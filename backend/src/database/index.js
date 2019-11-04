@@ -1,14 +1,11 @@
 import Sequelize from 'sequelize';
 import Autorizacao from '../app/models/Autorizacao';
+import SetorUsuario from '../app/models/SetorUsuario';
 import Auditoria from '../app/models/Auditoria';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
 
-const models = [
-  Autorizacao,
-  Auditoria,
-  DataHoraAtual,
-];
+const models = [Autorizacao, Auditoria, DataHoraAtual, SetorUsuario];
 
 class Database {
   constructor() {
