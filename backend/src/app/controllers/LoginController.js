@@ -75,6 +75,7 @@ class LoginController {
                           {
                             model: SetorUsuario,
                             mapToModel: true,
+                            logging: false,
                           }
                         )
                         .then(area => {
