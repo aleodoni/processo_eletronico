@@ -33,4 +33,12 @@ describe('Testando as rotas do sistema.', () => {
         expect(response.statusCode).toBe(200);
       });
   });
+  test('Área', () => {
+    return request(app)
+      .get(`${process.env.API_URL}/area`)
+      .set('authorization', `${token}`)
+      .then(response => {
+        expect(response.statusCode).toBe(200);
+      });
+  });
 });
