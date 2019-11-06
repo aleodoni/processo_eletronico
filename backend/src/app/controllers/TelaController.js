@@ -47,7 +47,7 @@ class TelaController {
       return res.status(400).json({ error: 'Tela não encontrada' });
     }
     await tela
-      .destroy({ logging: false })
+      .destroy({ logging: true })
       .then(() => {})
       .catch(function(err) {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {

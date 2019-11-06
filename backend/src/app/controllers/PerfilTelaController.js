@@ -48,7 +48,7 @@ class PerfilTelaController {
 
   async delete(req, res) {
     const perfilTela = await PerfilTela.findByPk(req.params.id, {
-      logging: false,
+      logging: true,
     });
     if (!perfilTela) {
       return res.status(400).json({ error: 'Perfil de tela não encontrado' });
@@ -59,7 +59,8 @@ class PerfilTelaController {
       .catch(function(err) {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
           return res.status(400).json({
-            error: 'Erro ao excluir perfil de tela. O perfil de tela possui uma ou mais ligações.',
+            error:
+              'Erro ao excluir perfil de tela. O perfil de tela possui uma ou mais ligações.',
           });
         }
       });

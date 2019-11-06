@@ -6,6 +6,7 @@ import AreaController from './app/controllers/AreaController';
 import TelaController from './app/controllers/TelaController';
 import PerfilTelaController from './app/controllers/PerfilTelaController';
 import PerfilAreaController from './app/controllers/PerfilAreaController';
+import TelaNoPerfilController from './app/controllers/TelaNoPerfilController';
 import AuthMiddleware from './app/middlewares/auth';
 
 require('dotenv/config');
@@ -54,6 +55,20 @@ routes.put(
 routes.delete(
   `${process.env.API_URL}/perfil-area/:id`,
   PerfilAreaController.delete
+);
+
+// rotas do cadastro de tela no perfil
+routes.get(
+  `${process.env.API_URL}/tela-no-perfil`,
+  TelaNoPerfilController.index
+);
+routes.post(
+  `${process.env.API_URL}/tela-no-perfil`,
+  TelaNoPerfilController.store
+);
+routes.delete(
+  `${process.env.API_URL}/tela-no-perfil/:tel_id/:pet_id`,
+  TelaNoPerfilController.delete
 );
 
 export default routes;

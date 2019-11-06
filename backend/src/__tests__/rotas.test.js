@@ -233,4 +233,100 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         done();
       });
   });
+
+  // Tela no Perfil
+  it('Tela no Perfil - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/tela-no-perfil`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) return done(err);
+        done();
+      });
+  });
+  let telId = '';
+  let petId = '';
+  it('Tela no Perfil - Insere', function(done) {
+    const insereTelasAux = {
+      tel_id: null,
+      tel_nome: `Inserção nome - ${Math.random()}`,
+      tel_url: `Inserção url - ${Math.random()}`,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/telas`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(insereTelasAux)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, resTela) {
+        telId = resTela.body.tel_id;
+        const inserePerfilTelaAux = {
+          pet_id: null,
+          pet_nome: `Inserção nome - ${Math.random()}`,
+          pet_descricao: `Inserção descriçao - ${Math.random()}`,
+        };
+        request(app)
+          .post(`${process.env.API_URL}/perfil-tela`)
+          .set('authorization', `${token}`)
+          .set('usuario', `${usuario}`)
+          .send(inserePerfilTelaAux)
+          .set('Content-Type', 'application/json')
+          .expect(200)
+          .end(function(err, resPerfilTela) {
+            petId = resPerfilTela.body.pet_id;
+            const insereTelaNoPerfil = {
+              tel_id: telId,
+              pet_id: petId,
+            };
+            request(app)
+              .post(`${process.env.API_URL}/tela-no-perfil`)
+              .set('authorization', `${token}`)
+              .set('usuario', `${usuario}`)
+              .send(insereTelaNoPerfil)
+              .set('Content-Type', 'application/json')
+              .expect(200)
+              .end(function(err, res) {
+                telId = res.body.tel_id;
+                petId = res.body.pet_id;
+                if (err) return done(err);
+                done();
+              });
+          });
+      });
+  });
+
+  it('Tela no Perfil - Apaga', function(done) {
+    request(app)
+      .delete(`${process.env.API_URL}/tela-no-perfil/${telId}/${petId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err) {
+        if (err) return done(err);
+        done();
+      });
+    request(app)
+      .delete(`${process.env.API_URL}/telas/${telId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err) {
+        if (err) return done(err);
+        done();
+      });
+    request(app)
+      .delete(`${process.env.API_URL}/perfil-tela/${petId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err) {
+        if (err) return done(err);
+        done();
+      });
+  });
 });

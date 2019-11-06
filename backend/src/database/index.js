@@ -5,6 +5,7 @@ import Area from '../app/models/Area';
 import Tela from '../app/models/Tela';
 import PerfilTela from '../app/models/PerfilTela';
 import PerfilArea from '../app/models/PerfilArea';
+import TelaNoPerfil from '../app/models/TelaNoPerfil';
 import Auditoria from '../app/models/Auditoria';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
@@ -18,6 +19,7 @@ const models = [
   Tela,
   PerfilTela,
   PerfilArea,
+  TelaNoPerfil,
 ];
 
 class Database {
