@@ -329,4 +329,72 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         done();
       });
   });
+
+  // Área no Perfil
+  it('Área no Perfil - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/area-no-perfil`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) return done(err);
+        done();
+      });
+  });
+  let setId = '';
+  let peaId = '';
+  it('Área no Perfil - Insere', function(done) {
+    const inserePerfilAreaAux = {
+      pea_id: null,
+      pea_nome: `Inserção nome aux - ${Math.random()}`,
+      pea_descricao: `Inserção descriçao - ${Math.random()}`,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/perfil-area`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(inserePerfilAreaAux)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, resPerfilAreaAux) {
+        peaId = resPerfilAreaAux.body.pea_id;
+        const insereAreaNoPerfil = {
+          set_id: '007',
+          pea_id: peaId,
+        };
+        request(app)
+          .post(`${process.env.API_URL}/area-no-perfil`)
+          .set('authorization', `${token}`)
+          .set('usuario', `${usuario}`)
+          .send(insereAreaNoPerfil)
+          .set('Content-Type', 'application/json')
+          .expect(200)
+          .end(function(err, resAreaNoPerfil) {
+            setId = resAreaNoPerfil.body.set_id;
+            peaId = resAreaNoPerfil.body.pea_id;
+            if (err) return done(err);
+            done();
+          });
+      });
+  });
+  it('Área no Perfil - Apaga', function(done) {
+    request(app)
+      .delete(`${process.env.API_URL}/area-no-perfil/${setId}/${peaId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err) {
+        request(app)
+          .delete(`${process.env.API_URL}/perfil-area/${peaId}`)
+          .set('authorization', `${token}`)
+          .set('usuario', `${usuario}`)
+          .set('Content-Type', 'application/json')
+          .expect(200)
+          .end(function(err) {
+            if (err) return done(err);
+            done();
+          });
+      });
+  });
 });

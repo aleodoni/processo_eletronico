@@ -13,7 +13,7 @@ class TelaNoPerfilController {
 
   async store(req, res) {
     const { tel_id, pet_id } = await TelaNoPerfil.create(req.body, {
-      logging: true,
+      logging: false,
     });
     return res.json({
       tel_id,
@@ -22,17 +22,15 @@ class TelaNoPerfilController {
   }
 
   async delete(req, res) {
-    const telaNoPerfil = await TelaNoPerfil.findOne(
-      { where: { tel_id: req.params.tel_id, pet_id: req.params.pet_id } },
-      {
-        logging: true,
-      }
-    );
+    const telaNoPerfil = await TelaNoPerfil.findOne({
+      where: { tel_id: req.params.tel_id, pet_id: req.params.pet_id },
+      logging: false,
+    });
     if (!telaNoPerfil) {
       return res.status(400).json({ error: 'Tela no perfil não encontrada' });
     }
     await telaNoPerfil
-      .destroy({ logging: true })
+      .destroy({ logging: false })
       .then(() => {})
       .catch(function(err) {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {

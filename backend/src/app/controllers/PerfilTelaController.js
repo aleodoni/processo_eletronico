@@ -48,7 +48,7 @@ class PerfilTelaController {
 
   async delete(req, res) {
     const perfilTela = await PerfilTela.findByPk(req.params.id, {
-      logging: true,
+      logging: false,
     });
     if (!perfilTela) {
       return res.status(400).json({ error: 'Perfil de tela não encontrado' });
