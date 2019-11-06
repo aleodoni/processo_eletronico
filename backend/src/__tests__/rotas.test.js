@@ -397,4 +397,99 @@ describe('Testando as rotas de manutenção do sistema.', () => {
           });
       });
   });
+
+  // União dos perfis
+  it('União dos perfis - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/uniao-perfis`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) return done(err);
+        done();
+      });
+  });
+  
+  let perfilAreaIdAux = '';
+  let perfilTelaIdAux = '';
+  it('União dos perfis - Insere', function(done) {
+    const inserePerfilAreaUniaoPerfis = {
+      pea_id: null,
+      pea_nome: `Inserção nome aux união perfis - ${Math.random()}`,
+      pea_descricao: `Inserção descriçao - ${Math.random()}`,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/perfil-area`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(inserePerfilAreaUniaoPerfis)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, resPerfilAreaUniaoPerfis) {
+        perfilAreaIdAux = resPerfilAreaUniaoPerfis.body.pea_id;
+        const inserePerfilTelaUniaoPerfis = {
+          pet_id: null,
+          pet_nome: `Inserção nome - ${Math.random()}`,
+          pet_descricao: `Inserção descriçao - ${Math.random()}`,
+        };
+        request(app)
+          .post(`${process.env.API_URL}/perfil-tela`)
+          .set('authorization', `${token}`)
+          .set('usuario', `${usuario}`)
+          .send(inserePerfilTelaUniaoPerfis)
+          .set('Content-Type', 'application/json')
+          .expect(200)
+          .end(function(_err, resPerfilTelaUniaoPerfis) {
+            perfilTelaIdAux = resPerfilTelaUniaoPerfis.body.pet_id;
+            const insereUniaoPerfis = {
+              pet_id: perfilTelaIdAux,
+              pea_id: perfilAreaIdAux,
+            };
+            request(app)
+              .post(`${process.env.API_URL}/uniao-perfis`)
+              .set('authorization', `${token}`)
+              .set('usuario', `${usuario}`)
+              .send(insereUniaoPerfis)
+              .set('Content-Type', 'application/json')
+              .expect(200)
+              .end(function(err) {
+                if (err) return done(err);
+                done();
+              });
+          });
+      });
+  });
+  it('União dos perfis - Apaga', function(done) {
+    request(app)
+      .delete(
+        `${process.env.API_URL}/uniao-perfis/${perfilTelaIdAux}/${perfilAreaIdAux}`
+      )
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function() {
+        request(app)
+          .delete(`${process.env.API_URL}/perfil-area/${perfilAreaIdAux}`)
+          .set('authorization', `${token}`)
+          .set('usuario', `${usuario}`)
+          .set('Content-Type', 'application/json')
+          .expect(200)
+          .end(function(err) {
+            if (err) return done(err);
+            done();
+          });
+        request(app)
+          .delete(`${process.env.API_URL}/perfil-tela/${perfilTelaIdAux}`)
+          .set('authorization', `${token}`)
+          .set('usuario', `${usuario}`)
+          .set('Content-Type', 'application/json')
+          .expect(200)
+          .end(function(err, res) {
+            perfilTelaId = res.body.pet_id;
+            if (err) return done(err);
+            done();
+          });
+      });
+  });
 });

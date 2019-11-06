@@ -8,6 +8,7 @@ import PerfilTelaController from './app/controllers/PerfilTelaController';
 import PerfilAreaController from './app/controllers/PerfilAreaController';
 import TelaNoPerfilController from './app/controllers/TelaNoPerfilController';
 import AreaNoPerfilController from './app/controllers/AreaNoPerfilController';
+import UniaoPerfisController from './app/controllers/UniaoPerfisController';
 import AuthMiddleware from './app/middlewares/auth';
 
 require('dotenv/config');
@@ -84,6 +85,14 @@ routes.post(
 routes.delete(
   `${process.env.API_URL}/area-no-perfil/:set_id/:pea_id`,
   AreaNoPerfilController.delete
+);
+
+// rotas do cadastro de união de perfis
+routes.get(`${process.env.API_URL}/uniao-perfis`, UniaoPerfisController.index);
+routes.post(`${process.env.API_URL}/uniao-perfis`, UniaoPerfisController.store);
+routes.delete(
+  `${process.env.API_URL}/uniao-perfis/:pet_id/:pea_id`,
+  UniaoPerfisController.delete
 );
 
 export default routes;
