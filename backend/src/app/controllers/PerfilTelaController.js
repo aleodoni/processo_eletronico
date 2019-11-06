@@ -18,9 +18,12 @@ class PerfilTelaController {
     if (!(await validator.validate(req))) {
       return res.status(400).json({ error: validator.errors });
     }
-    const { pet_id, pet_nome, pet_descricao } = await PerfilTela.create(req.body, {
-      logging: false,
-    });
+    const { pet_id, pet_nome, pet_descricao } = await PerfilTela.create(
+      req.body,
+      {
+        logging: false,
+      }
+    );
     return res.json({
       pet_id,
       pet_nome,

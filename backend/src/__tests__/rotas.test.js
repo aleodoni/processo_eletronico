@@ -170,4 +170,67 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         done();
       });
   });
+
+  // Perfil de área
+  it('Perfil de área - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/perfil-area`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) return done(err);
+        done();
+      });
+  });
+  let perfilAreaId = '';
+  it('Perfil de area - Insere', function(done) {
+    const inserePerfilArea = {
+      pea_id: null,
+      pea_nome: `Inserção nome - ${Math.random()}`,
+      pea_descricao: `Inserção descriçao - ${Math.random()}`,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/perfil-area`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(inserePerfilArea)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        perfilAreaId = res.body.pea_id;
+        if (err) return done(err);
+        done();
+      });
+  });
+  it('Perfil de área - Edita', function(done) {
+    const editaPerfilArea = {
+      pea_nome: `Edição nome - ${Math.random()}`,
+      pea_descricao: `Edição descrição - ${Math.random()}`,
+    };
+    request(app)
+      .put(`${process.env.API_URL}/perfil-area/${perfilAreaId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(editaPerfilArea)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        perfilAreaId = res.body.pea_id;
+        if (err) return done(err);
+        done();
+      });
+  });
+  it('Perfil de área - Apaga', function(done) {
+    request(app)
+      .delete(`${process.env.API_URL}/perfil-area/${perfilAreaId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        perfilAreaId = res.body.pea_id;
+        if (err) return done(err);
+        done();
+      });
+  });
 });
