@@ -38,6 +38,22 @@ describe('Testando as rotas do sistema.', () => {
         expect(response.statusCode).toBe(200);
       });
   });
+  test('Área por código', () => {
+    return request(app)
+      .get(`${process.env.API_URL}/area-por-codigo/027`)
+      .set('authorization', `${token}`)
+      .then(response => {
+        expect(response.statusCode).toBe(200);
+      });
+  });
+  test('Setor por código', () => {
+    return request(app)
+      .get(`${process.env.API_URL}/setor-por-codigo/171`)
+      .set('authorization', `${token}`)
+      .then(response => {
+        expect(response.statusCode).toBe(200);
+      });
+  });
 });
 
 describe('Testando as rotas de manutenção do sistema.', () => {

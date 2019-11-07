@@ -78,7 +78,7 @@ class LoginController {
                             logging: false,
                           }
                         )
-                        .then(area => {
+                        .then(function(area) {
                           if (area.length !== 0) {
                             const nivel = area[0].nivellotacao;
                             let setorPaiUsuario;
@@ -112,8 +112,6 @@ class LoginController {
                               setorPaiUsuario = area[0].set_id;
                               areaUsuario = setorPaiUsuario.substring(6, 9);
                             }
-                            // console.log(`Área do usuário: ${areaUsuario}`);
-                            //
                             const nomeUsuario = dados.dataValues.pes_nome;
                             console.log(
                               `Usuário: ${usuario} logado com sucesso no sistema SPA2.`
@@ -138,7 +136,8 @@ class LoginController {
                               token,
                               usuario,
                               nomeUsuario,
-                              lotacaoSPA2: areaUsuario,
+                              setorUsuario,
+                              areaUsuario,
                             });
                           } else {
                             console.log(ERRO_USUARIO_SETOR);
@@ -150,6 +149,7 @@ class LoginController {
                         .catch(function(erro) {
                           console.log(erro);
                         });
+                      return null;
                       //
                     }
                   })

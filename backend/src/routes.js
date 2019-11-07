@@ -30,6 +30,18 @@ routes.use(AuthMiddleware);
 // rota que retorna as áreas
 routes.get(`${process.env.API_URL}/area`, AreaController.index);
 
+// rota que retorna a área por código
+routes.get(
+  `${process.env.API_URL}/area-por-codigo/:id`,
+  AreaController.areaPorCodigo
+);
+
+// rota que retorna o setor por código
+routes.get(
+  `${process.env.API_URL}/setor-por-codigo/:id`,
+  AreaController.setorPorCodigo
+);
+
 // rotas do cadastro de telas
 routes.get(`${process.env.API_URL}/telas`, TelaController.index);
 routes.post(`${process.env.API_URL}/telas`, TelaController.store);

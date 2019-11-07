@@ -2,6 +2,7 @@ import Sequelize from 'sequelize';
 import Autorizacao from '../app/models/Autorizacao';
 import SetorUsuario from '../app/models/SetorUsuario';
 import Area from '../app/models/Area';
+import Setor from '../app/models/Setor';
 import Tela from '../app/models/Tela';
 import PerfilTela from '../app/models/PerfilTela';
 import PerfilArea from '../app/models/PerfilArea';
@@ -19,6 +20,7 @@ const models = [
   DataHoraAtual,
   SetorUsuario,
   Area,
+  Setor,
   Tela,
   PerfilTela,
   PerfilArea,
