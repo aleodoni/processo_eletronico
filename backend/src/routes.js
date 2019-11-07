@@ -9,6 +9,7 @@ import PerfilAreaController from './app/controllers/PerfilAreaController';
 import TelaNoPerfilController from './app/controllers/TelaNoPerfilController';
 import AreaNoPerfilController from './app/controllers/AreaNoPerfilController';
 import UniaoPerfisController from './app/controllers/UniaoPerfisController';
+import MenuController from './app/controllers/MenuController';
 import AuthMiddleware from './app/middlewares/auth';
 
 require('dotenv/config');
@@ -94,5 +95,11 @@ routes.delete(
   `${process.env.API_URL}/uniao-perfis/:pet_id/:pea_id`,
   UniaoPerfisController.delete
 );
+
+// rotas do cadastro de menu
+routes.get(`${process.env.API_URL}/menu`, MenuController.index);
+routes.post(`${process.env.API_URL}/menu`, MenuController.store);
+routes.put(`${process.env.API_URL}/menu/:id`, MenuController.update);
+routes.delete(`${process.env.API_URL}/menu/:id`, MenuController.delete);
 
 export default routes;

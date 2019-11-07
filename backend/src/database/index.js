@@ -8,6 +8,7 @@ import PerfilArea from '../app/models/PerfilArea';
 import TelaNoPerfil from '../app/models/TelaNoPerfil';
 import AreaNoPerfil from '../app/models/AreaNoPerfil';
 import UniaoPerfis from '../app/models/UniaoPerfis';
+import Menu from '../app/models/Menu';
 import Auditoria from '../app/models/Auditoria';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
@@ -24,6 +25,7 @@ const models = [
   TelaNoPerfil,
   AreaNoPerfil,
   UniaoPerfis,
+  Menu,
 ];
 
 class Database {

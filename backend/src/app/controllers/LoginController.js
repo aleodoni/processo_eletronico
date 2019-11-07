@@ -104,11 +104,11 @@ class LoginController {
                                 areaUsuario = setorPaiUsuario.substring(6, 9);
                               }
                             }
-                            if (nivel === 4){
+                            if (nivel === 4) {
                               setorPaiUsuario = area[0].set_id;
                               areaUsuario = setorPaiUsuario.substring(6, 9);
                             }
-                            if (nivel === 5){
+                            if (nivel === 5) {
                               setorPaiUsuario = area[0].set_id;
                               areaUsuario = setorPaiUsuario.substring(6, 9);
                             }
@@ -119,7 +119,7 @@ class LoginController {
                               `Usuário: ${usuario} logado com sucesso no sistema SPA2.`
                             );
                             const adicionaMinutos = function(dt, minutos) {
-                                return new Date(dt.getTime() + minutos * 60000);
+                              return new Date(dt.getTime() + minutos * 60000);
                             };
                             const claims = {
                               sub: usuario, // login do usuario
@@ -149,7 +149,7 @@ class LoginController {
                         })
                         .catch(function(erro) {
                           console.log(erro);
-                      });
+                        });
                       //
                     }
                   })

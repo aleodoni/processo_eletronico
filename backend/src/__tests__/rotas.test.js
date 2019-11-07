@@ -6,8 +6,6 @@ require('dotenv/config');
 
 let token = '';
 let usuario = '';
-let nomeUsuario = '';
-let areaUsuario = '';
 beforeAll(done => {
   request(app)
     .post(`${process.env.API_URL}/autorizacao`)
@@ -19,8 +17,6 @@ beforeAll(done => {
     .end((err, response) => {
       token = response.body.token;
       usuario = response.body.usuario;
-      nomeUsuario = response.body.nomeUsuario;
-      areaUsuario = response.body.lotacaoSPA2;
       done();
     });
 });
@@ -44,7 +40,7 @@ describe('Testando as rotas do sistema.', () => {
   });
 });
 
-describe('Testando as rotas de manutenção do sistema.', () => {  
+describe('Testando as rotas de manutenção do sistema.', () => {
   // Tela
   it('Telas - Lista', function(done) {
     request(app)
@@ -52,8 +48,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('authorization', `${token}`)
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   let telaId = '';
@@ -72,8 +70,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         telaId = res.body.tel_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   it('Telas - Edita', function(done) {
@@ -90,8 +90,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         telaId = res.body.tel_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   it('Telas - Apaga', function(done) {
@@ -103,8 +105,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         telaId = res.body.tel_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
 
@@ -115,8 +119,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('authorization', `${token}`)
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   let perfilTelaId = '';
@@ -135,8 +141,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         perfilTelaId = res.body.pet_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   it('Perfil de tela - Edita', function(done) {
@@ -153,8 +161,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         perfilTelaId = res.body.pet_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   it('Perfil de tela - Apaga', function(done) {
@@ -166,8 +176,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         perfilTelaId = res.body.pet_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
 
@@ -178,8 +190,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('authorization', `${token}`)
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   let perfilAreaId = '';
@@ -198,8 +212,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         perfilAreaId = res.body.pea_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   it('Perfil de área - Edita', function(done) {
@@ -216,8 +232,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         perfilAreaId = res.body.pea_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   it('Perfil de área - Apaga', function(done) {
@@ -229,8 +247,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .expect(200)
       .end(function(err, res) {
         perfilAreaId = res.body.pea_id;
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
 
@@ -241,8 +261,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('authorization', `${token}`)
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   let telId = '';
@@ -274,6 +296,7 @@ describe('Testando as rotas de manutenção do sistema.', () => {
           .send(inserePerfilTelaAux)
           .set('Content-Type', 'application/json')
           .expect(200)
+          // eslint-disable-next-line no-shadow
           .end(function(err, resPerfilTela) {
             petId = resPerfilTela.body.pet_id;
             const insereTelaNoPerfil = {
@@ -287,11 +310,13 @@ describe('Testando as rotas de manutenção do sistema.', () => {
               .send(insereTelaNoPerfil)
               .set('Content-Type', 'application/json')
               .expect(200)
-              .end(function(err, res) {
+              .end(function(erroTelaNoPerfil, res) {
                 telId = res.body.tel_id;
                 petId = res.body.pet_id;
-                if (err) return done(err);
-                done();
+                if (erroTelaNoPerfil) {
+                  return done(erroTelaNoPerfil);
+                }
+                return done();
               });
           });
       });
@@ -305,8 +330,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('Content-Type', 'application/json')
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
     request(app)
       .delete(`${process.env.API_URL}/telas/${telId}`)
@@ -315,8 +342,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('Content-Type', 'application/json')
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
     request(app)
       .delete(`${process.env.API_URL}/perfil-tela/${petId}`)
@@ -325,8 +354,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('Content-Type', 'application/json')
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
 
@@ -337,8 +368,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('authorization', `${token}`)
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
   let setId = '';
@@ -369,11 +402,13 @@ describe('Testando as rotas de manutenção do sistema.', () => {
           .send(insereAreaNoPerfil)
           .set('Content-Type', 'application/json')
           .expect(200)
-          .end(function(err, resAreaNoPerfil) {
+          .end(function(erroAreaNoPerfil, resAreaNoPerfil) {
             setId = resAreaNoPerfil.body.set_id;
             peaId = resAreaNoPerfil.body.pea_id;
-            if (err) return done(err);
-            done();
+            if (erroAreaNoPerfil) {
+              return done(erroAreaNoPerfil);
+            }
+            return done();
           });
       });
   });
@@ -384,16 +419,18 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('usuario', `${usuario}`)
       .set('Content-Type', 'application/json')
       .expect(200)
-      .end(function(err) {
+      .end(function() {
         request(app)
           .delete(`${process.env.API_URL}/perfil-area/${peaId}`)
           .set('authorization', `${token}`)
           .set('usuario', `${usuario}`)
           .set('Content-Type', 'application/json')
           .expect(200)
-          .end(function(err) {
-            if (err) return done(err);
-            done();
+          .end(function(erroPerfilArea) {
+            if (erroPerfilArea) {
+              return done(erroPerfilArea);
+            }
+            return done();
           });
       });
   });
@@ -405,11 +442,13 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       .set('authorization', `${token}`)
       .expect(200)
       .end(function(err) {
-        if (err) return done(err);
-        done();
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
-  
+
   let perfilAreaIdAux = '';
   let perfilTelaIdAux = '';
   it('União dos perfis - Insere', function(done) {
@@ -452,9 +491,11 @@ describe('Testando as rotas de manutenção do sistema.', () => {
               .send(insereUniaoPerfis)
               .set('Content-Type', 'application/json')
               .expect(200)
-              .end(function(err) {
-                if (err) return done(err);
-                done();
+              .end(function(erroUniaoPerfis) {
+                if (erroUniaoPerfis) {
+                  return done(erroUniaoPerfis);
+                }
+                return done();
               });
           });
       });
@@ -476,8 +517,10 @@ describe('Testando as rotas de manutenção do sistema.', () => {
           .set('Content-Type', 'application/json')
           .expect(200)
           .end(function(err) {
-            if (err) return done(err);
-            done();
+            if (err) {
+              return done(err);
+            }
+            return done();
           });
         request(app)
           .delete(`${process.env.API_URL}/perfil-tela/${perfilTelaIdAux}`)
@@ -487,9 +530,87 @@ describe('Testando as rotas de manutenção do sistema.', () => {
           .expect(200)
           .end(function(err, res) {
             perfilTelaId = res.body.pet_id;
-            if (err) return done(err);
-            done();
+            if (err) {
+              return done(err);
+            }
+            return done();
           });
+      });
+  });
+  // Menu
+  it('Menu - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/menu`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  let menuId = '';
+  it('Menu - Insere', function(done) {
+    const insereMenus = {
+      men_id: null,
+      men_id_pai: null,
+      men_nome: `Inserção nome menu - ${Math.random()}`,
+      men_url: `Inserção url menu - ${Math.random()}`,
+      tel_id: null,
+      men_icone: `Inserção icone menu - ${Math.random()}`,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/menu`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(insereMenus)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        menuId = res.body.men_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Menu - Edita', function(done) {
+    const editaMenus = {
+      men_id_pai: null,
+      men_nome: `Inserção nome menu - ${Math.random()}`,
+      men_url: `Inserção url menu - ${Math.random()}`,
+      tel_id: null,
+      men_icone: `Inserção icone menu - ${Math.random()}`,
+    };
+    request(app)
+      .put(`${process.env.API_URL}/menu/${menuId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(editaMenus)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        menuId = res.body.men_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Menu - Apaga', function(done) {
+    request(app)
+      .delete(`${process.env.API_URL}/menu/${menuId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        menuId = res.body.men_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
       });
   });
 });

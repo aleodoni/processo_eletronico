@@ -1,6 +1,8 @@
 import Auditoria from '../models/Auditoria';
 import DataHoraAtual from '../models/DataHoraAtual';
+
 require('dotenv').config();
+
 class AuditoriaController {
   async audita(passado, requisicao, tipo, chave) {
     DataHoraAtual.findAll({
@@ -25,7 +27,7 @@ class AuditoriaController {
               { returning: false, logging: false }
             )
               .then(auditoria => {
-                //console.log('Auditoria de inserção executada com sucesso.');
+                // console.log('Auditoria de inserção executada com sucesso.');
                 return null;
               })
               .catch(function(err) {
@@ -75,7 +77,7 @@ class AuditoriaController {
               { returning: false, logging: false }
             )
               .then(auditoria => {
-                //console.log('Auditoria de deleção executada com sucesso.');
+                // console.log('Auditoria de deleção executada com sucesso.');
                 return null;
               })
               .catch(function(err) {

@@ -59,7 +59,8 @@ class PerfilAreaController {
       .catch(function(err) {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
           return res.status(400).json({
-            error: 'Erro ao excluir perfil de área. O perfil de área possui uma ou mais ligações.',
+            error:
+              'Erro ao excluir perfil de área. O perfil de área possui uma ou mais ligações.',
           });
         }
       });

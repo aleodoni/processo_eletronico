@@ -12,8 +12,6 @@ class UniaoPerfisController {
   }
 
   async store(req, res) {
-    //console.log("-->>> "+req.body.pet_id)
-    //console.log("-->>> "+req.body.pea_id)
     const { pet_id, pea_id } = await UniaoPerfis.create(req.body, {
       logging: false,
     });
