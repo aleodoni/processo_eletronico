@@ -1,21 +1,22 @@
 import Sequelize, { Model } from 'sequelize';
 
-class PerfilTela extends Model {
+class AreaMenu extends Model {
   static init(sequelize) {
     super.init(
       {
-        pet_id: {
+        amu_id: {
           type: Sequelize.INTEGER,
-          defaultValue: "nextval('spa2.perfil_tela_pet_id_seq')",
+          defaultValue: "nextval('spa2.area_menu_mmu_id_seq')",
           primaryKey: true,
           autoIncrement: true,
         },
-        pet_nome: {
+        set_id: {
           type: Sequelize.STRING,
           allowNull: false,
         },
-        pet_descricao: {
-          type: Sequelize.STRING,
+        mmu_id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
         },
         versao: {
           type: Sequelize.INTEGER,
@@ -24,7 +25,7 @@ class PerfilTela extends Model {
         },
       },
       {
-        tableName: 'perfil_tela',
+        tableName: 'area_menu',
         schema: 'spa2',
         sequelize,
         operatorsAliases: false,
@@ -35,4 +36,4 @@ class PerfilTela extends Model {
   }
 }
 
-export default PerfilTela;
+export default AreaMenu;

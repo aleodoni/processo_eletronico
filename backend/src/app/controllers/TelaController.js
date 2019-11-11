@@ -18,13 +18,12 @@ class TelaController {
     if (!(await validator.validate(req))) {
       return res.status(400).json({ error: validator.errors });
     }
-    const { tel_id, tel_nome, tel_url } = await Tela.create(req.body, {
+    const { tel_id, tel_nome } = await Tela.create(req.body, {
       logging: false,
     });
     return res.json({
       tel_id,
       tel_nome,
-      tel_url,
     });
   }
 

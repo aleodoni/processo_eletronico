@@ -1,16 +1,18 @@
 import Sequelize, { Model } from 'sequelize';
 
-class AreaNoPerfil extends Model {
+class ModeloMenu extends Model {
   static init(sequelize) {
     super.init(
       {
-        set_id: {
-          type: Sequelize.STRING,
-          primaryKey: true,
-        },
-        pea_id: {
+        mmu_id: {
           type: Sequelize.INTEGER,
+          defaultValue: "nextval('spa2.modelo_menu_mmu_id_seq')",
           primaryKey: true,
+          autoIncrement: true,
+        },
+        mmu_nome: {
+          type: Sequelize.STRING,
+          allowNull: false,
         },
         versao: {
           type: Sequelize.INTEGER,
@@ -19,7 +21,7 @@ class AreaNoPerfil extends Model {
         },
       },
       {
-        tableName: 'area_no_perfil',
+        tableName: 'modelo_menu',
         schema: 'spa2',
         sequelize,
         operatorsAliases: false,
@@ -28,12 +30,6 @@ class AreaNoPerfil extends Model {
 
     return this;
   }
-
-  static associate(models) {
-    this.belongsTo(models.PerfilArea, {
-      foreignKey: 'pea_id',
-    });
-  }
 }
 
-export default AreaNoPerfil;
+export default ModeloMenu;

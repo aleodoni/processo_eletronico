@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-class PerfilAreaValidator {
+class ModeloMenuValidator {
   constructor() {
     this.init();
     this.errors = [];
@@ -8,7 +8,7 @@ class PerfilAreaValidator {
 
   init() {
     this.schema = Yup.object().shape({
-      pea_nome: Yup.string().required(),
+      mmu_nome: Yup.string().required(),
     });
   }
 
@@ -23,4 +23,4 @@ class PerfilAreaValidator {
   }
 }
 
-export default PerfilAreaValidator;
+export default ModeloMenuValidator;

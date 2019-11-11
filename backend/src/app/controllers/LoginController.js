@@ -112,33 +112,37 @@ class LoginController {
                               setorPaiUsuario = area[0].set_id;
                               areaUsuario = setorPaiUsuario.substring(6, 9);
                             }
-                            const nomeUsuario = dados.dataValues.pes_nome;
-                            console.log(
-                              `Usuário: ${usuario} logado com sucesso no sistema SPA2.`
-                            );
-                            const adicionaMinutos = function(dt, minutos) {
-                              return new Date(dt.getTime() + minutos * 60000);
-                            };
-                            const claims = {
-                              sub: usuario, // login do usuario
-                              nomeUsuario, // nome do usuario
-                              pesId: entry.object.employeeNumber, // pes_id no LDAP
-                              iat: new Date().getTime(), // data e hora de criação do token
-                              exp: adicionaMinutos(new Date(), timeout), // data e hora de expiração do token
-                            };
-                            const jwt = nJwt.create(
-                              claims,
-                              process.env.CHAVE,
-                              'HS512'
-                            );
-                            const token = jwt.compact();
-                            res.status(201).json({
-                              token,
-                              usuario,
-                              nomeUsuario,
-                              setorUsuario,
-                              areaUsuario,
-                            });
+                            
+                            
+                              const nomeUsuario = dados.dataValues.pes_nome;
+                              console.log(
+                                `Usuário: ${usuario} logado com sucesso no sistema SPA2.`
+                              );
+                              const adicionaMinutos = function(dt, minutos) {
+                                return new Date(dt.getTime() + minutos * 60000);
+                              };
+                              const claims = {
+                                sub: usuario, // login do usuario
+                                nomeUsuario, // nome do usuario
+                                pesId: entry.object.employeeNumber, // pes_id no LDAP
+                                iat: new Date().getTime(), // data e hora de criação do token
+                                exp: adicionaMinutos(new Date(), timeout), // data e hora de expiração do token
+                              };
+                              const jwt = nJwt.create(
+                                claims,
+                                process.env.CHAVE,
+                                'HS512'
+                              );
+                              const token = jwt.compact();
+                              res.status(201).json({
+                                token,
+                                usuario,
+                                nomeUsuario,
+                                setorUsuario,
+                                areaUsuario,
+                              }); 
+                              return null;
+                           
                           } else {
                             console.log(ERRO_USUARIO_SETOR);
                             res.status(412).json({

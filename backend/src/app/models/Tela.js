@@ -14,9 +14,6 @@ class Tela extends Model {
           type: Sequelize.STRING,
           allowNull: false,
         },
-        tel_url: {
-          type: Sequelize.STRING,
-        },
         versao: {
           type: Sequelize.INTEGER,
           allowNull: false,

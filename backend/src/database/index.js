@@ -4,12 +4,10 @@ import SetorUsuario from '../app/models/SetorUsuario';
 import Area from '../app/models/Area';
 import Setor from '../app/models/Setor';
 import Tela from '../app/models/Tela';
-import PerfilTela from '../app/models/PerfilTela';
-import PerfilArea from '../app/models/PerfilArea';
-import TelaNoPerfil from '../app/models/TelaNoPerfil';
-import AreaNoPerfil from '../app/models/AreaNoPerfil';
-import UniaoPerfis from '../app/models/UniaoPerfis';
+import ModeloMenu from '../app/models/ModeloMenu';
+import AreaMenu from '../app/models/AreaMenu';
 import Menu from '../app/models/Menu';
+import VMenu from '../app/models/VMenu';
 import Auditoria from '../app/models/Auditoria';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
@@ -22,12 +20,10 @@ const models = [
   Area,
   Setor,
   Tela,
-  PerfilTela,
-  PerfilArea,
-  TelaNoPerfil,
-  AreaNoPerfil,
-  UniaoPerfis,
   Menu,
+  VMenu,
+  ModeloMenu,
+  AreaMenu,
 ];
 
 class Database {
