@@ -6,14 +6,14 @@ class AreaMenuController {
   async index(req, res) {
     const areaMenus = await AreaMenu.findAll({
       attributes: ['amu_id', 'set_id', 'mmu_id'],
-      logging: true,
+      logging: false,
     });
     return res.json(areaMenus);
   }
 
   async store(req, res) {
     const { amu_id, set_id, mmu_id } = await AreaMenu.create(req.body, {
-      logging: true,
+      logging: false,
     });
     return res.json({
       amu_id,

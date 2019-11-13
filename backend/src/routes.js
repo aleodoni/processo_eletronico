@@ -19,6 +19,7 @@ const routes = new Router();
 routes.post(`${process.env.API_URL}/autorizacao`, LoginController.index);
 routes.get(`${process.env.API_URL}/`, Spa2Controller.index);
 
+
 /**
  * Rotas com autenticação
  */

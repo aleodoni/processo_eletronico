@@ -2,9 +2,9 @@
 /* eslint-disable func-names */
 import Sequelize from 'sequelize';
 import Menu from '../models/Menu';
-import VMenu from '../models/VMenu';
 import DataHoraAtual from '../models/DataHoraAtual';
 import MenuValidator from '../validators/MenuValidator';
+require('dotenv/config');
 
 class MenuController {
   async index(req, res) {
@@ -86,51 +86,33 @@ class MenuController {
     });
     return res.json(dataAtual);
   }
-
+    
   async montaMenu(req, res) {
-    const { Op } = Sequelize;
-    const menu = await VMenu.findAll({
-      attributes: [
-        'men_id',
-        'men_id_pai',
-        'set_id',
-        'mmu_nome',
-        'men_nome',
-        'men_url',
-        'men_icone',
-        'tel_id',
-        'tel_nome',
-        'men_ordem_pai',
-        'men_ordem_filho',
-      ],
-      where: {
-        men_id_pai: {
-          [Op.is]: null,
-        },
-        set_id: {
-          [Op.eq]: req.params.area,
-        },
+    const sequelize = new Sequelize(process.env.DB_NAME,process.env.DB_USER,process.env.DB_PASS,{
+      host: process.env.DB_HOST,
+      dialect: 'postgres',
+      define: {
+        timestamps: false,
+        underscoredAll: true,
       },
-      order: [['men_ordem_pai', 'ASC']],
+      pool: {
+        max: 7,
+        min: 0,
+        acquire: 30000,
+        idle: 10000,
+      },
+    });
+    const area = req.params.area;
+    
+    let sql = "select spa2.monta_menu_raiz('"+area+"')";
+    sequelize.query(sql,{
       logging: false,
-    })
-      .then(function(pai) {
-        const items = new Array();
-        for (let i = 0; i < pai.length; i++) {
-          const objeto = {};
-          objeto.label = pai[i].dataValues.men_nome;
-          objeto.icon = pai[i].dataValues.men_icone;
-          if (pai[i].dataValues.men_url !== null) {
-            // objeto.command = pai[i].dataValues.men_url;
-            objeto.url = pai[i].dataValues.men_url;
-            // objeto.command = eval(comando);
-          }
-          items.push(objeto);
-        }
-        // console.log(items)
-        return res.json(items);
-      })
-      .catch(function(err) {});
+      plain: true,
+      raw: true,
+    }).then(retorno => {
+      return res.json(retorno.monta_menu_raiz);
+    });
   }
+  
 }
 export default new MenuController();
