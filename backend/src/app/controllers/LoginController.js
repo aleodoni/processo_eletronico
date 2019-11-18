@@ -10,6 +10,7 @@ const ERRO_USUARIO_SETOR = 'Usuário não consta em nenhum setor.';
 const ERRO_USUARIO_SENHA_BRANCO = 'Usuário ou senha em branco.';
 const ERRO_PROCURA_LDAP = 'Erro ao fazer a procura no LDAP.';
 const ERRO_PERMISSAO = 'Sem permissão de acessar o sistema.';
+const ERRO_CONECTAR_LDAP = 'Erro ao conectar ao LDAP.';
 const ldapOptions = {
   url: process.env.LDAP_URL,
   connectTimeout: 30000,
@@ -112,8 +113,6 @@ class LoginController {
                               setorPaiUsuario = area[0].set_id;
                               areaUsuario = setorPaiUsuario.substring(6, 9);
                             }
-                            
-                            
                               const nomeUsuario = dados.dataValues.pes_nome;
                               console.log(
                                 `Usuário: ${usuario} logado com sucesso no sistema SPA2.`
@@ -158,6 +157,9 @@ class LoginController {
                     }
                   })
                   .catch(function(erroAutorizacao) {
+                    res.status(412).json({
+                      message: ERRO_CONECTAR_LDAP,
+                    });
                     console.log(erroAutorizacao);
                   });
               });
