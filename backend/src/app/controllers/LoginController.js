@@ -107,7 +107,11 @@ class LoginController {
                             }
                             if (nivel === 4) {
                               setorPaiUsuario = area[0].set_id;
-                              areaUsuario = setorPaiUsuario.substring(6, 9);
+                              if (setorPaiUsuario === '001288149439'){
+                                areaUsuario = setorPaiUsuario.substring(3, 6);
+                              }else{
+                                areaUsuario = setorPaiUsuario.substring(6, 9);
+                              }
                             }
                             if (nivel === 5) {
                               setorPaiUsuario = area[0].set_id;
@@ -174,5 +178,7 @@ class LoginController {
       });
     }
   }
+
+  
 }
 export default new LoginController();

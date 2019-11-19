@@ -13,11 +13,13 @@ import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import Paper from '@material-ui/core/Paper';
 import Logo from '../../assets/brasao.png';
+import History from 'history';
 require('dotenv').config();
 
 const styles = {
   list: {
     width: 300,
+    backgroundColor: '#EFF8FB',
   },
   links: {
     textDecoration:'none',
@@ -75,16 +77,16 @@ const styles = {
   }};
 
   class Menu extends Component {
-  constructor( props ) {
-    super( props );
-    this.state = {
-        data: [],
-        nomeArea: '',
-        nomeSetor: '',
-        dataHora: '',
-        mostraModalSair: false,
-    };
-  }
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            data: [],
+            nomeArea: '',
+            nomeSetor: '',
+            dataHora: '',
+            mostraModalSair: false,
+        };
+    }
 
   handleClick( item ) {
     this.setState( prevState => (
@@ -135,12 +137,7 @@ const styles = {
   };
 
   sairSistema = () => {
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('usuario');
-      sessionStorage.removeItem('nomeUsuario');
-      sessionStorage.removeItem('areaUsuario');
-      sessionStorage.removeItem('setorUsuario');
-      window.location.href = '/';
+      window.location.href = '/processo-eletronico';
   }
 
   handler( children ) {
@@ -193,6 +190,7 @@ const styles = {
 
   render() {
     const { classes } = this.props;
+    const { history } = this.props;
     return (
       <div className={classes.list}>
         <Drawer
@@ -202,20 +200,14 @@ const styles = {
           classes={ { paper: classes.list } }>
           <div>
             <Paper className={classes.paper}>
-            <img src={Logo} alt="Processo Eletrônico" className={classes.imgMenu} /><br />
-            <label className={ classes.area }>{this.state.nomeArea}</label><br />
-            <label className={ classes.area }>{this.state.nomeSetor}</label><br />
-            <label className={ classes.area }>{this.state.dataHora}</label><br /><br />
+                <img src={Logo} alt="Processo Eletrônico" className={classes.imgMenu} /><br />
+                <label className={ classes.area }>{this.state.nomeArea}</label><br />
+                <label className={ classes.area }>{this.state.nomeSetor}</label><br />
+                <label className={ classes.area }>{this.state.dataHora}</label><br />
+                <Person />
+                <label className={ classes.usuario }>{sessionStorage.getItem('nomeUsuario')}</label>
             </Paper>
             <List>
-              <ListItem
-                key="menuHeading"
-                divider
-                disableGutters
-              >
-                  <Person />
-                  <label className={ classes.usuario }>{sessionStorage.getItem('nomeUsuario')}</label>
-              </ListItem>
               { this.handler( this.state.data ) }
             </List>
             <Divider />

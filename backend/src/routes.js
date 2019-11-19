@@ -7,6 +7,7 @@ import TelaController from './app/controllers/TelaController';
 import MenuController from './app/controllers/MenuController';
 import ModeloMenuController from './app/controllers/ModeloMenuController';
 import AreaMenuController from './app/controllers/AreaMenuController';
+import AreaTelaController from './app/controllers/AreaTelaController';
 import AuthMiddleware from './app/middlewares/auth';
 
 require('dotenv/config');
@@ -69,6 +70,16 @@ routes.delete(
   `${process.env.API_URL}/area-menu/:id`,
   AreaMenuController.delete
 );
+
+// rotas do cadastro de área de tela
+routes.get(`${process.env.API_URL}/area-tela`, AreaTelaController.index);
+routes.post(`${process.env.API_URL}/area-tela`, AreaTelaController.store);
+routes.put(`${process.env.API_URL}/area-tela/:id`, AreaTelaController.update);
+routes.delete(
+  `${process.env.API_URL}/area-tela/:id`,
+  AreaTelaController.delete
+);
+routes.get(`${process.env.API_URL}/tela-por-area/:id`, AreaTelaController.telaPorArea);
 
 // rotas do cadastro de menu
 routes.get(`${process.env.API_URL}/menu`, MenuController.index);

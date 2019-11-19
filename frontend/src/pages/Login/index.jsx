@@ -88,11 +88,7 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('usuario');
-        sessionStorage.removeItem('nomeUsuario');
-        sessionStorage.removeItem('areaUsuario');
-        sessionStorage.removeItem('setorUsuario');
+
     }
 
     logar = async e => {
@@ -117,12 +113,25 @@ class Login extends Component {
                     sessionStorage.setItem('nomeUsuario', res.data.nomeUsuario);
                     sessionStorage.setItem('areaUsuario', res.data.areaUsuario);
                     sessionStorage.setItem('setorUsuario', res.data.setorUsuario);
-                    window.location.href = '/home';
+                    this.props.history.push('/home');
                 })
                 .catch(err => {
-                    this.setState({ erro: err.response.data.message });
+                    if (err == 'Error: Network Error'){
+                        this.setState({ erro: 'Não conectado a API.' });
+                    }else{
+                        this.setState({ erro: err.response.data.message });
+                    }
+                    this.limparSessao();
                 });
         }
     };
+
+    limparSessao = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('usuario');
+        sessionStorage.removeItem('nomeUsuario');
+        sessionStorage.removeItem('areaUsuario');
+        sessionStorage.removeItem('setorUsuario');
+    }
 }
 export default withStyles(styles)(Login)

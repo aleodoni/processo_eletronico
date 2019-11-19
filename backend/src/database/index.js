@@ -6,6 +6,7 @@ import Setor from '../app/models/Setor';
 import Tela from '../app/models/Tela';
 import ModeloMenu from '../app/models/ModeloMenu';
 import AreaMenu from '../app/models/AreaMenu';
+import AreaTela from '../app/models/AreaTela';
 import Menu from '../app/models/Menu';
 import VMenu from '../app/models/VMenu';
 import Auditoria from '../app/models/Auditoria';
@@ -24,6 +25,7 @@ const models = [
   VMenu,
   ModeloMenu,
   AreaMenu,
+  AreaTela,
 ];
 
 class Database {
