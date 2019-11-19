@@ -47,6 +47,7 @@ const styles = {
     width: 300,
     border: '2px solid #116FBF',
     backgroundColor: '#FFFFFF',
+    borderRadius: '5px',
     left: '40%',
     top: '40%',
     textAlign: 'center',
