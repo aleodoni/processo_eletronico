@@ -1,6 +1,7 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core';
-import Menu from '../Menu'
+import Menu from '../Menu';
+import Autorizacao from '../Autorizacao';
 
 const styles = {
     lateral: {
@@ -16,14 +17,15 @@ const styles = {
 class Home extends Component {
 
     constructor( props ) {
-        super( props )
-        this.state = {}
+        super( props );
+        this.state = {};
       }
 
       render() {
         const { classes } = this.props
         return (
             <div className={classes.lateral}>
+            <Autorizacao tela="Home"/>
             <Menu/>
             Home
             </div>
@@ -32,4 +34,4 @@ class Home extends Component {
 
 }
 
-export default withStyles(styles)(Home)
+export default withStyles(styles)(Home);

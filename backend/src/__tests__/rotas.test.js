@@ -60,6 +60,14 @@ describe('Testando as rotas do sistema.', () => {
       .set('authorization', `${token}`);
     expect(response.statusCode).toBe(200);
   });
+
+  test('Telas por área', async () => {
+    const response = await request(app)
+      .get(`${process.env.API_URL}/telas-por-area/288`)
+      .set('authorization', `${token}`);
+    expect(response.statusCode).toBe(200);
+  });
+  
 });
 
 describe('Testando as rotas de manutenção do sistema.', () => {
@@ -344,73 +352,5 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         return done();
       });
   });
-  // Área de Tela
-  it('Área de tela - Lista', function(done) {
-    request(app)
-      .get(`${process.env.API_URL}/area-tela`)
-      .set('authorization', `${token}`)
-      .expect(200)
-      .end(function(err) {
-        if (err) {
-          return done(err);
-        }
-        return done();
-      });
-  });
-  let areaTelaId = '';
-  it('Área de tela - Insere', function(done) {
-    const insereAreaTelas = {
-      atl_id: null,
-      set_id: '027',
-      tel_id: 22,
-    };
-    request(app)
-      .post(`${process.env.API_URL}/area-tela`)
-      .set('authorization', `${token}`)
-      .set('usuario', `${usuario}`)
-      .send(insereAreaTelas)
-      .set('Content-Type', 'application/json')
-      .expect(200)
-      .end(function(err, res) {
-        areaTelaId = res.body.atl_id;
-        if (err) {
-          return done(err);
-        }
-        return done();
-      });
-  });
-  it('Área de tela - Edita', function(done) {
-    const editaAreaTelas = {
-      set_id: '032',
-      tel_id: 22,
-    };
-    request(app)
-      .put(`${process.env.API_URL}/area-tela/${areaTelaId}`)
-      .set('authorization', `${token}`)
-      .set('usuario', `${usuario}`)
-      .send(editaAreaTelas)
-      .set('Content-Type', 'application/json')
-      .expect(200)
-      .end(function(err, res) {
-        if (err) {
-          return done(err);
-        }
-        return done();
-      });
-  });
-  it('Área de tela - Apaga', function(done) {
-    request(app)
-      .delete(`${process.env.API_URL}/area-tela/${areaTelaId}`)
-      .set('authorization', `${token}`)
-      .set('usuario', `${usuario}`)
-      .set('Content-Type', 'application/json')
-      .expect(200)
-      .end(function(err, res) {
-        menuId = res.body.atl_id;
-        if (err) {
-          return done(err);
-        }
-        return done();
-      });
-  });
+   
 });

@@ -116,7 +116,7 @@ class Login extends Component {
                     this.props.history.push('/home');
                 })
                 .catch(err => {
-                    if (err == 'Error: Network Error'){
+                    if (err === 'Error: Network Error'){
                         this.setState({ erro: 'Não conectado a API.' });
                     }else{
                         this.setState({ erro: err.response.data.message });
@@ -134,4 +134,4 @@ class Login extends Component {
         sessionStorage.removeItem('setorUsuario');
     }
 }
-export default withStyles(styles)(Login)
+export default withStyles(styles)(Login);

@@ -44,6 +44,9 @@ routes.get(
 // rota que retorna o menu
 routes.get(`${process.env.API_URL}/geraMenu/:area`, MenuController.montaMenu);
 
+//rota que retorna as telas da área
+routes.get(`${process.env.API_URL}/telas-por-area/:setId`, AreaTelaController.telasPorArea);
+
 // rotas do cadastro de telas
 routes.get(`${process.env.API_URL}/telas`, TelaController.index);
 routes.post(`${process.env.API_URL}/telas`, TelaController.store);
@@ -70,16 +73,6 @@ routes.delete(
   `${process.env.API_URL}/area-menu/:id`,
   AreaMenuController.delete
 );
-
-// rotas do cadastro de área de tela
-routes.get(`${process.env.API_URL}/area-tela`, AreaTelaController.index);
-routes.post(`${process.env.API_URL}/area-tela`, AreaTelaController.store);
-routes.put(`${process.env.API_URL}/area-tela/:id`, AreaTelaController.update);
-routes.delete(
-  `${process.env.API_URL}/area-tela/:id`,
-  AreaTelaController.delete
-);
-routes.get(`${process.env.API_URL}/tela-por-area/:id`, AreaTelaController.telaPorArea);
 
 // rotas do cadastro de menu
 routes.get(`${process.env.API_URL}/menu`, MenuController.index);

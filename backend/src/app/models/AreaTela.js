@@ -4,28 +4,22 @@ class AreaTela extends Model {
   static init(sequelize) {
     super.init(
       {
-        atl_id: {
-          type: Sequelize.INTEGER,
-          defaultValue: "nextval('spa2.area_tela_atl_id_seq')",
-          primaryKey: true,
-          autoIncrement: true,
-        },
         set_id: {
           type: Sequelize.STRING,
           allowNull: false,
         },
         tel_id: {
           type: Sequelize.INTEGER,
+          primaryKey: true,
           allowNull: false,
         },
-        versao: {
-          type: Sequelize.INTEGER,
+        tel_nome: {
+          type: Sequelize.STRING,
           allowNull: false,
-          defaultValue: 0,
         },
       },
       {
-        tableName: 'area_tela',
+        tableName: 'v_telas_area',
         schema: 'spa2',
         sequelize,
         operatorsAliases: false,

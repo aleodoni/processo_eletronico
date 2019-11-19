@@ -1,6 +1,7 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core';
 import Menu from '../Menu';
+import Autorizacao from '../Autorizacao';
 
 const styles = {
     lateral: {
@@ -24,14 +25,15 @@ class ConsultarProcesso extends Component {
         const { classes } = this.props
         return (
             <div className={classes.lateral}>
-            <Menu/>
-            Consultar processo
+                <Autorizacao tela="Consultar processo"/>
+                <Menu/>
+                Consultar processo
             </div>
         )
       }
 
 }
 
-export default withStyles(styles)(ConsultarProcesso)
+export default withStyles(styles)(ConsultarProcesso);
 
 

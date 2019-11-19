@@ -13,7 +13,6 @@ import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import Paper from '@material-ui/core/Paper';
 import Logo from '../../assets/brasao.png';
-import History from 'history';
 require('dotenv').config();
 
 const styles = {
@@ -190,7 +189,6 @@ const styles = {
 
   render() {
     const { classes } = this.props;
-    const { history } = this.props;
     return (
       <div className={classes.list}>
         <Drawer
@@ -241,4 +239,4 @@ const styles = {
   }
 }
 
-export default withStyles(styles)(Menu)
+export default withStyles(styles)(Menu);
