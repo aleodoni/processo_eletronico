@@ -140,6 +140,75 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       });
   });
 
+  // Gênero
+  it('Gêneros - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/generos`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  let generoId = '';
+  it('Gêneros - Insere', function(done) {
+    const insereGeneros = {
+      gen_id: null,
+      gen_nome: `Inserção nome - ${Math.random()}`,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/generos`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(insereGeneros)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        generoId = res.body.gen_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Gêneros - Edita', function(done) {
+    const editaGeneros = {
+      gen_nome: `Edição nome - ${Math.random()}`,
+    };
+    request(app)
+      .put(`${process.env.API_URL}/generos/${generoId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(editaGeneros)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        telaId = res.body.gen_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Gêneros - Apaga', function(done) {
+    request(app)
+      .delete(`${process.env.API_URL}/generos/${generoId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        telaId = res.body.gen_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+
   // Menu
   it('Menu - Lista', function(done) {
     request(app)

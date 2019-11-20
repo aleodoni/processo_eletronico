@@ -4,6 +4,7 @@ import SetorUsuario from '../app/models/SetorUsuario';
 import Area from '../app/models/Area';
 import Setor from '../app/models/Setor';
 import Tela from '../app/models/Tela';
+import Genero from '../app/models/Genero';
 import ModeloMenu from '../app/models/ModeloMenu';
 import AreaMenu from '../app/models/AreaMenu';
 import AreaTela from '../app/models/AreaTela';
@@ -26,6 +27,7 @@ const models = [
   ModeloMenu,
   AreaMenu,
   AreaTela,
+  Genero,
 ];
 
 class Database {

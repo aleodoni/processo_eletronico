@@ -4,6 +4,7 @@ import LoginController from './app/controllers/LoginController';
 import Spa2Controller from './app/controllers/Spa2Controller';
 import AreaController from './app/controllers/AreaController';
 import TelaController from './app/controllers/TelaController';
+import GeneroController from './app/controllers/GeneroController';
 import MenuController from './app/controllers/MenuController';
 import ModeloMenuController from './app/controllers/ModeloMenuController';
 import AreaMenuController from './app/controllers/AreaMenuController';
@@ -52,6 +53,12 @@ routes.get(`${process.env.API_URL}/telas`, TelaController.index);
 routes.post(`${process.env.API_URL}/telas`, TelaController.store);
 routes.put(`${process.env.API_URL}/telas/:id`, TelaController.update);
 routes.delete(`${process.env.API_URL}/telas/:id`, TelaController.delete);
+
+// rotas do cadastro de gêneros
+routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
+routes.post(`${process.env.API_URL}/generos`, GeneroController.store);
+routes.put(`${process.env.API_URL}/generos/:id`, GeneroController.update);
+routes.delete(`${process.env.API_URL}/generos/:id`, GeneroController.delete);
 
 // rotas do cadastro de modelo de menu
 routes.get(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.index);

@@ -99,18 +99,30 @@ const styles = {
         axios({
             method: "GET",
             url: `area-por-codigo/${sessionStorage.getItem('areaUsuario')}`,
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
         }),
         axios({
             method: "GET",
             url: `setor-por-codigo/${sessionStorage.getItem('setorUsuario')}`,
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
         }),
         axios({
             method: "GET",
             url: `data-hora-atual`,
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
         }),
         axios({
             method: "GET",
             url: `geraMenu/${sessionStorage.getItem('areaUsuario')}`,
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
         }),
     ]);
     let dados = [];

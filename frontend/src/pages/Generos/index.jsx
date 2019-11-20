@@ -78,64 +78,64 @@ const styles = {
       paddingLeft: '30px',
     }};
 
-class Tela extends Component {
+class Genero extends Component {
 
     constructor( props ) {
         super( props );
         this.state = {
             erro: '',
-            telId: undefined,
-            telNome: '',
-            telas: [],
+            genId: undefined,
+            genNome: '',
+            generos: [],
             salva: false,
             show: false,
             mensagemHint: '',
         };
-        this.setTelId = this.setTelId.bind(this);
-        this.setTelNome = this.setTelNome.bind(this);
+        this.setGenId = this.setGenId.bind(this);
+        this.setGenNome = this.setGenNome.bind(this);
     }
 
     componentDidMount() {
         this.carregaGrid();
     }
 
-    setTelId = event => {
+    setGenId = event => {
         this.setState({
-            telId: event.target.value,
+            genId: event.target.value,
         });
     };
 
-    setTelNome = event => {
+    setGenNome = event => {
         this.setState({
-            telNome: event.target.value,
+            genNome: event.target.value,
         });
     };
 
     limpaCampos = () => {
         this.setState({
-            telId: undefined,
-            telNome: '',
+            genId: undefined,
+            genNome: '',
             erro: '',
         });
     };
 
-    preencheCampos = (telId, telNome) => {
+    preencheCampos = (genId, genNome) => {
         this.setState({
-            telId: telId,
-            telNome: telNome,
+            genId: genId,
+            genNome: genNome,
         });
     };
 
     carregaGrid = () => {
         axios({
             method: 'GET',
-            url: '/telas',
+            url: '/generos',
             headers: {
                 'authorization': sessionStorage.getItem('token'),
             },
         })
         .then(res => {
-            this.setState({ telas: res.data });
+            this.setState({ generos: res.data });
         })
         .catch(err => {
             this.setState({ erro: 'Erro ao carregar registros.' });
@@ -143,15 +143,15 @@ class Tela extends Component {
     };
 
     salva = () => {
-        if (this.state.telNome.trim() === '') {
+        if (this.state.genNome.trim() === '') {
             this.setState({ erro: 'Nome em branco.' });
             return;
         }
-        if (this.state.telId === undefined) {
+        if (this.state.genId === undefined) {
             axios({
                 method: 'POST',
-                url: '/telas',
-                data: { tel_id: null, tel_nome: this.state.telNome.trim() },
+                url: '/generos',
+                data: { gen_id: null, gen_nome: this.state.genNome.trim() },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
                 },
@@ -167,9 +167,9 @@ class Tela extends Component {
         } else {
             axios({
                 method: 'PUT',
-                url: 'telas/' + this.state.telId,
+                url: 'generos/' + this.state.genId,
                 data: {
-                    tel_nome: this.state.telNome.trim(),
+                    gen_nome: this.state.genNome.trim(),
                 },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
@@ -189,7 +189,7 @@ class Tela extends Component {
     exclui = () => {
         axios({
             method: 'DELETE',
-            url: 'telas/' + this.state.telId,
+            url: 'generos/' + this.state.genId,
             headers: {
                 'authorization': sessionStorage.getItem('token'),
             },
@@ -215,7 +215,7 @@ class Tela extends Component {
     };
 
     abreModal = () => {
-        if (this.state.telId === undefined) {
+        if (this.state.genId === undefined) {
             this.setState({ erro: 'Selecione um registro para excluir.' });
         } else {
             this.setState({ show: true });
@@ -230,19 +230,19 @@ class Tela extends Component {
         const { classes } = this.props
         return (
             <div className={classes.lateral}>
-                <Autorizacao tela="Telas"/>
+                <Autorizacao tela="Gêneros"/>
                 <Menu/>
                 <Grid container>
                     <Grid item xs={12} sm={9}>
                         <Card>
-                            <CardHeader title="Telas" className={classes.fundoHeader}></CardHeader>
+                            <CardHeader title="Gêneros" className={classes.fundoHeader}></CardHeader>
                             <CardContent>
                                 <span className={classes.erro}>{this.state.erro}</span>
                                 <form className={classes.formulario} noValidate autoComplete="off">
-                                    <input id="telId" value={this.state.telId} onChange={this.setTelId} type="hidden" />
+                                    <input id="genId" value={this.state.genId} onChange={this.setGenId} type="hidden" />
                                     <fieldset className={classes.legenda}>
                                         <legend>Nome</legend>
-                                        <input className={classes.campoTexto} required id="telNome" type="text" value={this.state.telNome} onChange={this.setTelNome} autoFocus size="100" maxLength="100" />
+                                        <input className={classes.campoTexto} required id="genNome" type="text" value={this.state.genNome} onChange={this.setGenNome} autoFocus size="100" maxLength="100" />
                                     </fieldset>
                                 </form>
                                 <br />
@@ -266,17 +266,17 @@ class Tela extends Component {
                                     columns={[
                                         {
                                             hidden: true,
-                                            field: 'tel_id',
+                                            field: 'gen_id',
                                             type: 'numeric',
                                         },
-                                        { title: 'Nome', field: 'tel_nome' },
+                                        { title: 'Nome', field: 'gen_nome' },
                                     ]}
-                                    data={this.state.telas}
+                                    data={this.state.generos}
                                     actions={[
                                         {
                                             icon: () => <EditIcon />,
                                             tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.tel_id, rowData.tel_nome),
+                                            onClick: (event, rowData) => this.preencheCampos(rowData.gen_id, rowData.gen_nome),
                                         },
                                     ]}
                                     options={{
@@ -334,6 +334,6 @@ class Tela extends Component {
 
 }
 
-export default withStyles(styles)(Tela);
+export default withStyles(styles)(Genero);
 
 

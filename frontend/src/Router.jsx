@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import CriarProcesso from './pages/CriarProcesso';
 import ConsultarProcesso from './pages/ConsultarProcesso';
 import Tela from './pages/Tela';
+import Genero from './pages/Generos';
 
 const PrivateRoute = ({ component: Component, ...rest }) => <Route {...rest} render={props => (sessionStorage.getItem('token') !== null ? <Component {...props} /> : <Redirect to={{ pathname: '/', state: { from: props.location } }} />)} />;
 
@@ -16,6 +17,7 @@ const Routes = () => (
         <PrivateRoute exact path='/processo-consulta' component={ConsultarProcesso}/>
         <PrivateRoute exact path='/processo-cria' component={CriarProcesso}/>
         <PrivateRoute exact path='/telas' component={Tela}/>
+        <PrivateRoute exact path='/generos' component={Genero}/>
         <Route path='*' component={Login} />
     </Switch>
 );

@@ -12,6 +12,9 @@ class Autorizacao extends Component {
         axios({
             method: 'GET',
             url: `telas-por-area/${sessionStorage.getItem('areaUsuario')}`,
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
         })
         .then(res => {
             const achou = res.data.find(registro => registro.tel_nome === this.props.tela);

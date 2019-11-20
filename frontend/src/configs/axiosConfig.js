@@ -7,6 +7,9 @@ const instance = axios.create({
         common: {
             'authorization': sessionStorage.getItem('token'),
             'usuario': sessionStorage.getItem('usuario'),
+            'nomeUsuario': sessionStorage.getItem('nomeUsuario'),
+            'areaUsuario': sessionStorage.getItem('areaUsuario'),
+            'setorUsuario': sessionStorage.getItem('setorUsuario'),
         },
         post: {
             'Content-Type': 'application/json',
