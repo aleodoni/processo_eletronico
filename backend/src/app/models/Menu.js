@@ -20,9 +20,6 @@ class Tela extends Model {
         men_url: {
           type: Sequelize.STRING,
         },
-        men_icone: {
-          type: Sequelize.STRING,
-        },
         tel_id: {
           type: Sequelize.INTEGER,
         },
@@ -30,6 +27,18 @@ class Tela extends Model {
           type: Sequelize.INTEGER,
           allowNull: false,
           defaultValue: 0,
+        },
+        men_icone: {
+          type: Sequelize.STRING,
+        },
+        mmu_id: {
+          type: Sequelize.INTEGER,
+        },
+        men_ordem_pai: {
+          type: Sequelize.INTEGER,
+        },
+        men_ordem_filho: {
+          type: Sequelize.INTEGER,
         },
       },
       {

@@ -17,6 +17,9 @@ class MenuController {
         'men_url',
         'tel_id',
         'men_icone',
+        'mmu_id',
+        'men_ordem_pai',
+        'men_ordem_filho',
       ],
       logging: false,
     });
@@ -35,6 +38,9 @@ class MenuController {
       men_url,
       tel_id,
       men_icone,
+      mmu_id,
+      men_ordem_pai,
+      men_ordem_filho,
     } = await Menu.create(req.body, {
       logging: false,
     });
@@ -45,6 +51,9 @@ class MenuController {
       men_url,
       tel_id,
       men_icone,
+      mmu_id,
+      men_ordem_pai,
+      men_ordem_filho,
     });
   }
 

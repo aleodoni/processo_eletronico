@@ -20,6 +20,7 @@ class Autorizacao extends Component {
             const achou = res.data.find(registro => registro.tel_nome === this.props.tela);
             //se não achou não pode ver a tela
             if (achou === undefined){
+                console.log("Não achou a permissão para a tela:"+this.props.tela);
                 window.location.href = '/processo-eletronico';
             }
         })

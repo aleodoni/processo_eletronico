@@ -30,6 +30,7 @@ instance.interceptors.response.use(
         return response;
     },
     error => {
+        console.log(error)
         if (error.response.data.error === 'Token inválido.') {
             alert('Sua sessão expirou.');
             window.location.href = '/processo-eletronico';
