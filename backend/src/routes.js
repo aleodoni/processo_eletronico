@@ -74,6 +74,7 @@ routes.delete(
 
 // rotas do cadastro de área de menu
 routes.get(`${process.env.API_URL}/area-menu`, AreaMenuController.index);
+routes.get(`${process.env.API_URL}/areas-do-menu`, AreaMenuController.areaDoMenu);
 routes.post(`${process.env.API_URL}/area-menu`, AreaMenuController.store);
 routes.put(`${process.env.API_URL}/area-menu/:id`, AreaMenuController.update);
 routes.delete(

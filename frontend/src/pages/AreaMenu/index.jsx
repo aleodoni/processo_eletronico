@@ -88,19 +88,22 @@ class AreaMenu extends Component {
             setId: '',
             mmuId: '',
             areasMenu: [],
-            setores: [],
+            areas: [],
             modelosMenu: [],
             salva: false,
             show: false,
             mensagemHint: '',
         };
-        this.setAmuId = this.setAmulId.bind(this);
-        this.setMmuId = this.setMmulId.bind(this);
-        this.setSetId = this.setSetId.bind(this);
+        this.setAmuId = this.setAmuId.bind(this);
+        this.setMmuId = this.setMmuId.bind(this);
+        this.setAreas = this.setAreas.bind(this);
+        this.setModelos = this.setModelos.bind(this);
     }
 
     componentDidMount() {
         this.carregaGrid();
+        this.carregaAreas();
+        this.carregaModelosMenu();
     }
 
     setAmuId = event => {
@@ -115,52 +118,129 @@ class AreaMenu extends Component {
         });
     };
 
-    setSetId = event => {
+    setAreas = event => {
         this.setState({
-            setId: event.target.value,
+            setId: event.target.value
+        });
+    };
+
+    setModelos = event => {
+        this.setState({
+            mmuId: event.target.value
         });
     };
 
     limpaCampos = () => {
         this.setState({
             amuId: undefined,
+            setId: '',
+            mmuId: '',
             erro: '',
         });
     };
 
-    preencheCampos = (amuId, telNome) => {
+    preencheCampos = (amuId, setId, mmuId) => {
         this.setState({
             amuId: amuId,
-            telNome: telNome,
+            setId: setId,
+            mmuId: mmuId
         });
     };
 
     carregaGrid = () => {
         axios({
             method: 'GET',
-            url: '/telas',
+            url: '/areas-do-menu',
             headers: {
                 'authorization': sessionStorage.getItem('token'),
             },
         })
         .then(res => {
-            this.setState({ telas: res.data });
+            this.setState({ areasMenu: res.data });
         })
         .catch(err => {
             this.setState({ erro: 'Erro ao carregar registros.' });
         });
     };
 
+    carregaAreas = () => {
+        axios({
+            method: "GET",
+            url: "/area",
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                var comboAreas = [];
+                comboAreas.push(
+                    <option key="" value="">
+                        Selecione...
+                    </option>
+                );
+                for (var i = 0; i < res.data.length; i++) {
+                    comboAreas.push(
+                        <option
+                            key={res.data[i].set_id}
+                            value={res.data[i].set_id}
+                        >
+                            {res.data[i].set_nome}
+                        </option>
+                    );
+                }
+                this.setState({ areas: comboAreas });
+            })
+            .catch(err => {
+                this.setState({ erro: "Erro ao carregar áreas." });
+            });
+    };
+
+    carregaModelosMenu = () => {
+        axios({
+            method: "GET",
+            url: "/modelo-menu",
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                var comboModelosMenu = [];
+                comboModelosMenu.push(
+                    <option key="" value="">
+                        Selecione...
+                    </option>
+                );
+                for (var i = 0; i < res.data.length; i++) {
+                    comboModelosMenu.push(
+                        <option
+                            key={res.data[i].mmu_id}
+                            value={res.data[i].mmu_id}
+                        >
+                            {res.data[i].mmu_nome}
+                        </option>
+                    );
+                }
+                this.setState({ modelosMenu: comboModelosMenu });
+            })
+            .catch(err => {
+                this.setState({ erro: "Erro ao carregar modelos de menu." });
+            });
+    };
+
     salva = () => {
-        if (this.state.telNome.trim() === '') {
-            this.setState({ erro: 'Nome em branco.' });
+        if (this.state.setId.trim() === '') {
+            this.setState({ erro: 'Nome de área em branco.' });
             return;
         }
-        if (this.state.telId === undefined) {
+        if (this.state.mmuId.trim() === '') {
+            this.setState({ erro: 'Nome de modelo de menu em branco.' });
+            return;
+        }
+        if (this.state.mmuId === undefined) {
             axios({
                 method: 'POST',
-                url: '/telas',
-                data: { tel_id: null, tel_nome: this.state.telNome.trim() },
+                url: '/area-menu',
+                data: { amu_id: null, set_id: this.state.setId.trim(), mmu_id: this.state.mmuId },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
                 },
@@ -176,9 +256,10 @@ class AreaMenu extends Component {
         } else {
             axios({
                 method: 'PUT',
-                url: 'telas/' + this.state.telId,
+                url: 'area-menu/' + this.state.amuId,
                 data: {
-                    tel_nome: this.state.telNome.trim(),
+                    set_id: this.state.setId.trim(),
+                    mmu_id: this.state.mmuId,
                 },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
@@ -198,7 +279,7 @@ class AreaMenu extends Component {
     exclui = () => {
         axios({
             method: 'DELETE',
-            url: 'telas/' + this.state.telId,
+            url: 'area-menu/' + this.state.amuId,
             headers: {
                 'authorization': sessionStorage.getItem('token'),
             },
@@ -224,7 +305,7 @@ class AreaMenu extends Component {
     };
 
     abreModal = () => {
-        if (this.state.telId === undefined) {
+        if (this.state.amuId === undefined) {
             this.setState({ erro: 'Selecione um registro para excluir.' });
         } else {
             this.setState({ show: true });
@@ -239,19 +320,27 @@ class AreaMenu extends Component {
         const { classes } = this.props
         return (
             <div className={classes.lateral}>
-                <Autorizacao tela="Telas"/>
+                <Autorizacao tela="Áreas de menu"/>
                 <Menu/>
                 <Grid container>
                     <Grid item xs={12} sm={9}>
                         <Card>
-                            <CardHeader title="Telas" className={classes.fundoHeader}></CardHeader>
+                            <CardHeader title="Áreas de menu" className={classes.fundoHeader}></CardHeader>
                             <CardContent>
                                 <span className={classes.erro}>{this.state.erro}</span>
                                 <form className={classes.formulario} noValidate autoComplete="off">
-                                    <input id="telId" value={this.state.telId} onChange={this.setTelId} type="hidden" />
+                                    <input id="amuId" value={this.state.amuId} onChange={this.setAmuId} type="hidden" />
                                     <fieldset className={classes.legenda}>
-                                        <legend>Nome</legend>
-                                        <input className={classes.campoTexto} required id="telNome" type="text" value={this.state.telNome} onChange={this.setTelNome} autoFocus size="100" maxLength="100" />
+                                        <legend>Área</legend>
+                                        <select id="selectAreas" onChange={this.setAreas} value={this.state.setId}>
+                                            {this.state.areas}
+                                        </select>
+                                    </fieldset>
+                                    <fieldset className={classes.legenda}>
+                                        <legend>Modelo de menu</legend>
+                                        <select id="selectModelos" onChange={this.setModelos} value={this.state.mmuId}>
+                                            {this.state.modelosMenu}
+                                        </select>
                                     </fieldset>
                                 </form>
                                 <br />
@@ -275,17 +364,28 @@ class AreaMenu extends Component {
                                     columns={[
                                         {
                                             hidden: true,
-                                            field: 'tel_id',
+                                            field: 'amu_id',
                                             type: 'numeric',
                                         },
-                                        { title: 'Nome', field: 'tel_nome' },
+                                        {
+                                            hidden: true,
+                                            field: 'set_id',
+                                            type: 'string',
+                                        },
+                                        {
+                                            hidden: true,
+                                            field: 'mmu_id',
+                                            type: 'numeric',
+                                        },
+                                        { title: 'Área', field: 'set_nome' },
+                                        { title: 'Modelo', field: 'mmu_nome' },
                                     ]}
-                                    data={this.state.telas}
+                                    data={this.state.areasMenu}
                                     actions={[
                                         {
                                             icon: () => <EditIcon />,
                                             tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.tel_id, rowData.tel_nome),
+                                            onClick: (event, rowData) => this.preencheCampos(rowData.amu_id, rowData.set_id, rowData.mmu_id),
                                         },
                                     ]}
                                     options={{

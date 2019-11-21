@@ -67,7 +67,7 @@ describe('Testando as rotas do sistema.', () => {
       .set('authorization', `${token}`);
     expect(response.statusCode).toBe(200);
   });
-  
+
 });
 
 describe('Testando as rotas de manutenção do sistema.', () => {
@@ -356,6 +356,18 @@ describe('Testando as rotas de manutenção do sistema.', () => {
   it('Área de menu - Lista', function(done) {
     request(app)
       .get(`${process.env.API_URL}/area-menu`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Áreas do menu', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/areas-do-menu`)
       .set('authorization', `${token}`)
       .expect(200)
       .end(function(err) {

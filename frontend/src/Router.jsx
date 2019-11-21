@@ -7,6 +7,7 @@ import ConsultarProcesso from './pages/ConsultarProcesso';
 import Tela from './pages/Tela';
 import Genero from './pages/Generos';
 import ModeloMenu from './pages/ModeloMenu';
+import AreaMenu from './pages/AreaMenu';
 
 const PrivateRoute = ({ component: Component, ...rest }) => <Route {...rest} render={props => (sessionStorage.getItem('token') !== null ? <Component {...props} /> : <Redirect to={{ pathname: '/', state: { from: props.location } }} />)} />;
 
@@ -20,6 +21,7 @@ const Routes = () => (
         <PrivateRoute exact path='/telas' component={Tela}/>
         <PrivateRoute exact path='/generos' component={Genero}/>
         <PrivateRoute exact path='/modelo-menu' component={ModeloMenu}/>
+        <PrivateRoute exact path='/areas-menu' component={AreaMenu}/>
         <Route path='*' component={Login} />
     </Switch>
 );

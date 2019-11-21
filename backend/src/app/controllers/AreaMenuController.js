@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 import AreaMenu from '../models/AreaMenu';
+import VAreaMenu from '../models/VAreaMenu';
 
 class AreaMenuController {
   async index(req, res) {
@@ -9,6 +10,14 @@ class AreaMenuController {
       logging: false,
     });
     return res.json(areaMenus);
+  }
+
+  async areaDoMenu(req, res) {
+    const areaDoMenu = await VAreaMenu.findAll({
+      attributes: ['amu_id', 'set_id', 'mmu_id', 'mmu_nome', 'set_nome'],
+      logging: false,
+    });
+    return res.json(areaDoMenu);
   }
 
   async store(req, res) {

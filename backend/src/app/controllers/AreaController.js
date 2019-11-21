@@ -4,7 +4,6 @@ import Setor from '../models/Setor';
 class AreaController {
   async index(req, res) {
     const areas = await Area.findAll({
-      plain: true,
       logging: false,
     });
     return res.json(areas);

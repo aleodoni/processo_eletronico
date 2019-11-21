@@ -5,7 +5,6 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
 import { Link } from 'react-router-dom';
 import ExitToApp from '@material-ui/icons/ExitToApp';
-import IconHome from '@material-ui/icons/Home';
 import Person from '@material-ui/icons/Person';
 import axios from '../../configs/axiosConfig';
 import Modal from '@material-ui/core/Modal';
@@ -216,10 +215,12 @@ const styles = {
                 <label className={ classes.area }>{this.state.nomeSetor}</label><br />
                 <label className={ classes.area }>{this.state.dataHora}</label><br />
                 <table>
+                    <tbody>
                     <tr>
                         <td><Person /></td>
                         <td><label className={ classes.usuario }>{sessionStorage.getItem('nomeUsuario')}</label></td>
                     </tr>
+                    </tbody>
                 </table>
             </Paper>
             <Divider />
