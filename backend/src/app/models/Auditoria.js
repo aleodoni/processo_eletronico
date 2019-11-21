@@ -37,8 +37,8 @@ class Auditoria extends Model {
         },
       },
       {
-        tableName: 'regapl_spa2',
-        schema: 'auditoria',
+        tableName: 'audit_sistema',
+        schema: 'spa2',
         sequelize,
         operatorsAliases: false,
       }

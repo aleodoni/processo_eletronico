@@ -236,7 +236,7 @@ class AreaMenu extends Component {
             this.setState({ erro: 'Nome de modelo de menu em branco.' });
             return;
         }
-        if (this.state.mmuId === undefined) {
+        if (this.state.amuId === undefined) {
             axios({
                 method: 'POST',
                 url: '/area-menu',
