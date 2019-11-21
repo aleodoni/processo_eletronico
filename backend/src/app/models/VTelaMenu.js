@@ -1,21 +1,27 @@
 import Sequelize, { Model } from 'sequelize';
 
-class Menu extends Model {
+class VTelaMenu extends Model {
   static init(sequelize) {
     super.init(
       {
         men_id: {
           type: Sequelize.INTEGER,
-          defaultValue: "nextval('spa2.menu_men_id_seq')",
           primaryKey: true,
-          autoIncrement: true,
         },
         men_id_pai: {
           type: Sequelize.INTEGER,
         },
+        nome_pai: {
+          type: Sequelize.STRING,
+        },
+        mmu_id: {
+          type: Sequelize.INTEGER,
+        },
+        mmu_nome: {
+          type: Sequelize.STRING,
+        },
         men_nome: {
           type: Sequelize.STRING,
-          allowNull: false,
         },
         men_url: {
           type: Sequelize.STRING,
@@ -23,26 +29,15 @@ class Menu extends Model {
         tel_id: {
           type: Sequelize.INTEGER,
         },
-        versao: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-          defaultValue: 0,
-        },
-        men_icone: {
+        tel_nome: {
           type: Sequelize.STRING,
         },
-        mmu_id: {
-          type: Sequelize.INTEGER,
-        },
         men_ordem_pai: {
-          type: Sequelize.INTEGER,
-        },
-        men_ordem_filho: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING,
         },
       },
       {
-        tableName: 'menu',
+        tableName: 'v_tela_menu',
         schema: 'spa2',
         sequelize,
         operatorsAliases: false,
@@ -52,11 +47,6 @@ class Menu extends Model {
     return this;
   }
 
-  static associate(models) {
-    this.belongsTo(models.Tela, {
-      foreignKey: 'tel_id',
-    });
-  }
 }
 
-export default Menu;
+export default VTelaMenu;

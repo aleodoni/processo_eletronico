@@ -84,6 +84,8 @@ routes.delete(
 
 // rotas do cadastro de menu
 routes.get(`${process.env.API_URL}/menu`, MenuController.index);
+routes.get(`${process.env.API_URL}/tela-menu`, MenuController.telaMenu);
+routes.get(`${process.env.API_URL}/menu-pai`, MenuController.telaPai);
 routes.post(`${process.env.API_URL}/menu`, MenuController.store);
 routes.put(`${process.env.API_URL}/menu/:id`, MenuController.update);
 routes.delete(`${process.env.API_URL}/menu/:id`, MenuController.delete);

@@ -222,6 +222,30 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         return done();
       });
   });
+  it('Telas do Menu', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/tela-menu`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Menu pai', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/menu-pai`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
   let menuId = '';
   it('Menu - Insere', function(done) {
     const insereMenus = {

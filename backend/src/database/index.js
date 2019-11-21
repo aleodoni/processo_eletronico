@@ -10,7 +10,9 @@ import AreaMenu from '../app/models/AreaMenu';
 import AreaTela from '../app/models/AreaTela';
 import Menu from '../app/models/Menu';
 import VMenu from '../app/models/VMenu';
+import VMenuPai from '../app/models/VMenuPai';
 import VAreaMenu from '../app/models/VAreaMenu';
+import VTelaMenu from '../app/models/VTelaMenu';
 import Auditoria from '../app/models/Auditoria';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
@@ -30,6 +32,8 @@ const models = [
   AreaTela,
   Genero,
   VAreaMenu,
+  VTelaMenu,
+  VMenuPai,
 ];
 
 class Database {

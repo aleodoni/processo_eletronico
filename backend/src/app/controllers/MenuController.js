@@ -2,6 +2,8 @@
 /* eslint-disable func-names */
 import Sequelize from 'sequelize';
 import Menu from '../models/Menu';
+import VTelaMenu from '../models/VTelaMenu';
+import VMenuPai from '../models/VMenuPai';
 import DataHoraAtual from '../models/DataHoraAtual';
 import MenuValidator from '../validators/MenuValidator';
 require('dotenv/config');
@@ -24,6 +26,37 @@ class MenuController {
       logging: false,
     });
     return res.json(menus);
+  }
+
+  async telaMenu(req, res) {
+    const telaMenus = await VTelaMenu.findAll({
+      order: ['mmu_nome','men_ordem_pai'],
+      attributes: [
+        'men_id',
+        'men_id_pai',
+        'nome_pai',
+        'mmu_id',
+        'mmu_nome',
+        'men_nome',
+        'men_url',
+        'tel_id',
+        'tel_nome',
+        'men_ordem_pai',
+      ],
+      logging: false,
+    });
+    return res.json(telaMenus);
+  }
+
+  async telaPai(req, res) {
+    const telaPai = await VMenuPai.findAll({
+      attributes: [
+        'men_id',
+        'nome_pai',
+      ],
+      logging: true,
+    });
+    return res.json(telaPai);
   }
 
   async store(req, res) {
