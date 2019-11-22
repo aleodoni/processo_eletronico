@@ -53,7 +53,7 @@ class MenuController {
         'men_id',
         'nome_pai',
       ],
-      logging: true,
+      logging: false,
     });
     return res.json(telaPai);
   }

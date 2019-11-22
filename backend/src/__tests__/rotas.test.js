@@ -209,6 +209,91 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       });
   });
 
+  // Tipos de processo
+  it('Tipos de processo - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/tipos-processo`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Tipos de processo grid - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/tipos-de-processo`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  let tipoProcessoId = '';
+  it('Tipos de processo - Insere', function(done) {
+    const insereTiposProcesso = {
+      tpr_id: null,
+      tpr_nome: `Inserção nome tipo de processo - ${Math.random()}`,
+      tpr_visualizacao: 1,
+      gen_id: 6,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/tipos-processo`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(insereTiposProcesso)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        tipoProcessoId = res.body.tpr_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Tipos de processo - Edita', function(done) {
+    const editaTiposProcesso = {
+      tpr_nome: `Edição nome tipo de processo - ${Math.random()}`,
+      tpr_visualizacao: 2,
+      gen_id: 6,
+    };
+    request(app)
+      .put(`${process.env.API_URL}/tipos-processo/${tipoProcessoId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(editaTiposProcesso)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        tipoProcessoId = res.body.tpr_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Tipos de processo - Apaga', function(done) {
+    request(app)
+      .delete(`${process.env.API_URL}/tipos-processo/${tipoProcessoId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        tipoProcessoId = res.body.tpr_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  
   // Menu
   it('Menu - Lista', function(done) {
     request(app)

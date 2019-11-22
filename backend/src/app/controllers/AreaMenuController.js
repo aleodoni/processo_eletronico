@@ -81,7 +81,7 @@ class AreaMenuController {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
           return res.status(400).json({
             error:
-              'Erro ao excluir modelo de menu. O modelo de menu possui uma ou mais ligações.',
+              'Erro ao excluir a área de menu. A área de menu possui uma ou mais ligações.',
           });
         }
       });

@@ -5,6 +5,7 @@ import Spa2Controller from './app/controllers/Spa2Controller';
 import AreaController from './app/controllers/AreaController';
 import TelaController from './app/controllers/TelaController';
 import GeneroController from './app/controllers/GeneroController';
+import TipoProcessoController from './app/controllers/TipoProcessoController';
 import MenuController from './app/controllers/MenuController';
 import ModeloMenuController from './app/controllers/ModeloMenuController';
 import AreaMenuController from './app/controllers/AreaMenuController';
@@ -59,6 +60,13 @@ routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
 routes.post(`${process.env.API_URL}/generos`, GeneroController.store);
 routes.put(`${process.env.API_URL}/generos/:id`, GeneroController.update);
 routes.delete(`${process.env.API_URL}/generos/:id`, GeneroController.delete);
+
+// rotas do cadastro de tipos de processo
+routes.get(`${process.env.API_URL}/tipos-processo`, TipoProcessoController.index);
+routes.get(`${process.env.API_URL}/tipos-de-processo`, TipoProcessoController.listaTiposProcesso);
+routes.post(`${process.env.API_URL}/tipos-processo`, TipoProcessoController.store);
+routes.put(`${process.env.API_URL}/tipos-processo/:id`, TipoProcessoController.update);
+routes.delete(`${process.env.API_URL}/tipos-processo/:id`, TipoProcessoController.delete);
 
 // rotas do cadastro de modelo de menu
 routes.get(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.index);

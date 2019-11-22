@@ -9,9 +9,11 @@ import ModeloMenu from '../app/models/ModeloMenu';
 import AreaMenu from '../app/models/AreaMenu';
 import AreaTela from '../app/models/AreaTela';
 import Menu from '../app/models/Menu';
+import TipoProcesso from '../app/models/TipoProcesso';
 import VMenu from '../app/models/VMenu';
 import VMenuPai from '../app/models/VMenuPai';
 import VAreaMenu from '../app/models/VAreaMenu';
+import VTipoProcesso from '../app/models/VTipoProcesso';
 import VTelaMenu from '../app/models/VTelaMenu';
 import Auditoria from '../app/models/Auditoria';
 import DataHoraAtual from '../app/models/DataHoraAtual';
@@ -34,6 +36,8 @@ const models = [
   VAreaMenu,
   VTelaMenu,
   VMenuPai,
+  TipoProcesso,
+  VTipoProcesso,
 ];
 
 class Database {
