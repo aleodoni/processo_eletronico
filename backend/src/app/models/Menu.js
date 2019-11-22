@@ -28,16 +28,10 @@ class Menu extends Model {
           allowNull: false,
           defaultValue: 0,
         },
-        men_icone: {
-          type: Sequelize.STRING,
-        },
         mmu_id: {
           type: Sequelize.INTEGER,
         },
         men_ordem_pai: {
-          type: Sequelize.INTEGER,
-        },
-        men_ordem_filho: {
           type: Sequelize.INTEGER,
         },
       },

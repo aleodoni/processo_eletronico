@@ -254,7 +254,6 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       men_nome: `Inserção nome menu - ${Math.random()}`,
       men_url: `Inserção url menu - ${Math.random()}`,
       tel_id: null,
-      men_icone: `Inserção icone menu - ${Math.random()}`,
     };
     request(app)
       .post(`${process.env.API_URL}/menu`)
@@ -277,7 +276,6 @@ describe('Testando as rotas de manutenção do sistema.', () => {
       men_nome: `Edição nome menu - ${Math.random()}`,
       men_url: `Edição url menu - ${Math.random()}`,
       tel_id: null,
-      men_icone: `Edição icone menu - ${Math.random()}`,
     };
     request(app)
       .put(`${process.env.API_URL}/menu/${menuId}`)

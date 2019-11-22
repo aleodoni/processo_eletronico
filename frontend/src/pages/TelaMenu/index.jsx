@@ -331,6 +331,7 @@ class TelaMenu extends Component {
             this.setState({ erro: 'Nome em branco.' });
             return;
         }
+        alert(JSON.stringify(this.state,4,null))
         if (this.state.menId === undefined) {
             axios({
                 method: 'POST',
@@ -441,7 +442,7 @@ class TelaMenu extends Component {
                                         <Grid item xs={3}>
                                             <fieldset className={classes.legenda}>
                                                 <legend>Menu pai</legend>
-                                                <select id="selectPai" onChange={this.setMenusPai} value={this.state.menIdPai}>
+                                                <select id="selectPai" onChange={this.setMenIdPai} value={this.state.menIdPai}>
                                                     {this.state.menusPai}
                                                 </select>
                                             </fieldset>
@@ -449,7 +450,7 @@ class TelaMenu extends Component {
                                         <Grid item xs={3}>
                                             <fieldset className={classes.legenda}>
                                                 <legend>Modelo de menu</legend>
-                                                <select id="selectModelo" onChange={this.setModelos} value={this.state.mmuId}>
+                                                <select id="selectModelo" onChange={this.setMmuId} value={this.state.mmuId}>
                                                     {this.state.modelos}
                                                 </select>
                                             </fieldset>
@@ -471,7 +472,7 @@ class TelaMenu extends Component {
                                         <Grid item xs={3}>
                                             <fieldset className={classes.legenda}>
                                             <legend>Tela</legend>
-                                                <select id="selectTela" onChange={this.setTelas} value={this.state.telId}>
+                                                <select id="selectTela" onChange={this.setTelId} value={this.state.telId}>
                                                     {this.state.telas}
                                                 </select>
                                             </fieldset>
