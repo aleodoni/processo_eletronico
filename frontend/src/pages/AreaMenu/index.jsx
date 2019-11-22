@@ -228,11 +228,11 @@ class AreaMenu extends Component {
     };
 
     salva = () => {
-        if (this.state.setId.trim() === '') {
+        if (this.state.setId === '') {
             this.setState({ erro: 'Nome de área em branco.' });
             return;
         }
-        if (this.state.mmuId.trim() === '') {
+        if (this.state.mmuId === '') {
             this.setState({ erro: 'Nome de modelo de menu em branco.' });
             return;
         }

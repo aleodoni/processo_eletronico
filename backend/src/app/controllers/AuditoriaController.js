@@ -85,6 +85,7 @@ class AuditoriaController {
               });
           }
         }
+        return null;
       })
       .catch(function(err) {
         console.log(err);

@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 import Genero from '../models/Genero';
 import GeneroValidator from '../validators/GeneroValidator';
+import AuditoriaController from './AuditoriaController';
 
 class GeneroController {
   async index(req, res) {
@@ -21,6 +22,9 @@ class GeneroController {
     const { gen_id, gen_nome } = await Genero.create(req.body, {
       logging: false,
     });
+    //auditoria de inserção
+    AuditoriaController.audita(req.body, req, 'I', gen_id);
+    //
     return res.json({
       gen_id,
       gen_nome,
@@ -33,6 +37,14 @@ class GeneroController {
       return res.status(400).json({ error: validator.errors });
     }
     const genero = await Genero.findByPk(req.params.id, { logging: false });
+    //auditoria de edição
+    AuditoriaController.audita(
+      genero._previousDataValues,
+      req,
+      'U',
+      req.params.id
+    );
+    //
     if (!genero) {
       return res.status(400).json({ error: 'Gênero não encontrado' });
     }
@@ -47,7 +59,16 @@ class GeneroController {
     }
     await genero
       .destroy({ logging: false })
-      .then(() => {})
+      .then(auditoria => {
+        //auditoria de deleção
+        AuditoriaController.audita(
+          genero._previousDataValues,
+          req,
+          'D',
+          req.params.id
+        );
+        //
+      })
       .catch(function(err) {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
           return res.status(400).json({

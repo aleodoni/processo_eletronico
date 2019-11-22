@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 import ModeloMenu from '../models/ModeloMenu';
 import ModeloMenuValidator from '../validators/ModeloMenuValidator';
+import AuditoriaController from './AuditoriaController';
 
 class ModeloMenuController {
   async index(req, res) {
@@ -21,6 +22,9 @@ class ModeloMenuController {
     const { mmu_id, mmu_nome } = await ModeloMenu.create(req.body, {
       logging: false,
     });
+    //auditoria de inserção
+    AuditoriaController.audita(req.body, req, 'I', mmu_id);
+    //
     return res.json({
       mmu_id,
       mmu_nome,
@@ -33,6 +37,14 @@ class ModeloMenuController {
       return res.status(400).json({ error: validator.errors });
     }
     const menu = await ModeloMenu.findByPk(req.params.id, { logging: false });
+    //auditoria de edição
+    AuditoriaController.audita(
+      menu._previousDataValues,
+      req,
+      'U',
+      req.params.id
+    );
+    //
     if (!menu) {
       return res.status(400).json({ error: 'Modelo de menu não encontrado' });
     }
@@ -47,7 +59,16 @@ class ModeloMenuController {
     }
     await menu
       .destroy({ logging: false })
-      .then(() => {})
+      .then(auditoria => {
+        //auditoria de deleção
+        AuditoriaController.audita(
+          menu._previousDataValues,
+          req,
+          'D',
+          req.params.id
+        );
+        //
+      })
       .catch(function(err) {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
           return res.status(400).json({

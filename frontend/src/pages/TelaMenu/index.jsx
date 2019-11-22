@@ -331,7 +331,6 @@ class TelaMenu extends Component {
             this.setState({ erro: 'Nome em branco.' });
             return;
         }
-        alert(JSON.stringify(this.state,4,null))
         if (this.state.menId === undefined) {
             axios({
                 method: 'POST',

@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 import Tela from '../models/Tela';
 import TelaValidator from '../validators/TelaValidator';
+import AuditoriaController from './AuditoriaController';
 
 class TelaController {
   async index(req, res) {
@@ -21,6 +22,9 @@ class TelaController {
     const { tel_id, tel_nome } = await Tela.create(req.body, {
       logging: false,
     });
+    //auditoria de inserção
+    AuditoriaController.audita(req.body, req, 'I', tel_id);
+    //
     return res.json({
       tel_id,
       tel_nome,
@@ -33,6 +37,14 @@ class TelaController {
       return res.status(400).json({ error: validator.errors });
     }
     const tela = await Tela.findByPk(req.params.id, { logging: false });
+    //auditoria de edição
+    AuditoriaController.audita(
+      tela._previousDataValues,
+      req,
+      'U',
+      req.params.id
+    );
+    //
     if (!tela) {
       return res.status(400).json({ error: 'Tela não encontrada' });
     }
@@ -47,7 +59,16 @@ class TelaController {
     }
     await tela
       .destroy({ logging: false })
-      .then(() => {})
+      .then(auditoria => {
+        //auditoria de deleção
+        AuditoriaController.audita(
+          tela._previousDataValues,
+          req,
+          'D',
+          req.params.id
+        );
+        //
+      })
       .catch(function(err) {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
           return res.status(400).json({

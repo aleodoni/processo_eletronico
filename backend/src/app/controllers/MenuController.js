@@ -6,6 +6,7 @@ import VTelaMenu from '../models/VTelaMenu';
 import VMenuPai from '../models/VMenuPai';
 import DataHoraAtual from '../models/DataHoraAtual';
 import MenuValidator from '../validators/MenuValidator';
+import AuditoriaController from './AuditoriaController';
 require('dotenv/config');
 
 class MenuController {
@@ -73,6 +74,9 @@ class MenuController {
     } = await Menu.create(req.body, {
       logging: false,
     });
+    //auditoria de inserção
+    AuditoriaController.audita(req.body, req, 'I', men_id);
+    //
     return res.json({
       men_id,
       men_id_pai,
@@ -90,6 +94,14 @@ class MenuController {
       return res.status(400).json({ error: validator.errors });
     }
     const menu = await Menu.findByPk(req.params.id, { logging: false });
+    //auditoria de edição
+    AuditoriaController.audita(
+      menu._previousDataValues,
+      req,
+      'U',
+      req.params.id
+    );
+    //
     if (!menu) {
       return res.status(400).json({ error: 'Menu não encontrado' });
     }
@@ -104,7 +116,16 @@ class MenuController {
     }
     await menu
       .destroy({ logging: false })
-      .then(() => {})
+      .then(auditoria => {
+        //auditoria de deleção
+        AuditoriaController.audita(
+          menu._previousDataValues,
+          req,
+          'D',
+          req.params.id
+        );
+        //
+      })
       .catch(function(err) {
         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
           return res.status(400).json({
