@@ -10,6 +10,10 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Tooltip from '@material-ui/core/Tooltip';
+import Avatar from '@material-ui/core/Avatar';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
+
+
 
 const styles = {
     lateral: {
@@ -21,7 +25,8 @@ const styles = {
     fundoHeader: {
         background: '#EFF8FB',
         color: '#000000',
-        height: '0px',
+        height: '15px',
+        fontSize: '18px',
     },
     espacoIcone: {
         marginLeft: '5px',
@@ -46,7 +51,7 @@ class Home extends Component {
             <Grid container>
                 <Grid item xs={12}>
                     <Card>
-                    <CardHeader title="Acesso rápido" className={classes.fundoHeader}></CardHeader>
+                    <CardHeader title="Acesso rápido" className={classes.fundoHeader} avatar={ <Avatar ><FlashOnIcon/></Avatar> }></CardHeader>
                     <CardContent>
                         <Link to="/processo-cria">
                             <Tooltip title="Criar um novo processo" placement="bottom">
