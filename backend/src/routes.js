@@ -64,6 +64,7 @@ routes.delete(`${process.env.API_URL}/generos/:id`, GeneroController.delete);
 // rotas do cadastro de tipos de processo
 routes.get(`${process.env.API_URL}/tipos-processo`, TipoProcessoController.index);
 routes.get(`${process.env.API_URL}/tipos-de-processo`, TipoProcessoController.listaTiposProcesso);
+routes.get(`${process.env.API_URL}/tipos-de-processo/:genId`, TipoProcessoController.carregaPorGenero);
 routes.post(`${process.env.API_URL}/tipos-processo`, TipoProcessoController.store);
 routes.put(`${process.env.API_URL}/tipos-processo/:id`, TipoProcessoController.update);
 routes.delete(`${process.env.API_URL}/tipos-processo/:id`, TipoProcessoController.delete);

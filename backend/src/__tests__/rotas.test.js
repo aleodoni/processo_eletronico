@@ -234,6 +234,18 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         return done();
       });
   });
+  it('Tipos de processo - Carrega por gênero', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/tipos-de-processo/4`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });  
   let tipoProcessoId = '';
   it('Tipos de processo - Insere', function(done) {
     const insereTiposProcesso = {

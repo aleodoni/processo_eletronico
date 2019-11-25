@@ -15,6 +15,18 @@ class TipoProcessoController {
     return res.json(tiposProcesso);
   }
 
+  async carregaPorGenero(req, res) {
+    const tiposProcesso = await TipoProcesso.findAll({
+      where: {
+        gen_id: req.params.genId,
+      },
+      order: ['tpr_nome'],
+      attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id'],
+      logging: false,
+    });
+    return res.json(tiposProcesso);
+  }
+
   async listaTiposProcesso(req, res) {
     const vTiposProcesso = await VTipoProcesso.findAll({
       order: ['tpr_nome'],

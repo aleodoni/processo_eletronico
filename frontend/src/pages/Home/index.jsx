@@ -2,6 +2,14 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core';
 import Menu from '../Menu';
 import Autorizacao from '../Autorizacao';
+import Grid from '@material-ui/core/Grid';
+import { Link } from 'react-router-dom';
+import Fab from '@material-ui/core/Fab';
+import CriaIcon from '@material-ui/icons/Description';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const styles = {
     lateral: {
@@ -9,6 +17,14 @@ const styles = {
     },
     links: {
       textDecoration:'none',
+    },
+    fundoHeader: {
+        background: '#EFF8FB',
+        color: '#000000',
+        height: '0px',
+    },
+    espacoIcone: {
+        marginLeft: '5px',
     },
     menuHeader: {
       paddingLeft: '30px'
@@ -27,7 +43,22 @@ class Home extends Component {
             <div className={classes.lateral}>
             <Autorizacao tela="Home"/>
             <Menu/>
-            Home
+            <Grid container>
+                <Grid item xs={12}>
+                    <Card>
+                    <CardHeader title="Acesso rápido" className={classes.fundoHeader}></CardHeader>
+                    <CardContent>
+                        <Link to="/processo-cria">
+                            <Tooltip title="Criar um novo processo" placement="bottom">
+                            <Fab variant="extended" color="primary">
+                                <CriaIcon fontSize="large"/><div className={classes.espacoIcone}>Criar processo</div>
+                            </Fab>
+                            </Tooltip>
+                        </Link>
+                    </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
             </div>
         )
       }
