@@ -25,8 +25,7 @@ const styles = {
     fundoHeader: {
         background: '#EFF8FB',
         color: '#000000',
-        height: '15px',
-        fontSize: '18px',
+        height: '15px'
     },
     espacoIcone: {
         marginLeft: '5px',

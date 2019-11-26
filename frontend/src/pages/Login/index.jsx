@@ -113,6 +113,9 @@ class Login extends Component {
                     sessionStorage.setItem('nomeUsuario', res.data.nomeUsuario);
                     sessionStorage.setItem('areaUsuario', res.data.areaUsuario);
                     sessionStorage.setItem('setorUsuario', res.data.setorUsuario);
+                    sessionStorage.setItem('nomeSetorUsuario', res.data.nomeSetorUsuario);
+                    sessionStorage.setItem('nomeAreaUsuario', res.data.nomeAreaUsuario);
+                    sessionStorage.setItem('menu', res.data.menu);
                     this.props.history.push('/home');
                 })
                 .catch(err => {
@@ -132,6 +135,9 @@ class Login extends Component {
         sessionStorage.removeItem('nomeUsuario');
         sessionStorage.removeItem('areaUsuario');
         sessionStorage.removeItem('setorUsuario');
+        sessionStorage.removeItem('nomeSetorUsuario');
+        sessionStorage.removeItem('nomeAreaUsuario');
+        sessionStorage.removeItem('menu');
     }
 }
 export default withStyles(styles)(Login);

@@ -7,13 +7,13 @@ import { Link } from 'react-router-dom';
 import ExitToApp from '@material-ui/icons/PowerSettingsNew';
 import Person from '@material-ui/icons/Person';
 import HomeIcon from '@material-ui/icons/Home';
-import axios from '../../configs/axiosConfig';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import Paper from '@material-ui/core/Paper';
 import Logo from '../../assets/brasao.png';
+import Chip from '@material-ui/core/Chip';
 require('dotenv').config();
 
 const styles = {
@@ -69,6 +69,10 @@ const styles = {
     margin: '5px',
     textAlign: 'center',
     backgroundColor: '#FAFAFA',
+    paddingBottom: '5px',
+  },
+  paddingIcone: {
+    paddingTop: '10px',
   },
   menuHeader: {
     paddingLeft: '30px',
@@ -81,9 +85,6 @@ const styles = {
         super(props, context);
         this.state = {
             data: [],
-            nomeArea: '',
-            nomeSetor: '',
-            dataHora: '',
             mostraModalSair: false,
         };
     }
@@ -95,47 +96,14 @@ const styles = {
   }
 
   async componentDidMount(){
-    const [area, setor, dataHoraAtual, menu] = await Promise.all([
-        axios({
-            method: "GET",
-            url: `area-por-codigo/${sessionStorage.getItem('areaUsuario')}`,
-            headers: {
-                'authorization': sessionStorage.getItem('token'),
-            },
-        }),
-        axios({
-            method: "GET",
-            url: `setor-por-codigo/${sessionStorage.getItem('setorUsuario')}`,
-            headers: {
-                'authorization': sessionStorage.getItem('token'),
-            },
-        }),
-        axios({
-            method: "GET",
-            url: `data-hora-atual`,
-            headers: {
-                'authorization': sessionStorage.getItem('token'),
-            },
-        }),
-        axios({
-            method: "GET",
-            url: `geraMenu/${sessionStorage.getItem('areaUsuario')}`,
-            headers: {
-                'authorization': sessionStorage.getItem('token'),
-            },
-        }),
-    ]);
     let dados = [];
-    let data = JSON.parse(menu.data);
+    let data = JSON.parse(sessionStorage.getItem('menu'));
     for (let key in data) {
         if (data.hasOwnProperty(key)) {
             dados.push(data[key]);
         }
     }
     this.setState({
-        nomeArea: area.data.set_nome,
-        nomeSetor: setor.data.set_nome,
-        dataHora: 'Data/hora: '+dataHoraAtual.data[0].data_hora_atual,
         data: dados,
     });
   }
@@ -205,17 +173,9 @@ const styles = {
           <div>
             <Paper className={classes.paper}>
                 <img src={Logo} alt="Processo Eletrônico" className={classes.imgMenu} /><br />
-                <label className={ classes.area }>{this.state.nomeArea}</label><br />
-                <label className={ classes.area }>{this.state.nomeSetor}</label><br />
-                <label className={ classes.area }>{this.state.dataHora}</label><br />
-                <table>
-                    <tbody>
-                    <tr>
-                        <td><Person /></td>
-                        <td><label className={ classes.usuario }>{sessionStorage.getItem('nomeUsuario')}</label></td>
-                    </tr>
-                    </tbody>
-                </table>
+                <label className={ classes.area }>{sessionStorage.getItem('nomeAreaUsuario')}</label><br />
+                <label className={ classes.area }>{sessionStorage.getItem('nomeSetorUsuario')}</label><br /><br />
+                <Chip label={sessionStorage.getItem('nomeUsuario')} icon={<Person />} color="primary" variant="outlined"/><br />
             </Paper>
             <Divider />
             <List>
