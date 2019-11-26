@@ -1,70 +1,14 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core';
+import { styles } from './estilos';
 import Menu from '../Menu';
 import Autorizacao from '../Autorizacao';
-import Grid from '@material-ui/core/Grid';
 import axios from '../../configs/axiosConfig';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import SalvaIcon from '@material-ui/icons/Check';
-
-const styles = {
-    lateral: {
-      paddingLeft: 300,
-    },
-    links: {
-      textDecoration:'none',
-    },
-    fundoHeader: {
-        background: '#EFF8FB',
-        color: '#000000',
-        height: '0px',
-    },
-    espacoBotoes: {
-        width: '15px',
-        height: 'auto',
-        display: 'inline-block',
-    },
-    formulario: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    legenda: {
-        borderRadius: '5px',
-        fontFamily: 'Arial, Helvetica, sans-serif',
-    },
-    campoTexto: {
-        background: '#ffffff',
-        border: '1px solid #C4C4C4',
-        borderRadius: '5px',
-        fontFamily: 'Arial, Helvetica, sans-serif',
-        fontSize: '16px',
-        paddingTop: '5px',
-        paddingBottom: '5px',
-    },
-    erro: {
-        fontFamily: 'Arial, Helvetica, sans-serif',
-        fontSize: '14px',
-        color: 'red',
-        paddingBottom: '10px',
-    },
-    modal: {
-        position: 'absolute',
-        fontFamily: "Arial, Helvetica, sans-serif",
-        width: 300,
-        border: '2px solid #116FBF',
-        borderRadius: '5px',
-        backgroundColor: '#FFFFFF',
-        left: '40%',
-        top: '40%',
-        textAlign: 'center',
-        padding: '10px;',
-    },
-    menuHeader: {
-      paddingLeft: '30px',
-    }};
 
 class CriarProcesso extends Component {
 
@@ -222,41 +166,32 @@ class CriarProcesso extends Component {
             <div className={classes.lateral}>
                 <Autorizacao tela="Criar processo"/>
                 <Menu/>
-                <Grid container>
-                <Grid item xs={12}>
                     <Card>
                         <CardHeader title="Novo processo" className={classes.fundoHeader}></CardHeader>
                         <CardContent>
                             <div className={classes.erro}>{this.state.erro}</div>
                             <form className={classes.formulario} noValidate autoComplete="off">
                                 <input id="proId" value={this.state.proId} onChange={this.setProId} type="hidden" />
-                                <Grid container>
-                                    <Grid item xs={2}>
-                                        <fieldset className={classes.legenda}>
-                                            <legend>Gênero</legend>
-                                            <select id="selectGenero" onChange={this.onSelect} value={this.state.genId}>
-                                                {this.state.generos}
-                                            </select>
-                                        </fieldset>
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <fieldset className={classes.legenda}>
-                                            <legend>Tipo do processo</legend>
-                                            <select id="selectTiposProcesso" onChange={this.setTprId} value={this.state.tprId}>
-                                                {this.state.tiposProcesso}
-                                            </select>
-                                        </fieldset>
-                                    </Grid>
-                                </Grid>
+                                <div className={classes.containerProcesso}>
+                                    <fieldset className={classes.legenda}>
+                                        <legend>Gênero</legend>
+                                        <select id="selectGenero" onChange={this.onSelect} value={this.state.genId}>
+                                           {this.state.generos}
+                                        </select>
+                                    </fieldset>
+                                    <fieldset className={classes.legenda}>
+                                        <legend>Tipo do processo</legend>
+                                        <select id="selectTiposProcesso" onChange={this.setTprId} value={this.state.tprId}>
+                                            {this.state.tiposProcesso}
+                                        </select>
+                                    </fieldset>
+                                </div>
                             </form>
-                            <br />
                             <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
                                 <SalvaIcon />Salvar
                             </Button>&nbsp;
                         </CardContent>
                     </Card>
-                </Grid>
-                </Grid>
 
             </div>
         )

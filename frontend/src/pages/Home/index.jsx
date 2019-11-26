@@ -12,27 +12,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Tooltip from '@material-ui/core/Tooltip';
 import Avatar from '@material-ui/core/Avatar';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
-
-
-
-const styles = {
-    lateral: {
-      paddingLeft: 300,
-    },
-    links: {
-      textDecoration:'none',
-    },
-    fundoHeader: {
-        background: '#EFF8FB',
-        color: '#000000',
-        height: '15px'
-    },
-    espacoIcone: {
-        marginLeft: '5px',
-    },
-    menuHeader: {
-      paddingLeft: '30px'
-    }};
+import { styles } from './estilos';
 
 class Home extends Component {
 
