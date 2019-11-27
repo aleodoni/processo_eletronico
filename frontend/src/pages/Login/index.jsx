@@ -25,7 +25,7 @@ class Login extends Component {
                     Acessar
                     </Button>
                     <span className={classes.versao}>Versão: 1.0.0 - API - Desenvolvimento</span>
-                    <span className={classes.erroLogin}>{this.state.erro && <p>{this.state.erro}</p>}</span>
+                    <span className={classes.erroLogin}><p>{this.state.erro && this.state.erro}</p></span>
                 </form>
             </div>
         );
