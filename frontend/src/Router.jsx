@@ -7,6 +7,7 @@ import ConsultarProcesso from './pages/ConsultarProcesso';
 import Tela from './pages/Tela';
 import Genero from './pages/Generos';
 import TipoProcesso from './pages/TipoProcesso';
+import TipoIniciativa from './pages/TipoIniciativa';
 import ModeloMenu from './pages/ModeloMenu';
 import AreaMenu from './pages/AreaMenu';
 import TelaMenu from './pages/TelaMenu';
@@ -23,6 +24,7 @@ const Routes = () => (
         <PrivateRoute exact path='/telas' component={Tela}/>
         <PrivateRoute exact path='/generos' component={Genero}/>
         <PrivateRoute exact path='/tipos-processo' component={TipoProcesso}/>
+        <PrivateRoute exact path='/tipos-iniciativa' component={TipoIniciativa}/>
         <PrivateRoute exact path='/modelo-menu' component={ModeloMenu}/>
         <PrivateRoute exact path='/areas-menu' component={AreaMenu}/>
         <PrivateRoute exact path='/menus' component={TelaMenu}/>

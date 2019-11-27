@@ -305,6 +305,89 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         return done();
       });
   });
+
+  // Tipos de iniciativa
+  it('Tipos de iniciativa - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/tipos-iniciativa`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Tipos de iniciativa grid - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/tipos-de-iniciativa`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  let tipoIniciativaId = '';
+  it('Tipos de iniciativa - Insere', function(done) {
+    const insereTiposIniciativa = {
+      tin_id: null,
+      tin_nome: `Inserção nome tipo de iniciativa - ${Math.random()}`,
+      tin_tipo: 1,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/tipos-iniciativa`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(insereTiposIniciativa)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        tipoIniciativaId = res.body.tin_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Tipos de iniciativa - Edita', function(done) {
+    const editaTiposIniciativa = {
+      tin_nome: `Edição nome tipo de iniciativa - ${Math.random()}`,
+      tin_tipo: 0
+    };
+    request(app)
+      .put(`${process.env.API_URL}/tipos-iniciativa/${tipoIniciativaId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(editaTiposIniciativa)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        tipoProcessoId = res.body.tin_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Tipos de iniciativa - Apaga', function(done) {
+    request(app)
+      .delete(`${process.env.API_URL}/tipos-iniciativa/${tipoIniciativaId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        tipoIniciativaId = res.body.tin_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
   
   // Menu
   it('Menu - Lista', function(done) {
