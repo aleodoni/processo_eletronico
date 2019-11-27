@@ -120,10 +120,10 @@ require('dotenv').config();
             </List>
             <Divider />
             <List>
-                <ListItem divider disableGutters>
+                <ListItem divider disableGutters className={classes.corSair}>
                     &nbsp;&nbsp;&nbsp;&nbsp;<ExitToApp />
                     <button className={ classes.sair } onClick={this.handleOpen}>
-                        <ListItemText className={ classes.menuHeader } inset primary="Sair" />
+                        <ListItemText className={ classes.menuHeaderSair } inset primary="Sair" />
                     </button>
                 </ListItem>
             </List>

@@ -60,4 +60,8 @@ export const styles = {
       paddingLeft: '30px',
       fontSize: '10px',
 
+    },
+    corSair: {
+      backgroundColor: '#FFFFFF',
+      borderRadius: '3px',
     }};

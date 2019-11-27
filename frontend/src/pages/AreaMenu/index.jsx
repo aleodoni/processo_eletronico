@@ -9,20 +9,16 @@ import CardContent from '@material-ui/core/CardContent';
 import axios from '../../configs/axiosConfig';
 import Button from '@material-ui/core/Button';
 import SalvaIcon from '@material-ui/icons/Check';
-import OrdenaIcon from '@material-ui/icons/UnfoldMore';
 import ApagaIcon from '@material-ui/icons/Clear';
 import LimpaIcon from '@material-ui/icons/Refresh';
 import MaterialTable from 'material-table';
 import EditIcon from '@material-ui/icons/Edit';
-import PrimeiroIcon from '@material-ui/icons/FirstPage';
-import UltimoIcon from '@material-ui/icons/LastPage';
-import ProximoIcon from '@material-ui/icons/NavigateNext';
-import AnteriorIcon from '@material-ui/icons/NavigateBefore';
 import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import Snackbar from '@material-ui/core/Snackbar';
 import Modal from '@material-ui/core/Modal';
 import { styles } from './estilos';
+import { tabelas } from '../../configs/tabelas';
 
 class AreaMenu extends Component {
 
@@ -263,7 +259,7 @@ class AreaMenu extends Component {
     };
 
     render() {
-        const { classes } = this.props
+        const { classes } = this.props;
         return (
             <div className={classes.lateral}>
                 <Autorizacao tela="Áreas de menu"/>
@@ -334,34 +330,9 @@ class AreaMenu extends Component {
                                             onClick: (event, rowData) => this.preencheCampos(rowData.amu_id, rowData.set_id, rowData.mmu_id),
                                         },
                                     ]}
-                                    options={{
-                                        search: false,
-                                        toolbar: false,
-                                        pageSize: 10,
-                                    }}
-                                    icons={{
-                                        FirstPage: () => <PrimeiroIcon />,
-                                        LastPage: () => <UltimoIcon />,
-                                        NextPage: () => <ProximoIcon />,
-                                        PreviousPage: () => <AnteriorIcon />,
-                                        SortArrow: () => <OrdenaIcon />,
-                                    }}
-                                    localization={{
-                                        pagination: {
-                                            labelDisplayedRows: '{from}-{to} de {count}',
-                                            labelRowsSelect: 'linhas',
-                                            nextTooltip: 'Próxima',
-                                            firstTooltip: 'Primeira',
-                                            lastTooltip: 'Última',
-                                            previousTooltip: 'Anterior',
-                                        },
-                                        header: {
-                                            actions: '',
-                                        },
-                                        body: {
-                                            emptyDataSourceMessage: 'Sem registros para mostrar.',
-                                        },
-                                    }}
+                                    options={tabelas.opcoes}
+                                    icons={tabelas.icones}
+                                    localization={tabelas.localizacao}
                                 />
                             </CardContent>
                         </Card>
