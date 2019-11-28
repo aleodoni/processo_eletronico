@@ -25,6 +25,9 @@ class TipoProcesso extends Model {
         gen_id: {
           type: Sequelize.INTEGER,
         },
+        flu_id: {
+          type: Sequelize.INTEGER,
+        }
       },
       {
         tableName: 'tipo_processo',
@@ -40,6 +43,9 @@ class TipoProcesso extends Model {
   static associate(models) {
     this.belongsTo(models.Genero, {
       foreignKey: 'gen_id',
+    });
+    this.belongsTo(models.Fluxo, {
+      foreignKey: 'flu_id',
     });
   }
 }

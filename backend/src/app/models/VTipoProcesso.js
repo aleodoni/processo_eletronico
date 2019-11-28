@@ -11,6 +11,9 @@ class VTipoProcesso extends Model {
         gen_id: {
           type: Sequelize.INTEGER,
         },
+        flu_id: {
+          type: Sequelize.INTEGER,
+        },
         tpr_visualizacao: {
           type: Sequelize.INTEGER,
         },
@@ -18,6 +21,9 @@ class VTipoProcesso extends Model {
           type: Sequelize.STRING,
         },
         gen_nome: {
+          type: Sequelize.STRING,
+        },
+        flu_nome: {
           type: Sequelize.STRING,
         },
         visualizacao: {

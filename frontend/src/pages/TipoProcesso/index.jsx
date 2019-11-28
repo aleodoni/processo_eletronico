@@ -30,8 +30,10 @@ class TipoProcesso extends Component {
             tprNome: '',
             tpr_visualizacao: '',
             genId: '',
+            fluId: '',
             tiposProcesso: [],
             generos: [],
+            fluxos: [],
             salva: false,
             show: false,
             mensagemHint: '',
@@ -40,13 +42,16 @@ class TipoProcesso extends Component {
         this.setTprVisualizacao = this.setTprVisualizacao.bind(this);
         this.setTprNome = this.setTprNome.bind(this);
         this.setGenId = this.setGenId.bind(this);
+        this.setFluId = this.setFluId.bind(this);
         this.setTiposProcesso = this.setTiposProcesso.bind(this);
         this.setGeneros = this.setGeneros.bind(this);
+        this.setFluxos = this.setFluxos.bind(this);
     }
 
     componentDidMount() {
         this.carregaGrid();
         this.carregaGenero();
+        this.carregaFluxo();
     }
 
     setTprId = event => {
@@ -73,6 +78,12 @@ class TipoProcesso extends Component {
         });
     };
 
+    setFluId = event => {
+        this.setState({
+            fluId: event.target.value,
+        });
+    };
+
     setTiposProcesso = event => {
         this.setState({
             tiposProcesso: event.target.value,
@@ -85,22 +96,30 @@ class TipoProcesso extends Component {
         });
     };
 
+    setFluxos = event => {
+        this.setState({
+            fluxos: event.target.value,
+        });
+    };
+
     limpaCampos = () => {
         this.setState({
             tprId: undefined,
             tprVisualizacao: '',
             tprNome: '',
             genId: '',
+            fluId: '',
             erro: '',
         });
     };
 
-    preencheCampos = (tprId, tprVisualizacao, tprNome, genId) => {
+    preencheCampos = (tprId, tprVisualizacao, tprNome, genId, fluId) => {
         this.setState({
             tprId: tprId,
             tprVisualizacao: tprVisualizacao,
             tprNome: tprNome,
             genId: genId,
+            fluId: fluId,
         });
     };
 
@@ -153,6 +172,38 @@ class TipoProcesso extends Component {
             });
     };
 
+    carregaFluxo = () => {
+        axios({
+            method: "GET",
+            url: "/fluxos",
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                var comboFluxo = [];
+                comboFluxo.push(
+                    <option key="" value="">
+                        Selecione...
+                    </option>
+                );
+                for (var i = 0; i < res.data.length; i++) {
+                    comboFluxo.push(
+                        <option
+                            key={res.data[i].flu_id}
+                            value={res.data[i].flu_id}
+                        >
+                            {res.data[i].flu_nome}
+                        </option>
+                    );
+                }
+                this.setState({ fluxos: comboFluxo });
+            })
+            .catch(err => {
+                this.setState({ erro: "Erro ao carregar fluxos." });
+            });
+    };
+
     salva = () => {
         if (this.state.tprNome.trim() === '') {
             this.setState({ erro: 'Tipo de processo em branco.' });
@@ -175,6 +226,7 @@ class TipoProcesso extends Component {
                     tpr_visualizacao: this.state.tprVisualizacao,
                     tpr_nome: this.state.tprNome,
                     gen_id: this.state.genId,
+                    flu_id: this.state.fluId,
                 },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
@@ -196,6 +248,7 @@ class TipoProcesso extends Component {
                     tpr_visualizacao: this.state.tprVisualizacao,
                     tpr_nome: this.state.tprNome,
                     gen_id: this.state.genId,
+                    flu_id: this.state.fluId,
                 },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
@@ -294,6 +347,14 @@ class TipoProcesso extends Component {
                                                 </select>
                                             </fieldset>
                                         </Grid>
+                                        <Grid item xs={2}>
+                                            <fieldset className={classes.legenda}>
+                                                <legend>Fluxo</legend>
+                                                <select id="selectFluxo" onChange={this.setFluId} value={this.state.fluId}>
+                                                    {this.state.fluxos}
+                                                </select>
+                                            </fieldset>
+                                        </Grid>
                                     </Grid>
                                 </form>
                                 <br />
@@ -327,6 +388,11 @@ class TipoProcesso extends Component {
                                         },
                                         {
                                             hidden: true,
+                                            field: 'flu_id',
+                                            type: 'numeric',
+                                        },
+                                        {
+                                            hidden: true,
                                             field: 'tpr_visualizacao',
                                             type: 'numeric',
                                         },
@@ -342,13 +408,17 @@ class TipoProcesso extends Component {
                                             title: 'Gênero',
                                             field: 'gen_nome'
                                         },
+                                        {
+                                            title: 'Fluxo',
+                                            field: 'flu_nome'
+                                        },
                                     ]}
                                     data={this.state.tiposProcesso}
                                     actions={[
                                         {
                                             icon: () => <EditIcon />,
                                             tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.tpr_id, rowData.tpr_visualizacao, rowData.tpr_nome, rowData.gen_id),
+                                            onClick: (event, rowData) => this.preencheCampos(rowData.tpr_id, rowData.tpr_visualizacao, rowData.tpr_nome, rowData.gen_id, rowData.flu_id),
                                         },
                                     ]}
                                     options={tabelas.opcoes}

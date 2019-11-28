@@ -9,7 +9,7 @@ class TipoProcessoController {
   async index(req, res) {
     const tiposProcesso = await TipoProcesso.findAll({
       order: ['tpr_nome'],
-      attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id'],
+      attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'flu_id'],
       logging: false,
     });
     return res.json(tiposProcesso);
@@ -21,7 +21,7 @@ class TipoProcessoController {
         gen_id: req.params.genId,
       },
       order: ['tpr_nome'],
-      attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id'],
+      attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'flu_id'],
       logging: false,
     });
     return res.json(tiposProcesso);
@@ -30,7 +30,7 @@ class TipoProcessoController {
   async listaTiposProcesso(req, res) {
     const vTiposProcesso = await VTipoProcesso.findAll({
       order: ['tpr_nome'],
-      attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'visualizacao', 'gen_nome'],
+      attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'visualizacao', 'gen_nome', 'flu_id', 'flu_nome'],
       logging: false,
     });
     return res.json(vTiposProcesso);
@@ -42,7 +42,7 @@ class TipoProcessoController {
     if (!(await validator.validate(req))) {
       return res.status(400).json({ error: validator.errors });
     }
-    const { tpr_id, tpr_nome, tpr_visualizacao, gen_id } = await TipoProcesso.create(req.body, {
+    const { tpr_id, tpr_nome, tpr_visualizacao, gen_id, flu_id } = await TipoProcesso.create(req.body, {
       logging: false,
     });
     //auditoria de inserção
@@ -53,6 +53,7 @@ class TipoProcessoController {
       tpr_nome, 
       tpr_visualizacao, 
       gen_id,
+      flu_id,
     });
   }
 
