@@ -4,6 +4,7 @@ import LoginController from './app/controllers/LoginController';
 import Spa2Controller from './app/controllers/Spa2Controller';
 import AreaController from './app/controllers/AreaController';
 import TelaController from './app/controllers/TelaController';
+import FluxoController from './app/controllers/FluxoController';
 import GeneroController from './app/controllers/GeneroController';
 import TipoProcessoController from './app/controllers/TipoProcessoController';
 import TipoIniciativaController from './app/controllers/TipoIniciativaController';
@@ -111,5 +112,11 @@ routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 
 // rotas de criação de processo
 routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
+
+// rotas do cadastro de fluxos
+routes.get(`${process.env.API_URL}/fluxos`, FluxoController.index);
+routes.post(`${process.env.API_URL}/fluxos`, FluxoController.store);
+routes.put(`${process.env.API_URL}/fluxos/:id`, FluxoController.update);
+routes.delete(`${process.env.API_URL}/fluxos/:id`, FluxoController.delete);
 
 export default routes;

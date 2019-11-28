@@ -9,6 +9,7 @@ import ModeloMenu from '../app/models/ModeloMenu';
 import AreaMenu from '../app/models/AreaMenu';
 import AreaTela from '../app/models/AreaTela';
 import Menu from '../app/models/Menu';
+import Fluxo from '../app/models/Fluxo';
 import TipoProcesso from '../app/models/TipoProcesso';
 import TipoIniciativa from '../app/models/TipoIniciativa';
 import VMenu from '../app/models/VMenu';
@@ -44,6 +45,7 @@ const models = [
   VTipoProcesso,
   VTipoIniciativa,
   VDadosPessoa,
+  Fluxo,
 ];
 
 class Database {

@@ -649,5 +649,74 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         return done();
       });
   });
+
+  // Fluxo
+  it('Fluxos - Lista', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/fluxos`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  let fluxoId = '';
+  it('Fluxos - Insere', function(done) {
+    const insereFluxos = {
+      flu_id: null,
+      flu_nome: `Inserção nome - ${Math.random()}`,
+    };
+    request(app)
+      .post(`${process.env.API_URL}/fluxos`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(insereFluxos)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        fluxoId = res.body.flu_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Fluxos - Edita', function(done) {
+    const editaFluxos = {
+      flu_nome: `Edição nome - ${Math.random()}`,
+    };
+    request(app)
+      .put(`${process.env.API_URL}/fluxos/${fluxoId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .send(editaFluxos)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        telaId = res.body.flu_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
+  it('Fluxos - Apaga', function(done) {
+    request(app)
+      .delete(`${process.env.API_URL}/fluxos/${fluxoId}`)
+      .set('authorization', `${token}`)
+      .set('usuario', `${usuario}`)
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .end(function(err, res) {
+        fluxoId = res.body.flu_id;
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
    
 });
