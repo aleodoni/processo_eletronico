@@ -54,7 +54,6 @@ class LoginController {
               } else {
                 resposta.on('searchEntry', function(entry) {
                   pesId = entry.object.employeeNumber;
-                  console.log("pesId: "+pesId);
                   Autorizacao.findAll({
                     where: {
                       pessoa: pesId,

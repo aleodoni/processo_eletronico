@@ -11,6 +11,7 @@ import MenuController from './app/controllers/MenuController';
 import ModeloMenuController from './app/controllers/ModeloMenuController';
 import AreaMenuController from './app/controllers/AreaMenuController';
 import AreaTelaController from './app/controllers/AreaTelaController';
+import CriaProcessoController from './app/controllers/CriaProcessoController';
 import AuthMiddleware from './app/middlewares/auth';
 
 require('dotenv/config');
@@ -107,5 +108,8 @@ routes.post(`${process.env.API_URL}/menu`, MenuController.store);
 routes.put(`${process.env.API_URL}/menu/:id`, MenuController.update);
 routes.delete(`${process.env.API_URL}/menu/:id`, MenuController.delete);
 routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
+
+// rotas de criação de processo
+routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
 
 export default routes;

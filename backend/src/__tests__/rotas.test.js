@@ -635,5 +635,19 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         return done();
       });
   });
+
+  // Criação de processo - dados da pessoa
+  it('Criação de processo - dados da pessoa', function(done) {
+    request(app)
+      .get(`${process.env.API_URL}/dados-pessoa/2209`)
+      .set('authorization', `${token}`)
+      .expect(200)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        return done();
+      });
+  });
    
 });

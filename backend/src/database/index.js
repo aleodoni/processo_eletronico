@@ -17,6 +17,7 @@ import VAreaMenu from '../app/models/VAreaMenu';
 import VTipoProcesso from '../app/models/VTipoProcesso';
 import VTipoIniciativa from '../app/models/VTipoIniciativa';
 import VTelaMenu from '../app/models/VTelaMenu';
+import VDadosPessoa from '../app/models/VDadosPessoa';
 import Auditoria from '../app/models/Auditoria';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
@@ -42,6 +43,7 @@ const models = [
   TipoIniciativa,
   VTipoProcesso,
   VTipoIniciativa,
+  VDadosPessoa,
 ];
 
 class Database {
