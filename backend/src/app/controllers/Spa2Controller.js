@@ -1,7 +1,7 @@
 class BibController {
-  async index(req, res) {
-    return res.json('spa2');
-  }
+    async index(req, res) {
+        return res.json('spa2');
+    }
 }
 
 export default new BibController();

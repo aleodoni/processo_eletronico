@@ -20,45 +20,47 @@ import VTipoIniciativa from '../app/models/VTipoIniciativa';
 import VTelaMenu from '../app/models/VTelaMenu';
 import VDadosPessoa from '../app/models/VDadosPessoa';
 import Auditoria from '../app/models/Auditoria';
+import Processo from '../app/models/Processo';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
 
 const models = [
-  Autorizacao,
-  Auditoria,
-  DataHoraAtual,
-  SetorUsuario,
-  Area,
-  Setor,
-  Tela,
-  Menu,
-  VMenu,
-  ModeloMenu,
-  AreaMenu,
-  AreaTela,
-  Genero,
-  VAreaMenu,
-  VTelaMenu,
-  VMenuPai,
-  TipoProcesso,
-  TipoIniciativa,
-  VTipoProcesso,
-  VTipoIniciativa,
-  VDadosPessoa,
-  Fluxo,
+    Autorizacao,
+    Auditoria,
+    DataHoraAtual,
+    SetorUsuario,
+    Area,
+    Setor,
+    Tela,
+    Menu,
+    VMenu,
+    ModeloMenu,
+    AreaMenu,
+    AreaTela,
+    Genero,
+    VAreaMenu,
+    VTelaMenu,
+    VMenuPai,
+    TipoProcesso,
+    TipoIniciativa,
+    VTipoProcesso,
+    VTipoIniciativa,
+    VDadosPessoa,
+    Fluxo,
+    Processo
 ];
 
 class Database {
-  constructor() {
-    this.init();
-  }
+    constructor() {
+        this.init();
+    }
 
-  init() {
-    this.connection = new Sequelize(databaseConfig);
-    models.map(model => model.init(this.connection));
-    models.map(
-      model => model.associate && model.associate(this.connection.models)
-    );
-  }
+    init() {
+        this.connection = new Sequelize(databaseConfig);
+        models.map(model => model.init(this.connection));
+        models.map(
+            model => model.associate && model.associate(this.connection.models)
+        );
+    }
 }
 export default new Database();

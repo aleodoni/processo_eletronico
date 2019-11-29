@@ -11,52 +11,52 @@ import routes from './routes';
 import './database';
 
 class App {
-  constructor() {
-    //carrega o express
-    this.server = express();
-    //carrega os middlewares
-    this.middlewares();
-    //carrega as rotas
-    this.routes();
-    //carrega o handler de exception
-    this.exceptionHandler();
-  }
+    constructor() {
+    // carrega o express
+        this.server = express();
+        // carrega os middlewares
+        this.middlewares();
+        // carrega as rotas
+        this.routes();
+        // carrega o handler de exception
+        this.exceptionHandler();
+    }
 
-  middlewares() {
-    //configura o express
-    this.server.use(express.json());
-    //formata o JSON retornado
-    this.server.set('json spaces', 4);
-    //configura o log da aplicação
-    this.server.use(morgan('combined', { stream: winston.stream }));
-    //configura o helmet
-    this.server.use(helmet());
-    //configura o CORS
-    this.server.use(cors());
-    //configura a compressão nas requisições
-    this.server.use(compression());
-    //configura o parser do JSON
-    this.server.use(
-      bodyParser.urlencoded({
-        extended: true,
-      })
-    );
-    this.server.use(bodyParser.json());
-    this.server.use(express.static('public'));
-  }
+    middlewares() {
+    // configura o express
+        this.server.use(express.json());
+        // formata o JSON retornado
+        this.server.set('json spaces', 4);
+        // configura o log da aplicação
+        this.server.use(morgan('combined', { stream: winston.stream }));
+        // configura o helmet
+        this.server.use(helmet());
+        // configura o CORS
+        this.server.use(cors());
+        // configura a compressão nas requisições
+        this.server.use(compression());
+        // configura o parser do JSON
+        this.server.use(
+            bodyParser.urlencoded({
+                extended: true
+            })
+        );
+        this.server.use(bodyParser.json());
+        this.server.use(express.static('public'));
+    }
 
-  routes() {
-    this.server.use(routes);
-  }
+    routes() {
+        this.server.use(routes);
+    }
 
-  exceptionHandler() {
-    this.server.use(async (err, req, res, next) => {
-      if (process.env.NODE_ENV === 'development') {
-        const errors = await new Youch(err, req).toJSON();
-        return res.status(500).json(errors);
-      }
-      return res.status(500).json({ error: 'Erro interno no servidor.' });
-    });
-  }
+    exceptionHandler() {
+        this.server.use(async(err, req, res, next) => {
+            if (process.env.NODE_ENV === 'development') {
+                const errors = await new Youch(err, req).toJSON();
+                return res.status(500).json(errors);
+            }
+            return res.status(500).json({ error: 'Erro interno no servidor.' });
+        });
+    }
 }
 export default new App().server;

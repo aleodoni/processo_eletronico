@@ -25,7 +25,6 @@ const routes = new Router();
 routes.post(`${process.env.API_URL}/autorizacao`, LoginController.index);
 routes.get(`${process.env.API_URL}/`, Spa2Controller.index);
 
-
 /**
  * Rotas com autenticação
  */
@@ -36,20 +35,20 @@ routes.get(`${process.env.API_URL}/area`, AreaController.index);
 
 // rota que retorna a área por código
 routes.get(
-  `${process.env.API_URL}/area-por-codigo/:id`,
-  AreaController.areaPorCodigo
+    `${process.env.API_URL}/area-por-codigo/:id`,
+    AreaController.areaPorCodigo
 );
 
 // rota que retorna o setor por código
 routes.get(
-  `${process.env.API_URL}/setor-por-codigo/:id`,
-  AreaController.setorPorCodigo
+    `${process.env.API_URL}/setor-por-codigo/:id`,
+    AreaController.setorPorCodigo
 );
 
 // rota que retorna o menu
 routes.get(`${process.env.API_URL}/geraMenu/:area`, MenuController.montaMenu);
 
-//rota que retorna as telas da área
+// rota que retorna as telas da área
 routes.get(`${process.env.API_URL}/telas-por-area/:setId`, AreaTelaController.telasPorArea);
 
 // rotas do cadastro de telas
@@ -83,12 +82,12 @@ routes.delete(`${process.env.API_URL}/tipos-iniciativa/:id`, TipoIniciativaContr
 routes.get(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.index);
 routes.post(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.store);
 routes.put(
-  `${process.env.API_URL}/modelo-menu/:id`,
-  ModeloMenuController.update
+    `${process.env.API_URL}/modelo-menu/:id`,
+    ModeloMenuController.update
 );
 routes.delete(
-  `${process.env.API_URL}/modelo-menu/:id`,
-  ModeloMenuController.delete
+    `${process.env.API_URL}/modelo-menu/:id`,
+    ModeloMenuController.delete
 );
 
 // rotas do cadastro de área de menu
@@ -97,8 +96,8 @@ routes.get(`${process.env.API_URL}/areas-do-menu`, AreaMenuController.areaDoMenu
 routes.post(`${process.env.API_URL}/area-menu`, AreaMenuController.store);
 routes.put(`${process.env.API_URL}/area-menu/:id`, AreaMenuController.update);
 routes.delete(
-  `${process.env.API_URL}/area-menu/:id`,
-  AreaMenuController.delete
+    `${process.env.API_URL}/area-menu/:id`,
+    AreaMenuController.delete
 );
 
 // rotas do cadastro de menu
