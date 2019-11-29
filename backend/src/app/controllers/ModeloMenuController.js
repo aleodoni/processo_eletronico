@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
+/* eslint-disable camelcase */
 import ModeloMenu from '../models/ModeloMenu';
 import ModeloMenuValidator from '../validators/ModeloMenuValidator';
 import AuditoriaController from './AuditoriaController';
@@ -19,15 +20,15 @@ class ModeloMenuController {
         if (!(await validator.validate(req))) {
             return res.status(400).json({ error: validator.errors });
         }
-        const { mmuId, mmuNome } = await ModeloMenu.create(req.body, {
+        const { mmu_id, mmu_nome } = await ModeloMenu.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', mmuId);
+        AuditoriaController.audita(req.body, req, 'I', mmu_id);
         //
         return res.json({
-            mmuId,
-            mmuNome
+            mmu_id,
+            mmu_nome
         });
     }
 

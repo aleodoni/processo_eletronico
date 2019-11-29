@@ -10,6 +10,10 @@ class Processo extends Model {
                     primaryKey: true,
                     autoIncrement: true
                 },
+                pro_codigo: {
+                    type: Sequelize.STRING,
+                    allowNull: false
+                },
                 tpr_id: {
                     type: Sequelize.INTEGER,
                     allowNull: false
@@ -65,11 +69,11 @@ class Processo extends Model {
                     allowNull: false
                 },
                 set_id_autuador: {
-                    type: Sequelize.INTEGER,
+                    type: Sequelize.STRING,
                     allowNull: false
                 },
                 area_id: {
-                    type: Sequelize.INTEGER,
+                    type: Sequelize.STRING,
                     allowNull: false
                 },
                 pro_ultimo_tramite: {
@@ -79,7 +83,7 @@ class Processo extends Model {
                     type: Sequelize.STRING
                 },
                 set_id_finalizador: {
-                    type: Sequelize.INTEGER
+                    type: Sequelize.STRING
                 },
                 usu_alteracao: {
                     type: Sequelize.STRING,

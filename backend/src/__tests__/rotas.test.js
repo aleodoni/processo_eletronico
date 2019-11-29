@@ -649,6 +649,50 @@ describe('Testando as rotas de manutenção do sistema.', () => {
             });
     });
 
+    let processoId = '';
+    it('Processo - Insere', function(done) {
+        const insereProcesso = {
+            pro_id: null,
+            pro_codigo: '00001/2019',
+            tpr_id: 27,
+            tin_id: 6,
+            ini_nome: `Inserção de ini nome - ${Math.random()}`,
+            ini_matricula: 99999,
+            ini_cpf: '99999999999',
+            ini_cnpj: '99999999999',
+            ini_fone: '(99) 99999-9999',
+            ini_celular: '(99) 99999-9999',
+            ini_email: 'teste@teste.com',
+            pro_encerramento: null,
+            pro_assunto: `Inserção de pro assunto - ${Math.random()}`,
+            pro_numero: 1,
+            pro_autuacao: '2019-11-29 12:00:00',
+            usu_autuador: 'usuario.teste',
+            set_id_autuador: '171',
+            area_id: '027',
+            pro_ultimo_tramite: null,
+            usu_finalizador: 'usuario.teste',
+            set_id_finalizador: '171',
+            usu_alteracao: 'usuario.teste',
+            usu_data_hora_alteracao: '2019-11-29 12:00:00',
+            nod_id: 1
+        };
+        request(app)
+            .post(`${process.env.API_URL}/processo`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereProcesso)
+            .set('Content-Type', 'application/json')
+            .expect(200)
+            .end(function(err, res) {
+                processoId = res.body.pro_id;
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
     // Fluxo
     it('Fluxos - Lista', function(done) {
         request(app)
@@ -707,7 +751,7 @@ describe('Testando as rotas de manutenção do sistema.', () => {
             .delete(`${process.env.API_URL}/fluxos/${fluxoId}`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`)
-            .set('Content-Type', 'application/json')
+            .set('Content-Type', 'applicatio/json')
             .expect(200)
             .end(function(err, res) {
                 fluxoId = res.body.flu_id;

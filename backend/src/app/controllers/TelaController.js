@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 import Tela from '../models/Tela';
@@ -19,15 +20,15 @@ class TelaController {
         if (!(await validator.validate(req))) {
             return res.status(400).json({ error: validator.errors });
         }
-        const { telId, telNome } = await Tela.create(req.body, {
+        const { tel_id, tel_nome } = await Tela.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', telId);
+        AuditoriaController.audita(req.body, req, 'I', tel_id);
         //
         return res.json({
-            telId,
-            telNome
+            tel_id,
+            tel_nome
         });
     }
 

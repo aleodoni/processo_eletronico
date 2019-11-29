@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
+/* eslint-disable camelcase */
 import Genero from '../models/Genero';
 import GeneroValidator from '../validators/GeneroValidator';
 import AuditoriaController from './AuditoriaController';
@@ -19,15 +20,15 @@ class GeneroController {
         if (!(await validator.validate(req))) {
             return res.status(400).json({ error: validator.errors });
         }
-        const { genId, genNome } = await Genero.create(req.body, {
+        const { gen_id, gen_nome } = await Genero.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', genId);
+        AuditoriaController.audita(req.body, req, 'I', gen_id);
         //
         return res.json({
-            genId,
-            genNome
+            gen_id,
+            gen_nome
         });
     }
 

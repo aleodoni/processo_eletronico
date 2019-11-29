@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
+/* eslint-disable camelcase */
 import TipoProcesso from '../models/TipoProcesso';
 import VTipoProcesso from '../models/VTipoProcesso';
 import TipoProcessoValidator from '../validators/TipoProcessoValidator';
@@ -41,18 +42,18 @@ class TipoProcessoController {
         if (!(await validator.validate(req))) {
             return res.status(400).json({ error: validator.errors });
         }
-        const { tprId, tprNome, tprVisualizacao, genId, fluId } = await TipoProcesso.create(req.body, {
+        const { tpr_id, tpr_nome, tpr_visualizacao, gen_id, flu_id } = await TipoProcesso.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', tprId);
+        AuditoriaController.audita(req.body, req, 'I', tpr_id);
         //
         return res.json({
-            tprId,
-            tprNome,
-            tprVisualizacao,
-            genId,
-            fluId
+            tpr_id,
+            tpr_nome,
+            tpr_visualizacao,
+            gen_id,
+            flu_id
         });
     }
 

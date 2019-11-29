@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
+/* eslint-disable camelcase */
 import TipoIniciativa from '../models/TipoIniciativa';
 import VTipoIniciativa from '../models/VTipoIniciativa';
 import TipoIniciativaValidator from '../validators/TipoIniciativaValidator';
@@ -29,16 +30,16 @@ class TipoIniciativaController {
         if (!(await validator.validate(req))) {
             return res.status(400).json({ error: validator.errors });
         }
-        const { tinId, tinNome, tinTipo } = await TipoIniciativa.create(req.body, {
+        const { tin_id, tin_nome, tin_tipo } = await TipoIniciativa.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', tinId);
+        AuditoriaController.audita(req.body, req, 'I', tin_id);
         //
         return res.json({
-            tinId,
-            tinNome,
-            tinTipo
+            tin_id,
+            tin_nome,
+            tin_tipo
         });
     }
 

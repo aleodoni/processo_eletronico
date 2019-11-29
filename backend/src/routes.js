@@ -111,6 +111,7 @@ routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 
 // rotas de criação de processo
 routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
+routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 
 // rotas do cadastro de fluxos
 routes.get(`${process.env.API_URL}/fluxos`, FluxoController.index);

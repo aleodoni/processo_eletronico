@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
+/* eslint-disable camelcase */
 import Sequelize from 'sequelize';
 import Menu from '../models/Menu';
 import VTelaMenu from '../models/VTelaMenu';
@@ -64,27 +65,27 @@ class MenuController {
             return res.status(400).json({ error: validator.errors });
         }
         const {
-            menId,
-            menIdPai,
-            menNome,
-            menUrl,
-            telId,
-            mmuId,
-            menOrdemPai
+            men_id,
+            men_id_pai,
+            men_nome,
+            men_url,
+            tel_id,
+            mmu_id,
+            men_ordem_pai
         } = await Menu.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', menId);
+        AuditoriaController.audita(req.body, req, 'I', men_id);
         //
         return res.json({
-            menId,
-            menIdPai,
-            menNome,
-            menUrl,
-            telId,
-            mmuId,
-            menOrdemPai
+            men_id,
+            men_id_pai,
+            men_nome,
+            men_url,
+            tel_id,
+            mmu_id,
+            men_ordem_pai
         });
     }
 

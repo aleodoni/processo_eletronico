@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
+/* eslint-disable camelcase */
 import AreaMenu from '../models/AreaMenu';
 import VAreaMenu from '../models/VAreaMenu';
 import AuditoriaController from './AuditoriaController';
@@ -22,16 +23,16 @@ class AreaMenuController {
     }
 
     async store(req, res) {
-        const { amuId, setId, mmuId } = await AreaMenu.create(req.body, {
+        const { amu_id, set_id, mmu_id } = await AreaMenu.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', amuId);
+        AuditoriaController.audita(req.body, req, 'I', amu_id);
         //
         return res.json({
-            amuId,
-            setId,
-            mmuId
+            amu_id,
+            set_id,
+            mmu_id
         });
     }
 

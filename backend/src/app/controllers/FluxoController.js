@@ -1,5 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
+/* eslint-disable camelcase */
 import Fluxo from '../models/Fluxo';
 import FluxoValidator from '../validators/FluxoValidator';
 import AuditoriaController from './AuditoriaController';
@@ -19,15 +20,15 @@ class FluxoController {
         if (!(await validator.validate(req))) {
             return res.status(400).json({ error: validator.errors });
         }
-        const { fluId, fluNome } = await Fluxo.create(req.body, {
+        const { flu_id, flu_nome } = await Fluxo.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', fluId);
+        AuditoriaController.audita(req.body, req, 'I', flu_id);
         //
         return res.json({
-            fluId,
-            fluNome
+            flu_id,
+            flu_nome
         });
     }
 
