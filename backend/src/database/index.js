@@ -21,6 +21,7 @@ import VTelaMenu from '../app/models/VTelaMenu';
 import VDadosPessoa from '../app/models/VDadosPessoa';
 import Auditoria from '../app/models/Auditoria';
 import Processo from '../app/models/Processo';
+import Nodo from '../app/models/Nodo';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
 
@@ -47,7 +48,8 @@ const models = [
     VTipoIniciativa,
     VDadosPessoa,
     Fluxo,
-    Processo
+    Processo,
+    Nodo
 ];
 
 class Database {
