@@ -32,6 +32,7 @@ class CriarProcesso extends Component {
             proCelular: '',
             proEmail: '',
             proAssunto: '',
+            proContatoPj: '',
             generos: [],
             areas: [],
             salva: false,
@@ -68,6 +69,7 @@ class CriarProcesso extends Component {
         this.setProCelular = this.setProCelular.bind(this);
         this.setProEmail = this.setProEmail.bind(this);
         this.setProAssunto = this.setProAssunto.bind(this);
+        this.setProContatoPj = this.setProContatoPj.bind(this);
         this.onSelect = this.onSelect.bind(this);
     }
 
@@ -142,6 +144,12 @@ class CriarProcesso extends Component {
     setProNome = event => {
         this.setState({
             proNome: event.target.value,
+        });
+    };
+
+    setProContatoPj = event => {
+        this.setState({
+            proContatoPj: event.target.value,
         });
     };
 
@@ -453,7 +461,8 @@ class CriarProcesso extends Component {
             proFone: '',
             proCelular: '',
             proEmail: '',
-            proAssunto: ''
+            proAssunto: '',
+            proContatoPj: ''
         });
     }
 
@@ -489,6 +498,7 @@ class CriarProcesso extends Component {
             proCelular: '',
             proEmail: '',
             proAssunto: '',
+            proContatoPj: '',
             erro: '',
         });
         axios({
@@ -596,11 +606,27 @@ class CriarProcesso extends Component {
                                     : null
                                 }
                                 { this.state.cnpjVisivel
-                                    ? <div className={classes.containerDadosServidorPublico}>
+                                    ? <div>
+                                      <div className={classes.containerNome}>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>Responsável</legend>
+                                              <input id="proContatoPj" name="proContatoPj" value={this.state.proContatoPj} onChange={this.setProContatoPj} type="text" size="100" maxLength="100" className={classes.textoCampos}/>
+                                          </fieldset>
+                                      </div>
+                                      <div className={classes.containerDadosServidorPublico}>
                                           <fieldset className={classes.fieldSetNome}>
                                               <legend className={classes.legendIniciativa}>Cnpj</legend>
                                               <input id="proCnpj" name="proCnpj" value={this.state.proCnpj} onChange={this.setProCnpj} type="text" size="12" maxLength="14" className={classes.textoCampos}/>
                                           </fieldset>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>Fone</legend>
+                                              <input id="proFone" name="proFone" value={this.state.proFone} onChange={this.setProFone} type="text" size="30" maxLength="30" className={classes.textoCampos}/>
+                                          </fieldset>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>Celular</legend>
+                                              <input id="proCelular" name="proCelular" value={this.state.proCelular} onChange={this.setProCelular} type="text" size="30" maxLength="30" className={classes.textoCampos}/>
+                                          </fieldset>
+                                      </div>
                                       </div>
                                     : null
                                 }

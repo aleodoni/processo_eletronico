@@ -578,6 +578,7 @@ describe('Testando as rotas de manutenção do sistema.', () => {
             pro_matricula: 99999,
             pro_cpf: '99999999999',
             pro_cnpj: '99999999999',
+            pro_contato_pj: `Inserção de contato pj - ${Math.random()}`,
             pro_fone: '(99) 99999-9999',
             pro_celular: '(99) 99999-9999',
             pro_email: 'teste@teste.com',

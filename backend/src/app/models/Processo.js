@@ -38,6 +38,9 @@ class Processo extends Model {
                 pro_cnpj: {
                     type: Sequelize.STRING
                 },
+                pro_contato_pj: {
+                    type: Sequelize.STRING
+                },
                 pro_fone: {
                     type: Sequelize.STRING
                 },
