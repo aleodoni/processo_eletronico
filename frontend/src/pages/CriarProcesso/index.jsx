@@ -19,21 +19,22 @@ class CriarProcesso extends Component {
             erro: '',
             proId: undefined,
             genId: '',
+            areaId: '',
             tprId: '',
             tiposProcesso: [],
-            tinId: '',
             tiposIniciativa: [],
-            iniNome: '',
-            iniMatricula: '',
-            iniCpf: '',
-            iniCnpj: '',
-            iniFone: '',
-            iniCelular: '',
-            iniEmail: '',
+            pro_iniciativa: '',
+            proNome: '',
+            proMatricula: '',
+            proCpf: '',
+            proCnpj: '',
+            proFone: '',
+            proCelular: '',
+            proEmail: '',
             proAssunto: '',
             generos: [],
+            areas: [],
             salva: false,
-            teste: '',
             desabilitaMatricula: true,
             desabilitaNomeIniciativa: true,
             desabilitaCpf: true,
@@ -41,42 +42,37 @@ class CriarProcesso extends Component {
             desabilitaFone: true,
             desabilitaCelular: true,
             desabilitaEmail: true,
-            cssCampo: props.classes.campoDesabilitado,
-            cssTitulo: props.classes.tituloDesabilitado,
-            cssCampoMatricula: props.classes.campoDesabilitado,
-            cssTituloMatricula: props.classes.tituloDesabilitado,
-            cssCampoCpf: props.classes.campoDesabilitado,
-            cssTituloCpf: props.classes.tituloDesabilitado,
-            cssCampoCnpj: props.classes.campoDesabilitado,
-            cssTituloCnpj: props.classes.tituloDesabilitado,
-            cssCampoFone: props.classes.campoDesabilitado,
-            cssTituloFone: props.classes.tituloDesabilitado,
-            cssCampoCelular: props.classes.campoDesabilitado,
-            cssTituloCelular: props.classes.tituloDesabilitado,
-            cssCampoEmail: props.classes.campoDesabilitado,
-            cssTituloEmail: props.classes.tituloDesabilitado,
+            tipoIniciativaVisivel: false,
+            matriculaVisivel: false,
+            nomeVisivel: false,
+            dadosServidorPublico: false,
+            emailVisivel: false,
+            cnpjVisivel: false,
+            areaVisivel: false,
+            assuntoVisivel: false
         }
         this.setProId = this.setProId.bind(this);
         this.setGenId = this.setGenId.bind(this);
+        this.setAreaId = this.setAreaId.bind(this);
         this.setGeneros = this.setGeneros.bind(this);
+        this.setAreas = this.setAreas.bind(this);
         this.setTprId = this.setTprId.bind(this);
         this.setTiposProcesso = this.setTiposProcesso.bind(this);
-        this.setTinId = this.setTinId.bind(this);
         this.setTiposIniciativa = this.setTiposIniciativa.bind(this);
-        this.setIniNome = this.setIniNome.bind(this);
-        this.setIniMatricula = this.setIniMatricula.bind(this);
-        this.setIniCpf = this.setIniCpf.bind(this);
-        this.setIniCnpj = this.setIniCnpj.bind(this);
-        this.setIniFone = this.setIniFone.bind(this);
-        this.setIniCelular = this.setIniCelular.bind(this);
-        this.setIniEmail = this.setIniEmail.bind(this);
+        this.setProIniciativa = this.setProIniciativa.bind(this);
+        this.setProNome = this.setProNome.bind(this);
+        this.setProMatricula = this.setProMatricula.bind(this);
+        this.setProCpf = this.setProCpf.bind(this);
+        this.setProCnpj = this.setProCnpj.bind(this);
+        this.setProFone = this.setProFone.bind(this);
+        this.setProCelular = this.setProCelular.bind(this);
+        this.setProEmail = this.setProEmail.bind(this);
         this.setProAssunto = this.setProAssunto.bind(this);
         this.onSelect = this.onSelect.bind(this);
     }
 
     componentDidMount() {
         this.carregaGenero();
-        this.carregaTipoIniciativa();
         this.iniciaTipoProcesso();
     }
 
@@ -89,20 +85,33 @@ class CriarProcesso extends Component {
     setGenId = event => {
         this.setState({
             genId: event.target.value,
-            teste: 'aqui muda o combo'
         });
+    };
 
+    setAreaId = event => {
+        this.setState({
+            areaId: event.target.value,
+        });
     };
 
     setTprId = event => {
+        if (event.target.value === '26'){
+            this.setState({
+                assuntoVisivel: true
+            });
+        }else{
+            this.setState({
+                assuntoVisivel: false
+            });
+        }
         this.setState({
             tprId: event.target.value,
         });
     };
 
-    setTinId = event => {
+    setProIniciativa = event => {
         this.setState({
-            tinId: event.target.value,
+            proIniciativa: event.target.value,
         });
     };
 
@@ -124,9 +133,15 @@ class CriarProcesso extends Component {
         });
     };
 
-    setIniNome = event => {
+    setAreas = event => {
         this.setState({
-            iniNome: event.target.value,
+            areas: event.target.value,
+        });
+    };
+
+    setProNome = event => {
+        this.setState({
+            proNome: event.target.value,
         });
     };
 
@@ -136,48 +151,48 @@ class CriarProcesso extends Component {
         });
     };
 
-    setIniMatricula = event => {
+    setProMatricula = event => {
         const re = /^[0-9\b]+$/;
         if (event.target.value === "" || re.test(event.target.value)) {
             this.setState({
-                iniMatricula: event.target.value
+                proMatricula: event.target.value
             });
         }
     };
 
-    setIniCpf = event => {
+    setProCpf = event => {
         const re = /^[0-9\b]+$/;
         if (event.target.value === "" || re.test(event.target.value)) {
             this.setState({
-                iniCpf: event.target.value
+                proCpf: event.target.value
             });
         }
     };
 
-    setIniCnpj = event => {
+    setProCnpj = event => {
         const re = /^[0-9\b]+$/;
         if (event.target.value === "" || re.test(event.target.value)) {
             this.setState({
-                iniCnpj: event.target.value
+                proCnpj: event.target.value
             });
         }
     };
 
-    setIniFone = event => {
+    setProFone = event => {
         this.setState({
-            iniFone: event.target.value,
+            proFone: event.target.value,
         });
     };
 
-    setIniCelular = event => {
+    setProCelular = event => {
         this.setState({
-            iniCelular: event.target.value,
+            proCelular: event.target.value,
         });
     };
 
-    setIniEmail = event => {
+    setProEmail = event => {
         this.setState({
-            iniEmail: event.target.value,
+            proEmail: event.target.value,
         });
     };
 
@@ -219,6 +234,129 @@ class CriarProcesso extends Component {
         });
     }
 
+    carregaTipoIniciativa = (event) => {
+        this.limpaCamposIniciativa();
+        this.setState({
+            erro: ''
+        });
+        const selectedIndex = event.target.options.selectedIndex;
+        const iniciativa = event.target.options[selectedIndex].getAttribute('data-key');
+        if (iniciativa !== ''){
+            let comboTipoIniciativa = [];
+            this.setState({
+                tipoIniciativaVisivel: true
+            });
+            if (iniciativa === 'Interna') {
+                comboTipoIniciativa.push(<option key="" data-key="" value="">Selecione...</option>);
+                comboTipoIniciativa.push(<option key="Servidor Público" data-key="Servidor Público" value="Servidor Público">Servidor Público</option>);
+                comboTipoIniciativa.push(<option key="Diretorias" data-key="Diretorias" value="Diretorias">Diretorias</option>);
+                this.setState({
+                    cnpjVisivel: false,
+                    areaVisivel: false,
+                    matriculaVisivel: false,
+                    nomeVisivel: false,
+                    dadosServidorPublico: false,
+                    emailVisivel: false,
+                    assuntoVisivel: false
+                })
+            }
+            if (iniciativa === 'Externa') {
+                comboTipoIniciativa.push(<option key="" data-key="" value="">Selecione...</option>);
+                comboTipoIniciativa.push(<option key="Pessoa Física" data-key="Pessoa Física" value="Pessoa Física">Pessoa Física</option>);
+                comboTipoIniciativa.push(<option key="Pessoa Jurídica" data-key="Pessoa Jurídica" value="Pessoa Jurídica">Pessoa Jurídica</option>);
+                this.setState({
+                    cnpjVisivel: false,
+                    matriculaVisivel: false,
+                    nomeVisivel: false,
+                    dadosServidorPublico: false,
+                    emailVisivel: false,
+                    areaVisivel: false,
+                    assuntoVisivel: false
+                })
+            }
+            this.setState({ tiposIniciativa: comboTipoIniciativa });
+        }else{
+            this.setState({
+                tipoIniciativaVisivel: false,
+                matriculaVisivel: false,
+                nomeVisivel: false,
+                dadosServidorPublico: false,
+                emailVisivel: false,
+                cnpjVisivel: false,
+                areaVisivel: false,
+                assuntoVisivel: false
+            });
+            this.iniciaTipoProcesso();
+        }
+    }
+
+    carregaDadosIniciativa = (event) => {
+        this.limpaCamposIniciativa();
+        this.setState({
+            erro: ''
+        });
+        const selectedIndex = event.target.options.selectedIndex;
+        const tipoIniciativa = event.target.options[selectedIndex].getAttribute('data-key');
+        if (tipoIniciativa !== ''){
+            if (tipoIniciativa === 'Servidor Público'){
+                this.setState({
+                    matriculaVisivel: true,
+                    nomeVisivel: true,
+                    dadosServidorPublico: true,
+                    emailVisivel: true,
+                    cnpjVisivel: false,
+                    areaVisivel: false,
+                    assuntoVisivel: false
+                });
+            }
+            if (tipoIniciativa === 'Diretorias'){
+                this.carregaArea();
+                this.setState({
+                    matriculaVisivel: false,
+                    nomeVisivel: false,
+                    dadosServidorPublico: false,
+                    emailVisivel: false,
+                    cnpjVisivel: false,
+                    areaVisivel: true,
+                    assuntoVisivel: false
+                });
+            }
+            if (tipoIniciativa === 'Pessoa Física'){
+                this.setState({
+                    matriculaVisivel: false,
+                    nomeVisivel: true,
+                    dadosServidorPublico: true,
+                    emailVisivel: true,
+                    cnpjVisivel: false,
+                    areaVisivel: false,
+                    assuntoVisivel: false
+                });
+            }
+            if (tipoIniciativa === 'Pessoa Jurídica'){
+                this.setState({
+                    matriculaVisivel: false,
+                    nomeVisivel: true,
+                    dadosServidorPublico: false,
+                    emailVisivel: true,
+                    cnpjVisivel: true,
+                    areaVisivel: false,
+                    assuntoVisivel: false
+                });
+            }
+        }else{
+           this.setState({
+               matriculaVisivel: false,
+               nomeVisivel: false,
+               dadosServidorPublico: false,
+               emailVisivel: false,
+               cnpjVisivel: false,
+               areaVisivel: false,
+               assuntoVisivel: false
+           });
+        }
+
+    }
+
     carregaGenero = () => {
         axios({
             method: "GET",
@@ -252,36 +390,36 @@ class CriarProcesso extends Component {
             });
     };
 
-    carregaTipoIniciativa = () => {
+    carregaArea = () => {
         axios({
             method: "GET",
-            url: "/tipos-de-iniciativa",
+            url: "/area",
             headers: {
                 'authorization': sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                let comboTipoIniciativa = [];
-                comboTipoIniciativa.push(
+                let comboArea = [];
+                comboArea.push(
                     <option key="" data-key="" value="">
                         Selecione...
                     </option>
                 );
                 for (let i = 0; i < res.data.length; i++) {
-                    comboTipoIniciativa.push(
+                    comboArea.push(
                         <option
-                            key={res.data[i].tin_id}
-                            data-key={res.data[i].tin_id}
-                            value={res.data[i].tin_id}
+                            key={res.data[i].set_id}
+                            data-key={res.data[i].set_id}
+                            value={res.data[i].set_id}
                         >
-                            {res.data[i].tin_nome+' ('+res.data[i].tipo+')'}
+                            {res.data[i].set_nome}
                         </option>
                     );
                 }
-                this.setState({ tiposIniciativa: comboTipoIniciativa });
+                this.setState({ areas: comboArea });
             })
             .catch(err => {
-                this.setState({ erro: "Erro ao carregar tipos de iniciativa." });
+                this.setState({ erro: "Erro ao carregar áreas." });
             });
     };
 
@@ -296,7 +434,7 @@ class CriarProcesso extends Component {
         this.setState({ tiposProcesso: comboTipoProcesso });
     };
 
-    salva = () => {
+    criaProcesso = () => {
         this.setState({erro: ''});
         if (this.state.tprId === ''){
             this.setState({erro: 'Selecione o tipo do processo.'});
@@ -306,154 +444,16 @@ class CriarProcesso extends Component {
         }
     }
 
-    habilitaCampos = (event) => {
-        this.setState({erro: ''});
-        const selectedIndex = event.target.options.selectedIndex;
-        const tinId = event.target.options[selectedIndex].getAttribute('data-key');
-        this.setState({ tinId: tinId });
-        if (tinId !== ''){
-            //Servidor ou Vereador ou Ex-Servidor ou Aposentado
-            if (parseInt(tinId) === 2 || parseInt(tinId) === 3){
-                this.setState({
-                    desabilitaMatricula: false,
-                    desabilitaNomeIniciativa: false,
-                    desabilitaCpf: false,
-                    desabilitaCnpj: true,
-                    desabilitaFone: false,
-                    desabilitaCelular: false,
-                    desabilitaEmail: false,
-                    cssCampo: this.props.classes.campoObrigatorio,
-                    cssTitulo: this.props.classes.tituloObrigatorio,
-                    cssCampoMatricula: this.props.classes.campoObrigatorio,
-                    cssTituloMatricula: this.props.classes.tituloObrigatorio,
-                    cssCampoCpf: this.props.classes.campoObrigatorio,
-                    cssTituloCpf: this.props.classes.tituloObrigatorio,
-                    cssCampoCnpj: this.props.classes.campoDesabilitado,
-                    cssTituloCnpj: this.props.classes.tituloDesabilitado,
-                    cssCampoFone: this.props.classes.campoDesabilitado,
-                    cssTituloFone: this.props.classes.tituloNaoObrigatorio,
-                    cssCampoCelular: this.props.classes.campoDesabilitado,
-                    cssTituloCelular: this.props.classes.tituloNaoObrigatorio,
-                    cssCampoEmail: this.props.classes.campoDesabilitado,
-                    cssTituloEmail: this.props.classes.tituloNaoObrigatorio,
-
-                });
-            }
-            // Assessoria, Controladoria, Departamento, Diretoria, Setor ou Seção ou Outros (interno)
-            if (parseInt(tinId) === 4 || parseInt(tinId) === 5){
-                this.setState({
-                    desabilitaMatricula: true,
-                    desabilitaNomeIniciativa: false,
-                    desabilitaCpf: true,
-                    desabilitaCnpj: true,
-                    desabilitaFone: false,
-                    desabilitaCelular: true,
-                    desabilitaEmail: false,
-                    cssCampo: this.props.classes.campoObrigatorio,
-                    cssTitulo: this.props.classes.tituloObrigatorio,
-                    cssCampoMatricula: this.props.classes.campoDesabilitado,
-                    cssTituloMatricula: this.props.classes.tituloDesabilitado,
-                    cssCampoCpf: this.props.classes.campoDesabilitado,
-                    cssTituloCpf: this.props.classes.tituloDesabilitado,
-                    cssCampoCnpj: this.props.classes.campoDesabilitado,
-                    cssTituloCnpj: this.props.classes.tituloDesabilitado,
-                    cssCampoFone: this.props.classes.campoDesabilitado,
-                    cssTituloFone: this.props.classes.tituloNaoObrigatorio,
-                    cssCampoCelular: this.props.classes.campoDesabilitado,
-                    cssTituloCelular: this.props.classes.tituloDesabilitado,
-                    cssCampoEmail: this.props.classes.campoDesabilitado,
-                    cssTituloEmail: this.props.classes.tituloNaoObrigatorio,
-                });
-            }
-            // Empresa, Sindicato ou Órgão Estatal
-            if (parseInt(tinId) === 6){
-                this.setState({
-                    desabilitaMatricula: true,
-                    desabilitaNomeIniciativa: false,
-                    desabilitaCpf: true,
-                    desabilitaCnpj: false,
-                    desabilitaFone: false,
-                    desabilitaCelular: false,
-                    desabilitaEmail: false,
-                    cssCampo: this.props.classes.campoObrigatorio,
-                    cssTitulo: this.props.classes.tituloObrigatorio,
-                    cssCampoMatricula: this.props.classes.campoDesabilitado,
-                    cssTituloMatricula: this.props.classes.tituloDesabilitado,
-                    cssCampoCpf: this.props.classes.campoDesabilitado,
-                    cssTituloCpf: this.props.classes.tituloDesabilitado,
-                    cssCampoCnpj: this.props.classes.campoObrigatorio,
-                    cssTituloCnpj: this.props.classes.tituloObrigatorio,
-                    cssCampoFone: this.props.classes.campoDesabilitado,
-                    cssTituloFone: this.props.classes.tituloNaoObrigatorio,
-                    cssCampoCelular: this.props.classes.campoDesabilitado,
-                    cssTituloCelular: this.props.classes.tituloDesabilitado,
-                    cssCampoEmail: this.props.classes.campoDesabilitado,
-                    cssTituloEmail: this.props.classes.tituloNaoObrigatorio,
-                });
-            }
-            // Outros (externo)
-            if (parseInt(tinId) === 7){
-                this.setState({
-                    desabilitaMatricula: true,
-                    desabilitaNomeIniciativa: false,
-                    desabilitaCpf: true,
-                    desabilitaCnpj: true,
-                    desabilitaFone: false,
-                    desabilitaCelular: false,
-                    desabilitaEmail: false,
-                    cssCampo: this.props.classes.campoObrigatorio,
-                    cssTitulo: this.props.classes.tituloObrigatorio,
-                    cssCampoMatricula: this.props.classes.campoDesabilitado,
-                    cssTituloMatricula: this.props.classes.tituloDesabilitado,
-                    cssCampoCpf: this.props.classes.campoDesabilitado,
-                    cssTituloCpf: this.props.classes.tituloDesabilitado,
-                    cssCampoCnpj: this.props.classes.campoDesabilitado,
-                    cssTituloCnpj: this.props.classes.tituloDesabilitado,
-                    cssCampoFone: this.props.classes.campoDesabilitado,
-                    cssTituloFone: this.props.classes.tituloNaoObrigatorio,
-                    cssCampoCelular: this.props.classes.campoDesabilitado,
-                    cssTituloCelular: this.props.classes.tituloNaoObrigatorio,
-                    cssCampoEmail: this.props.classes.campoDesabilitado,
-                    cssTituloEmail: this.props.classes.tituloNaoObrigatorio,
-                });
-            }
-        }else{
-            this.setState({
-                desabilitaMatricula: true,
-                desabilitaNomeIniciativa: true,
-                desabilitaCpf: true,
-                desabilitaCnpj: true,
-                desabilitaFone: true,
-                desabilitaCelular: true,
-                desabilitaEmail: true,
-                cssCampo: this.props.classes.campoDesabilitado,
-                cssTitulo: this.props.classes.tituloDesabilitado,
-                cssCampoMatricula: this.props.classes.campoDesabilitado,
-                cssTituloMatricula: this.props.classes.tituloDesabilitado,
-                cssCampoCpf: this.props.classes.campoDesabilitado,
-                cssTituloCpf: this.props.classes.tituloDesabilitado,
-                cssCampoCnpj: this.props.classes.campoDesabilitado,
-                cssTituloCnpj: this.props.classes.tituloDesabilitado,
-                cssCampoFone: this.props.classes.campoDesabilitado,
-                cssTituloFone: this.props.classes.tituloDesabilitado,
-                cssCampoCelular: this.props.classes.campoDesabilitado,
-                cssTituloCelular: this.props.classes.tituloDesabilitado,
-                cssCampoEmail: this.props.classes.campoDesabilitado,
-                cssTituloEmail: this.props.classes.tituloDesabilitado,
-            });
-        }
-        this.limpaCamposIniciativa();
-    }
-
     limpaCamposIniciativa = () => {
         this.setState({
-            iniNome: '',
-            iniMatricula: '',
-            iniCpf: '',
-            iniCnpj: '',
-            iniFone: '',
-            iniCelular: '',
-            iniEmail: '',
+            proNome: '',
+            proMatricula: '',
+            proCpf: '',
+            proCnpj: '',
+            proFone: '',
+            proCelular: '',
+            proEmail: '',
+            proAssunto: ''
         });
     }
 
@@ -482,17 +482,18 @@ class CriarProcesso extends Component {
 
     localiza = () => {
         this.setState({
-            iniNome: '',
-            iniCpf: '',
-            iniCnpj: '',
-            iniFone: '',
-            iniCelular: '',
-            iniEmail: '',
+            proNome: '',
+            proCpf: '',
+            proCnpj: '',
+            proFone: '',
+            proCelular: '',
+            proEmail: '',
+            proAssunto: '',
             erro: '',
         });
         axios({
             method: "GET",
-            url: "/dados-pessoa/"+this.state.iniMatricula,
+            url: "/dados-pessoa/"+this.state.proMatricula,
             headers: {
                 'authorization': sessionStorage.getItem('token'),
             },
@@ -500,18 +501,18 @@ class CriarProcesso extends Component {
         .then(res => {
             if (res.data === null){
                 this.setState({
-                    iniMatricula: '',
+                    proMatricula: '',
                 });
             }else{
                 if (res.data.pes_email !== null){
                     res.data.pes_email = res.data.pes_email.toLowerCase();
                 }
                 this.setState({
-                    iniNome: res.data.pes_nome,
-                    iniCpf: res.data.pes_cpf,
-                    iniFone: res.data.fone,
-                    iniCelular: res.data.pes_celular,
-                    iniEmail: res.data.pes_email,
+                    proNome: res.data.pes_nome,
+                    proCpf: res.data.pes_cpf,
+                    proFone: res.data.fone,
+                    proCelular: res.data.pes_celular,
+                    proEmail: res.data.pes_email,
                 });
             }
         })
@@ -532,74 +533,112 @@ class CriarProcesso extends Component {
                             <div className={classes.erro}>{this.state.erro}</div>
                             <form className={classes.formulario} noValidate autoComplete="off">
                                 <input id="proId" value={this.state.proId} onChange={this.setProId} type="hidden" />
-                                <div className={classes.containerTipoIniciativa}>
-                                    <fieldset className={classes.campoObrigatorio}>
-                                        <legend><span className={classes.tituloObrigatorio}>Tipo de iniciativa</span></legend>
-                                        <select id="selectTipoIniciativa" onChange={this.habilitaCampos} value={this.state.tinId}>
-                                           {this.state.tiposIniciativa}
+                                <div className={classes.containerIniciativa}>
+                                    <fieldset className={classes.fieldSetIniciativa}>
+                                        <legend><span className={classes.legendIniciativa}>Iniciativa</span></legend>
+                                        <select id="selectIniciativa" onChange={this.carregaTipoIniciativa} value={this.state.proIniciativa}>
+                                            <option key="" data-key="" value="">Selecione...</option>
+                                            <option key="Interna" data-key="Interna" value="Interna">Interna</option>
+                                            <option key="Externa" data-key="Externa" value="Externa">Externa</option>
                                         </select>
                                     </fieldset>
-                                    <fieldset className={this.state.cssCampoMatricula}>
-                                        <legend className={this.state.cssTituloMatricula}>Matrícula</legend>
-                                        <input id="iniMatricula" name="iniMatricula" value={this.state.iniMatricula} onChange={this.setIniMatricula} type="text" size="5" maxLength="5" className={classes.textoCampos} disabled={this.state.desabilitaMatricula}/>
-                                    </fieldset>
-                                    <Button id="btnLocaliza" variant="contained" color="primary" onClick={this.localiza} className={classes.botaoLocaliza} disabled={this.state.desabilitaMatricula}>
-                                        <SearchIcon />Localizar
-                                    </Button>
+                                    { this.state.tipoIniciativaVisivel
+                                        ? <fieldset className={classes.fieldSetIniciativa}>
+                                              <legend><span className={classes.legendIniciativa}>Tipo da iniciativa</span></legend>
+                                              <select id="selectTipoIniciativa" onChange={this.carregaDadosIniciativa} value={this.state.proTipoIniciativa}>
+                                                  {this.state.tiposIniciativa}
+                                              </select>
+                                          </fieldset>
+                                        : null
+                                    }
+                                    { this.state.matriculaVisivel
+                                        ? <fieldset className={classes.fieldSetMatricula}>
+                                              <legend className={classes.legendIniciativa}>Matrícula</legend>
+                                              <input id="proMatricula" name="proMatricula" value={this.state.proMatricula} onChange={this.setProMatricula} type="text" size="5" maxLength="5" className={classes.textoCampos}/>&nbsp;&nbsp;
+                                              <Button id="btnLocaliza" variant="contained" color="primary" onClick={this.localiza}><SearchIcon />Localizar</Button>
+                                          </fieldset>
+                                        : null
+                                    }
+                                    { this.state.areaVisivel
+                                        ? <fieldset className={classes.fieldSetMatricula}>
+                                              <legend className={classes.legendIniciativa}>Área</legend>
+                                              <select id="selectArea" value={this.state.areaId} onChange={this.setAreaId}>
+                                                  {this.state.areas}
+                                              </select>
+                                          </fieldset>
+                                        : null
+                                    }
                                 </div>
-                                <div className={classes.containerNomeIniciativa}>
-                                    <fieldset className={this.state.cssCampo}>
-                                        <legend className={this.state.cssTitulo}>Nome da iniciativa</legend>
-                                        <input id="iniNome" name="iniNome" value={this.state.iniNome} onChange={this.setIniNome} type="text" size="100" maxLength="100" className={classes.textoCampos} disabled={this.state.desabilitaNomeIniciativa}/>
-                                    </fieldset>
-                                </div>
-                                <div className={classes.containerDadosTipoIniciativa}>
-                                    <fieldset className={this.state.cssCampoCpf}>
-                                        <legend className={this.state.cssTituloCpf}>Cpf</legend>
-                                        <input id="iniCpf" name="iniCpf" value={this.state.iniCpf} onChange={this.setIniCpf} type="text" size="10" maxLength="11" className={classes.textoCampos} disabled={this.state.desabilitaCpf}/>
-                                    </fieldset>
-                                    <fieldset className={this.state.cssCampoCnpj}>
-                                        <legend className={this.state.cssTituloCnpj}>Cnpj</legend>
-                                        <input id="iniCnpj" name="iniCnpj" value={this.state.iniCnpj} onChange={this.setIniCnpj} type="text" size="12" maxLength="14" className={classes.textoCampos} disabled={this.state.desabilitaCnpj}/>
-                                    </fieldset>
-                                    <fieldset className={this.state.cssCampoFone}>
-                                        <legend className={this.state.cssTituloFone}>Fone</legend>
-                                        <input id="iniFone" name="iniFone" value={this.state.iniFone} onChange={this.setIniFone} type="text" size="30" maxLength="30" className={classes.textoCampos} disabled={this.state.desabilitaFone}/>
-                                    </fieldset>
-                                    <fieldset className={this.state.cssCampoCelular}>
-                                        <legend className={this.state.cssTituloCelular}>Celular</legend>
-                                        <input id="iniCelular" name="iniCelular" value={this.state.iniCelular} onChange={this.setIniCelular} type="text" size="30" maxLength="30" className={classes.textoCampos} disabled={this.state.desabilitaCelular}/>
-                                    </fieldset>
-                                </div>
-                                <div className={classes.containerNomeIniciativa}>
-                                    <fieldset className={this.state.cssCampoEmail}>
-                                        <legend className={this.state.cssTituloEmail}>E-mail</legend>
-                                        <input id="iniEmail" name="iniEmail" value={this.state.iniEmail} onChange={this.setIniEmail} type="text" size="100" maxLength="100" className={classes.textoCampos} disabled={this.state.desabilitaEmail}/>
-                                    </fieldset>
-                                </div>
+                                { this.state.nomeVisivel
+                                    ? <div className={classes.containerNome}>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>Nome</legend>
+                                              <input id="proNome" name="proNome" value={this.state.proNome} onChange={this.setProNome} type="text" size="100" maxLength="100" className={classes.textoCampos}/>
+                                          </fieldset>
+                                      </div>
+                                    : null
+                                }
+                                { this.state.dadosServidorPublico
+                                    ? <div className={classes.containerDadosServidorPublico}>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>Cpf</legend>
+                                              <input id="proCpf" name="proCpf" value={this.state.proCpf} onChange={this.setProCpf} type="text" size="10" maxLength="11" className={classes.textoCampos}/>
+                                          </fieldset>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>Fone</legend>
+                                              <input id="proFone" name="proFone" value={this.state.proFone} onChange={this.setProFone} type="text" size="30" maxLength="30" className={classes.textoCampos}/>
+                                          </fieldset>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>Celular</legend>
+                                              <input id="proCelular" name="proCelular" value={this.state.proCelular} onChange={this.setProCelular} type="text" size="30" maxLength="30" className={classes.textoCampos}/>
+                                          </fieldset>
+                                      </div>
+                                    : null
+                                }
+                                { this.state.cnpjVisivel
+                                    ? <div className={classes.containerDadosServidorPublico}>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>Cnpj</legend>
+                                              <input id="proCnpj" name="proCnpj" value={this.state.proCnpj} onChange={this.setProCnpj} type="text" size="12" maxLength="14" className={classes.textoCampos}/>
+                                          </fieldset>
+                                      </div>
+                                    : null
+                                }
+                                { this.state.emailVisivel
+                                    ? <div className={classes.containerNome}>
+                                          <fieldset className={classes.fieldSetNome}>
+                                              <legend className={classes.legendIniciativa}>E-mail</legend>
+                                              <input id="proEmail" name="proEmail" value={this.state.proEmail} onChange={this.setProEmail} type="text" size="100" maxLength="100" className={classes.textoCampos}/>
+                                          </fieldset>
+                                      </div>
+                                    : null
+                                }
                                 <div className={classes.containerCriaProcesso}>
-                                    <fieldset className={classes.campoObrigatorio}>
+                                    <fieldset className={classes.fieldSetNome}>
                                         <legend><span className={classes.tituloObrigatorio}>Gênero</span></legend>
                                         <select id="selectGenero" onChange={this.onSelect} value={this.state.genId}>
                                            {this.state.generos}
                                         </select>
                                     </fieldset>
-                                    <fieldset className={classes.campoObrigatorio}>
+                                    <fieldset className={classes.fieldSetNome}>
                                         <legend><span className={classes.tituloObrigatorio}>Tipo do processo</span></legend>
                                         <select id="selectTiposProcesso" onChange={this.setTprId} value={this.state.tprId}>
                                             {this.state.tiposProcesso}
                                         </select>
                                     </fieldset>
                                 </div>
-                                <div className={classes.containerAssunto}>
-                                    <fieldset className={classes.campoObrigatorio}>
-                                        <legend><span className={classes.tituloObrigatorio}>Assunto</span></legend>
-                                        <textarea id="proAssunto" name="proAssunto" rows="3" cols="114" maxlength="500" value={this.state.proAssunto} onChange={this.setProAssunto} className={classes.textoCamposArea}/>
-                                    </fieldset>
-                                </div>
+                                { this.state.assuntoVisivel
+                                    ? <div className={classes.containerAssunto}>
+                                          <fieldset className={classes.fieldSetAssunto}>
+                                              <legend className={classes.legendIniciativa}>Assunto</legend>
+                                              <textarea id="proAssunto" name="proAssunto" rows="3" cols="100" value={this.state.proAssunto} onChange={this.setProAssunto} className={classes.textoCamposArea}/>
+                                          </fieldset>
+                                      </div>
+                                    : null
+                                }
                             </form>
-                            <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
-                                <SalvaIcon />Salvar
+                            <Button id="btnCriaProcesso" variant="contained" color="primary" onClick={this.criaProcesso}>
+                                <SalvaIcon />Criar processo
                             </Button>&nbsp;
                         </CardContent>
                     </Card>

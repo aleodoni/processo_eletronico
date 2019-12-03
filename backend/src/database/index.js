@@ -11,12 +11,10 @@ import AreaTela from '../app/models/AreaTela';
 import Menu from '../app/models/Menu';
 import Fluxo from '../app/models/Fluxo';
 import TipoProcesso from '../app/models/TipoProcesso';
-import TipoIniciativa from '../app/models/TipoIniciativa';
 import VMenu from '../app/models/VMenu';
 import VMenuPai from '../app/models/VMenuPai';
 import VAreaMenu from '../app/models/VAreaMenu';
 import VTipoProcesso from '../app/models/VTipoProcesso';
-import VTipoIniciativa from '../app/models/VTipoIniciativa';
 import VTelaMenu from '../app/models/VTelaMenu';
 import VDadosPessoa from '../app/models/VDadosPessoa';
 import Auditoria from '../app/models/Auditoria';
@@ -43,9 +41,7 @@ const models = [
     VTelaMenu,
     VMenuPai,
     TipoProcesso,
-    TipoIniciativa,
     VTipoProcesso,
-    VTipoIniciativa,
     VDadosPessoa,
     Fluxo,
     Processo,

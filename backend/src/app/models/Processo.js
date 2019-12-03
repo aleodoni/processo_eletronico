@@ -18,38 +18,40 @@ class Processo extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false
                 },
-                tin_id: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false
-                },
-                ini_nome: {
+                pro_iniciativa: {
                     type: Sequelize.STRING,
                     allowNull: false
                 },
-                ini_matricula: {
+                pro_tipo_iniciativa: {
+                    type: Sequelize.STRING,
+                    allowNull: false
+                },
+                pro_nome: {
+                    type: Sequelize.STRING
+                },
+                pro_matricula: {
                     type: Sequelize.INTEGER
                 },
-                ini_cpf: {
+                pro_cpf: {
                     type: Sequelize.STRING
                 },
-                ini_cnpj: {
+                pro_cnpj: {
                     type: Sequelize.STRING
                 },
-                ini_fone: {
+                pro_fone: {
                     type: Sequelize.STRING
                 },
-                ini_celular: {
+                pro_celular: {
                     type: Sequelize.STRING
                 },
-                ini_email: {
+                pro_email: {
                     type: Sequelize.STRING
                 },
                 pro_encerramento: {
                     type: Sequelize.NOW
                 },
                 pro_assunto: {
-                    type: Sequelize.STRING,
-                    allowNull: false
+                    type: Sequelize.STRING
                 },
                 versao: {
                     type: Sequelize.INTEGER,
@@ -75,6 +77,9 @@ class Processo extends Model {
                 area_id: {
                     type: Sequelize.STRING,
                     allowNull: false
+                },
+                area_id_iniciativa: {
+                    type: Sequelize.STRING
                 },
                 pro_ultimo_tramite: {
                     type: Sequelize.NOW
@@ -110,9 +115,6 @@ class Processo extends Model {
     }
 
     static associate(models) {
-        this.belongsTo(models.TipoIniciativa, {
-            foreignKey: 'tin_id'
-        });
         this.belongsTo(models.TipoProcesso, {
             foreignKey: 'tpr_id'
         });

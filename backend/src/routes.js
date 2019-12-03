@@ -7,7 +7,6 @@ import TelaController from './app/controllers/TelaController';
 import FluxoController from './app/controllers/FluxoController';
 import GeneroController from './app/controllers/GeneroController';
 import TipoProcessoController from './app/controllers/TipoProcessoController';
-import TipoIniciativaController from './app/controllers/TipoIniciativaController';
 import MenuController from './app/controllers/MenuController';
 import ModeloMenuController from './app/controllers/ModeloMenuController';
 import AreaMenuController from './app/controllers/AreaMenuController';
@@ -70,13 +69,6 @@ routes.get(`${process.env.API_URL}/tipos-de-processo/:genId`, TipoProcessoContro
 routes.post(`${process.env.API_URL}/tipos-processo`, TipoProcessoController.store);
 routes.put(`${process.env.API_URL}/tipos-processo/:id`, TipoProcessoController.update);
 routes.delete(`${process.env.API_URL}/tipos-processo/:id`, TipoProcessoController.delete);
-
-// rotas do cadastro de tipos de iniciativa
-routes.get(`${process.env.API_URL}/tipos-iniciativa`, TipoIniciativaController.index);
-routes.get(`${process.env.API_URL}/tipos-de-iniciativa`, TipoIniciativaController.listaTiposIniciativa);
-routes.post(`${process.env.API_URL}/tipos-iniciativa`, TipoIniciativaController.store);
-routes.put(`${process.env.API_URL}/tipos-iniciativa/:id`, TipoIniciativaController.update);
-routes.delete(`${process.env.API_URL}/tipos-iniciativa/:id`, TipoIniciativaController.delete);
 
 // rotas do cadastro de modelo de menu
 routes.get(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.index);

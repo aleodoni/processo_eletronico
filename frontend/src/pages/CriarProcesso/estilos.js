@@ -2,64 +2,68 @@ export const styles = {
     lateral: {
       paddingLeft: 300,
     },
-    containerTipoIniciativa: {
+    containerIniciativa: {
         display: 'grid',
-        gridTemplateColumns: '550px 150px 150px',
+        gridTemplateColumns: '150px 150px 275px',
         gridTemplateRows: '70px',
-        gridGap: '21px',
-        marginBottom: '10px',
+        gridGap: '12px',
+        marginBottom: '20px',
     },
-    campoObrigatorio: {
+    containerNome: {
+        display: 'grid',
+        gridTemplateColumns: '575px',
+        gridTemplateRows: '70px',
+        marginBottom: '20px',
+    },
+    fieldSetAssunto: {
         borderColor: '#303F9F',
         borderRadius: '5px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+    },
+    containerDadosServidorPublico: {
+        display: 'grid',
+        gridTemplateColumns: '200px 350px 350px',
+        gridTemplateRows: '70px',
+        gridGap: '37px',
+        marginBottom: '20px',
+    },
+    fieldSetIniciativa: {
+        borderColor: '#303F9F',
+        borderRadius: '5px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+    },
+    fieldSetMatricula: {
+        borderColor: '#303F9F',
+        borderRadius: '5px',
+        height: '47px',
+        marginLeft: '10px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+    },
+    fieldSetNome: {
+        borderColor: '#303F9F',
+        borderRadius: '5px',
+        height: '47px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+    },
+    legendIniciativa: {
+        color: '#303F9F',
         fontFamily: 'Arial, Helvetica, sans-serif',
     },
     tituloObrigatorio: {
         color: '#303F9F',
         fontFamily: 'Arial, Helvetica, sans-serif',
     },
-    tituloNaoObrigatorio: {
-        color: '#000000',
-        fontFamily: 'Arial, Helvetica, sans-serif',
-    },
-    tituloDesabilitado: {
-        color: '#DCDCDC',
-        fontFamily: 'Arial, Helvetica, sans-serif',
-    },
-    campoNaoObrigatorio: {
-        borderColor: '#000000',
-        borderRadius: '5px',
-        fontFamily: 'Arial, Helvetica, sans-serif',
-    },
-    campoDesabilitado: {
-        borderColor: 'white',
-        borderRadius: '5px',
-        fontFamily: 'Arial, Helvetica, sans-serif',
-    },
-    containerNomeIniciativa: {
-        display: 'grid',
-        gridTemplateColumns: '1100px',
-        gridTemplateRows: '70px',
-        marginBottom: '10px',
-    },
     containerAssunto: {
         display: 'grid',
-        gridTemplateColumns: '1100px',
+        gridTemplateColumns: '400px',
         gridTemplateRows: '115px',
-        marginBottom: '10px',
-    },
-    containerDadosTipoIniciativa: {
-        display: 'grid',
-        gridTemplateColumns: '160px 183px 344px 340px',
-        gridTemplateRows: '70px',
-        gridColumnGap: '22px',
-        marginBottom: '10px',
+        marginBottom: '20px',
     },
     containerCriaProcesso: {
         display: 'grid',
-        gridTemplateColumns: '550px 550px',
+        gridTemplateColumns: '487px 487px',
         gridTemplateRows: '70px',
-        marginBottom: '10px',
+        marginBottom: '20px',
     },
     fundoHeader: {
         background: '#EFF8FB',
@@ -70,12 +74,6 @@ export const styles = {
         width: '15px',
         height: 'auto',
         display: 'inline-block',
-    },
-    botaoLocaliza: {
-        marginTop: '20px',
-        marginLeft: '5px',
-        width: '130px',
-        height: '40px',
     },
     formulario: {
         display: 'flex',
@@ -91,8 +89,6 @@ export const styles = {
         borderRadius: '5px',
         fontFamily: 'Arial, Helvetica, sans-serif',
         fontSize: '16px',
-        paddingTop: '5px',
-        paddingBottom: '5px',
     },
     erro: {
         fontFamily: 'Arial, Helvetica, sans-serif',

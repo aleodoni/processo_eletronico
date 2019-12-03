@@ -9,9 +9,9 @@ class ProcessoValidator {
     init() {
         this.schema = Yup.object().shape({
             tpr_id: Yup.number().required(),
-            tin_id: Yup.number().required(),
-            ini_nome: Yup.string().required(),
-            pro_assunto: Yup.string().required(),
+            pro_iniciativa: Yup.string().required(),
+            pro_tipo_iniciativa: Yup.string().required(),
+            pro_nome: Yup.string().required(),
             pro_numero: Yup.number().required(),
             pro_autuacao: Yup.date().required(),
             usu_autuador: Yup.string().required(),

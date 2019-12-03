@@ -305,89 +305,6 @@ describe('Testando as rotas de manutenção do sistema.', () => {
             });
     });
 
-    // Tipos de iniciativa
-    it('Tipos de iniciativa - Lista', function(done) {
-        request(app)
-            .get(`${process.env.API_URL}/tipos-iniciativa`)
-            .set('authorization', `${token}`)
-            .expect(200)
-            .end(function(err) {
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
-    });
-    it('Tipos de iniciativa grid - Lista', function(done) {
-        request(app)
-            .get(`${process.env.API_URL}/tipos-de-iniciativa`)
-            .set('authorization', `${token}`)
-            .expect(200)
-            .end(function(err) {
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
-    });
-    let tipoIniciativaId = '';
-    it('Tipos de iniciativa - Insere', function(done) {
-        const insereTiposIniciativa = {
-            tin_id: null,
-            tin_nome: `Inserção nome tipo de iniciativa - ${Math.random()}`,
-            tin_tipo: 1
-        };
-        request(app)
-            .post(`${process.env.API_URL}/tipos-iniciativa`)
-            .set('authorization', `${token}`)
-            .set('usuario', `${usuario}`)
-            .send(insereTiposIniciativa)
-            .set('Content-Type', 'application/json')
-            .expect(200)
-            .end(function(err, res) {
-                tipoIniciativaId = res.body.tin_id;
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
-    });
-    it('Tipos de iniciativa - Edita', function(done) {
-        const editaTiposIniciativa = {
-            tin_nome: `Edição nome tipo de iniciativa - ${Math.random()}`,
-            tin_tipo: 0
-        };
-        request(app)
-            .put(`${process.env.API_URL}/tipos-iniciativa/${tipoIniciativaId}`)
-            .set('authorization', `${token}`)
-            .set('usuario', `${usuario}`)
-            .send(editaTiposIniciativa)
-            .set('Content-Type', 'application/json')
-            .expect(200)
-            .end(function(err, res) {
-                tipoProcessoId = res.body.tin_id;
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
-    });
-    it('Tipos de iniciativa - Apaga', function(done) {
-        request(app)
-            .delete(`${process.env.API_URL}/tipos-iniciativa/${tipoIniciativaId}`)
-            .set('authorization', `${token}`)
-            .set('usuario', `${usuario}`)
-            .set('Content-Type', 'application/json')
-            .expect(200)
-            .end(function(err, res) {
-                tipoIniciativaId = res.body.tin_id;
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
-    });
-
     // Menu
     it('Menu - Lista', function(done) {
         request(app)
@@ -654,15 +571,16 @@ describe('Testando as rotas de manutenção do sistema.', () => {
         const insereProcesso = {
             pro_id: null,
             pro_codigo: '00001/2019',
-            tpr_id: 27,
-            tin_id: 6,
-            ini_nome: `Inserção de ini nome - ${Math.random()}`,
-            ini_matricula: 99999,
-            ini_cpf: '99999999999',
-            ini_cnpj: '99999999999',
-            ini_fone: '(99) 99999-9999',
-            ini_celular: '(99) 99999-9999',
-            ini_email: 'teste@teste.com',
+            tpr_id: 17,
+            pro_iniciativa: 'Interna',
+            pro_tipo_iniciativa: 'Servidor Público',
+            pro_nome: `Inserção de ini nome - ${Math.random()}`,
+            pro_matricula: 99999,
+            pro_cpf: '99999999999',
+            pro_cnpj: '99999999999',
+            pro_fone: '(99) 99999-9999',
+            pro_celular: '(99) 99999-9999',
+            pro_email: 'teste@teste.com',
             pro_encerramento: null,
             pro_assunto: `Inserção de pro assunto - ${Math.random()}`,
             pro_numero: 1,
@@ -670,6 +588,7 @@ describe('Testando as rotas de manutenção do sistema.', () => {
             usu_autuador: 'usuario.teste',
             set_id_autuador: '171',
             area_id: '027',
+            area_id_iniciativa: '027',
             pro_ultimo_tramite: null,
             usu_finalizador: 'usuario.teste',
             set_id_finalizador: '171',
