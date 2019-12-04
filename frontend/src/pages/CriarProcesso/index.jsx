@@ -244,6 +244,7 @@ class CriarProcesso extends Component {
 
     carregaTipoIniciativa = (event) => {
         this.limpaCamposIniciativa();
+        this.iniciaTipoProcesso();
         this.setState({
             erro: ''
         });
@@ -252,7 +253,8 @@ class CriarProcesso extends Component {
         if (iniciativa !== ''){
             let comboTipoIniciativa = [];
             this.setState({
-                tipoIniciativaVisivel: true
+                tipoIniciativaVisivel: true,
+                proIniciativa: iniciativa
             });
             if (iniciativa === 'Interna') {
                 comboTipoIniciativa.push(<option key="" data-key="" value="">Selecione...</option>);
@@ -292,20 +294,24 @@ class CriarProcesso extends Component {
                 emailVisivel: false,
                 cnpjVisivel: false,
                 areaVisivel: false,
-                assuntoVisivel: false
+                assuntoVisivel: false,
+                proIniciativa: iniciativa
             });
-            this.iniciaTipoProcesso();
         }
     }
 
     carregaDadosIniciativa = (event) => {
         this.limpaCamposIniciativa();
+        this.iniciaTipoProcesso();
         this.setState({
             erro: ''
         });
         const selectedIndex = event.target.options.selectedIndex;
         const tipoIniciativa = event.target.options[selectedIndex].getAttribute('data-key');
         if (tipoIniciativa !== ''){
+            this.setState({
+                proTipoIniciativa: tipoIniciativa
+            });
             if (tipoIniciativa === 'Servidor Público'){
                 this.setState({
                     matriculaVisivel: true,
@@ -359,7 +365,8 @@ class CriarProcesso extends Component {
                emailVisivel: false,
                cnpjVisivel: false,
                areaVisivel: false,
-               assuntoVisivel: false
+               assuntoVisivel: false,
+               proTipoIniciativa: tipoIniciativa
            });
         }
 
@@ -444,12 +451,139 @@ class CriarProcesso extends Component {
 
     criaProcesso = () => {
         this.setState({erro: ''});
-        if (this.state.tprId === ''){
-            this.setState({erro: 'Selecione o tipo do processo.'});
+        if (this.state.proIniciativa === undefined || this.state.proIniciativa === '') {
+            this.setState({erro: 'Selecione a iniciativa.'});
             return;
         }else{
-            this.setState({erro: ''});
+            if (this.state.proTipoIniciativa === undefined || this.state.proTipoIniciativa === '') {
+                this.setState({erro: 'Selecione o tipo de iniciativa.'});
+                return;
+            }else{
+                if (this.state.proIniciativa === 'Interna') {
+                    if (this.state.proTipoIniciativa === 'Servidor Público') {
+                        let erros = '';
+                        if (this.state.proNome.trim() === '') {
+                            erros = erros + 'Nome obrigatório.<br />';
+                        }
+                        if (this.state.proCpf.trim() === '' && this.state.proFone.trim() === '' && this.state.proCelular.trim() === '' && this.state.proEmail.trim() === '') {
+                            erros = erros + 'Pelo menos um campo (Cpf, Fone, Celular, E-mail) deve ser preenchido.';
+                        }
+                        if (erros !== ''){
+                            this.setState({erro: erros});
+                            return;
+                        }else{
+                            if (this.state.proCpf.trim() !== ''){
+                                if (!this.testaCPF(this.state.proCpf.trim())){
+                                    this.setState({erro: 'Cpf inválido.'});
+                                    return;
+                                }
+                            }
+                            if (this.state.genId === ''){
+                                this.setState({erro: 'Selecione o gênero.'});
+                                return;
+                            }
+                            if (this.state.tprId === ''){
+                                this.setState({erro: 'Selecione o tipo do processo.'});
+                                return;
+                            }
+                        }
+                    }
+                    if (this.state.proTipoIniciativa === 'Diretorias') {
+                        if (this.state.areaId === '') {
+                            this.setState({erro: 'Selecione a área.'});
+                            return;
+                        }
+                        if (this.state.genId === ''){
+                            this.setState({erro: 'Selecione o gênero.'});
+                            return;
+                        }
+                        if (this.state.tprId === ''){
+                            this.setState({erro: 'Selecione o tipo do processo.'});
+                            return;
+                        }
+                    }
+                }
+                if (this.state.proIniciativa === 'Externa') {
+                    if (this.state.proTipoIniciativa === 'Pessoa Física') {
+                        let erros = '';
+                        if (this.state.proNome.trim() === '') {
+                            erros = erros + 'Nome obrigatório.<br />';
+                        }
+                        if (this.state.proCpf.trim() === '' && this.state.proFone.trim() === '' && this.state.proCelular.trim() === '' && this.state.proEmail.trim() === '') {
+                            erros = erros + 'Pelo menos um campo (Cpf, Fone, Celular, E-mail) deve ser preenchido.';
+                        }
+                        if (erros !== ''){
+                            this.setState({erro: erros});
+                            return;
+                        }else{
+                            if (this.state.proCpf.trim() !== ''){
+                                if (!this.testaCPF(this.state.proCpf.trim())){
+                                    this.setState({erro: 'Cpf inválido.'});
+                                    return;
+                                }
+                            }
+                            if (this.state.genId === ''){
+                                this.setState({erro: 'Selecione o gênero.'});
+                                return;
+                            }
+                            if (this.state.tprId === ''){
+                                this.setState({erro: 'Selecione o tipo do processo.'});
+                                return;
+                            }
+                        }
+                    }
+                    if (this.state.proTipoIniciativa === 'Pessoa Jurídica') {
+                        let erros = '';
+                        if (this.state.proNome.trim() === '') {
+                            erros = erros + 'Nome obrigatório.<br />';
+                        }
+                        if (this.state.proContatoPj.trim() === '') {
+                            erros = erros + 'Nome do responsável obrigatório.<br />';
+                        }
+                        if (this.state.proCnpj.trim() === '') {
+                            erros = erros + 'Cnpj obrigatório.<br />';
+                        }
+                        if (this.state.proFone.trim() === '' && this.state.proCelular.trim() === '' && this.state.proEmail.trim() === '') {
+                            erros = erros + 'Pelo menos um campo (Fone, Celular, E-mail) deve ser preenchido.';
+                        }
+                        if (erros !== ''){
+                            this.setState({erro: erros});
+                            return;
+                        }else{
+                            if (this.state.proCnpj.trim() !== ''){
+                                if (!this.testaCNPJ(this.state.proCnpj.trim())){
+                                    this.setState({erro: 'Cnpj inválido.'});
+                                    return;
+                                }
+                            }
+                            if (this.state.genId === ''){
+                                this.setState({erro: 'Selecione o gênero.'});
+                                return;
+                            }
+                            if (this.state.tprId === ''){
+                                this.setState({erro: 'Selecione o tipo do processo.'});
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
         }
+        console.log("areaId: "+this.state.areaId);
+        console.log("proIniciativa: "+this.state.proIniciativa);
+        console.log("proTipoIniciativa: "+this.state.proTipoIniciativa);
+        console.log("proNome: "+this.state.proNome);
+        console.log("proMatricula: "+this.state.proMatricula);
+        console.log("proCpf: "+this.state.proCpf);
+        console.log("proCnpj: "+this.state.proCnpj);
+        console.log("proFone: "+this.state.proFone);
+        console.log("proCelular: "+this.state.proCelular);
+        console.log("proEmail: "+this.state.proEmail);
+        console.log("proAssunto: "+this.state.proAssunto);
+        console.log("proContatoPj: "+this.state.proContatoPj);
+        console.log("genId: "+this.state.genId);
+        console.log("tprId: "+this.state.tprId);
+
     }
 
     limpaCamposIniciativa = () => {
@@ -462,7 +596,8 @@ class CriarProcesso extends Component {
             proCelular: '',
             proEmail: '',
             proAssunto: '',
-            proContatoPj: ''
+            proContatoPj: '',
+            proTipoIniciativa: ''
         });
     }
 
@@ -488,6 +623,50 @@ class CriarProcesso extends Component {
         if (resto !== parseInt(cpf.substring(10, 11))) return false;
         return true;
     };
+
+    testaCNPJ = cnpj => {
+        cnpj = cnpj.replace(/[^\d]+/g,'');
+        if (cnpj.length !== 14)
+            return false;
+        if (cnpj === '00000000000000' ||
+            cnpj === '11111111111111' ||
+            cnpj === '22222222222222' ||
+            cnpj === '33333333333333' ||
+            cnpj === '44444444444444' ||
+            cnpj === '55555555555555' ||
+            cnpj === '66666666666666' ||
+            cnpj === '77777777777777' ||
+            cnpj === '88888888888888' ||
+            cnpj === '99999999999999')
+            return false;
+        let tamanho = cnpj.length - 2
+        let numeros = cnpj.substring(0,tamanho);
+        let digitos = cnpj.substring(tamanho);
+        let soma = 0;
+        let pos = tamanho - 7;
+        for (let i = tamanho; i >= 1; i--) {
+          soma += numeros.charAt(tamanho - i) * pos--;
+          if (pos < 2)
+                pos = 9;
+        }
+        let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado.toString() !== digitos.charAt(0))
+            return false;
+
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0,tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (let i = tamanho; i >= 1; i--) {
+          soma += numeros.charAt(tamanho - i) * pos--;
+          if (pos < 2)
+                pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado.toString() !== digitos.charAt(1))
+              return false;
+        return true;
+    }
 
     localiza = () => {
         this.setState({
@@ -516,6 +695,17 @@ class CriarProcesso extends Component {
             }else{
                 if (res.data.pes_email !== null){
                     res.data.pes_email = res.data.pes_email.toLowerCase();
+                }else{
+                    res.data.pes_email = '';
+                }
+                if (res.data.pes_cpf === null) {
+                    res.data.pes_cpf = '';
+                }
+                if (res.data.fone === null) {
+                    res.data.fone = '';
+                }
+                if (res.data.pes_celular === null) {
+                    res.data.pes_celular = '';
                 }
                 this.setState({
                     proNome: res.data.pes_nome,
@@ -540,7 +730,7 @@ class CriarProcesso extends Component {
                     <Card>
                         <CardHeader title="Novo processo" className={classes.fundoHeader}></CardHeader>
                         <CardContent>
-                            <div className={classes.erro}>{this.state.erro}</div>
+                            <div className={classes.erro} dangerouslySetInnerHTML={{__html: this.state.erro}}></div>
                             <form className={classes.formulario} noValidate autoComplete="off">
                                 <input id="proId" value={this.state.proId} onChange={this.setProId} type="hidden" />
                                 <div className={classes.containerIniciativa}>
