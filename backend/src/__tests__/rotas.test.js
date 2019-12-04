@@ -695,6 +695,18 @@ describe('Testando as rotas de manutenção do sistema.', () => {
                 return done();
             });
     });
+    it('Nós - Grid', function(done) {
+        request(app)
+            .get(`${process.env.API_URL}/grid-nos/9`)
+            .set('authorization', `${token}`)
+            .expect(200)
+            .end(function(err) {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
     let nodoId = '';
     it('Nós - Insere', function(done) {
         const insereNodos = {

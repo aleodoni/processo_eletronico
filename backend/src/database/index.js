@@ -20,6 +20,7 @@ import VDadosPessoa from '../app/models/VDadosPessoa';
 import Auditoria from '../app/models/Auditoria';
 import Processo from '../app/models/Processo';
 import Nodo from '../app/models/Nodo';
+import VNodo from '../app/models/VNodo';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import databaseConfig from '../config/database';
 
@@ -45,7 +46,8 @@ const models = [
     VDadosPessoa,
     Fluxo,
     Processo,
-    Nodo
+    Nodo,
+    VNodo
 ];
 
 class Database {

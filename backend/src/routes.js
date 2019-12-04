@@ -59,6 +59,7 @@ routes.delete(`${process.env.API_URL}/telas/:id`, TelaController.delete);
 
 // rotas do cadastro de nós
 routes.get(`${process.env.API_URL}/nos`, NodoController.index);
+routes.get(`${process.env.API_URL}/grid-nos/:fluId`, NodoController.gridNodo);
 routes.post(`${process.env.API_URL}/nos`, NodoController.store);
 routes.put(`${process.env.API_URL}/nos/:id`, NodoController.update);
 routes.delete(`${process.env.API_URL}/nos/:id`, NodoController.delete);

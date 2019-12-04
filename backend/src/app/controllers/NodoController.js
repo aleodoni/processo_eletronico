@@ -2,6 +2,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 import Nodo from '../models/Nodo';
+import VNodo from '../models/VNodo';
 import AuditoriaController from './AuditoriaController';
 
 class NodoController {
@@ -12,6 +13,18 @@ class NodoController {
             logging: false
         });
         return res.json(nodos);
+    }
+
+    async gridNodo(req, res) {
+        const gridNodos = await VNodo.findAll({
+            where: {
+                flu_id: req.params.fluId
+            },
+            order: ['nod_id'],
+            attributes: ['nod_id', 'nod_inicio', 'flu_id', 'area_id', 'nod_fim', 'fluxo', 'area', 'inicio', 'fim'],
+            logging: false
+        });
+        return res.json(gridNodos);
     }
 
     async store(req, res) {

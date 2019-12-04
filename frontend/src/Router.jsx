@@ -11,6 +11,7 @@ import TipoProcesso from './pages/TipoProcesso';
 import ModeloMenu from './pages/ModeloMenu';
 import AreaMenu from './pages/AreaMenu';
 import TelaMenu from './pages/TelaMenu';
+import Nodo from './pages/Nodo';
 
 const PrivateRoute = ({ component: Component, ...rest }) => <Route {...rest} render={props => (sessionStorage.getItem('token') !== null ? <Component {...props} /> : <Redirect to={{ pathname: '/', state: { from: props.location } }} />)} />;
 
@@ -28,6 +29,7 @@ const Routes = () => (
         <PrivateRoute exact path='/modelo-menu' component={ModeloMenu}/>
         <PrivateRoute exact path='/areas-menu' component={AreaMenu}/>
         <PrivateRoute exact path='/menus' component={TelaMenu}/>
+        <PrivateRoute exact path='/nos' component={Nodo}/>
         <Route path='*' component={Login} />
     </Switch>
 );
