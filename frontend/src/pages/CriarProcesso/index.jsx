@@ -369,7 +369,6 @@ class CriarProcesso extends Component {
                proTipoIniciativa: tipoIniciativa
            });
         }
-
     }
 
     carregaGenero = () => {
@@ -569,21 +568,45 @@ class CriarProcesso extends Component {
                 }
             }
         }
-        console.log("areaId: "+this.state.areaId);
-        console.log("proIniciativa: "+this.state.proIniciativa);
-        console.log("proTipoIniciativa: "+this.state.proTipoIniciativa);
-        console.log("proNome: "+this.state.proNome);
-        console.log("proMatricula: "+this.state.proMatricula);
-        console.log("proCpf: "+this.state.proCpf);
-        console.log("proCnpj: "+this.state.proCnpj);
-        console.log("proFone: "+this.state.proFone);
-        console.log("proCelular: "+this.state.proCelular);
-        console.log("proEmail: "+this.state.proEmail);
-        console.log("proAssunto: "+this.state.proAssunto);
-        console.log("proContatoPj: "+this.state.proContatoPj);
-        console.log("genId: "+this.state.genId);
-        console.log("tprId: "+this.state.tprId);
 
+        axios({
+            method: 'POST',
+            url: '/processo',
+            data: {
+                pro_id: null,
+                pro_nome: this.state.proNome,
+                pro_matricula: this.state.proMatricula,
+                pro_cpf: this.state.proCpf,
+                pro_cnpj: this.state.proCnpj,
+                pro_fone: this.state.proFone,
+                pro_celular: this.state.proCelular,
+                pro_email: this.state.proEmail,
+                pro_encerramento: null,
+                pro_assunto: this.state.proAssunto,
+                usu_autuador: sessionStorage.getItem('usuario'),
+                pro_ultimo_tramite: null,
+                usu_finalizador: null,
+                usu_alteracao: sessionStorage.getItem('usuario'),
+                nod_id: sessionStorage.getItem('areaUsuario'),
+                set_id_autuador: sessionStorage.getItem('setorUsuario'),
+                area_id: sessionStorage.getItem('areaUsuario'),
+                set_id_finalizador: null,
+                pro_iniciativa: this.state.proIniciativa,
+                pro_tipo_iniciativa: this.state.proTipoIniciativa,
+                area_id_iniciativa: this.state.areaId,
+                tpr_id: this.state.tprId,
+                pro_contato_pj: this.state.proContatoPj
+            },
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
+        })
+        .then(res => {
+            alert(res.data.pro_id);
+        })
+        .catch(err => {
+            this.setState({ erro: 'Erro ao inserir processo.' });
+        });
     }
 
     limpaCamposIniciativa = () => {

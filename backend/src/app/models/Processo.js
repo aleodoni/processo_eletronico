@@ -6,13 +6,10 @@ class Processo extends Model {
             {
                 pro_id: {
                     type: Sequelize.INTEGER,
-                    defaultValue: "nextval('spa2.processo_pro_id_seq')",
-                    primaryKey: true,
-                    autoIncrement: true
+                    primaryKey: true
                 },
                 pro_codigo: {
-                    type: Sequelize.STRING,
-                    allowNull: false
+                    type: Sequelize.STRING
                 },
                 tpr_id: {
                     type: Sequelize.INTEGER,
@@ -61,14 +58,6 @@ class Processo extends Model {
                     allowNull: false,
                     defaultValue: 0
                 },
-                pro_numero: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false
-                },
-                pro_autuacao: {
-                    type: Sequelize.NOW,
-                    allowNull: false
-                },
                 usu_autuador: {
                     type: Sequelize.STRING,
                     allowNull: false
@@ -98,8 +87,7 @@ class Processo extends Model {
                     allowNull: false
                 },
                 usu_data_hora_alteracao: {
-                    type: Sequelize.NOW,
-                    allowNull: false
+                    type: Sequelize.NOW
                 },
                 nod_id: {
                     type: Sequelize.INTEGER,

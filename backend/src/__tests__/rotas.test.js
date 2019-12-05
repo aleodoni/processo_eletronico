@@ -569,7 +569,6 @@ describe('Testando as rotas de manutenção do sistema.', () => {
     let processoId = '';
     it('Processo - Insere', function(done) {
         const insereProcesso = {
-            pro_id: null,
             pro_codigo: '00001/2019',
             tpr_id: 17,
             pro_iniciativa: 'Interna',
@@ -584,8 +583,6 @@ describe('Testando as rotas de manutenção do sistema.', () => {
             pro_email: 'teste@teste.com',
             pro_encerramento: null,
             pro_assunto: `Inserção de pro assunto - ${Math.random()}`,
-            pro_numero: 1,
-            pro_autuacao: '2019-11-29 12:00:00',
             usu_autuador: 'usuario.teste',
             set_id_autuador: '171',
             area_id: '027',
