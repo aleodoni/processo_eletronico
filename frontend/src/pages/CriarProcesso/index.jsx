@@ -13,8 +13,8 @@ import SearchIcon from '@material-ui/icons/Search';
 
 class CriarProcesso extends Component {
 
-    constructor( props ) {
-        super( props )
+    constructor(props, context) {
+        super(props, context)
         this.state = {
             erro: '',
             proId: undefined,
@@ -603,6 +603,7 @@ class CriarProcesso extends Component {
         })
         .then(res => {
             alert(res.data.pro_id);
+            this.props.history.push('/dados-processo/'+res.data.pro_id);
         })
         .catch(err => {
             this.setState({ erro: 'Erro ao inserir processo.' });

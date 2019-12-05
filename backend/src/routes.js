@@ -13,6 +13,7 @@ import AreaMenuController from './app/controllers/AreaMenuController';
 import AreaTelaController from './app/controllers/AreaTelaController';
 import NodoController from './app/controllers/NodoController';
 import CriaProcessoController from './app/controllers/CriaProcessoController';
+import DadosProcessoController from './app/controllers/DadosProcessoController';
 import AuthMiddleware from './app/middlewares/auth';
 
 require('dotenv/config');
@@ -112,6 +113,9 @@ routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 // rotas de criação de processo
 routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
 routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
+
+// rotas de dados do processo
+routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.dadosProcesso);
 
 // rotas do cadastro de fluxos
 routes.get(`${process.env.API_URL}/fluxos`, FluxoController.index);

@@ -566,6 +566,20 @@ describe('Testando as rotas de manutenção do sistema.', () => {
             });
     });
 
+    // Dados do processo
+    it('Dados do processo - dados', function(done) {
+        request(app)
+            .get(`${process.env.API_URL}/ver-processo/20`)
+            .set('authorization', `${token}`)
+            .expect(200)
+            .end(function(err) {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+
     let processoId = '';
     it('Processo - Insere', function(done) {
         const insereProcesso = {
