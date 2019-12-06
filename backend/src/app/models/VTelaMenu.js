@@ -34,6 +34,9 @@ class VTelaMenu extends Model {
                 },
                 men_ordem_pai: {
                     type: Sequelize.STRING
+                },
+                tel_interna: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

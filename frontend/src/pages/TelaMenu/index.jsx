@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core';
 import Menu from '../Menu';
 import Autorizacao from '../Autorizacao';
-import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -40,6 +39,7 @@ class TelaMenu extends Component {
             salva: false,
             show: false,
             mensagemHint: '',
+            telInterna: false
         };
         this.setMenId = this.setMenId.bind(this);
         this.setMenIdPai = this.setMenIdPai.bind(this);
@@ -52,6 +52,7 @@ class TelaMenu extends Component {
         this.setMenusPai = this.setMenusPai.bind(this);
         this.setTelas = this.setTelas.bind(this);
         this.setModelos = this.setModelos.bind(this);
+        this.setTelInterna = this.setTelInterna.bind(this);
     }
 
     componentDidMount() {
@@ -70,6 +71,12 @@ class TelaMenu extends Component {
     setMenIdPai = event => {
         this.setState({
             menIdPai: event.target.value,
+        });
+    };
+
+    setTelInterna = event => {
+        this.setState({
+            telInterna: event.target.checked,
         });
     };
 
@@ -137,10 +144,11 @@ class TelaMenu extends Component {
             mmuId: '',
             menOrdemPai: '',
             erro: '',
+            telInterna: false
         });
     };
 
-    preencheCampos = (menId, menIdPai, menNome, menUrl, telId, mmuId, menOrdemPai) => {
+    preencheCampos = (menId, menIdPai, menNome, menUrl, telId, mmuId, menOrdemPai, telInterna) => {
         if (menIdPai === null){
             menIdPai = '';
         }
@@ -152,6 +160,7 @@ class TelaMenu extends Component {
             telId: telId,
             mmuId: mmuId,
             menOrdemPai: menOrdemPai,
+            telInterna: telInterna
         });
     };
 
@@ -284,7 +293,8 @@ class TelaMenu extends Component {
                     tel_id: this.state.telId,
                     mmu_id: this.state.mmuId,
                     men_ordem_pai: this.state.menOrdemPai,
-                    men_nome: this.state.menNome.trim()
+                    men_nome: this.state.menNome.trim(),
+                    tel_interna: this.state.telInterna
                 },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
@@ -308,7 +318,8 @@ class TelaMenu extends Component {
                     tel_id: this.state.telId,
                     mmu_id: this.state.mmuId,
                     men_ordem_pai: this.state.menOrdemPai,
-                    men_nome: this.state.menNome.trim()
+                    men_nome: this.state.menNome.trim(),
+                    tel_interna: this.state.telInterna
                 },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
@@ -371,78 +382,55 @@ class TelaMenu extends Component {
             <div className={classes.lateral}>
                 <Autorizacao tela="Menus"/>
                 <Menu/>
-                <Grid container>
-                    <Grid item xs={12}>
                         <Card>
                             <CardHeader title="Menus" className={classes.fundoHeader}></CardHeader>
                             <CardContent>
                                 <span className={classes.erro}>{this.state.erro}</span>
                                 <form className={classes.formulario} noValidate autoComplete="off">
                                     <input id="menId" value={this.state.menId} onChange={this.setMenId} type="hidden" />
-                                    <Grid container>
-                                        <Grid item xs={3}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Menu pai</legend>
-                                                <select id="selectPai" onChange={this.setMenIdPai} value={this.state.menIdPai}>
-                                                    {this.state.menusPai}
-                                                </select>
-                                            </fieldset>
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Modelo de menu</legend>
-                                                <select id="selectModelo" onChange={this.setMmuId} value={this.state.mmuId}>
-                                                    {this.state.modelos}
-                                                </select>
-                                            </fieldset>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Item</legend>
-                                                <input className={classes.campoTexto} required id="menNome" type="text" value={this.state.menNome} onChange={this.setMenNome} size="60" maxLength="60" />
-                                            </fieldset>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid container>
-                                        <Grid item xs={8}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Url</legend>
-                                                <input className={classes.campoTexto} required id="menUrl" type="text" value={this.state.menUrl} onChange={this.setMenUrl} size="100" maxLength="200" />
-                                            </fieldset>
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <fieldset className={classes.legenda}>
+                                    <div className={classes.containerMenu1}>
+                                        <fieldset className={classes.legenda}>
+                                            <legend>Menu pai</legend>
+                                            <select id="selectPai" onChange={this.setMenIdPai} value={this.state.menIdPai}>
+                                                {this.state.menusPai}
+                                            </select>
+                                        </fieldset>
+                                        <fieldset className={classes.legenda}>
+                                            <legend>Modelo de menu</legend>
+                                            <select id="selectModelo" onChange={this.setMmuId} value={this.state.mmuId}>
+                                                {this.state.modelos}
+                                            </select>
+                                        </fieldset>
+                                        <fieldset className={classes.legenda}>
+                                            <legend>Item</legend>
+                                            <input className={classes.campoTexto} required id="menNome" type="text" value={this.state.menNome} onChange={this.setMenNome} size="60" maxLength="60" />
+                                        </fieldset>
+                                    </div>
+                                    <div className={classes.containerMenu2}>
+                                        <fieldset className={classes.legenda}>
+                                            <legend>Url</legend>
+                                            <input className={classes.campoTexto} id="menUrl" type="text" value={this.state.menUrl} onChange={this.setMenUrl} size="70" maxLength="200" />
+                                        </fieldset>
+                                        <fieldset className={classes.legenda}>
                                             <legend>Tela</legend>
-                                                <select id="selectTela" onChange={this.setTelId} value={this.state.telId}>
-                                                    {this.state.telas}
-                                                </select>
-                                            </fieldset>
-                                        </Grid>
-                                        <Grid item xs={1}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Ordem pai</legend>
-                                                <input className={classes.campoTexto} required id="menOrdemPai" type="text" value={this.state.menOrdemPai} onChange={this.setMenOrdemPai} size="5" maxLength="10" />
-                                            </fieldset>
-                                        </Grid>
-                                    </Grid>
+                                            <select id="selectTela" onChange={this.setTelId} value={this.state.telId}>
+                                                {this.state.telas}
+                                            </select>
+                                        </fieldset>
+                                        <fieldset className={classes.legenda}>
+                                            <legend>Ordem pai</legend>
+                                            <input className={classes.campoTexto} id="menOrdemPai" type="text" value={this.state.menOrdemPai} onChange={this.setMenOrdemPai} size="5" maxLength="10" />
+                                        </fieldset>
+                                        <div className={classes.estiloCheck}>
+                                            <input type="checkbox" name="interno" id="interno" value={ this.state.telInterna } checked={ this.state.telInterna } onChange={ this.setTelInterna }/>Tela interna
+                                        </div>
+                                    </div>
                                 </form>
-                                <br />
-                                <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
-                                    <SalvaIcon />
-                                    Salvar
-                                </Button>
-                                    &nbsp;
-                                <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
-                                    <ApagaIcon />
-                                    Excluir
-                                </Button>
-                                    &nbsp;
-                                <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
-                                    <LimpaIcon />
-                                    Limpar campos
-                                </Button>
-                                <br />
-                                <br />
+                                <div className={classes.containerMenuBotoes}>
+                                    <div><Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}><SalvaIcon />Salvar</Button></div>
+                                    <div><Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}><ApagaIcon />Excluir</Button></div>
+                                    <div><Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}><LimpaIcon />Limpar campos</Button></div>
+                                </div>
                                 <MaterialTable
                                     columns={[
                                         {
@@ -454,6 +442,11 @@ class TelaMenu extends Component {
                                             hidden: true,
                                             field: 'men_id_pai',
                                             type: 'numeric',
+                                        },
+                                        {
+                                            hidden: true,
+                                            field: 'tel_interna',
+                                            type: 'boolean',
                                         },
                                         {
                                             hidden: true,
@@ -495,7 +488,7 @@ class TelaMenu extends Component {
                                         {
                                             icon: () => <EditIcon />,
                                             tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.men_id, rowData.men_id_pai, rowData.men_nome, rowData.men_url, rowData.tel_id, rowData.mmu_id, rowData.men_ordem_pai),
+                                            onClick: (event, rowData) => this.preencheCampos(rowData.men_id, rowData.men_id_pai, rowData.men_nome, rowData.men_url, rowData.tel_id, rowData.mmu_id, rowData.men_ordem_pai, rowData.tel_interna),
                                         },
                                     ]}
                                     options={tabelas.opcoes}
@@ -504,7 +497,6 @@ class TelaMenu extends Component {
                                 />
                             </CardContent>
                         </Card>
-                    </Grid>
                     <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
                     <Modal open={this.state.show} onClose={this.fechaModal}>
                     <div className={classes.modal}>
@@ -520,8 +512,6 @@ class TelaMenu extends Component {
                     </div>
                     </div>
                     </Modal>
-                </Grid>
-
             </div>
         )
     }

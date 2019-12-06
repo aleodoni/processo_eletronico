@@ -33,6 +33,9 @@ class Menu extends Model {
                 },
                 men_ordem_pai: {
                     type: Sequelize.INTEGER
+                },
+                tel_interna: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

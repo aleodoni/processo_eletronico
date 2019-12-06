@@ -5,6 +5,29 @@ export const styles = {
     links: {
       textDecoration:'none',
     },
+    containerMenu1: {
+        display: 'grid',
+        gridTemplateColumns: '300px 250px 300px',
+        gridTemplateRows: '70px',
+        marginBottom: '10px',
+    },
+    containerMenu2: {
+        display: 'grid',
+        gridTemplateColumns: '700px 220px 120px 150px',
+        gridTemplateRows: '70px',
+        marginBottom: '10px',
+    },
+    containerMenuBotoes: {
+        display: 'grid',
+        gridTemplateColumns: '120px 130px 190px',
+        gridTemplateRows: '30px',
+        marginTop: '10px',
+        marginBottom: '20px',
+    },
+    estiloCheck: {
+        marginTop: '20px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+    },
     fundoHeader: {
         background: '#EFF8FB',
         color: '#000000',

@@ -21,7 +21,8 @@ class MenuController {
                 'men_url',
                 'tel_id',
                 'mmu_id',
-                'men_ordem_pai'
+                'men_ordem_pai',
+                'tel_interna'
             ],
             logging: false
         });
@@ -41,7 +42,8 @@ class MenuController {
                 'men_url',
                 'tel_id',
                 'tel_nome',
-                'men_ordem_pai'
+                'men_ordem_pai',
+                'tel_interna'
             ],
             logging: false
         });
@@ -63,6 +65,12 @@ class MenuController {
         const validator = new MenuValidator();
         if (!(await validator.validate(req))) {
             return res.status(400).json({ error: validator.errors });
+        }
+        if (req.body.men_id_pai === '') {
+            req.body.men_id_pai = null;
+        }
+        if (req.body.men_ordem_pai === '') {
+            req.body.men_ordem_pai = null;
         }
         const {
             men_id,
@@ -105,6 +113,12 @@ class MenuController {
         //
         if (!menu) {
             return res.status(400).json({ error: 'Menu não encontrado' });
+        }
+        if (req.body.men_id_pai === '') {
+            req.body.men_id_pai = null;
+        }
+        if (req.body.men_ordem_pai === '') {
+            req.body.men_ordem_pai = null;
         }
         await menu.update(req.body, { logging: false });
         return res.json(menu);
