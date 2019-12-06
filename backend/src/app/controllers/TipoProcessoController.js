@@ -3,7 +3,6 @@
 /* eslint-disable camelcase */
 import TipoProcesso from '../models/TipoProcesso';
 import VTipoProcesso from '../models/VTipoProcesso';
-import TipoProcessoValidator from '../validators/TipoProcessoValidator';
 import AuditoriaController from './AuditoriaController';
 
 class TipoProcessoController {
@@ -38,10 +37,6 @@ class TipoProcessoController {
     }
 
     async store(req, res) {
-        const validator = new TipoProcessoValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const { tpr_id, tpr_nome, tpr_visualizacao, gen_id, flu_id } = await TipoProcesso.create(req.body, {
             logging: false
         });
@@ -58,10 +53,6 @@ class TipoProcessoController {
     }
 
     async update(req, res) {
-        const validator = new TipoProcessoValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const tipoProcesso = await TipoProcesso.findByPk(req.params.id, { logging: false });
         // auditoria de edição
         AuditoriaController.audita(

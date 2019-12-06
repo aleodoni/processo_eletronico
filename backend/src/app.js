@@ -28,7 +28,9 @@ class App {
         // formata o JSON retornado
         this.server.set('json spaces', 4);
         // configura o log da aplicação
-        this.server.use(morgan('combined', { stream: winston.stream }));
+        if (process.env.NODE_ENV !== 'test') {
+            this.server.use(morgan('combined', { stream: winston.stream }));
+        }
         // configura o helmet
         this.server.use(helmet());
         // configura o CORS

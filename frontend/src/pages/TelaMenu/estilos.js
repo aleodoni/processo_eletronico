@@ -13,7 +13,7 @@ export const styles = {
     },
     containerMenu2: {
         display: 'grid',
-        gridTemplateColumns: '700px 220px 120px 150px',
+        gridTemplateColumns: '700px 315px 120px 150px',
         gridTemplateRows: '70px',
         marginBottom: '10px',
     },

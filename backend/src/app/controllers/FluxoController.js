@@ -2,7 +2,6 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Fluxo from '../models/Fluxo';
-import FluxoValidator from '../validators/FluxoValidator';
 import AuditoriaController from './AuditoriaController';
 
 class FluxoController {
@@ -16,10 +15,6 @@ class FluxoController {
     }
 
     async store(req, res) {
-        const validator = new FluxoValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const { flu_id, flu_nome } = await Fluxo.create(req.body, {
             logging: false
         });
@@ -33,10 +28,6 @@ class FluxoController {
     }
 
     async update(req, res) {
-        const validator = new FluxoValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const fluxo = await Fluxo.findByPk(req.params.id, { logging: false });
         // auditoria de edição
         AuditoriaController.audita(

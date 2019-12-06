@@ -2,7 +2,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 import Tela from '../models/Tela';
-import TelaValidator from '../validators/TelaValidator';
 import AuditoriaController from './AuditoriaController';
 
 class TelaController {
@@ -16,10 +15,6 @@ class TelaController {
     }
 
     async store(req, res) {
-        const validator = new TelaValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const { tel_id, tel_nome } = await Tela.create(req.body, {
             logging: false
         });
@@ -33,10 +28,6 @@ class TelaController {
     }
 
     async update(req, res) {
-        const validator = new TelaValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const tela = await Tela.findByPk(req.params.id, { logging: false });
         // auditoria de edição
         AuditoriaController.audita(

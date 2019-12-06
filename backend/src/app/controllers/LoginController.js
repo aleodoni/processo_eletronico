@@ -152,7 +152,9 @@ class LoginController {
                                                                             raw: true
                                                                         }).then(retorno => {
                                                                             const nomeUsuario = dados.dataValues.pes_nome;
-                                                                            console.log(`Usuário: ${req.body.usuario} logado com sucesso no sistema SPA2.`);
+                                                                            if (process.env.NODE_ENV !== 'test') {
+                                                                                console.log(`Usuário: ${req.body.usuario} logado com sucesso no sistema SPA2.`);
+                                                                            }
                                                                             const adicionaMinutos = function(dt, minutos) {
                                                                                 return new Date(dt.getTime() + minutos * 60000);
                                                                             };

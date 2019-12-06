@@ -6,7 +6,6 @@ import Menu from '../models/Menu';
 import VTelaMenu from '../models/VTelaMenu';
 import VMenuPai from '../models/VMenuPai';
 import DataHoraAtual from '../models/DataHoraAtual';
-import MenuValidator from '../validators/MenuValidator';
 import AuditoriaController from './AuditoriaController';
 require('dotenv/config');
 
@@ -62,10 +61,6 @@ class MenuController {
     }
 
     async store(req, res) {
-        const validator = new MenuValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         if (req.body.men_id_pai === '') {
             req.body.men_id_pai = null;
         }
@@ -98,10 +93,6 @@ class MenuController {
     }
 
     async update(req, res) {
-        const validator = new MenuValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const menu = await Menu.findByPk(req.params.id, { logging: false });
         // auditoria de edição
         AuditoriaController.audita(

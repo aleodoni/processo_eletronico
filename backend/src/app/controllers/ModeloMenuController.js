@@ -2,7 +2,6 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import ModeloMenu from '../models/ModeloMenu';
-import ModeloMenuValidator from '../validators/ModeloMenuValidator';
 import AuditoriaController from './AuditoriaController';
 
 class ModeloMenuController {
@@ -16,10 +15,6 @@ class ModeloMenuController {
     }
 
     async store(req, res) {
-        const validator = new ModeloMenuValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const { mmu_id, mmu_nome } = await ModeloMenu.create(req.body, {
             logging: false
         });
@@ -33,10 +28,6 @@ class ModeloMenuController {
     }
 
     async update(req, res) {
-        const validator = new ModeloMenuValidator();
-        if (!(await validator.validate(req))) {
-            return res.status(400).json({ error: validator.errors });
-        }
         const menu = await ModeloMenu.findByPk(req.params.id, { logging: false });
         // auditoria de edição
         AuditoriaController.audita(

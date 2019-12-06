@@ -23,6 +23,7 @@ import Nodo from '../app/models/Nodo';
 import VNodo from '../app/models/VNodo';
 import VDadosProcesso from '../app/models/VDadosProcesso';
 import DataHoraAtual from '../app/models/DataHoraAtual';
+import RazaoTramite from '../app/models/RazaoTramite';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -49,7 +50,8 @@ const models = [
     Processo,
     Nodo,
     VNodo,
-    VDadosProcesso
+    VDadosProcesso,
+    RazaoTramite
 ];
 
 class Database {

@@ -5,6 +5,7 @@ import Spa2Controller from './app/controllers/Spa2Controller';
 import AreaController from './app/controllers/AreaController';
 import TelaController from './app/controllers/TelaController';
 import FluxoController from './app/controllers/FluxoController';
+import RazaoTramiteController from './app/controllers/RazaoTramiteController';
 import GeneroController from './app/controllers/GeneroController';
 import TipoProcessoController from './app/controllers/TipoProcessoController';
 import MenuController from './app/controllers/MenuController';
@@ -122,5 +123,11 @@ routes.get(`${process.env.API_URL}/fluxos`, FluxoController.index);
 routes.post(`${process.env.API_URL}/fluxos`, FluxoController.store);
 routes.put(`${process.env.API_URL}/fluxos/:id`, FluxoController.update);
 routes.delete(`${process.env.API_URL}/fluxos/:id`, FluxoController.delete);
+
+// rotas do cadastro de razoes de trâmite
+routes.get(`${process.env.API_URL}/razao-tramite`, RazaoTramiteController.index);
+routes.post(`${process.env.API_URL}/razao-tramite`, RazaoTramiteController.store);
+routes.put(`${process.env.API_URL}/razao-tramite/:id`, RazaoTramiteController.update);
+routes.delete(`${process.env.API_URL}/razao-tramite/:id`, RazaoTramiteController.delete);
 
 export default routes;
