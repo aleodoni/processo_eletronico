@@ -12,6 +12,7 @@ import ModeloMenu from './pages/ModeloMenu';
 import AreaMenu from './pages/AreaMenu';
 import TelaMenu from './pages/TelaMenu';
 import DadosProcesso from './pages/DadosProcesso';
+import RazaoTramite from './pages/RazaoTramite';
 import Nodo from './pages/Nodo';
 
 const PrivateRoute = ({ component: Component, ...rest }) => <Route {...rest} render={props => (sessionStorage.getItem('token') !== null ? <Component {...props} /> : <Redirect to={{ pathname: '/', state: { from: props.location } }} />)} />;
@@ -31,6 +32,7 @@ const Routes = () => (
         <PrivateRoute exact path='/areas-menu' component={AreaMenu}/>
         <PrivateRoute exact path='/menus' component={TelaMenu}/>
         <PrivateRoute exact path='/nos' component={Nodo}/>
+        <PrivateRoute exact path='/razao' component={RazaoTramite}/>
         <PrivateRoute exact path='/dados-processo/:id' component={DadosProcesso}/>
         <Route path='*' component={Login} />
     </Switch>

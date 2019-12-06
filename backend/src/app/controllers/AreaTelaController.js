@@ -9,7 +9,7 @@ class AreaTelaController {
                 where: {
                     set_id: req.params.setId
                 },
-                logging: false
+                logging: true
             });
         if (!setor) {
             return res.status(400).json({ error: '´Telas da área não encontrada' });

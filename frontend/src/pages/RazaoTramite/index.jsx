@@ -20,81 +20,80 @@ import Modal from '@material-ui/core/Modal';
 import { styles } from './estilos';
 import { tabelas } from '../../configs/tabelas';
 
-class ModeloMenu extends Component {
+class RazaoTramite extends Component {
 
     constructor( props ) {
         super( props );
         this.state = {
             erro: '',
-            mmuId: undefined,
-            mmuNome: '',
-            modeloMenus: [],
+            razId: undefined,
+            razNome: '',
+            razoes: [],
             salva: false,
             show: false,
             mensagemHint: '',
         };
-        this.setMmuId = this.setMmuId.bind(this);
-        this.setMmuNome = this.setMmuNome.bind(this);
+        this.setRazId = this.setRazId.bind(this);
+        this.setRazNome = this.setRazNome.bind(this);
     }
 
     componentDidMount() {
         this.carregaGrid();
     }
 
-    setMmuId = event => {
+    setRazId = event => {
         this.setState({
-            mmuId: event.target.value,
+            razId: event.target.value,
         });
     };
 
-    setMmuNome = event => {
+    setRazNome = event => {
         this.setState({
-            mmuNome: event.target.value,
+            razNome: event.target.value,
         });
     };
 
     limpaCampos = () => {
         this.setState({
-            mmuId: undefined,
-            mmuNome: '',
+            razId: undefined,
+            razNome: '',
             erro: '',
         });
     };
 
-    preencheCampos = (mmuId, mmuNome) => {
+    preencheCampos = (razId, razNome) => {
         this.setState({
-            mmuId: mmuId,
-            mmuNome: mmuNome,
+            razId: razId,
+            razNome: razNome,
         });
     };
 
     carregaGrid = () => {
         axios({
             method: 'GET',
-            url: '/modelo-menu',
+            url: '/razao-tramite',
             headers: {
                 'authorization': sessionStorage.getItem('token'),
             },
         })
         .then(res => {
-            this.setState({ modeloMenus: res.data });
+            this.setState({ razoes: res.data });
         })
         .catch(err => {
-            console.log(err)
             this.setState({ erro: 'Erro ao carregar registros.' });
         });
     };
 
     salva = () => {
-        if (this.state.mmuNome.trim() === '') {
+        if (this.state.razNome.trim() === '') {
             this.setState({ erro: 'Nome em branco.' });
             return;
         }
-        if (this.state.mmuId === undefined) {
+        if (this.state.razId === undefined) {
             axios({
                 method: 'POST',
-                url: '/modelo-menu',
-                data: { mmu_id: null, mmu_nome: this.state.mmuNome.trim() },
+                url: '/razao-tramite',
+                data: { raz_id: null, raz_nome: this.state.razNome.trim() },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
                 },
@@ -110,9 +109,9 @@ class ModeloMenu extends Component {
         } else {
             axios({
                 method: 'PUT',
-                url: 'modelo-menu/' + this.state.mmuId,
+                url: 'razao-tramite/' + this.state.razId,
                 data: {
-                    mmu_nome: this.state.mmuNome.trim(),
+                    raz_nome: this.state.razNome.trim(),
                 },
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
@@ -132,7 +131,7 @@ class ModeloMenu extends Component {
     exclui = () => {
         axios({
             method: 'DELETE',
-            url: 'modelo-menu/' + this.state.mmuId,
+            url: 'razao-tramite/' + this.state.razId,
             headers: {
                 'authorization': sessionStorage.getItem('token'),
             },
@@ -158,7 +157,7 @@ class ModeloMenu extends Component {
     };
 
     abreModal = () => {
-        if (this.state.mmuId === undefined) {
+        if (this.state.razId === undefined) {
             this.setState({ erro: 'Selecione um registro para excluir.' });
         } else {
             this.setState({ show: true });
@@ -173,19 +172,19 @@ class ModeloMenu extends Component {
         const { classes } = this.props
         return (
             <div className={classes.lateral}>
-                <Autorizacao tela="Modelo de menus"/>
+                <Autorizacao tela="Razões de trâmite"/>
                 <Menu/>
                 <Grid container>
                     <Grid item xs={12} sm={9}>
                         <Card>
-                            <CardHeader title="Modelos de menus" className={classes.fundoHeader}></CardHeader>
+                            <CardHeader title="Razões de trâmite" className={classes.fundoHeader}></CardHeader>
                             <CardContent>
                                 <span className={classes.erro}>{this.state.erro}</span>
                                 <form className={classes.formulario} noValidate autoComplete="off">
-                                    <input id="mmuId" value={this.state.mmuId} onChange={this.setMmuId} type="hidden" />
+                                    <input id="razId" value={this.state.razId} onChange={this.setRazId} type="hidden" />
                                     <fieldset className={classes.legenda}>
                                         <legend>Nome</legend>
-                                        <input className={classes.campoTexto} required id="mmuNome" type="text" value={this.state.mmuNome} onChange={this.setMmuNome} autoFocus size="100" maxLength="100" />
+                                        <input className={classes.campoTexto} required id="razNome" type="text" value={this.state.razNome} onChange={this.setRazNome} autoFocus size="100" maxLength="100" />
                                     </fieldset>
                                 </form>
                                 <br />
@@ -209,17 +208,17 @@ class ModeloMenu extends Component {
                                     columns={[
                                         {
                                             hidden: true,
-                                            field: 'mmu_id',
+                                            field: 'raz_id',
                                             type: 'numeric',
                                         },
-                                        { title: 'Nome', field: 'mmu_nome' },
+                                        { title: 'Nome', field: 'raz_nome' },
                                     ]}
-                                    data={this.state.modeloMenus}
+                                    data={this.state.razoes}
                                     actions={[
                                         {
                                             icon: () => <EditIcon />,
                                             tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.mmu_id, rowData.mmu_nome),
+                                            onClick: (event, rowData) => this.preencheCampos(rowData.raz_id, rowData.raz_nome),
                                         },
                                     ]}
                                     options={tabelas.opcoes}
@@ -252,6 +251,6 @@ class ModeloMenu extends Component {
 
 }
 
-export default withStyles(styles)(ModeloMenu);
+export default withStyles(styles)(RazaoTramite);
 
 

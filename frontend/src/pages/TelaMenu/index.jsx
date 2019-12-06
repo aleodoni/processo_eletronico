@@ -176,7 +176,7 @@ class TelaMenu extends Component {
             this.setState({ telasMenu: res.data });
         })
         .catch(err => {
-            alert(err)
+            console.log(err)
             this.setState({ erro: 'Erro ao carregar registros.' });
         });
     };
