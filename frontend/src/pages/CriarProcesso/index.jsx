@@ -602,7 +602,6 @@ class CriarProcesso extends Component {
             },
         })
         .then(res => {
-            alert(res.data.pro_id);
             this.props.history.push('/dados-processo/'+res.data.pro_id);
         })
         .catch(err => {
