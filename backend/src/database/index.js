@@ -24,6 +24,7 @@ import VNodo from '../app/models/VNodo';
 import VDadosProcesso from '../app/models/VDadosProcesso';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import RazaoTramite from '../app/models/RazaoTramite';
+import ProximoTramite from '../app/models/ProximoTramite';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -51,7 +52,8 @@ const models = [
     Nodo,
     VNodo,
     VDadosProcesso,
-    RazaoTramite
+    RazaoTramite,
+    ProximoTramite
 ];
 
 class Database {
