@@ -155,6 +155,7 @@ routes.post(`${process.env.API_URL}/arquivos`, ArquivoController.store);
 routes.put(`${process.env.API_URL}/arquivos/:id`, ArquivoController.update);
 routes.delete(`${process.env.API_URL}/arquivos/:id`, ArquivoController.delete);
 routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.index);
+routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
 
 // rota de inserção de anexo em processo
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {

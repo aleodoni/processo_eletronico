@@ -3,6 +3,9 @@
 /* eslint-disable camelcase */
 import Arquivo from '../models/Arquivo';
 import AuditoriaController from './AuditoriaController';
+import * as caminhos from '../../config/arquivos';
+import fs from 'fs';
+require('dotenv/config');
 
 class ArquivoController {
     async index(req, res) {
@@ -75,6 +78,17 @@ class ArquivoController {
                 });
             });
         return res.send();
+    }
+
+    download(req, res) {
+        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.params.arqId) + caminhos.nomeFisico(req.params.arqId) + '.pdf';
+        fs.readFile(caminho, function(_err, data) {
+            if (_err) {
+                console.log(_err);
+            }
+            res.contentType('application/pdf');
+            return res.send(data);
+        });
     }
 }
 export default new ArquivoController();
