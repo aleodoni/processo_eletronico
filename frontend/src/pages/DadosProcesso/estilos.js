@@ -58,6 +58,11 @@ export const styles = {
         gridTemplateColumns: '170px 220px 140px',
         gridGap: '5px'
     },
+    containerArquivos: {
+        display: 'grid',
+        gridTemplateColumns: '775px',
+        gridGap: '5px'
+    },
     botaoTramita: {
         backgroundColor: 'green',
         '&:hover': {

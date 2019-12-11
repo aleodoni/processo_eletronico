@@ -15,11 +15,31 @@ import AreaTelaController from './app/controllers/AreaTelaController';
 import NodoController from './app/controllers/NodoController';
 import CriaProcessoController from './app/controllers/CriaProcessoController';
 import DadosProcessoController from './app/controllers/DadosProcessoController';
+import ArquivoController from './app/controllers/ArquivoController';
 import AuthMiddleware from './app/middlewares/auth';
+import path from 'path';
+import multer from 'multer';
+import * as funcoesArquivo from '../src/config/arquivos';
+import fs from 'fs';
 
 require('dotenv/config');
 
 const routes = new Router();
+const storage = multer.diskStorage({
+    // destination: funcoesArquivo.destino,
+    destination: function(req, file, callback) {
+        const novoCaminho = funcoesArquivo.destino + funcoesArquivo.finalDoCaminho(req.params.id);
+        if (!fs.existsSync(novoCaminho)) {
+            fs.mkdirSync(novoCaminho);
+        }
+        callback(null, novoCaminho);
+    },
+    filename: function(req, file, callback) {
+        console.log('Id do arquivo: ' + req.params.id);
+        callback(null, funcoesArquivo.nomeFisico(req.params.id) + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 
 /**
  * Rotas sem autenticação
@@ -129,5 +149,16 @@ routes.get(`${process.env.API_URL}/razao-tramite`, RazaoTramiteController.index)
 routes.post(`${process.env.API_URL}/razao-tramite`, RazaoTramiteController.store);
 routes.put(`${process.env.API_URL}/razao-tramite/:id`, RazaoTramiteController.update);
 routes.delete(`${process.env.API_URL}/razao-tramite/:id`, RazaoTramiteController.delete);
+
+// rotas de arquivos
+routes.post(`${process.env.API_URL}/arquivos`, ArquivoController.store);
+routes.put(`${process.env.API_URL}/arquivos/:id`, ArquivoController.update);
+routes.delete(`${process.env.API_URL}/arquivos/:id`, ArquivoController.delete);
+routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.index);
+
+// rota de inserção de anexo em processo
+routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {
+    res.status(204).end();
+});
 
 export default routes;

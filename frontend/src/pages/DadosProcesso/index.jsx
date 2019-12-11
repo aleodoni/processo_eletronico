@@ -13,6 +13,7 @@ import CriaManifestacaoIcon from '@material-ui/icons/Create';
 import TramitaIcon from '@material-ui/icons/CallSplit';
 import OKIcon from '@material-ui/icons/Check';
 import Modal from '@material-ui/core/Modal';
+import AnexoArquivo from './AnexoArquivo';
 require('dotenv').config();
 
 class DadosProcesso extends Component {
@@ -48,19 +49,37 @@ class DadosProcesso extends Component {
             setorAutuadorProcesso: '',
             setorFinalizadorProcesso: '',
             show: false,
-            mensagemModal: ''
+            mensagemModal: '',
+            anexos: []
         }
         this.carregaDadosProcesso(this.state.proId);
     }
 
     componentDidMount() {
-
+        this.carregaAnexos(this.state.proId);
     }
 
-    carregaAnexo = e =>{
+    carregaAnexos = (proId) => {
+        axios({
+            method: 'GET',
+            url: '/arquivos-processo/'+proId,
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+            },
+        })
+        .then(res => {
+            this.setState({anexos: res.data});
+        })
+        .catch(err => {
+            console.log('Erro ao criar componente de anexo.');
+        });
+    }
+
+    incluiAnexo = e =>{
         console.log(e.target.files[0]);
         this.setState({
-            mensagemModal: ''
+            mensagemModal: '',
+            erro: ''
         })
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const tamanhoAnexoMB = Math.round((tamanhoAnexo / 1024)/1024);
@@ -68,6 +87,59 @@ class DadosProcesso extends Component {
             if (e.target.files[0].type === 'application/pdf'){
                 const data = new FormData()
                 data.append('file', e.target.files[0]);
+                axios({
+                    method: 'POST',
+                    url: '/arquivos',
+                    headers: {
+                        'authorization': sessionStorage.getItem('token')
+                    },
+                    data: {
+                        arq_id: null,
+                        arq_nome: e.target.files[0].name,
+                        pro_id: this.state.proId,
+                        man_id: null,
+                        arq_tipo: e.target.files[0].type,
+                        arq_doc_id: this.state.proId,
+                        arq_doc_tipo: 'processo'
+                    }
+                })
+                .then(res => {
+                    axios({
+                        method: 'POST',
+                        url: '/anexo-processo/'+res.data.arq_id,
+                        headers: {
+                            'authorization': sessionStorage.getItem('token'),
+                            'Content-Type': 'multipart/form-data'
+                        },
+                        data: data
+                    })
+                    .then(res => {
+                        if (res.status === 204) {
+                            this.carregaAnexos(this.state.proId);
+                        }
+                    })
+                    .catch(err => {
+                        const arqId = res.data.arq_id;
+                        axios({
+                            method: 'DELETE',
+                            url: 'arquivos/' + arqId,
+                            headers: {
+                                'authorization': sessionStorage.getItem('token'),
+                            },
+                        })
+                        .then(res => {
+
+                        })
+                        .catch(err => {
+                            this.setState({ erro: err.response.data.error });
+                        });
+                        this.setState({ erro: 'Erro ao criar arquivo anexo.' });
+                    });
+
+                })
+                .catch(err => {
+                    this.setState({ erro: 'Erro ao inserir na tabela arquivo.' });
+                });
             }else{
                 this.setState({
                     show: true,
@@ -294,9 +366,16 @@ class DadosProcesso extends Component {
                             </div>
                             <div className={classes.containerBotoes}>
                                 <label className={classes.labelUpload} htmlFor="anexo"><AnexoIcon fontSize="small" className={classes.ajustaIcone}/>INSERIR ANEXO</label>
-                                <input className={classes.campoUpload} type="file" name="file" onChange={this.carregaAnexo} id="anexo"/>
+                                <input className={classes.campoUpload} type="file" name="file" onChange={this.incluiAnexo} id="anexo"/>
                                 <Button id="btnCriaManifestacao" variant="contained" color="primary" onClick={this.manifestacao}><CriaManifestacaoIcon />Criar manifestação</Button>
                                 <Button id="btnTramita" className={classes.botaoTramita} variant="contained" color="primary" onClick={this.tramite}><TramitaIcon />Tramitar</Button>
+                            </div>
+                            <br />
+                            <div className={classes.containerArquivos}>
+                                <fieldset className={classes.fieldSetIniciativa}>
+                                    <legend><span className={classes.legendIniciativa}>Arquivo(s) anexo(s)</span></legend>
+                                    <AnexoArquivo proId={this.state.proId} anexos={this.state.anexos} />
+                                </fieldset>
                             </div>
                         </CardContent>
                     </Card>
