@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button';
 import AnexoIcon from '@material-ui/icons/AttachFile';
 import CriaManifestacaoIcon from '@material-ui/icons/Create';
 import TramitaIcon from '@material-ui/icons/CallSplit';
+import ConsultaIcon from '@material-ui/icons/Search';
 import OKIcon from '@material-ui/icons/Check';
 import Modal from '@material-ui/core/Modal';
 import AnexoArquivo from './AnexoArquivo';
@@ -200,6 +201,10 @@ class DadosProcesso extends Component {
         this.setState({ show: false });
     };
 
+    consulta = () => {
+        this.props.history.push('/processo-consulta');
+    }
+
     render() {
         const { classes } = this.props
         return (
@@ -369,6 +374,7 @@ class DadosProcesso extends Component {
                                 <input className={classes.campoUpload} type="file" name="file" onChange={this.incluiAnexo} id="anexo"/>
                                 <Button id="btnCriaManifestacao" variant="contained" color="primary" onClick={this.manifestacao}><CriaManifestacaoIcon />Criar manifestação</Button>
                                 <Button id="btnTramita" className={classes.botaoTramita} variant="contained" color="primary" onClick={this.tramite}><TramitaIcon />Tramitar</Button>
+                                <Button id="btnConsulta" className={classes.botaoConsulta} variant="contained" color="primary" onClick={this.consulta}><ConsultaIcon />Consultar outro</Button>
                             </div>
                             <br />
                             <div className={classes.containerArquivos}>

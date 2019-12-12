@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { Link } from 'react-router-dom';
 import Fab from '@material-ui/core/Fab';
 import CriaIcon from '@material-ui/icons/Description';
+import ConsultaIcon from '@material-ui/icons/Search';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -32,6 +33,7 @@ class Home extends Component {
                     <Card>
                     <CardHeader title="Acesso rápido" className={classes.fundoHeader} avatar={ <Avatar ><FlashOnIcon/></Avatar> }></CardHeader>
                     <CardContent>
+                        <div className={classes.containerBotoes}>
                         <Link to="/processo-cria">
                             <Tooltip title="Criar um novo processo" placement="bottom">
                             <Fab variant="extended" color="primary">
@@ -39,6 +41,14 @@ class Home extends Component {
                             </Fab>
                             </Tooltip>
                         </Link>
+                        <Link to="/processo-consulta">
+                            <Tooltip title="Consultar processos" placement="bottom">
+                            <Fab variant="extended" color="primary">
+                                <ConsultaIcon fontSize="large"/><div className={classes.espacoIcone}>Consultar processos</div>
+                            </Fab>
+                            </Tooltip>
+                        </Link>
+                        </div>
                     </CardContent>
                     </Card>
                 </Grid>

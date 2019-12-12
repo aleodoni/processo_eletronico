@@ -54,5 +54,20 @@ class DadosProcessoController {
         });
         return res.json(dadosProcesso);
     }
+
+    async processoPorCodigo(req, res) {
+        const dadosProcesso = await VDadosProcesso.findAll({
+            attributes: [
+                'pro_id',
+                'pro_codigo'
+            ],
+            logging: false,
+            plain: true,
+            where: {
+                pro_codigo: req.body.proCodigo
+            }
+        });
+        return res.json(dadosProcesso);
+    }
 }
 export default new DadosProcessoController();

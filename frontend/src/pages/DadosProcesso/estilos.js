@@ -55,7 +55,7 @@ export const styles = {
     },
     containerBotoes: {
         display: 'grid',
-        gridTemplateColumns: '170px 220px 140px',
+        gridTemplateColumns: '170px 220px 140px 220px',
         gridGap: '5px'
     },
     containerArquivos: {

@@ -37,3 +37,23 @@ describe('Dados do processo', () => {
             });
     });
 });
+
+describe('Processo por código', () => {
+    it('Processo por código - dados', function(done) {
+        const proCodigo = {
+            proCodigo: '00020/2019'
+        };
+        request(app)
+            .post(`${process.env.API_URL}/processo-por-codigo`)
+            .set('authorization', `${token}`)
+            .send(proCodigo)
+            .set('Content-Type', 'application/json')
+            .expect(200)
+            .end(function(err) {
+                if (err) {
+                    return done(err);
+                }
+                return done();
+            });
+    });
+});

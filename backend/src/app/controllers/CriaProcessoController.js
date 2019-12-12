@@ -60,7 +60,7 @@ class CriaProcessoController {
         }
 
         const { pro_id, tpr_id, pro_iniciativa, pro_nome, pro_matricula, pro_cpf, pro_cnpj, pro_contato_pj, pro_fone, pro_celular, pro_email, pro_encerramento, pro_assunto, usu_autuador, set_id_autuador, area_id, pro_ultimo_tramite, usu_finalizador, set_id_finalizador, usu_alteracao, usu_data_hora_alteracao, nod_id, pro_tipo_iniciativa, area_id_iniciativa } = await Processo.create(req.body, {
-            logging: true
+            logging: false
         });
         // auditoria de inserção
         AuditoriaController.audita(req.body, req, 'I', pro_id);
