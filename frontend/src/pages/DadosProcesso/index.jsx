@@ -280,7 +280,7 @@ class DadosProcesso extends Component {
                                 <legend><span className={classes.legendIniciativa}>Dados do processo</span></legend>
                                 { this.state.genNome
                                     ? <div className={classes.containerDados}>
-                                          <label className={classes.tituloDados}>Gênero:</label>
+                                          <label className={classes.tituloDados}>Espécie:</label>
                                           <div className={classes.descDados}>{this.state.genNome}</div>
                                       </div>
                                     : null

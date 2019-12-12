@@ -854,7 +854,7 @@ class CriarProcesso extends Component {
                                 }
                                 <div className={classes.containerCriaProcesso}>
                                     <fieldset className={classes.fieldSetNome}>
-                                        <legend><span className={classes.tituloObrigatorio}>Gênero</span></legend>
+                                        <legend><span className={classes.tituloObrigatorio}>Espécie</span></legend>
                                         <select id="selectGenero" onChange={this.onSelect} value={this.state.genId}>
                                            {this.state.generos}
                                         </select>

@@ -310,10 +310,10 @@ class Nodo extends Component {
         const { classes } = this.props
         return (
             <div className={classes.lateral}>
-                <Autorizacao tela="Nós"/>
+                <Autorizacao tela="Nodos"/>
                 <Menu/>
                         <Card>
-                            <CardHeader title="Nós" className={classes.fundoHeader}></CardHeader>
+                            <CardHeader title="Nodos" className={classes.fundoHeader}></CardHeader>
                             <CardContent>
                                 <span className={classes.erro}>{this.state.erro}</span>
                                 <form className={classes.formulario} noValidate autoComplete="off">

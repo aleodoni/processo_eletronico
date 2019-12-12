@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from '../../configs/axiosConfig';
+import { withStyles } from '@material-ui/core';
+import { styles } from './estilos';
 class AnexoArquivo extends Component {
 
     downloadAnexo(e,arqId,proId,arqNome) {
@@ -37,13 +39,16 @@ class AnexoArquivo extends Component {
     }
 
     render() {
+        const { classes } = this.props;
       return(
       <div>
           { (this.props.anexos.length > 0)
         ? <ul>
           {
              this.props.anexos.map((anexo, index) => (
-             <li key={index}><a href="#" onClick={(e) => this.downloadAnexo(e,anexo.arq_id, this.props.proId, anexo.arq_nome)}>{anexo.arq_nome}</a></li>
+             <li key={index}>
+                  <button type="button" className={classes.botaoComoLink} onClick={(e) => this.downloadAnexo(e,anexo.arq_id, this.props.proId, anexo.arq_nome)}>{anexo.arq_nome}</button>
+             </li>
             ))
           }
           </ul>
@@ -55,4 +60,4 @@ class AnexoArquivo extends Component {
       </div>)
     }
   }
-  export default AnexoArquivo;
+  export default withStyles(styles)(AnexoArquivo);

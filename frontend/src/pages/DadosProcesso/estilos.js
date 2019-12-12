@@ -101,6 +101,16 @@ export const styles = {
         fontSize: '14px',
         fontWeight: 'normal'
     },
+    botaoComoLink: {
+        background: 'none',
+        border: 'none',
+        padding: '3px',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        color: '#069',
+        fontSize: '14px',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
     menuHeader: {
       paddingLeft: '30px',
     }};
