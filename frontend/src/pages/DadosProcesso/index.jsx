@@ -15,7 +15,10 @@ import ConsultaIcon from '@material-ui/icons/Search';
 import OKIcon from '@material-ui/icons/Check';
 import Modal from '@material-ui/core/Modal';
 import AnexoArquivo from './AnexoArquivo';
+import ModalManifestacao from '../Manifestacao';
+
 require('dotenv').config();
+
 
 class DadosProcesso extends Component {
 
@@ -51,7 +54,8 @@ class DadosProcesso extends Component {
             setorFinalizadorProcesso: '',
             show: false,
             mensagemModal: '',
-            anexos: []
+            anexos: [],
+            showModalManifestacao: false
         }
         this.carregaDadosProcesso(this.state.proId);
     }
@@ -59,6 +63,15 @@ class DadosProcesso extends Component {
     componentDidMount() {
         this.carregaAnexos(this.state.proId);
     }
+
+    showModalManifestacao = () => {
+        alert("1")
+        this.setState({ showModalManifestacao: true });
+    };
+
+    hideModalManifestacao = () => {
+        this.setState({ showModalManifestacao: false });
+    };
 
     carregaAnexos = (proId) => {
         axios({
@@ -204,6 +217,12 @@ class DadosProcesso extends Component {
     consulta = () => {
         this.props.history.push('/processo-consulta');
     }
+
+    showModalManifestacao = e => {
+        this.setState({
+              showModalManifestacao: !this.state.showModalManifestacao
+        });
+    };
 
     render() {
         const { classes } = this.props
@@ -372,14 +391,14 @@ class DadosProcesso extends Component {
                             <div className={classes.containerBotoes}>
                                 <label className={classes.labelUpload} htmlFor="anexo"><AnexoIcon fontSize="small" className={classes.ajustaIcone}/>INSERIR ANEXO</label>
                                 <input className={classes.campoUpload} type="file" name="file" onChange={this.incluiAnexo} id="anexo"/>
-                                <Button id="btnCriaManifestacao" variant="contained" color="primary" onClick={this.manifestacao}><CriaManifestacaoIcon />Criar manifestação</Button>
+                                <Button id="btnCriaManifestacao" variant="contained" color="primary" onClick={e => { this.showModalManifestacao(); }}><CriaManifestacaoIcon />Criar manifestação</Button>
                                 <Button id="btnTramita" className={classes.botaoTramita} variant="contained" color="primary" onClick={this.tramite}><TramitaIcon />Tramitar</Button>
                                 <Button id="btnConsulta" className={classes.botaoConsulta} variant="contained" color="primary" onClick={this.consulta}><ConsultaIcon />Consultar outro</Button>
                             </div>
                             <br />
                             <div className={classes.containerArquivos}>
                                 <fieldset className={classes.fieldSetIniciativa}>
-                                    <legend><span className={classes.legendIniciativa}>Arquivo(s) anexo(s)</span></legend>
+                                    <legend><span className={classes.legendIniciativa}>Arquivo(s) do processo em anexo</span></legend>
                                     <AnexoArquivo proId={this.state.proId} anexos={this.state.anexos} />
                                 </fieldset>
                             </div>
@@ -393,6 +412,7 @@ class DadosProcesso extends Component {
                         </div>
                     </div>
                     </Modal>
+                    <ModalManifestacao show={this.state.showModalManifestacao} onClose={this.showModalManifestacao} proId={this.state.proId}>Message in modal</ModalManifestacao>
             </div>
         )
     }

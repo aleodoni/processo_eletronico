@@ -1,21 +1,12 @@
-import React, { Component } from 'react';
-import Router from './Router'
+import React from 'react';
+import Router from './Router';
 
-class App extends Component {
-  constructor(props){
-    super(props);
-    this.state={
-
-    }
-  }
-  render() {
+export default function App() {
     return (
         <div>
             <div>
-                <Router/>
+                <Router />
             </div>
         </div>
     );
-  }
 }
-export default App;

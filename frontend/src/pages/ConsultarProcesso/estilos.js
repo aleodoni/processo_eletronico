@@ -1,6 +1,7 @@
+// eslint-disable-next-line import/prefer-default-export
 export const styles = {
     lateral: {
-      paddingLeft: 300,
+        paddingLeft: 300,
     },
     fundoHeader: {
         background: '#EFF8FB',
@@ -17,7 +18,7 @@ export const styles = {
         display: 'grid',
         gridTemplateColumns: '290px 290px',
         gridGap: '5px',
-        marginBottom: '14px'
+        marginBottom: '14px',
     },
     containerConsultaProcessoCampo: {
         display: 'grid',
@@ -40,18 +41,18 @@ export const styles = {
     tituloDados: {
         fontFamily: 'Arial, Helvetica, sans-serif',
         fontSize: '14px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     descDados: {
         fontFamily: 'Arial, Helvetica, sans-serif',
         fontSize: '14px',
-        fontWeight: 'normal'
+        fontWeight: 'normal',
     },
     textoCampos: {
         fontSize: '16px',
-        fontFamily: "Arial, Helvetica, sans-serif",
+        fontFamily: 'Arial, Helvetica, sans-serif',
     },
     menuHeader: {
-      paddingLeft: '30px',
-    }};
-
+        paddingLeft: '30px',
+    },
+};

@@ -1,0 +1,61 @@
+// eslint-disable-next-line import/prefer-default-export
+export const styles = {
+    erro: {
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        fontSize: '14px',
+        color: 'red',
+        paddingBottom: '10px',
+    },
+    fundoHeader: {
+        background: '#EFF8FB',
+        color: '#000000',
+        height: '0px',
+    },
+    modalPai: {
+        position: 'fixed',
+        width: '100%',
+        height: '100%',
+        background: '#000000',
+        top: 0,
+        left: 0,
+        opacity: 0.5,
+    },
+    labelUpload: {
+        cursor: 'pointer',
+        fontFamily: 'Arial, Helvetica, sans-serif',
+        fontSize: '16px',
+        border: '1px solid',
+        borderRadius: '5px',
+        paddingTop: '3px',
+        paddingBottom: '5px',
+        paddingLeft: '10px',
+        paddingRight: '10px',
+        borderColor: '#4859B8',
+        background: '#4859B8',
+        color: '#FFFFFF',
+        '&:hover': {
+            backgroundColor: '#303F9F',
+        },
+    },
+    containerBotoes: {
+        display: 'grid',
+        gridTemplateColumns: '170px 170px',
+        gridGap: '5px',
+    },
+    campoUpload: {
+        opacity: '0',
+        position: 'absolute',
+        zIndex: -1,
+    },
+    modalFilho: {
+        position: 'absolute',
+        width: 800,
+        height: 600,
+        background: 'white',
+        padding: '20px',
+        top: '16%',
+        left: '30%',
+        borderRadius: '0.5rem',
+        opacity: 1,
+    },
+};

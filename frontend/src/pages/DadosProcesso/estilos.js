@@ -1,6 +1,7 @@
+// eslint-disable-next-line import/prefer-default-export
 export const styles = {
     lateral: {
-      paddingLeft: 300,
+        paddingLeft: 300,
     },
     fundoHeader: {
         background: '#EFF8FB',
@@ -13,7 +14,7 @@ export const styles = {
         color: 'red',
         paddingBottom: '10px',
     },
-    labelUpload:  {
+    labelUpload: {
         cursor: 'pointer',
         fontFamily: 'Arial, Helvetica, sans-serif',
         fontSize: '16px',
@@ -27,12 +28,12 @@ export const styles = {
         background: '#4859B8',
         color: '#FFFFFF',
         '&:hover': {
-            backgroundColor: '#303F9F'
-        }
+            backgroundColor: '#303F9F',
+        },
     },
     modal: {
         position: 'absolute',
-        fontFamily: "Arial, Helvetica, sans-serif",
+        fontFamily: 'Arial, Helvetica, sans-serif',
         width: 400,
         border: '2px solid #116FBF',
         borderRadius: '5px',
@@ -42,32 +43,32 @@ export const styles = {
         textAlign: 'center',
         padding: '10px;',
     },
-    campoUpload:  {
+    campoUpload: {
         opacity: '0',
         position: 'absolute',
-        zIndex: -1
+        zIndex: -1,
     },
     containerDados: {
         display: 'grid',
         gridTemplateColumns: '240px 500px',
         gridGap: '5px',
-        marginBottom: '14px'
+        marginBottom: '14px',
     },
     containerBotoes: {
         display: 'grid',
         gridTemplateColumns: '170px 220px 140px 220px',
-        gridGap: '5px'
+        gridGap: '5px',
     },
     containerArquivos: {
         display: 'grid',
         gridTemplateColumns: '775px',
-        gridGap: '5px'
+        gridGap: '5px',
     },
     botaoTramita: {
         backgroundColor: 'green',
         '&:hover': {
-            backgroundColor: '#3CB371'
-        }
+            backgroundColor: '#3CB371',
+        },
     },
     containerIniciativa: {
         display: 'grid',
@@ -89,17 +90,17 @@ export const styles = {
         fontFamily: 'Arial, Helvetica, sans-serif',
         fontSize: '16px',
         fontWeight: 'normal',
-        paddingBottom: '50px'
+        paddingBottom: '50px',
     },
     tituloDados: {
         fontFamily: 'Arial, Helvetica, sans-serif',
         fontSize: '14px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     descDados: {
         fontFamily: 'Arial, Helvetica, sans-serif',
         fontSize: '14px',
-        fontWeight: 'normal'
+        fontWeight: 'normal',
     },
     botaoComoLink: {
         background: 'none',
@@ -109,9 +110,9 @@ export const styles = {
         color: '#069',
         fontSize: '14px',
         textDecoration: 'underline',
-        cursor: 'pointer'
+        cursor: 'pointer',
     },
     menuHeader: {
-      paddingLeft: '30px',
-    }};
-
+        paddingLeft: '30px',
+    },
+};

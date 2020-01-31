@@ -1,45 +1,53 @@
 import Sequelize, { Model } from 'sequelize';
 
-class VNodo extends Model {
+class VPessoaCeri extends Model {
     static init(sequelize) {
         super.init(
             {
-                nod_id: {
-                    type: Sequelize.INTEGER,
+                pes_nome: {
+                    type: Sequelize.STRING,
                     primaryKey: true
                 },
-                flu_id: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false
+                pes_aposentado: {
+                    type: Sequelize.INTEGER
                 },
-                area_id: {
-                    type: Sequelize.STRING,
-                    allowNull: false
-                },
-                nod_inicio: {
-                    type: Sequelize.BOOLEAN,
-                    allowNull: false
-                },
-                nod_fim: {
-                    type: Sequelize.BOOLEAN,
-                    allowNull: false
-                },
-                area: {
+                pes_sexo: {
                     type: Sequelize.STRING
                 },
-                fluxo: {
+                pes_setor: {
                     type: Sequelize.STRING
                 },
-                inicio: {
+                pes_mes_nascimento: {
                     type: Sequelize.STRING
                 },
-                fim: {
+                pes_dia_nascimento: {
+                    type: Sequelize.STRING
+                },
+                pes_logradouro: {
+                    type: Sequelize.STRING
+                },
+                pes_numero: {
+                    type: Sequelize.STRING
+                },
+                pes_complemento: {
+                    type: Sequelize.STRING
+                },
+                pes_cep: {
+                    type: Sequelize.INTEGER
+                },
+                pes_cidade: {
+                    type: Sequelize.STRING
+                },
+                pes_bairro: {
+                    type: Sequelize.STRING
+                },
+                pes_uf: {
                     type: Sequelize.STRING
                 }
             },
             {
-                tableName: 'v_nodo',
-                schema: 'spa2',
+                tableName: 'v_pessoa_ceri',
+                schema: 'ceri',
                 sequelize,
                 operatorsAliases: false
             }
@@ -49,4 +57,4 @@ class VNodo extends Model {
     }
 }
 
-export default VNodo;
+export default VPessoaCeri;

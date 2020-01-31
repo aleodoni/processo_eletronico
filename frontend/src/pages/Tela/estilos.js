@@ -1,9 +1,10 @@
+// eslint-disable-next-line import/prefer-default-export
 export const styles = {
     lateral: {
-      paddingLeft: 300,
+        paddingLeft: 300,
     },
     links: {
-      textDecoration:'none',
+        textDecoration: 'none',
     },
     fundoHeader: {
         background: '#EFF8FB',
@@ -39,7 +40,7 @@ export const styles = {
     },
     modal: {
         position: 'absolute',
-        fontFamily: "Arial, Helvetica, sans-serif",
+        fontFamily: 'Arial, Helvetica, sans-serif',
         width: 300,
         border: '2px solid #116FBF',
         borderRadius: '5px',
@@ -50,5 +51,6 @@ export const styles = {
         padding: '10px;',
     },
     menuHeader: {
-      paddingLeft: '30px',
-    }};
+        paddingLeft: '30px',
+    },
+};

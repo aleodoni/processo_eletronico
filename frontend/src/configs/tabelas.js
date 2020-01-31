@@ -4,9 +4,9 @@ import UltimoIcon from '@material-ui/icons/LastPage';
 import ProximoIcon from '@material-ui/icons/NavigateNext';
 import AnteriorIcon from '@material-ui/icons/NavigateBefore';
 import OrdenaIcon from '@material-ui/icons/UnfoldMore';
+// eslint-disable-next-line import/prefer-default-export
 export const tabelas = {
-    localizacao:
-    {
+    localizacao: {
         pagination: {
             labelDisplayedRows: '{from}-{to} de {count}',
             labelRowsSelect: 'linhas',
@@ -20,10 +20,9 @@ export const tabelas = {
         },
         body: {
             emptyDataSourceMessage: 'Sem registros para mostrar.',
-        }
+        },
     },
-    opcoes:
-    {
+    opcoes: {
         search: false,
         toolbar: false,
         pageSize: 10,
@@ -34,5 +33,5 @@ export const tabelas = {
         NextPage: () => <ProximoIcon />,
         PreviousPage: () => <AnteriorIcon />,
         SortArrow: () => <OrdenaIcon />,
-    }
+    },
 };

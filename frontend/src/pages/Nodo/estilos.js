@@ -1,6 +1,7 @@
+// eslint-disable-next-line import/prefer-default-export
 export const styles = {
     lateral: {
-      paddingLeft: 300,
+        paddingLeft: 300,
     },
     containerDados: {
         display: 'grid',
@@ -19,7 +20,7 @@ export const styles = {
     },
     cardFluxo: {
         marginBottom: '10px',
-        backgroundColor: '#EFF8FB'
+        backgroundColor: '#EFF8FB',
     },
     estiloCheck: {
         marginTop: '20px',
@@ -59,7 +60,7 @@ export const styles = {
     },
     modal: {
         position: 'absolute',
-        fontFamily: "Arial, Helvetica, sans-serif",
+        fontFamily: 'Arial, Helvetica, sans-serif',
         width: 300,
         border: '2px solid #116FBF',
         borderRadius: '5px',
@@ -70,5 +71,6 @@ export const styles = {
         padding: '10px;',
     },
     menuHeader: {
-      paddingLeft: '30px',
-    }};
+        paddingLeft: '30px',
+    },
+};

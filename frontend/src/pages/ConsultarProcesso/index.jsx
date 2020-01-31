@@ -23,6 +23,7 @@ class ConsultarProcesso extends Component {
     }
 
     setProCodigo = event => {
+        //eslint-disable-next-line
         const re = /^[0-9\/\b]+$/;
         if (event.target.value === "" || re.test(event.target.value)) {
             this.setState({

@@ -16,6 +16,7 @@ import NodoController from './app/controllers/NodoController';
 import CriaProcessoController from './app/controllers/CriaProcessoController';
 import DadosProcessoController from './app/controllers/DadosProcessoController';
 import ArquivoController from './app/controllers/ArquivoController';
+import TipoManifestacaoController from './app/controllers/TipoManifestacaoController';
 import AuthMiddleware from './app/middlewares/auth';
 import path from 'path';
 import multer from 'multer';
@@ -162,5 +163,11 @@ routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoCont
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {
     res.status(204).end();
 });
+
+// rotas do cadastro de tipos de manifestacao
+routes.get(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoController.index);
+routes.post(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoController.store);
+routes.put(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.update);
+routes.delete(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.delete);
 
 export default routes;
