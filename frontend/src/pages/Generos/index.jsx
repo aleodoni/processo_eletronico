@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core';
-import Menu from '../Menu';
-import Autorizacao from '../Autorizacao';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import axios from '../../configs/axiosConfig';
 import Button from '@material-ui/core/Button';
 import SalvaIcon from '@material-ui/icons/Check';
 import ApagaIcon from '@material-ui/icons/Clear';
@@ -17,13 +14,15 @@ import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import Snackbar from '@material-ui/core/Snackbar';
 import Modal from '@material-ui/core/Modal';
+import axios from '../../configs/axiosConfig';
+import Autorizacao from '../../components/Autorizacao';
+import Menu from '../../components/Menu';
 import { styles } from './estilos';
 import { tabelas } from '../../configs/tabelas';
 
 class Genero extends Component {
-
-    constructor( props ) {
-        super( props );
+    constructor(props) {
+        super(props);
         this.state = {
             erro: '',
             genId: undefined,
@@ -63,8 +62,8 @@ class Genero extends Component {
 
     preencheCampos = (genId, genNome) => {
         this.setState({
-            genId: genId,
-            genNome: genNome,
+            genId,
+            genNome,
         });
     };
 
@@ -73,15 +72,15 @@ class Genero extends Component {
             method: 'GET',
             url: '/generos',
             headers: {
-                'authorization': sessionStorage.getItem('token'),
+                authorization: sessionStorage.getItem('token'),
             },
         })
-        .then(res => {
-            this.setState({ generos: res.data });
-        })
-        .catch(err => {
-            this.setState({ erro: 'Erro ao carregar registros.' });
-        });
+            .then(res => {
+                this.setState({ generos: res.data });
+            })
+            .catch(err => {
+                this.setState({ erro: 'Erro ao carregar registros.' });
+            });
     };
 
     salva = () => {
@@ -95,7 +94,7 @@ class Genero extends Component {
                 url: '/generos',
                 data: { gen_id: null, gen_nome: this.state.genNome.trim() },
                 headers: {
-                    'authorization': sessionStorage.getItem('token'),
+                    authorization: sessionStorage.getItem('token'),
                 },
             })
                 .then(res => {
@@ -109,12 +108,12 @@ class Genero extends Component {
         } else {
             axios({
                 method: 'PUT',
-                url: 'generos/' + this.state.genId,
+                url: `generos/${this.state.genId}`,
                 data: {
                     gen_nome: this.state.genNome.trim(),
                 },
                 headers: {
-                    'authorization': sessionStorage.getItem('token'),
+                    authorization: sessionStorage.getItem('token'),
                 },
             })
                 .then(res => {
@@ -131,9 +130,9 @@ class Genero extends Component {
     exclui = () => {
         axios({
             method: 'DELETE',
-            url: 'generos/' + this.state.genId,
+            url: `generos/${this.state.genId}`,
             headers: {
-                'authorization': sessionStorage.getItem('token'),
+                authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
@@ -153,7 +152,7 @@ class Genero extends Component {
     };
 
     abreHint = mensagemHint => {
-        this.setState({ salva: true, mensagemHint: mensagemHint });
+        this.setState({ salva: true, mensagemHint });
     };
 
     abreModal = () => {
@@ -169,15 +168,15 @@ class Genero extends Component {
     };
 
     render() {
-        const { classes } = this.props
+        const { classes } = this.props;
         return (
             <div className={classes.lateral}>
-                <Autorizacao tela="Gêneros"/>
-                <Menu/>
+                <Autorizacao tela="Gêneros" />
+                <Menu />
                 <Grid container>
                     <Grid item xs={12} sm={9}>
                         <Card>
-                            <CardHeader title="Gêneros" className={classes.fundoHeader}></CardHeader>
+                            <CardHeader title="Gêneros" className={classes.fundoHeader} />
                             <CardContent>
                                 <span className={classes.erro}>{this.state.erro}</span>
                                 <form className={classes.formulario} noValidate autoComplete="off">
@@ -192,12 +191,12 @@ class Genero extends Component {
                                     <SalvaIcon />
                                     Salvar
                                 </Button>
-                                    &nbsp;
+                                &nbsp;
                                 <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
                                     <ApagaIcon />
                                     Excluir
                                 </Button>
-                                    &nbsp;
+                                &nbsp;
                                 <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
                                     <LimpaIcon />
                                     Limpar campos
@@ -230,27 +229,23 @@ class Genero extends Component {
                     </Grid>
                     <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
                     <Modal open={this.state.show} onClose={this.fechaModal}>
-                    <div className={classes.modal}>
-                    <h3>Deseja apagar o registro?</h3>
-                    <div>
-                        <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
-                            Sim
-                        </Button>
-                        <div className={classes.espacoBotoes}/>
-                        <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
-                            Não
-                        </Button>
-                    </div>
-                    </div>
+                        <div className={classes.modal}>
+                            <h3>Deseja apagar o registro?</h3>
+                            <div>
+                                <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
+                                    Sim
+                                </Button>
+                                <div className={classes.espacoBotoes} />
+                                <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
+                                    Não
+                                </Button>
+                            </div>
+                        </div>
                     </Modal>
                 </Grid>
-
             </div>
-        )
+        );
     }
-
 }
 
 export default withStyles(styles)(Genero);
-
-

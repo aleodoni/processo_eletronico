@@ -1,10 +1,6 @@
 import React from 'react';
-import PrimeiroIcon from '@material-ui/icons/FirstPage';
-import UltimoIcon from '@material-ui/icons/LastPage';
-import ProximoIcon from '@material-ui/icons/NavigateNext';
-import AnteriorIcon from '@material-ui/icons/NavigateBefore';
-import OrdenaIcon from '@material-ui/icons/UnfoldMore';
-// eslint-disable-next-line import/prefer-default-export
+import { FaAngleDoubleRight, FaAngleLeft, FaAngleDoubleLeft, FaAngleRight, FaSort } from 'react-icons/fa';
+
 export const tabelas = {
     localizacao: {
         pagination: {
@@ -28,10 +24,10 @@ export const tabelas = {
         pageSize: 10,
     },
     icones: {
-        FirstPage: () => <PrimeiroIcon />,
-        LastPage: () => <UltimoIcon />,
-        NextPage: () => <ProximoIcon />,
-        PreviousPage: () => <AnteriorIcon />,
-        SortArrow: () => <OrdenaIcon />,
+        FirstPage: () => <FaAngleDoubleLeft />,
+        LastPage: () => <FaAngleDoubleRight />,
+        NextPage: () => <FaAngleRight />,
+        PreviousPage: () => <FaAngleLeft />,
+        SortArrow: () => <FaSort />,
     },
 };

@@ -1,41 +1,42 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core';
-import { styles } from './estilos';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import AnexoIcon from '@material-ui/icons/AttachFile';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { FaPaperclip } from 'react-icons/fa';
+import { ModalPai, ModalFilho, ContainerBotoes } from './styles';
 
-class ModalManifestacao extends Component {
-
-    onClose = e => {
-        this.props.onClose && this.props.onClose(e);
-    };
-    render() {
-        const { classes } = this.props;
-        if (!this.props.show){
-            return null;
-        }
-        return (
-            <div>
-            <div className={classes.modalPai}></div>
-                <div className={classes.modalFilho}>
-                    <Card>
-                    <CardHeader title={'Manifestação proId:'+this.props.proId} className={classes.fundoHeader}></CardHeader>
-                    <CardContent>
-                        <div>{this.props.children}</div>
-                        <div className={classes.containerBotoes}>
-                            <label className={classes.labelUpload} htmlFor="anexo"><AnexoIcon fontSize="small"/>INSERIR ANEXO</label>
-                            <input className={classes.campoUpload} type="file" name="file" onChange={this.incluiAnexo} id="anexo"/>
-                            <Button variant="contained" color="primary" onClick={e => {this.onClose(e); }}>Fechar</Button>
-                        </div>
-                    </CardContent>
-                    </Card>
-
-                </div>
-            </div>
-          );
+function ModalManifestacao({ proId, show, onClose }) {
+    function fechar(e) {
+        onClose && onClose(e);
     }
+
+    return (
+        <div>
+            <ModalPai />
+            <ModalFilho>
+                <fieldset>
+                    <legend>{`Manifestação proId:${proId}`}</legend>
+                    <div />
+                    <ContainerBotoes>
+                        <label htmlFor="anexo">
+                            <FaPaperclip />
+                            &nbsp;Inserir anexo
+                        </label>
+                        <input type="file" name="file" onChange={null} id="anexo" />
+                        <button
+                            type="button"
+                            onClick={e => {
+                                fechar(e);
+                            }}>
+                            Fechar
+                        </button>
+                    </ContainerBotoes>
+                </fieldset>
+            </ModalFilho>
+        </div>
+    );
 }
-  export default withStyles(styles)(ModalManifestacao);
+ModalManifestacao.propTypes = {
+    proId: PropTypes.string.isRequired,
+    show: PropTypes.bool.isRequired,
+    onClose: PropTypes.bool.isRequired,
+};
+export default ModalManifestacao;

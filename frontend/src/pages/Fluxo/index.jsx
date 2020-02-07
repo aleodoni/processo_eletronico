@@ -1,256 +1,197 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core';
-import Menu from '../Menu';
-import Autorizacao from '../Autorizacao';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import axios from '../../configs/axiosConfig';
-import Button from '@material-ui/core/Button';
-import SalvaIcon from '@material-ui/icons/Check';
-import ApagaIcon from '@material-ui/icons/Clear';
-import LimpaIcon from '@material-ui/icons/Refresh';
+import React, { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
-import EditIcon from '@material-ui/icons/Edit';
-import Check from '@material-ui/icons/Check';
-import Clear from '@material-ui/icons/Clear';
-import Snackbar from '@material-ui/core/Snackbar';
-import Modal from '@material-ui/core/Modal';
-import { styles } from './estilos';
+import { FaRegSave, FaRegTrashAlt, FaRegEdit, FaSyncAlt } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
+import ModalApaga from '../../components/ModalExcluir';
+import axios from '../../configs/axiosConfig';
+import Autorizacao from '../../components/Autorizacao';
+import Menu from '../../components/Menu';
 import { tabelas } from '../../configs/tabelas';
+import { Container, Container1, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
+import Header from '../../components/Header';
 
-class Fluxo extends Component {
+function Fluxo() {
+    const [erro, setErro] = useState('');
+    const [fluId, setFluId] = useState(undefined);
+    const [fluNome, setFluNome] = useState('');
+    const [fluxos, setFluxos] = useState([]);
+    const [modalExcluir, setModalExcluir] = useState(false);
 
-    constructor( props ) {
-        super( props );
-        this.state = {
-            erro: '',
-            fluId: undefined,
-            fluNome: '',
-            fluxos: [],
-            salva: false,
-            show: false,
-            mensagemHint: '',
-        };
-        this.setFluId = this.setFluId.bind(this);
-        this.setFluNome = this.setFluNome.bind(this);
+    function abreModalExcluir() {
+        if (fluNome === '') {
+            setErro('Selecione um registro para apagar.');
+            return;
+        }
+        setModalExcluir(true);
     }
 
-    componentDidMount() {
-        this.carregaGrid();
+    function fechaModalExcluir() {
+        setModalExcluir(false);
     }
 
-    setFluId = event => {
-        this.setState({
-            fluId: event.target.value,
-        });
-    };
+    function handleFluId(e) {
+        setFluId(e.target.value);
+    }
 
-    setFluNome = event => {
-        this.setState({
-            fluNome: event.target.value,
-        });
-    };
+    function handleFluNome(e) {
+        setFluNome(e.target.value);
+    }
 
-    limpaCampos = () => {
-        this.setState({
-            fluId: undefined,
-            fluNome: '',
-            erro: '',
-        });
-    };
+    function limpaCampos() {
+        setFluId(undefined);
+        setFluNome('');
+        setErro('');
+    }
 
-    preencheCampos = (fluId, fluNome) => {
-        this.setState({
-            fluId: fluId,
-            fluNome: fluNome,
-        });
-    };
+    function preencheCampos(id, nome) {
+        setFluId(id);
+        setFluNome(nome);
+    }
 
-    carregaGrid = () => {
+    function carregaGrid() {
         axios({
             method: 'GET',
             url: '/fluxos',
             headers: {
-                'authorization': sessionStorage.getItem('token'),
+                authorization: sessionStorage.getItem('token'),
             },
         })
-        .then(res => {
-            this.setState({ fluxos: res.data });
-        })
-        .catch(err => {
-            this.setState({ erro: 'Erro ao carregar registros.' });
-        });
-    };
+            .then(res => {
+                setFluxos(res.data);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }
 
-    salva = () => {
-        if (this.state.fluNome.trim() === '') {
-            this.setState({ erro: 'Nome em branco.' });
+    useEffect(() => {
+        carregaGrid();
+    }, []);
+
+    function grava() {
+        if (fluNome.trim() === '') {
+            setErro('Nome em branco.');
             return;
         }
-        if (this.state.fluId === undefined) {
+        if (fluId === undefined) {
             axios({
                 method: 'POST',
                 url: '/fluxos',
-                data: { flu_id: null, flu_nome: this.state.fluNome.trim() },
+                data: { flu_id: null, flu_nome: fluNome.trim() },
                 headers: {
-                    'authorization': sessionStorage.getItem('token'),
+                    authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Inserido com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    mensagem.success('Inserido com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao inserir registro.' });
+                .catch(() => {
+                    setErro('Erro ao inserir registro.');
                 });
         } else {
             axios({
                 method: 'PUT',
-                url: 'fluxos/' + this.state.fluId,
+                url: `fluxos/${fluId}`,
                 data: {
-                    flu_nome: this.state.fluNome.trim(),
+                    flu_nome: fluNome.trim(),
                 },
                 headers: {
-                    'authorization': sessionStorage.getItem('token'),
+                    authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Editado com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    mensagem.success('Editado com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao editar registro.' });
+                .catch(() => {
+                    setErro('Erro ao editar registro.');
                 });
         }
-    };
-
-    exclui = () => {
-        axios({
-            method: 'DELETE',
-            url: 'fluxos/' + this.state.fluId,
-            headers: {
-                'authorization': sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                this.limpaCampos();
-                this.carregaGrid();
-                this.abreHint('Excluído com sucesso.');
-                this.fechaModal();
-            })
-            .catch(err => {
-                this.setState({ erro: err.response.data.error });
-                this.fechaModal();
-            });
-    };
-
-    fechaHint = () => {
-        this.setState({ salva: false, mensagemHint: '' });
-    };
-
-    abreHint = mensagemHint => {
-        this.setState({ salva: true, mensagemHint: mensagemHint });
-    };
-
-    abreModal = () => {
-        if (this.state.fluId === undefined) {
-            this.setState({ erro: 'Selecione um registro para excluir.' });
-        } else {
-            this.setState({ show: true });
-        }
-    };
-
-    fechaModal = () => {
-        this.setState({ show: false });
-    };
-
-    render() {
-        const { classes } = this.props
-        return (
-            <div className={classes.lateral}>
-                <Autorizacao tela="Fluxos"/>
-                <Menu/>
-                <Grid container>
-                    <Grid item xs={12} sm={9}>
-                        <Card>
-                            <CardHeader title="Fluxos" className={classes.fundoHeader}></CardHeader>
-                            <CardContent>
-                                <span className={classes.erro}>{this.state.erro}</span>
-                                <form className={classes.formulario} noValidate autoComplete="off">
-                                    <input id="fluId" value={this.state.fluId} onChange={this.setFluId} type="hidden" />
-                                    <fieldset className={classes.legenda}>
-                                        <legend>Nome</legend>
-                                        <input className={classes.campoTexto} required id="fluNome" type="text" value={this.state.fluNome} onChange={this.setFluNome} autoFocus size="100" maxLength="100" />
-                                    </fieldset>
-                                </form>
-                                <br />
-                                <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
-                                    <SalvaIcon />
-                                    Salvar
-                                </Button>
-                                    &nbsp;
-                                <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
-                                    <ApagaIcon />
-                                    Excluir
-                                </Button>
-                                    &nbsp;
-                                <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
-                                    <LimpaIcon />
-                                    Limpar campos
-                                </Button>
-                                <br />
-                                <br />
-                                <MaterialTable
-                                    columns={[
-                                        {
-                                            hidden: true,
-                                            field: 'flu_id',
-                                            type: 'numeric',
-                                        },
-                                        { title: 'Nome', field: 'flu_nome' },
-                                    ]}
-                                    data={this.state.fluxos}
-                                    actions={[
-                                        {
-                                            icon: () => <EditIcon />,
-                                            tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.flu_id, rowData.flu_nome),
-                                        },
-                                    ]}
-                                    options={tabelas.opcoes}
-                                    icons={tabelas.icones}
-                                    localization={tabelas.localizacao}
-                                />
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
-                    <Modal open={this.state.show} onClose={this.fechaModal}>
-                    <div className={classes.modal}>
-                    <h3>Deseja apagar o registro?</h3>
-                    <div>
-                        <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
-                            Sim
-                        </Button>
-                        <div className={classes.espacoBotoes}/>
-                        <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
-                            Não
-                        </Button>
-                    </div>
-                    </div>
-                    </Modal>
-                </Grid>
-
-            </div>
-        )
     }
 
+    function apaga(id) {
+        axios({
+            method: 'DELETE',
+            url: `fluxos/${id}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                limpaCampos();
+                carregaGrid();
+                mensagem.success('Excluído com sucesso.');
+            })
+            .catch(err => {
+                setErro(err.response.data.error);
+            });
+    }
+
+    return (
+        <>
+            <Container>
+                <Autorizacao tela="Fluxos" />
+                <Header />
+                <AsideLeft>
+                    <Menu />
+                </AsideLeft>
+                <Main>
+                    <fieldset>
+                        <legend>Fluxos</legend>
+                        <Erro>{erro}</Erro>
+                        <form noValidate autoComplete="off">
+                            <input id="fluId" value={fluId} onChange={handleFluId} type="hidden" />
+                            <Container1>
+                                <fieldset>
+                                    <legend>Nome</legend>
+                                    <input required id="fluNome" type="text" value={fluNome} onChange={handleFluNome} autoFocus size="100" maxLength="100" />
+                                </fieldset>
+                            </Container1>
+                        </form>
+                        <ContainerBotoes>
+                            <button type="button" id="btnSalva" onClick={grava}>
+                                <FaRegSave />
+                                &nbsp;Salvar
+                            </button>
+                            <button type="button" id="btnExclui" onClick={abreModalExcluir}>
+                                <FaRegTrashAlt />
+                                &nbsp;Excluir
+                            </button>
+                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
+                                <FaSyncAlt />
+                                &nbsp;Limpar campos
+                            </button>
+                        </ContainerBotoes>
+                        <MaterialTable
+                            columns={[
+                                {
+                                    hidden: true,
+                                    field: 'flu_id',
+                                    type: 'numeric',
+                                },
+                                { title: 'Nome', field: 'flu_nome' },
+                            ]}
+                            data={fluxos}
+                            actions={[
+                                {
+                                    icon: () => <FaRegEdit />,
+                                    tooltip: 'Editar',
+                                    onClick: (_event, linha) => preencheCampos(linha.flu_id, linha.flu_nome),
+                                },
+                            ]}
+                            options={tabelas.opcoes}
+                            icons={tabelas.icones}
+                            localization={tabelas.localizacao}
+                        />
+                        <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={fluId} />
+                    </fieldset>
+                </Main>
+            </Container>
+        </>
+    );
 }
 
-export default withStyles(styles)(Fluxo);
-
-
+export default Fluxo;

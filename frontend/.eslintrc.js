@@ -9,6 +9,7 @@ module.exports = {
       Atomics: "readonly",
       SharedArrayBuffer: "readonly",
     },
+    parser: 'babel-eslint',
     parserOptions: {
       ecmaFeatures: {
         jsx: true
@@ -27,8 +28,22 @@ module.exports = {
       "no-param-reassign": "off",
       "no-underscore-dangle": "off",
       camelcase: "off",
-      "no-console": ["error", { allow: ["tron"] }],
+      "no-console": ["off", { allow: ["tron"] }],
       "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn"
+      "react-hooks/exhaustive-deps": "warn",
+      "react/jsx-props-no-spreading": ["off"],
+      "no-plusplus": "off",
+      "import/prefer-default-export": "off",
+      "jsx-a11y/label-has-associated-control": "off",
+      "jsx-a11y/no-autofocus": "off",
+      "react/destructuring-assignment": [
+        "error",
+        "always",
+        {
+          "ignoreClassFields": true
+        }
+      ],
+      "prefer-destructuring": ["error", {"object": true, "array": false}],
+      "no-useless-escape": "error"
     }
   };

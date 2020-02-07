@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core';
-import Menu from '../Menu';
-import Autorizacao from '../Autorizacao';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import axios from '../../configs/axiosConfig';
 import Button from '@material-ui/core/Button';
 import SalvaIcon from '@material-ui/icons/Check';
 import ApagaIcon from '@material-ui/icons/Clear';
@@ -17,13 +14,15 @@ import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import Snackbar from '@material-ui/core/Snackbar';
 import Modal from '@material-ui/core/Modal';
+import axios from '../../configs/axiosConfig';
+import Autorizacao from '../../components/Autorizacao';
+import Menu from '../../components/Menu';
 import { styles } from './estilos';
 import { tabelas } from '../../configs/tabelas';
 
 class AreaMenu extends Component {
-
-    constructor( props ) {
-        super( props );
+    constructor(props) {
+        super(props);
         this.state = {
             erro: '',
             amuId: undefined,
@@ -62,13 +61,13 @@ class AreaMenu extends Component {
 
     setAreas = event => {
         this.setState({
-            setId: event.target.value
+            setId: event.target.value,
         });
     };
 
     setModelos = event => {
         this.setState({
-            mmuId: event.target.value
+            mmuId: event.target.value,
         });
     };
 
@@ -83,9 +82,9 @@ class AreaMenu extends Component {
 
     preencheCampos = (amuId, setId, mmuId) => {
         this.setState({
-            amuId: amuId,
-            setId: setId,
-            mmuId: mmuId
+            amuId,
+            setId,
+            mmuId,
         });
     };
 
@@ -94,38 +93,35 @@ class AreaMenu extends Component {
             method: 'GET',
             url: '/areas-do-menu',
             headers: {
-                'authorization': sessionStorage.getItem('token'),
+                authorization: sessionStorage.getItem('token'),
             },
         })
-        .then(res => {
-            this.setState({ areasMenu: res.data });
-        })
-        .catch(err => {
-            this.setState({ erro: 'Erro ao carregar registros.' });
-        });
+            .then(res => {
+                this.setState({ areasMenu: res.data });
+            })
+            .catch(err => {
+                this.setState({ erro: 'Erro ao carregar registros.' });
+            });
     };
 
     carregaAreas = () => {
         axios({
-            method: "GET",
-            url: "/area",
+            method: 'GET',
+            url: '/area',
             headers: {
-                'authorization': sessionStorage.getItem('token'),
+                authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                var comboAreas = [];
+                const comboAreas = [];
                 comboAreas.push(
                     <option key="" value="">
                         Selecione...
                     </option>
                 );
-                for (var i = 0; i < res.data.length; i++) {
+                for (let i = 0; i < res.data.length; i++) {
                     comboAreas.push(
-                        <option
-                            key={res.data[i].set_id}
-                            value={res.data[i].set_id}
-                        >
+                        <option key={res.data[i].set_id} value={res.data[i].set_id}>
                             {res.data[i].set_nome}
                         </option>
                     );
@@ -133,31 +129,28 @@ class AreaMenu extends Component {
                 this.setState({ areas: comboAreas });
             })
             .catch(err => {
-                this.setState({ erro: "Erro ao carregar áreas." });
+                this.setState({ erro: 'Erro ao carregar áreas.' });
             });
     };
 
     carregaModelosMenu = () => {
         axios({
-            method: "GET",
-            url: "/modelo-menu",
+            method: 'GET',
+            url: '/modelo-menu',
             headers: {
-                'authorization': sessionStorage.getItem('token'),
+                authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                var comboModelosMenu = [];
+                const comboModelosMenu = [];
                 comboModelosMenu.push(
                     <option key="" value="">
                         Selecione...
                     </option>
                 );
-                for (var i = 0; i < res.data.length; i++) {
+                for (let i = 0; i < res.data.length; i++) {
                     comboModelosMenu.push(
-                        <option
-                            key={res.data[i].mmu_id}
-                            value={res.data[i].mmu_id}
-                        >
+                        <option key={res.data[i].mmu_id} value={res.data[i].mmu_id}>
                             {res.data[i].mmu_nome}
                         </option>
                     );
@@ -165,7 +158,7 @@ class AreaMenu extends Component {
                 this.setState({ modelosMenu: comboModelosMenu });
             })
             .catch(err => {
-                this.setState({ erro: "Erro ao carregar modelos de menu." });
+                this.setState({ erro: 'Erro ao carregar modelos de menu.' });
             });
     };
 
@@ -184,27 +177,27 @@ class AreaMenu extends Component {
                 url: '/area-menu',
                 data: { amu_id: null, set_id: this.state.setId.trim(), mmu_id: this.state.mmuId },
                 headers: {
-                    'authorization': sessionStorage.getItem('token'),
+                    authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
+                .then(() => {
                     this.limpaCampos();
                     this.carregaGrid();
                     this.abreHint('Inserido com sucesso.');
                 })
-                .catch(err => {
+                .catch(() => {
                     this.setState({ erro: 'Erro ao inserir registro.' });
                 });
         } else {
             axios({
                 method: 'PUT',
-                url: 'area-menu/' + this.state.amuId,
+                url: `area-menu/${this.state.amuId}`,
                 data: {
                     set_id: this.state.setId.trim(),
                     mmu_id: this.state.mmuId,
                 },
                 headers: {
-                    'authorization': sessionStorage.getItem('token'),
+                    authorization: sessionStorage.getItem('token'),
                 },
             })
                 .then(res => {
@@ -221,9 +214,9 @@ class AreaMenu extends Component {
     exclui = () => {
         axios({
             method: 'DELETE',
-            url: 'area-menu/' + this.state.amuId,
+            url: `area-menu/${this.state.amuId}`,
             headers: {
-                'authorization': sessionStorage.getItem('token'),
+                authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
@@ -243,7 +236,7 @@ class AreaMenu extends Component {
     };
 
     abreHint = mensagemHint => {
-        this.setState({ salva: true, mensagemHint: mensagemHint });
+        this.setState({ salva: true, mensagemHint });
     };
 
     abreModal = () => {
@@ -262,12 +255,12 @@ class AreaMenu extends Component {
         const { classes } = this.props;
         return (
             <div className={classes.lateral}>
-                <Autorizacao tela="Áreas de menu"/>
-                <Menu/>
+                <Autorizacao tela="Áreas de menu" />
+                <Menu />
                 <Grid container>
                     <Grid item xs={12} sm={9}>
                         <Card>
-                            <CardHeader title="Áreas de menu" className={classes.fundoHeader}></CardHeader>
+                            <CardHeader title="Áreas de menu" className={classes.fundoHeader} />
                             <CardContent>
                                 <span className={classes.erro}>{this.state.erro}</span>
                                 <form className={classes.formulario} noValidate autoComplete="off">
@@ -290,12 +283,12 @@ class AreaMenu extends Component {
                                     <SalvaIcon />
                                     Salvar
                                 </Button>
-                                    &nbsp;
+                                &nbsp;
                                 <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
                                     <ApagaIcon />
                                     Excluir
                                 </Button>
-                                    &nbsp;
+                                &nbsp;
                                 <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
                                     <LimpaIcon />
                                     Limpar campos
@@ -339,27 +332,23 @@ class AreaMenu extends Component {
                     </Grid>
                     <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
                     <Modal open={this.state.show} onClose={this.fechaModal}>
-                    <div className={classes.modal}>
-                    <h3>Deseja apagar o registro?</h3>
-                    <div>
-                        <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
-                            Sim
-                        </Button>
-                        <div className={classes.espacoBotoes}/>
-                        <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
-                            Não
-                        </Button>
-                    </div>
-                    </div>
+                        <div className={classes.modal}>
+                            <h3>Deseja apagar o registro?</h3>
+                            <div>
+                                <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
+                                    Sim
+                                </Button>
+                                <div className={classes.espacoBotoes} />
+                                <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
+                                    Não
+                                </Button>
+                            </div>
+                        </div>
                     </Modal>
                 </Grid>
-
             </div>
-        )
+        );
     }
-
 }
 
 export default withStyles(styles)(AreaMenu);
-
-
