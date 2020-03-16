@@ -55,7 +55,7 @@ function Login() {
                     if (err === 'Error: Network Error') {
                         setErro('Não conectado a API.');
                     } else {
-                        setErro('err.response.data.message');
+                        setErro(err.response.data.message);
                     }
                     limparSessao();
                 });

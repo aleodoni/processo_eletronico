@@ -64,5 +64,5 @@ export const Versao = styled.label`
 `;
 
 export const ErroLogin = styled.label`
-    color: 'red';
+    color: red;
 `;
