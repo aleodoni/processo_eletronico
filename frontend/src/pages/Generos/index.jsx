@@ -1,73 +1,54 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import SalvaIcon from '@material-ui/icons/Check';
-import ApagaIcon from '@material-ui/icons/Clear';
-import LimpaIcon from '@material-ui/icons/Refresh';
+import React, { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
-import EditIcon from '@material-ui/icons/Edit';
-import Check from '@material-ui/icons/Check';
-import Clear from '@material-ui/icons/Clear';
-import Snackbar from '@material-ui/core/Snackbar';
-import Modal from '@material-ui/core/Modal';
+import { FaRegSave, FaRegTrashAlt, FaRegEdit, FaSyncAlt } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
+import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
-import { styles } from './estilos';
 import { tabelas } from '../../configs/tabelas';
+import { Container, Container1, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
+import Header from '../../components/Header';
 
-class Genero extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            erro: '',
-            genId: undefined,
-            genNome: '',
-            generos: [],
-            salva: false,
-            show: false,
-            mensagemHint: '',
-        };
-        this.setGenId = this.setGenId.bind(this);
-        this.setGenNome = this.setGenNome.bind(this);
+function Genero() {
+    const [erro, setErro] = useState('');
+    const [genId, setGenId] = useState(undefined);
+    const [genNome, setGenNome] = useState('');
+    const [generos, setGeneros] = useState([]);
+    const [modalExcluir, setModalExcluir] = useState(false);
+
+    function abreModalExcluir() {
+        if (genNome === '') {
+            setErro('Selecione um registro para apagar.');
+            return;
+        }
+        setModalExcluir(true);
     }
 
-    componentDidMount() {
-        this.carregaGrid();
+    function fechaModalExcluir() {
+        setModalExcluir(false);
     }
 
-    setGenId = event => {
-        this.setState({
-            genId: event.target.value,
-        });
-    };
+    function handleGenId(e) {
+        setGenId(e.target.value);
+    }
 
-    setGenNome = event => {
-        this.setState({
-            genNome: event.target.value,
-        });
-    };
+    function handleGenNome(e) {
+        setGenNome(e.target.value);
+    }
 
-    limpaCampos = () => {
-        this.setState({
-            genId: undefined,
-            genNome: '',
-            erro: '',
-        });
-    };
+    function limpaCampos() {
+        setGenId(undefined);
+        setGenNome('');
+        setErro('');
+    }
 
-    preencheCampos = (genId, genNome) => {
-        this.setState({
-            genId,
-            genNome,
-        });
-    };
+    function preencheCampos(id, nome) {
+        setGenId(id);
+        setGenNome(nome);
+    }
 
-    carregaGrid = () => {
+    function carregaGrid() {
         axios({
             method: 'GET',
             url: '/generos',
@@ -76,176 +57,141 @@ class Genero extends Component {
             },
         })
             .then(res => {
-                this.setState({ generos: res.data });
+                setGeneros(res.data);
             })
-            .catch(err => {
-                this.setState({ erro: 'Erro ao carregar registros.' });
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
             });
-    };
+    }
 
-    salva = () => {
-        if (this.state.genNome.trim() === '') {
-            this.setState({ erro: 'Nome em branco.' });
+    useEffect(() => {
+        carregaGrid();
+    }, []);
+
+    function grava() {
+        if (genNome.trim() === '') {
+            setErro('Nome em branco.');
             return;
         }
-        if (this.state.genId === undefined) {
+        if (genId === undefined) {
             axios({
                 method: 'POST',
                 url: '/generos',
-                data: { gen_id: null, gen_nome: this.state.genNome.trim() },
+                data: { gen_id: null, gen_nome: genNome.trim() },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Inserido com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    mensagem.success('Inserido com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao inserir registro.' });
+                .catch(() => {
+                    setErro('Erro ao inserir registro.');
                 });
         } else {
             axios({
                 method: 'PUT',
-                url: `generos/${this.state.genId}`,
+                url: `generos/${genId}`,
                 data: {
-                    gen_nome: this.state.genNome.trim(),
+                    gen_nome: genNome.trim(),
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Editado com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    mensagem.success('Editado com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao editar registro.' });
+                .catch(() => {
+                    setErro('Erro ao editar registro.');
                 });
         }
-    };
+    }
 
-    exclui = () => {
+    function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `generos/${this.state.genId}`,
+            url: `generos/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(res => {
-                this.limpaCampos();
-                this.carregaGrid();
-                this.abreHint('Excluído com sucesso.');
-                this.fechaModal();
+            .then(() => {
+                limpaCampos();
+                carregaGrid();
+                mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {
-                this.setState({ erro: err.response.data.error });
-                this.fechaModal();
+                setErro(err.response.data.error);
             });
-    };
-
-    fechaHint = () => {
-        this.setState({ salva: false, mensagemHint: '' });
-    };
-
-    abreHint = mensagemHint => {
-        this.setState({ salva: true, mensagemHint });
-    };
-
-    abreModal = () => {
-        if (this.state.genId === undefined) {
-            this.setState({ erro: 'Selecione um registro para excluir.' });
-        } else {
-            this.setState({ show: true });
-        }
-    };
-
-    fechaModal = () => {
-        this.setState({ show: false });
-    };
-
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className={classes.lateral}>
-                <Autorizacao tela="Gêneros" />
-                <Menu />
-                <Grid container>
-                    <Grid item xs={12} sm={9}>
-                        <Card>
-                            <CardHeader title="Gêneros" className={classes.fundoHeader} />
-                            <CardContent>
-                                <span className={classes.erro}>{this.state.erro}</span>
-                                <form className={classes.formulario} noValidate autoComplete="off">
-                                    <input id="genId" value={this.state.genId} onChange={this.setGenId} type="hidden" />
-                                    <fieldset className={classes.legenda}>
-                                        <legend>Nome</legend>
-                                        <input className={classes.campoTexto} required id="genNome" type="text" value={this.state.genNome} onChange={this.setGenNome} autoFocus size="100" maxLength="100" />
-                                    </fieldset>
-                                </form>
-                                <br />
-                                <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
-                                    <SalvaIcon />
-                                    Salvar
-                                </Button>
-                                &nbsp;
-                                <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
-                                    <ApagaIcon />
-                                    Excluir
-                                </Button>
-                                &nbsp;
-                                <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
-                                    <LimpaIcon />
-                                    Limpar campos
-                                </Button>
-                                <br />
-                                <br />
-                                <MaterialTable
-                                    columns={[
-                                        {
-                                            hidden: true,
-                                            field: 'gen_id',
-                                            type: 'numeric',
-                                        },
-                                        { title: 'Nome', field: 'gen_nome' },
-                                    ]}
-                                    data={this.state.generos}
-                                    actions={[
-                                        {
-                                            icon: () => <EditIcon />,
-                                            tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.gen_id, rowData.gen_nome),
-                                        },
-                                    ]}
-                                    options={tabelas.opcoes}
-                                    icons={tabelas.icones}
-                                    localization={tabelas.localizacao}
-                                />
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
-                    <Modal open={this.state.show} onClose={this.fechaModal}>
-                        <div className={classes.modal}>
-                            <h3>Deseja apagar o registro?</h3>
-                            <div>
-                                <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
-                                    Sim
-                                </Button>
-                                <div className={classes.espacoBotoes} />
-                                <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
-                                    Não
-                                </Button>
-                            </div>
-                        </div>
-                    </Modal>
-                </Grid>
-            </div>
-        );
     }
+
+    return (
+        <>
+            <Container>
+                <Autorizacao tela="Gêneros" />
+                <Header />
+                <AsideLeft>
+                    <Menu />
+                </AsideLeft>
+                <Main>
+                    <fieldset>
+                        <legend>Gêneros</legend>
+                        <Erro>{erro}</Erro>
+                        <form noValidate autoComplete="off">
+                            <input id="genId" value={genId} onChange={handleGenId} type="hidden" />
+                            <Container1>
+                                <fieldset>
+                                    <legend>Nome</legend>
+                                    <input required id="genNome" type="text" value={genNome} onChange={handleGenNome} autoFocus size="100" maxLength="100" />
+                                </fieldset>
+                            </Container1>
+                        </form>
+                        <ContainerBotoes>
+                            <button type="button" id="btnSalva" onClick={grava}>
+                                <FaRegSave />
+                                &nbsp;Salvar
+                            </button>
+                            <button type="button" id="btnExclui" onClick={abreModalExcluir}>
+                                <FaRegTrashAlt />
+                                &nbsp;Excluir
+                            </button>
+                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
+                                <FaSyncAlt />
+                                &nbsp;Limpar campos
+                            </button>
+                        </ContainerBotoes>
+                        <MaterialTable
+                            columns={[
+                                {
+                                    hidden: true,
+                                    field: 'gen_id',
+                                    type: 'numeric',
+                                },
+                                { title: 'Nome', field: 'gen_nome' },
+                            ]}
+                            data={generos}
+                            actions={[
+                                {
+                                    icon: () => <FaRegEdit />,
+                                    tooltip: 'Editar',
+                                    onClick: (_event, linha) => preencheCampos(linha.gen_id, linha.gen_nome),
+                                },
+                            ]}
+                            options={tabelas.opcoes}
+                            icons={tabelas.icones}
+                            localization={tabelas.localizacao}
+                        />
+                        <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={genId} />
+                    </fieldset>
+                </Main>
+            </Container>
+        </>
+    );
 }
 
-export default withStyles(styles)(Genero);
+export default Genero;
