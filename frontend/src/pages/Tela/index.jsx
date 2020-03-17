@@ -1,73 +1,54 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import SalvaIcon from '@material-ui/icons/Check';
-import ApagaIcon from '@material-ui/icons/Clear';
-import LimpaIcon from '@material-ui/icons/Refresh';
+import React, { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
-import EditIcon from '@material-ui/icons/Edit';
-import Check from '@material-ui/icons/Check';
-import Clear from '@material-ui/icons/Clear';
-import Snackbar from '@material-ui/core/Snackbar';
-import Modal from '@material-ui/core/Modal';
+import { FaRegSave, FaRegTrashAlt, FaRegEdit, FaSyncAlt } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
+import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
-import { styles } from './estilos';
 import { tabelas } from '../../configs/tabelas';
+import { Container, Container1, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
+import Header from '../../components/Header';
 
-class Tela extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            erro: '',
-            telId: undefined,
-            telNome: '',
-            telas: [],
-            salva: false,
-            show: false,
-            mensagemHint: '',
-        };
-        this.setTelId = this.setTelId.bind(this);
-        this.setTelNome = this.setTelNome.bind(this);
+function Tela() {
+    const [erro, setErro] = useState('');
+    const [telId, setTelId] = useState(undefined);
+    const [telNome, setTelNome] = useState('');
+    const [telas, setTelas] = useState([]);
+    const [modalExcluir, setModalExcluir] = useState(false);
+
+    function abreModalExcluir() {
+        if (telNome === '') {
+            setErro('Selecione um registro para apagar.');
+            return;
+        }
+        setModalExcluir(true);
     }
 
-    componentDidMount() {
-        this.carregaGrid();
+    function fechaModalExcluir() {
+        setModalExcluir(false);
     }
 
-    setTelId = event => {
-        this.setState({
-            telId: event.target.value,
-        });
-    };
+    function handleTelId(e) {
+        setTelId(e.target.value);
+    }
 
-    setTelNome = event => {
-        this.setState({
-            telNome: event.target.value,
-        });
-    };
+    function handleTelNome(e) {
+        setTelNome(e.target.value);
+    }
 
-    limpaCampos = () => {
-        this.setState({
-            telId: undefined,
-            telNome: '',
-            erro: '',
-        });
-    };
+    function limpaCampos() {
+        setTelId(undefined);
+        setTelNome('');
+        setErro('');
+    }
 
-    preencheCampos = (telId, telNome) => {
-        this.setState({
-            telId,
-            telNome,
-        });
-    };
+    function preencheCampos(id, nome) {
+        setTelId(id);
+        setTelNome(nome);
+    }
 
-    carregaGrid = () => {
+    function carregaGrid() {
         axios({
             method: 'GET',
             url: '/telas',
@@ -76,176 +57,141 @@ class Tela extends Component {
             },
         })
             .then(res => {
-                this.setState({ telas: res.data });
+                setTelas(res.data);
             })
-            .catch(err => {
-                this.setState({ erro: 'Erro ao carregar registros.' });
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
             });
-    };
+    }
 
-    salva = () => {
-        if (this.state.telNome.trim() === '') {
-            this.setState({ erro: 'Nome em branco.' });
+    useEffect(() => {
+        carregaGrid();
+    }, []);
+
+    function grava() {
+        if (telNome.trim() === '') {
+            setErro('Nome em branco.');
             return;
         }
-        if (this.state.telId === undefined) {
+        if (telId === undefined) {
             axios({
                 method: 'POST',
                 url: '/telas',
-                data: { tel_id: null, tel_nome: this.state.telNome.trim() },
+                data: { tel_id: null, tel_nome: telNome.trim() },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Inserido com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    mensagem.success('Inserido com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao inserir registro.' });
+                .catch(() => {
+                    setErro('Erro ao inserir registro.');
                 });
         } else {
             axios({
                 method: 'PUT',
-                url: `telas/${this.state.telId}`,
+                url: `telas/${telId}`,
                 data: {
-                    tel_nome: this.state.telNome.trim(),
+                    tel_nome: telNome.trim(),
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Editado com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    mensagem.success('Editado com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao editar registro.' });
+                .catch(() => {
+                    setErro('Erro ao editar registro.');
                 });
         }
-    };
+    }
 
-    exclui = () => {
+    function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `telas/${this.state.telId}`,
+            url: `telas/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(res => {
-                this.limpaCampos();
-                this.carregaGrid();
-                this.abreHint('Excluído com sucesso.');
-                this.fechaModal();
+            .then(() => {
+                limpaCampos();
+                carregaGrid();
+                mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {
-                this.setState({ erro: err.response.data.error });
-                this.fechaModal();
+                setErro(err.response.data.error);
             });
-    };
-
-    fechaHint = () => {
-        this.setState({ salva: false, mensagemHint: '' });
-    };
-
-    abreHint = mensagemHint => {
-        this.setState({ salva: true, mensagemHint });
-    };
-
-    abreModal = () => {
-        if (this.state.telId === undefined) {
-            this.setState({ erro: 'Selecione um registro para excluir.' });
-        } else {
-            this.setState({ show: true });
-        }
-    };
-
-    fechaModal = () => {
-        this.setState({ show: false });
-    };
-
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className={classes.lateral}>
-                <Autorizacao tela="Telas" />
-                <Menu />
-                <Grid container>
-                    <Grid item xs={12} sm={9}>
-                        <Card>
-                            <CardHeader title="Telas" className={classes.fundoHeader} />
-                            <CardContent>
-                                <span className={classes.erro}>{this.state.erro}</span>
-                                <form className={classes.formulario} noValidate autoComplete="off">
-                                    <input id="telId" value={this.state.telId} onChange={this.setTelId} type="hidden" />
-                                    <fieldset className={classes.legenda}>
-                                        <legend>Nome</legend>
-                                        <input className={classes.campoTexto} required id="telNome" type="text" value={this.state.telNome} onChange={this.setTelNome} autoFocus size="100" maxLength="100" />
-                                    </fieldset>
-                                </form>
-                                <br />
-                                <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
-                                    <SalvaIcon />
-                                    Salvar
-                                </Button>
-                                &nbsp;
-                                <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
-                                    <ApagaIcon />
-                                    Excluir
-                                </Button>
-                                &nbsp;
-                                <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
-                                    <LimpaIcon />
-                                    Limpar campos
-                                </Button>
-                                <br />
-                                <br />
-                                <MaterialTable
-                                    columns={[
-                                        {
-                                            hidden: true,
-                                            field: 'tel_id',
-                                            type: 'numeric',
-                                        },
-                                        { title: 'Nome', field: 'tel_nome' },
-                                    ]}
-                                    data={this.state.telas}
-                                    actions={[
-                                        {
-                                            icon: () => <EditIcon />,
-                                            tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.tel_id, rowData.tel_nome),
-                                        },
-                                    ]}
-                                    options={tabelas.opcoes}
-                                    icons={tabelas.icones}
-                                    localization={tabelas.localizacao}
-                                />
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
-                    <Modal open={this.state.show} onClose={this.fechaModal}>
-                        <div className={classes.modal}>
-                            <h3>Deseja apagar o registro?</h3>
-                            <div>
-                                <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
-                                    Sim
-                                </Button>
-                                <div className={classes.espacoBotoes} />
-                                <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
-                                    Não
-                                </Button>
-                            </div>
-                        </div>
-                    </Modal>
-                </Grid>
-            </div>
-        );
     }
+
+    return (
+        <>
+            <Container>
+                <Autorizacao tela="Telas" />
+                <Header />
+                <AsideLeft>
+                    <Menu />
+                </AsideLeft>
+                <Main>
+                    <fieldset>
+                        <legend>Telas</legend>
+                        <Erro>{erro}</Erro>
+                        <form noValidate autoComplete="off">
+                            <input id="telId" value={telId} onChange={handleTelId} type="hidden" />
+                            <Container1>
+                                <fieldset>
+                                    <legend>Nome</legend>
+                                    <input required id="telNome" type="text" value={telNome} onChange={handleTelNome} autoFocus size="100" maxLength="100" />
+                                </fieldset>
+                            </Container1>
+                        </form>
+                        <ContainerBotoes>
+                            <button type="button" id="btnSalva" onClick={grava}>
+                                <FaRegSave />
+                                &nbsp;Salvar
+                            </button>
+                            <button type="button" id="btnExclui" onClick={abreModalExcluir}>
+                                <FaRegTrashAlt />
+                                &nbsp;Excluir
+                            </button>
+                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
+                                <FaSyncAlt />
+                                &nbsp;Limpar campos
+                            </button>
+                        </ContainerBotoes>
+                        <MaterialTable
+                            columns={[
+                                {
+                                    hidden: true,
+                                    field: 'tel_id',
+                                    type: 'numeric',
+                                },
+                                { title: 'Nome', field: 'tel_nome' },
+                            ]}
+                            data={telas}
+                            actions={[
+                                {
+                                    icon: () => <FaRegEdit />,
+                                    tooltip: 'Editar',
+                                    onClick: (_event, linha) => preencheCampos(linha.tel_id, linha.tel_nome),
+                                },
+                            ]}
+                            options={tabelas.opcoes}
+                            icons={tabelas.icones}
+                            localization={tabelas.localizacao}
+                        />
+                        <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={telId} />
+                    </fieldset>
+                </Main>
+            </Container>
+        </>
+    );
 }
 
-export default withStyles(styles)(Tela);
+export default Tela;
