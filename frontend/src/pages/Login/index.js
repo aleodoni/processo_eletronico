@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaKey } from 'react-icons/fa';
 import axios from 'axios';
 import { useHistory } from 'react-router';
@@ -12,6 +12,7 @@ function Login() {
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
     const [erro, setErro] = useState('');
+    const [bd, setBd] = useState('');
     const history = useHistory();
 
     function limparSessao() {
@@ -24,6 +25,24 @@ function Login() {
         sessionStorage.removeItem('nomeAreaUsuario');
         sessionStorage.removeItem('menu');
     }
+
+    useEffect(() => {
+        async function nomeBd() {
+            axios({
+                method: 'GET',
+                url: `${process.env.REACT_APP_API_URL}/spa2-api/bd`,
+            }).then(res => {
+                if (res.data.bd === 'des' || res.data.bd === 'postgres') {
+                    setBd(`Desenvolvimento - versão:${res.data.versao}`);
+                } else if (res.data.bd === 'pro') {
+                    setBd(`Produção - versão:${res.data.versao}`);
+                } else {
+                    setBd(`Não conectado - versão:${res.data.versao}`);
+                }
+            });
+        }
+        nomeBd();
+    }, []);
 
     function logar(e) {
         e.preventDefault();
@@ -55,7 +74,7 @@ function Login() {
                     if (err === 'Error: Network Error') {
                         setErro('Não conectado a API.');
                     } else {
-                        setErro(err.response.data.message);
+                        setErro(err.response.data.error);
                     }
                     limparSessao();
                 });
@@ -78,7 +97,7 @@ function Login() {
                         <FaKey color="#FFF" />
                         &nbsp;Acessar
                     </BotaoLogin>
-                    <Versao>Versão: 1.0.0 - API - Desenvolvimento</Versao>
+                    <Versao>{bd}</Versao>
                     <ErroLogin>
                         <p>{erro && erro}</p>
                     </ErroLogin>

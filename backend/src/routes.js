@@ -46,6 +46,7 @@ const upload = multer({ storage: storage });
  * Rotas sem autenticação
  */
 routes.post(`${process.env.API_URL}/autorizacao`, LoginController.index);
+routes.get(`${process.env.API_URL}/bd`, LoginController.getBd);
 routes.get(`${process.env.API_URL}/`, Spa2Controller.index);
 
 /**
