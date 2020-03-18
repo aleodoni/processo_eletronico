@@ -19,7 +19,7 @@ const Modal = ({ isShowing, hide }) =>
                                   data-dismiss="modal"
                                   aria-label="Close"
                                   onClick={() => {
-                                      window.location.href = '/';
+                                      window.location.href = '/processo-eletronico';
                                   }}>
                                   <FaCheck />
                                   &nbsp; OK
