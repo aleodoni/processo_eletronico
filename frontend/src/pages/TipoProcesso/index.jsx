@@ -1,15 +1,6 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import SalvaIcon from '@material-ui/icons/Check';
-import ApagaIcon from '@material-ui/icons/Clear';
-import LimpaIcon from '@material-ui/icons/Refresh';
+import React, { useState, useEffect } from 'react';
+import { FaRegSave, FaRegTrashAlt, FaSyncAlt, FaRegEdit } from 'react-icons/fa';
 import MaterialTable from 'material-table';
-import EditIcon from '@material-ui/icons/Edit';
 import Check from '@material-ui/icons/Check';
 import Clear from '@material-ui/icons/Clear';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -17,112 +8,62 @@ import Modal from '@material-ui/core/Modal';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
-import { styles } from './estilos';
 import { tabelas } from '../../configs/tabelas';
+import { Container, ContainerMenu1, ContainerBotoes, AsideLeft, Main, Erro, ModalApaga } from './styles';
+import Header from '../../components/Header';
 
-class TipoProcesso extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            erro: '',
-            tprId: undefined,
-            tprNome: '',
-            tpr_visualizacao: '',
-            genId: '',
-            fluId: '',
-            tiposProcesso: [],
-            generos: [],
-            fluxos: [],
-            salva: false,
-            show: false,
-            mensagemHint: '',
-        };
-        this.setTprId = this.setTprId.bind(this);
-        this.setTprVisualizacao = this.setTprVisualizacao.bind(this);
-        this.setTprNome = this.setTprNome.bind(this);
-        this.setGenId = this.setGenId.bind(this);
-        this.setFluId = this.setFluId.bind(this);
-        this.setTiposProcesso = this.setTiposProcesso.bind(this);
-        this.setGeneros = this.setGeneros.bind(this);
-        this.setFluxos = this.setFluxos.bind(this);
+function TipoProcesso() {
+    const [erro, setErro] = useState('');
+    const [tprId, setTprId] = useState(undefined);
+    const [tprNome, setTprNome] = useState('');
+    const [tprVisualizacao, setTprVisualizacao] = useState('');
+    const [genId, setGenId] = useState('');
+    const [fluId, setFluId] = useState('');
+    const [tiposProcesso, setTiposProcesso] = useState([]);
+    const [generos, setGeneros] = useState([]);
+    const [fluxos, setFluxos] = useState([]);
+    const [salva, setSalva] = useState(false);
+    const [show, setShow] = useState(false);
+    const [mensagemHint, setMensagemHint] = useState('');
+
+    function handleTprId(e) {
+        setTprId(e.target.value);
     }
 
-    componentDidMount() {
-        this.carregaGrid();
-        this.carregaGenero();
-        this.carregaFluxo();
+    function handleTprNome(e) {
+        setTprNome(e.target.value);
     }
 
-    setTprId = event => {
-        this.setState({
-            tprId: event.target.value,
-        });
-    };
+    function handleTprVisualizacao(e) {
+        setTprVisualizacao(e.target.value);
+    }
 
-    setTprVisualizacao = event => {
-        this.setState({
-            tprVisualizacao: event.target.value,
-        });
-    };
+    function handleGenId(e) {
+        setGenId(e.target.value);
+    }
 
-    setTprNome = event => {
-        this.setState({
-            tprNome: event.target.value,
-        });
-    };
+    function handleFluId(e) {
+        setFluId(e.target.value);
+    }
 
-    setGenId = event => {
-        this.setState({
-            genId: event.target.value,
-        });
-    };
+    function limpaCampos() {
+        setTprId(undefined);
+        setTprNome('');
+        setTprVisualizacao('');
+        setGenId('');
+        setFluId('');
+        setErro('');
+    }
 
-    setFluId = event => {
-        this.setState({
-            fluId: event.target.value,
-        });
-    };
+    function preencheCampos(tprId, tprVisualizacao, tprNome, genId, fluId) {
+        setTprId(tprId);
+        setTprNome(tprNome);
+        setTprVisualizacao(tprVisualizacao);
+        setGenId(genId);
+        setFluId(fluId);
+    }
 
-    setTiposProcesso = event => {
-        this.setState({
-            tiposProcesso: event.target.value,
-        });
-    };
-
-    setGeneros = event => {
-        this.setState({
-            generos: event.target.value,
-        });
-    };
-
-    setFluxos = event => {
-        this.setState({
-            fluxos: event.target.value,
-        });
-    };
-
-    limpaCampos = () => {
-        this.setState({
-            tprId: undefined,
-            tprVisualizacao: '',
-            tprNome: '',
-            genId: '',
-            fluId: '',
-            erro: '',
-        });
-    };
-
-    preencheCampos = (tprId, tprVisualizacao, tprNome, genId, fluId) => {
-        this.setState({
-            tprId,
-            tprVisualizacao,
-            tprNome,
-            genId,
-            fluId,
-        });
-    };
-
-    carregaGrid = () => {
+    function carregaGrid() {
         axios({
             method: 'GET',
             url: '/tipos-de-processo',
@@ -131,15 +72,15 @@ class TipoProcesso extends Component {
             },
         })
             .then(res => {
-                this.setState({ tiposProcesso: res.data });
+                setTiposProcesso(res.data);
             })
             .catch(err => {
                 console.log(err);
-                this.setState({ erro: 'Erro ao carregar registros.' });
+                setErro('Erro ao carregar registros.');
             });
-    };
+    }
 
-    carregaGenero = () => {
+    function carregaGenero() {
         axios({
             method: 'GET',
             url: '/generos',
@@ -161,14 +102,14 @@ class TipoProcesso extends Component {
                         </option>
                     );
                 }
-                this.setState({ generos: comboGenero });
+                setGeneros(comboGenero);
             })
-            .catch(err => {
-                this.setState({ erro: 'Erro ao carregar gêneros.' });
+            .catch(() => {
+                setErro('Erro ao carregar gêneros.');
             });
-    };
+    }
 
-    carregaFluxo = () => {
+    function carregaFluxo() {
         axios({
             method: 'GET',
             url: '/fluxos',
@@ -190,264 +131,259 @@ class TipoProcesso extends Component {
                         </option>
                     );
                 }
-                this.setState({ fluxos: comboFluxo });
+                setFluxos(comboFluxo);
             })
-            .catch(err => {
-                this.setState({ erro: 'Erro ao carregar fluxos.' });
+            .catch(() => {
+                setErro('Erro ao carregar fluxos.');
             });
-    };
+    }
 
-    salva = () => {
-        if (this.state.tprNome.trim() === '') {
-            this.setState({ erro: 'Tipo de processo em branco.' });
+    useEffect(() => {
+        async function carrega() {
+            carregaGrid();
+            carregaGenero();
+            carregaFluxo();
+        }
+        carrega();
+    }, []);
+
+    function abreHint(mensagem) {
+        setSalva(true);
+        setMensagemHint(mensagem);
+    }
+
+    function salvaTela() {
+        if (tprNome.trim() === '') {
+            setErro('Tipo de processo em branco.');
             return;
         }
-        if (this.state.tprVisualizacao === undefined) {
-            this.setState({ erro: 'Visualização não selecionada.' });
+        if (tprVisualizacao === undefined) {
+            setErro('Visualização não selecionada.');
             return;
         }
-        if (this.state.genId === '') {
-            this.setState({ erro: 'Gênero não selecionado.' });
+        if (genId === '') {
+            setErro('Gênero não selecionado.');
             return;
         }
-        if (this.state.tprId === undefined) {
+        if (tprId === undefined) {
             axios({
                 method: 'POST',
                 url: '/tipos-processo',
                 data: {
                     tpr_id: null,
-                    tpr_visualizacao: this.state.tprVisualizacao,
-                    tpr_nome: this.state.tprNome,
-                    gen_id: this.state.genId,
-                    flu_id: this.state.fluId,
+                    tpr_visualizacao: tprVisualizacao,
+                    tpr_nome: tprNome,
+                    gen_id: genId,
+                    flu_id: fluId,
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Inserido com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    abreHint('Inserido com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao inserir registro.' });
+                .catch(() => {
+                    setErro('Erro ao inserir registro.');
                 });
         } else {
             axios({
                 method: 'PUT',
-                url: `tipos-processo/${this.state.tprId}`,
+                url: `tipos-processo/${tprId}`,
                 data: {
-                    tpr_visualizacao: this.state.tprVisualizacao,
-                    tpr_nome: this.state.tprNome,
-                    gen_id: this.state.genId,
-                    flu_id: this.state.fluId,
+                    tpr_visualizacao: tprVisualizacao,
+                    tpr_nome: tprNome,
+                    gen_id: genId,
+                    flu_id: fluId,
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Editado com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    abreHint('Editado com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao editar registro.' });
+                .catch(() => {
+                    setErro('Erro ao editar registro.');
                 });
         }
-    };
+    }
 
-    exclui = () => {
+    function fechaModal() {
+        setShow(false);
+    }
+
+    function exclui() {
         axios({
             method: 'DELETE',
-            url: `tipos-processo/${this.state.tprId}`,
+            url: `tipos-processo/${tprId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(res => {
-                this.limpaCampos();
-                this.carregaGrid();
-                this.abreHint('Excluído com sucesso.');
-                this.fechaModal();
+            .then(() => {
+                limpaCampos();
+                carregaGrid();
+                abreHint('Excluído com sucesso.');
+                fechaModal();
             })
             .catch(err => {
-                this.setState({ erro: err.response.data.error });
-                this.fechaModal();
+                setErro(err.response.data.error);
+                fechaModal();
             });
-    };
-
-    fechaHint = () => {
-        this.setState({ salva: false, mensagemHint: '' });
-    };
-
-    abreHint = mensagemHint => {
-        this.setState({ salva: true, mensagemHint });
-    };
-
-    abreModal = () => {
-        if (this.state.tprId === undefined) {
-            this.setState({ erro: 'Selecione um registro para excluir.' });
-        } else {
-            this.setState({ show: true });
-        }
-    };
-
-    fechaModal = () => {
-        this.setState({ show: false });
-    };
-
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className={classes.lateral}>
-                <Autorizacao tela="Tipos de processo" />
-                <Menu />
-                <Grid container>
-                    <Grid item xs={12}>
-                        <Card>
-                            <CardHeader title="Tipos de processo" className={classes.fundoHeader} />
-                            <CardContent>
-                                <span className={classes.erro}>{this.state.erro}</span>
-                                <form className={classes.formulario} noValidate autoComplete="off">
-                                    <input id="tprId" value={this.state.tprId} onChange={this.setTprId} type="hidden" />
-                                    <Grid container>
-                                        <Grid item xs={6}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Tipo de processo</legend>
-                                                <input className={classes.campoTexto} required id="tprNome" type="text" value={this.state.tprNome} onChange={this.setTprNome} size="150" maxLength="150" />
-                                            </fieldset>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid container>
-                                        <Grid item xs={2}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Visualização</legend>
-                                                <select id="selectVisualizacao" onChange={this.setTprVisualizacao} value={this.state.tprVisualizacao}>
-                                                    <option key="" value="">
-                                                        Selecione...
-                                                    </option>
-                                                    <option key="0" value="0">
-                                                        Normal
-                                                    </option>
-                                                    <option key="1" value="1">
-                                                        Restrito
-                                                    </option>
-                                                    <option key="2" value="2">
-                                                        Sigiloso
-                                                    </option>
-                                                </select>
-                                            </fieldset>
-                                        </Grid>
-                                        <Grid item xs={2}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Gênero</legend>
-                                                <select id="selectGenero" onChange={this.setGenId} value={this.state.genId}>
-                                                    {this.state.generos}
-                                                </select>
-                                            </fieldset>
-                                        </Grid>
-                                        <Grid item xs={2}>
-                                            <fieldset className={classes.legenda}>
-                                                <legend>Fluxo</legend>
-                                                <select id="selectFluxo" onChange={this.setFluId} value={this.state.fluId}>
-                                                    {this.state.fluxos}
-                                                </select>
-                                            </fieldset>
-                                        </Grid>
-                                    </Grid>
-                                </form>
-                                <br />
-                                <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
-                                    <SalvaIcon />
-                                    Salvar
-                                </Button>
-                                &nbsp;
-                                <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
-                                    <ApagaIcon />
-                                    Excluir
-                                </Button>
-                                &nbsp;
-                                <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
-                                    <LimpaIcon />
-                                    Limpar campos
-                                </Button>
-                                <br />
-                                <br />
-                                <MaterialTable
-                                    columns={[
-                                        {
-                                            hidden: true,
-                                            field: 'tpr_id',
-                                            type: 'numeric',
-                                        },
-                                        {
-                                            hidden: true,
-                                            field: 'gen_id',
-                                            type: 'numeric',
-                                        },
-                                        {
-                                            hidden: true,
-                                            field: 'flu_id',
-                                            type: 'numeric',
-                                        },
-                                        {
-                                            hidden: true,
-                                            field: 'tpr_visualizacao',
-                                            type: 'numeric',
-                                        },
-                                        {
-                                            title: 'Nome',
-                                            field: 'tpr_nome',
-                                        },
-                                        {
-                                            title: 'Visualização',
-                                            field: 'visualizacao',
-                                        },
-                                        {
-                                            title: 'Gênero',
-                                            field: 'gen_nome',
-                                        },
-                                        {
-                                            title: 'Fluxo',
-                                            field: 'flu_nome',
-                                        },
-                                    ]}
-                                    data={this.state.tiposProcesso}
-                                    actions={[
-                                        {
-                                            icon: () => <EditIcon />,
-                                            tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.tpr_id, rowData.tpr_visualizacao, rowData.tpr_nome, rowData.gen_id, rowData.flu_id),
-                                        },
-                                    ]}
-                                    options={tabelas.opcoes}
-                                    icons={tabelas.icones}
-                                    localization={tabelas.localizacao}
-                                />
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
-                    <Modal open={this.state.show} onClose={this.fechaModal}>
-                        <div className={classes.modal}>
-                            <h3>Deseja apagar o registro?</h3>
-                            <div>
-                                <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
-                                    Sim
-                                </Button>
-                                <div className={classes.espacoBotoes} />
-                                <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
-                                    Não
-                                </Button>
-                            </div>
-                        </div>
-                    </Modal>
-                </Grid>
-            </div>
-        );
     }
+
+    function fechaHint() {
+        setSalva(false);
+        setMensagemHint('');
+    }
+
+    function abreModal() {
+        if (tprId === undefined) {
+            setErro('Selecione um registro para excluir.');
+        } else {
+            setShow(true);
+        }
+    }
+
+    return (
+        <>
+            <Container>
+                <Autorizacao tela="Tipos de processo" />
+                <Header />
+                <AsideLeft>
+                    <Menu />
+                </AsideLeft>
+                <Main>
+                    <fieldset>
+                        <legend>Tipos de processo</legend>
+                        <Erro>{erro}</Erro>
+                        <form noValidate autoComplete="off">
+                            <input id="tprId" value={tprId} onChange={handleTprId} type="hidden" />
+                            <ContainerMenu1>
+                                <fieldset>
+                                    <legend>Tipo</legend>
+                                    <input required id="tprNome" type="text" value={tprNome} onChange={handleTprNome} size="60" maxLength="60" />
+                                </fieldset>
+                                <fieldset>
+                                    <legend>Visualização</legend>
+                                    <select id="selectVisualizacao" onChange={handleTprVisualizacao} value={tprVisualizacao}>
+                                        <option key="" value="">
+                                            Selecione...
+                                        </option>
+                                        <option key="0" value="0">
+                                            Normal
+                                        </option>
+                                        <option key="1" value="1">
+                                            Restrito
+                                        </option>
+                                        <option key="2" value="2">
+                                            Sigiloso
+                                        </option>
+                                    </select>
+                                </fieldset>
+                                <fieldset>
+                                    <legend>Gênero</legend>
+                                    <select id="selectGenero" onChange={handleGenId} value={genId}>
+                                        {generos}
+                                    </select>
+                                </fieldset>
+                                <fieldset>
+                                    <legend>Fluxo</legend>
+                                    <select id="selectFluxo" onChange={handleFluId} value={fluId}>
+                                        {fluxos}
+                                    </select>
+                                </fieldset>
+                            </ContainerMenu1>
+                        </form>
+                        <ContainerBotoes>
+                            <button type="button" id="btnSalva" onClick={salvaTela}>
+                                <FaRegSave />
+                                &nbsp;Salvar
+                            </button>
+                            <button type="button" id="btnExclui" onClick={abreModal}>
+                                <FaRegTrashAlt />
+                                &nbsp;Excluir
+                            </button>
+                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
+                                <FaSyncAlt />
+                                &nbsp;Limpar campos
+                            </button>
+                        </ContainerBotoes>
+                        <MaterialTable
+                            columns={[
+                                {
+                                    hidden: true,
+                                    field: 'tpr_id',
+                                    type: 'numeric',
+                                },
+                                {
+                                    hidden: true,
+                                    field: 'gen_id',
+                                    type: 'numeric',
+                                },
+                                {
+                                    hidden: true,
+                                    field: 'flu_id',
+                                    type: 'numeric',
+                                },
+                                {
+                                    hidden: true,
+                                    field: 'tpr_visualizacao',
+                                    type: 'numeric',
+                                },
+                                {
+                                    title: 'Nome',
+                                    field: 'tpr_nome',
+                                },
+                                {
+                                    title: 'Visualização',
+                                    field: 'visualizacao',
+                                },
+                                {
+                                    title: 'Gênero',
+                                    field: 'gen_nome',
+                                },
+                                {
+                                    title: 'Fluxo',
+                                    field: 'flu_nome',
+                                },
+                            ]}
+                            data={tiposProcesso}
+                            actions={[
+                                {
+                                    icon: () => <FaRegEdit />,
+                                    tooltip: 'Editar',
+                                    onClick: (event, rowData) => preencheCampos(rowData.tpr_id, rowData.tpr_visualizacao, rowData.tpr_nome, rowData.gen_id, rowData.flu_id),
+                                },
+                            ]}
+                            options={tabelas.opcoes}
+                            icons={tabelas.icones}
+                            localization={tabelas.localizacao}
+                        />
+                        <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={salva} onClose={fechaHint} autoHideDuration={500} message={mensagemHint} />
+                        <Modal open={show} onClose={fechaModal}>
+                            <ModalApaga>
+                                <h3>Deseja apagar o registro?</h3>
+                                <div>
+                                    <button type="submit" startIcon={<Check />} onClick={exclui}>
+                                        Sim
+                                    </button>
+                                    <button type="submit" startIcon={<Clear />} onClick={fechaModal}>
+                                        Não
+                                    </button>
+                                </div>
+                            </ModalApaga>
+                        </Modal>
+                    </fieldset>
+                </Main>
+            </Container>
+        </>
+    );
 }
 
-export default withStyles(styles)(TipoProcesso);
+export default TipoProcesso;
