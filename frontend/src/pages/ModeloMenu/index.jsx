@@ -1,73 +1,54 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import SalvaIcon from '@material-ui/icons/Check';
-import ApagaIcon from '@material-ui/icons/Clear';
-import LimpaIcon from '@material-ui/icons/Refresh';
+import React, { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
-import EditIcon from '@material-ui/icons/Edit';
-import Check from '@material-ui/icons/Check';
-import Clear from '@material-ui/icons/Clear';
-import Snackbar from '@material-ui/core/Snackbar';
-import Modal from '@material-ui/core/Modal';
+import { FaRegSave, FaRegTrashAlt, FaRegEdit, FaSyncAlt } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
+import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
-import { styles } from './estilos';
 import { tabelas } from '../../configs/tabelas';
+import { Container, Container1, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
+import Header from '../../components/Header';
 
-class ModeloMenu extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            erro: '',
-            mmuId: undefined,
-            mmuNome: '',
-            modeloMenus: [],
-            salva: false,
-            show: false,
-            mensagemHint: '',
-        };
-        this.setMmuId = this.setMmuId.bind(this);
-        this.setMmuNome = this.setMmuNome.bind(this);
+function ModeloMenu() {
+    const [erro, setErro] = useState('');
+    const [mmuId, setMmuId] = useState(undefined);
+    const [mmuNome, setMmuNome] = useState('');
+    const [modeloMenus, setModeloMenus] = useState([]);
+    const [modalExcluir, setModalExcluir] = useState(false);
+
+    function abreModalExcluir() {
+        if (mmuNome === '') {
+            setErro('Selecione um registro para apagar.');
+            return;
+        }
+        setModalExcluir(true);
     }
 
-    componentDidMount() {
-        this.carregaGrid();
+    function fechaModalExcluir() {
+        setModalExcluir(false);
     }
 
-    setMmuId = event => {
-        this.setState({
-            mmuId: event.target.value,
-        });
-    };
+    function handleMmuId(e) {
+        setMmuId(e.target.value);
+    }
 
-    setMmuNome = event => {
-        this.setState({
-            mmuNome: event.target.value,
-        });
-    };
+    function handleMmuNome(e) {
+        setMmuNome(e.target.value);
+    }
 
-    limpaCampos = () => {
-        this.setState({
-            mmuId: undefined,
-            mmuNome: '',
-            erro: '',
-        });
-    };
+    function limpaCampos() {
+        setMmuId(undefined);
+        setMmuNome('');
+        setErro('');
+    }
 
-    preencheCampos = (mmuId, mmuNome) => {
-        this.setState({
-            mmuId,
-            mmuNome,
-        });
-    };
+    function preencheCampos(id, nome) {
+        setMmuId(id);
+        setMmuNome(nome);
+    }
 
-    carregaGrid = () => {
+    function carregaGrid() {
         axios({
             method: 'GET',
             url: '/modelo-menu',
@@ -76,177 +57,141 @@ class ModeloMenu extends Component {
             },
         })
             .then(res => {
-                this.setState({ modeloMenus: res.data });
+                setModeloMenus(res.data);
             })
-            .catch(err => {
-                console.log(err);
-                this.setState({ erro: 'Erro ao carregar registros.' });
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
             });
-    };
+    }
 
-    salva = () => {
-        if (this.state.mmuNome.trim() === '') {
-            this.setState({ erro: 'Nome em branco.' });
+    useEffect(() => {
+        carregaGrid();
+    }, []);
+
+    function grava() {
+        if (mmuNome.trim() === '') {
+            setErro('Nome em branco.');
             return;
         }
-        if (this.state.mmuId === undefined) {
+        if (mmuId === undefined) {
             axios({
                 method: 'POST',
                 url: '/modelo-menu',
-                data: { mmu_id: null, mmu_nome: this.state.mmuNome.trim() },
+                data: { mmu_id: null, mmu_nome: mmuNome.trim() },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Inserido com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    mensagem.success('Inserido com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao inserir registro.' });
+                .catch(() => {
+                    setErro('Erro ao inserir registro.');
                 });
         } else {
             axios({
                 method: 'PUT',
-                url: `modelo-menu/${this.state.mmuId}`,
+                url: `modelo-menu/${mmuId}`,
                 data: {
-                    mmu_nome: this.state.mmuNome.trim(),
+                    mmu_nome: mmuNome.trim(),
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
             })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid();
-                    this.abreHint('Editado com sucesso.');
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid();
+                    mensagem.success('Editado com sucesso.');
                 })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao editar registro.' });
+                .catch(() => {
+                    setErro('Erro ao editar registro.');
                 });
         }
-    };
+    }
 
-    exclui = () => {
+    function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `modelo-menu/${this.state.mmuId}`,
+            url: `modelo-menu/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(res => {
-                this.limpaCampos();
-                this.carregaGrid();
-                this.abreHint('Excluído com sucesso.');
-                this.fechaModal();
+            .then(() => {
+                limpaCampos();
+                carregaGrid();
+                mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {
-                this.setState({ erro: err.response.data.error });
-                this.fechaModal();
+                setErro(err.response.data.error);
             });
-    };
-
-    fechaHint = () => {
-        this.setState({ salva: false, mensagemHint: '' });
-    };
-
-    abreHint = mensagemHint => {
-        this.setState({ salva: true, mensagemHint });
-    };
-
-    abreModal = () => {
-        if (this.state.mmuId === undefined) {
-            this.setState({ erro: 'Selecione um registro para excluir.' });
-        } else {
-            this.setState({ show: true });
-        }
-    };
-
-    fechaModal = () => {
-        this.setState({ show: false });
-    };
-
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className={classes.lateral}>
-                <Autorizacao tela="Modelo de menus" />
-                <Menu />
-                <Grid container>
-                    <Grid item xs={12} sm={9}>
-                        <Card>
-                            <CardHeader title="Modelos de menus" className={classes.fundoHeader} />
-                            <CardContent>
-                                <span className={classes.erro}>{this.state.erro}</span>
-                                <form className={classes.formulario} noValidate autoComplete="off">
-                                    <input id="mmuId" value={this.state.mmuId} onChange={this.setMmuId} type="hidden" />
-                                    <fieldset className={classes.legenda}>
-                                        <legend>Nome</legend>
-                                        <input className={classes.campoTexto} required id="mmuNome" type="text" value={this.state.mmuNome} onChange={this.setMmuNome} autoFocus size="100" maxLength="100" />
-                                    </fieldset>
-                                </form>
-                                <br />
-                                <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
-                                    <SalvaIcon />
-                                    Salvar
-                                </Button>
-                                &nbsp;
-                                <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
-                                    <ApagaIcon />
-                                    Excluir
-                                </Button>
-                                &nbsp;
-                                <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
-                                    <LimpaIcon />
-                                    Limpar campos
-                                </Button>
-                                <br />
-                                <br />
-                                <MaterialTable
-                                    columns={[
-                                        {
-                                            hidden: true,
-                                            field: 'mmu_id',
-                                            type: 'numeric',
-                                        },
-                                        { title: 'Nome', field: 'mmu_nome' },
-                                    ]}
-                                    data={this.state.modeloMenus}
-                                    actions={[
-                                        {
-                                            icon: () => <EditIcon />,
-                                            tooltip: 'Editar',
-                                            onClick: (event, rowData) => this.preencheCampos(rowData.mmu_id, rowData.mmu_nome),
-                                        },
-                                    ]}
-                                    options={tabelas.opcoes}
-                                    icons={tabelas.icones}
-                                    localization={tabelas.localizacao}
-                                />
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
-                    <Modal open={this.state.show} onClose={this.fechaModal}>
-                        <div className={classes.modal}>
-                            <h3>Deseja apagar o registro?</h3>
-                            <div>
-                                <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
-                                    Sim
-                                </Button>
-                                <div className={classes.espacoBotoes} />
-                                <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
-                                    Não
-                                </Button>
-                            </div>
-                        </div>
-                    </Modal>
-                </Grid>
-            </div>
-        );
     }
+
+    return (
+        <>
+            <Container>
+                <Autorizacao tela="Modelo de menus" />
+                <Header />
+                <AsideLeft>
+                    <Menu />
+                </AsideLeft>
+                <Main>
+                    <fieldset>
+                        <legend>Modelos de menus</legend>
+                        <Erro>{erro}</Erro>
+                        <form noValidate autoComplete="off">
+                            <input id="mmuId" value={mmuId} onChange={handleMmuId} type="hidden" />
+                            <Container1>
+                                <fieldset>
+                                    <legend>Nome</legend>
+                                    <input required id="mmuNome" type="text" value={mmuNome} onChange={handleMmuNome} autoFocus size="100" maxLength="100" />
+                                </fieldset>
+                            </Container1>
+                        </form>
+                        <ContainerBotoes>
+                            <button type="button" id="btnSalva" onClick={grava}>
+                                <FaRegSave />
+                                &nbsp;Salvar
+                            </button>
+                            <button type="button" id="btnExclui" onClick={abreModalExcluir}>
+                                <FaRegTrashAlt />
+                                &nbsp;Excluir
+                            </button>
+                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
+                                <FaSyncAlt />
+                                &nbsp;Limpar campos
+                            </button>
+                        </ContainerBotoes>
+                        <MaterialTable
+                            columns={[
+                                {
+                                    hidden: true,
+                                    field: 'mmu_id',
+                                    type: 'numeric',
+                                },
+                                { title: 'Nome', field: 'mmu_nome' },
+                            ]}
+                            data={modeloMenus}
+                            actions={[
+                                {
+                                    icon: () => <FaRegEdit />,
+                                    tooltip: 'Editar',
+                                    onClick: (_event, linha) => preencheCampos(linha.mmu_id, linha.mmu_nome),
+                                },
+                            ]}
+                            options={tabelas.opcoes}
+                            icons={tabelas.icones}
+                            localization={tabelas.localizacao}
+                        />
+                        <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={mmuId} />
+                    </fieldset>
+                </Main>
+            </Container>
+        </>
+    );
 }
 
-export default withStyles(styles)(ModeloMenu);
+export default ModeloMenu;
