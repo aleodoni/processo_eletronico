@@ -1,7 +1,7 @@
 ---
 name: Documentação
 about: Documentação do sistema
-title: ''
+title: "[DOC]"
 labels: documentation
 assignees: ''
 
