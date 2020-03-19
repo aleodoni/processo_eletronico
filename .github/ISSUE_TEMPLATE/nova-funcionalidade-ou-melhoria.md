@@ -2,7 +2,7 @@
 name: Nova Funcionalidade ou Melhoria
 about: Nova funcionalidade ou melhoria para o sistema
 title: "[NEW FEATURE]"
-labels: wontfix
+labels: new feature
 assignees: ''
 
 ---
