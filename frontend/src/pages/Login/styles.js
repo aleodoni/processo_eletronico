@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { lighten } from 'polished';
 
 export const Centro = styled.div`
     border-radius: 7px;
@@ -6,14 +7,16 @@ export const Centro = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #303f9f;
-    font-family: Arial, Helvetica, sans-serif;
+    /* background: #303f9f; */
+    /* font-family: Arial, Helvetica, sans-serif; */
 
     form {
         width: 400px;
         border-radius: 7px;
         margin: 20px;
         padding-bottom: 10px;
+        padding-left: 50px;
+        padding-right: 50px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -27,17 +30,18 @@ export const Centro = styled.div`
     }
 
     span {
-        color: #000;
-        font-size: 32px;
-        letter-spacing: 0.1em;
-        text-shadow: -1px 0 darkgrey, 0 1px darkgrey, 1px 0 black, 0 -1px darkgrey;
+        color: #222;
+        font-size: 28px;
+        font-weight: bold;
+        /* letter-spacing: 0.1em; */
+        /* text-shadow: -1px 0 darkgrey, 0 1px darkgrey, 1px 0 black, 0 -1px darkgrey; */
         margin-bottom: 15px;
     }
 
-    input {
+    /*input {
         font-size: 14px;
         margin-bottom: 5px;
-    }
+    } */
 `;
 
 export const BotaoLogin = styled.button.attrs({
@@ -47,14 +51,16 @@ export const BotaoLogin = styled.button.attrs({
     border-radius: 4px;
     background: #303f9f;
     padding: 7px;
+    margin-top: 10px;
     color: #fff;
-    border: 1px solid #303f9f;
+    /* border: 1px solid #303f9f; */
+    border: 0;
     display: flex;
     justify-content: center;
     align-items: center;
 
     &:hover {
-        background: #4496db;
+        background: ${lighten(0.1, '#303f9f')};
     }
 `;
 

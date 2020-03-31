@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { FaKey } from 'react-icons/fa';
 import axios from 'axios';
 import { useHistory } from 'react-router';
+import { Form } from '@unform/web';
+
 import Logo from '../../assets/brasao.png';
+import Input from '../../components/layout/Input';
 
 import { Centro, BotaoLogin, Versao, ErroLogin } from './styles';
 
 require('dotenv').config();
 
 function Login() {
-    const [usuario, setUsuario] = useState('');
-    const [senha, setSenha] = useState('');
+    // const [usuario, setUsuario] = useState('');
+    // const [senha, setSenha] = useState('');
     const [erro, setErro] = useState('');
     const [bd, setBd] = useState('');
     const history = useHistory();
@@ -28,24 +31,26 @@ function Login() {
 
     useEffect(() => {
         async function nomeBd() {
-            axios({
-                method: 'GET',
-                url: `${process.env.REACT_APP_API_URL}/spa2-api/bd`,
-            }).then(res => {
-                if (res.data.bd === 'des' || res.data.bd === 'postgres') {
-                    setBd(`Desenvolvimento - versão:${res.data.versao}`);
-                } else if (res.data.bd === 'pro') {
-                    setBd(`Produção - versão:${res.data.versao}`);
-                } else {
-                    setBd(`Não conectado - versão:${res.data.versao}`);
-                }
-            });
+            // axios({
+            //     method: 'GET',
+            //     url: `${process.env.REACT_APP_API_URL}/spa2-api/bd`,
+            // }).then(res => {
+            //     if (res.data.bd === 'des' || res.data.bd === 'postgres') {
+            //         setBd(`Desenvolvimento - versão:${res.data.versao}`);
+            //     } else if (res.data.bd === 'pro') {
+            //         setBd(`Produção - versão:${res.data.versao}`);
+            //     } else {
+            //         setBd(`Não conectado - versão:${res.data.versao}`);
+            //     }
+            // });
+            setBd(`Não conectado`);
         }
         nomeBd();
     }, []);
 
-    function logar(e) {
-        e.preventDefault();
+    function logar({ usuario, senha }) {
+        // console.log(usuario, senha);
+        // e.preventDefault();
         if (!usuario || !senha) {
             setErro('Usuário ou senha em branco.');
         } else {
@@ -84,14 +89,16 @@ function Login() {
     return (
         <>
             <Centro>
-                <form onSubmit={logar}>
+                <Form onSubmit={logar}>
                     <img src={Logo} alt="Câmara Municipal de Curitiba" />
                     <span>Processo eletrônico</span>
                     <br />
-                    <label>Usuário</label>
-                    <input type="text" id="usuario" name="usuario" size="30" autoFocus onChange={e => setUsuario(e.target.value)} />
-                    <label>Senha</label>
-                    <input type="password" id="senha" name="senha" size="30" onChange={e => setSenha(e.target.value)} />
+                    {/* <label>Usuário</label> */}
+                    {/* <input type="text" id="usuario" name="usuario" size="30" autoFocus onChange={e => setUsuario(e.target.value)} /> */}
+                    <Input type="text" name="usuario" placeholder="Usuário" />
+                    <Input type="password" name="senha" placeholder="Senha" />
+                    {/* <label>Senha</label> */}
+                    {/* <input type="password" id="senha" name="senha" size="30" onChange={e => setSenha(e.target.value)} /> */}
                     <input type="hidden" id="timeout" name="timeout" value="1440" />
                     <BotaoLogin>
                         <FaKey color="#FFF" />
@@ -101,7 +108,7 @@ function Login() {
                     <ErroLogin>
                         <p>{erro && erro}</p>
                     </ErroLogin>
-                </form>
+                </Form>
             </Centro>
         </>
     );
