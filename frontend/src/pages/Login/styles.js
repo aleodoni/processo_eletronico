@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { lighten } from 'polished';
 
 export const Centro = styled.div`
     border-radius: 7px;
@@ -7,7 +6,7 @@ export const Centro = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background: #303f9f; */
+    /* background: ${({ theme }) => theme.text}; */
     /* font-family: Arial, Helvetica, sans-serif; */
 
     form {
@@ -21,7 +20,7 @@ export const Centro = styled.div`
         flex-direction: column;
         align-items: center;
         left: 50%;
-        background: #fff;
+        background: ${({ theme }) => theme.text};
     }
 
     img {
@@ -49,18 +48,18 @@ export const BotaoLogin = styled.button.attrs({
 })`
     font-size: 16px;
     border-radius: 4px;
-    background: #303f9f;
+    background: ${({ theme }) => theme.primary};
     padding: 7px;
     margin-top: 10px;
-    color: #fff;
-    /* border: 1px solid #303f9f; */
+    color: ${({ theme }) => theme.text};
+    /* border: 1px solid ${({ theme }) => theme.primary}; */
     border: 0;
     display: flex;
     justify-content: center;
     align-items: center;
 
     &:hover {
-        background: ${lighten(0.1, '#303f9f')};
+        background: ${({ theme }) => theme.hover};
     }
 `;
 
@@ -70,5 +69,5 @@ export const Versao = styled.label`
 `;
 
 export const ErroLogin = styled.label`
-    color: red;
+    color: ${({ theme }) => theme.error};
 `;

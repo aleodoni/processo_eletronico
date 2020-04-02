@@ -9,21 +9,21 @@ export const Container = styled.div`
         display: flex;
 
         width: 100%;
-        background: rgba(48, 63, 159, 0.8);
+        background: ${({ theme }) => theme.input};
         border: 0;
         border-radius: 4px;
         height: 34px;
         padding: 0 15px;
-        color: #fff;
+        color: ${({ theme }) => theme.text};
         margin: 0 0 10px;
 
         &::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: ${({ theme }) => theme.placeholder};
         }
     }
 
     span {
-        color: #d44059;
+        color: ${({ theme }) => theme.text};
         align-self: flex-start;
         margin: 0 0 10px;
         font-weight: bold;

@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default createGlobalStyle`
     @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
     * {
         margin: 2;
         padding: 0;
@@ -40,7 +41,7 @@ export default createGlobalStyle`
         bottom: 0;
         width: 100%;
         z-index: -1;
-        background-image: linear-gradient(#25212e, #303f9f);
+        background-image: ${({ theme }) => theme.gradient};
     }
 
     body, input, button, textarea, pre {
@@ -65,7 +66,7 @@ export default createGlobalStyle`
 
     nav {
         grid-area: nav;
-        /* background: #303f9f; */
+        /* background: ${({ theme }) => theme.primary}; */
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
@@ -73,7 +74,7 @@ export default createGlobalStyle`
             overflow: hidden;
             font-weight: bold;
             font-size: 14px;
-            color: #FFF;
+            color: ${({ theme }) => theme.text};
             img {
                 width: 50px;
                 vertical-align:middle;
@@ -94,7 +95,7 @@ export default createGlobalStyle`
                     font-weight: bold;
                     font-size: 14px;
                     margin-top: 10px;
-                    color: #FFF;
+                    color: ${({ theme }) => theme.text};
                     margin-right: 25px;
                 }
                 button {
@@ -102,7 +103,7 @@ export default createGlobalStyle`
                     margin-left: 5px;
                     padding-left: 15px !important;
                     padding-right: 15px !important;
-                    border: 1px solid #FFF !important;
+                    border: 1px solid ${({ theme }) => theme.text} !important;
                 }
             }
         }

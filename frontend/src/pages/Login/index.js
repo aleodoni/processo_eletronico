@@ -6,6 +6,7 @@ import { Form } from '@unform/web';
 
 import Logo from '../../assets/brasao.png';
 import Input from '../../components/layout/Input';
+import Button from '../../components/layout/button/Button';
 
 import { Centro, BotaoLogin, Versao, ErroLogin } from './styles';
 
@@ -100,10 +101,15 @@ function Login() {
                     {/* <label>Senha</label> */}
                     {/* <input type="password" id="senha" name="senha" size="30" onChange={e => setSenha(e.target.value)} /> */}
                     <input type="hidden" id="timeout" name="timeout" value="1440" />
-                    <BotaoLogin>
+                    {/* <BotaoLogin>
                         <FaKey color="#FFF" />
                         &nbsp;Acessar
-                    </BotaoLogin>
+                    </BotaoLogin> */}
+                    <Button type="submit">
+                        <FaKey color="#FFF" />
+                        Acessar
+                    </Button>
+
                     <Versao>{bd}</Versao>
                     <ErroLogin>
                         <p>{erro && erro}</p>
