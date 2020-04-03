@@ -27,6 +27,7 @@ import RazaoTramite from '../app/models/RazaoTramite';
 import ProximoTramite from '../app/models/ProximoTramite';
 import Arquivo from '../app/models/Arquivo';
 import TipoManifestacao from '../app/models/TipoManifestacao';
+import VDadosLogin from '../app/models/VDadosLogin';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -57,7 +58,8 @@ const models = [
     RazaoTramite,
     ProximoTramite,
     Arquivo,
-    TipoManifestacao
+    TipoManifestacao,
+    VDadosLogin
 ];
 
 class Database {
