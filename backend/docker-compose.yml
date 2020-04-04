@@ -8,3 +8,31 @@ services:
             POSTGRES_DB: spa2_local
         ports:
             - "5432:5432"
+    openldap:
+        image: osixia/openldap:latest
+        container_name: openldap
+        environment:
+            LDAP_ORGANISATION: "Camara Municipal de Curitiba"
+            LDAP_DOMAIN: "cmc.pr.gov.br"
+            LDAP_ADMIN_PASSWORD: "admin"
+            LDAP_CONFIG_PASSWORD: "config"
+            LDAP_READONLY_USER: "true"
+            LDAP_READONLY_USER_USERNAME: "authproxy"
+            LDAP_READONLY_USER_PASSWORD: "authproxy"
+        volumes:
+            - ./ldap-seeds.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/ldap-seeds.ldif
+        ports:
+            - "389:389"
+            - "636:636"
+        hostname: "cmc.pr.gov.br"
+        command: ["--copy-service"]
+    phpldapadmin:
+        image: osixia/phpldapadmin:latest
+        container_name: phpldapadmin
+        environment:
+            PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+            PHPLDAPADMIN_HTTPS: "false"
+        ports:
+            - "8080:80"
+        depends_on:
+            - openldap
