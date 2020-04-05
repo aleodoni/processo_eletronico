@@ -6,12 +6,33 @@ class Setor extends Model {
             {
                 set_id: {
                     type: Sequelize.INTEGER,
-                    primaryKey: true
+                    defaultValue: "nextval('spa2.setor_set_id_seq')",
+                    primaryKey: true,
+                    autoIncrement: true
                 },
-                set_nome: Sequelize.STRING
+                set_nome: {
+                    type: Sequelize.STRING,
+                    allowNull: false
+                },
+                set_sigla: {
+                    type: Sequelize.STRING,
+                    allowNull: false
+                },
+                set_id_area: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false
+                },
+                set_ativo: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
+                },
+                set_tipo: {
+                    type: Sequelize.STRING,
+                    allowNull: false
+                }
             },
             {
-                tableName: 'v_setor',
+                tableName: 'setor',
                 schema: 'spa2',
                 sequelize,
                 operatorsAliases: false

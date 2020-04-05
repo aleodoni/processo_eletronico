@@ -17,6 +17,7 @@ import CriaProcessoController from './app/controllers/CriaProcessoController';
 import DadosProcessoController from './app/controllers/DadosProcessoController';
 import ArquivoController from './app/controllers/ArquivoController';
 import TipoManifestacaoController from './app/controllers/TipoManifestacaoController';
+import SetorController from './app/controllers/SetorController';
 import AuthMiddleware from './app/middlewares/auth';
 import path from 'path';
 import multer from 'multer';
@@ -170,5 +171,11 @@ routes.get(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoControll
 routes.post(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoController.store);
 routes.put(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.delete);
+
+// rotas do cadastro de setores
+routes.get(`${process.env.API_URL}/setores`, SetorController.index);
+routes.post(`${process.env.API_URL}/setores`, SetorController.store);
+routes.put(`${process.env.API_URL}/setores/:id`, SetorController.update);
+routes.delete(`${process.env.API_URL}/setores/:id`, SetorController.delete);
 
 export default routes;
