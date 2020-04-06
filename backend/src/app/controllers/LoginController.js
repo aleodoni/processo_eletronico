@@ -1,5 +1,6 @@
 /* eslint-disable func-names */
 /* eslint-disable no-console */
+
 import nJwt from 'njwt';
 import VDadosLogin from '../models/VDadosLogin';
 import Sequelize from 'sequelize';

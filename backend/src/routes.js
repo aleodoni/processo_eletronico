@@ -1,4 +1,7 @@
 import { Router } from 'express';
+import fs from 'fs';
+import path from 'path';
+import multer from 'multer';
 
 import LoginController from './app/controllers/LoginController';
 import Spa2Controller from './app/controllers/Spa2Controller';
@@ -19,10 +22,9 @@ import ArquivoController from './app/controllers/ArquivoController';
 import TipoManifestacaoController from './app/controllers/TipoManifestacaoController';
 import SetorController from './app/controllers/SetorController';
 import AuthMiddleware from './app/middlewares/auth';
-import path from 'path';
-import multer from 'multer';
 import * as funcoesArquivo from '../src/config/arquivos';
-import fs from 'fs';
+
+import validatorSessionStore from './app/validators/SessionStore';
 
 require('dotenv/config');
 
@@ -46,7 +48,7 @@ const upload = multer({ storage: storage });
 /**
  * Rotas sem autenticação
  */
-routes.post(`${process.env.API_URL}/autorizacao`, LoginController.index);
+routes.post(`${process.env.API_URL}/autorizacao`, validatorSessionStore, LoginController.index);
 routes.get(`${process.env.API_URL}/bd`, LoginController.getBd);
 routes.get(`${process.env.API_URL}/`, Spa2Controller.index);
 
