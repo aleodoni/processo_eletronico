@@ -15,6 +15,7 @@ import DadosProcesso from './pages/DadosProcesso';
 import RazaoTramite from './pages/RazaoTramite';
 import TipoManifestacao from './pages/TipoManifestacao';
 import Setor from './pages/Setor';
+import Lotacao from './pages/Lotacao';
 import Nodo from './pages/Nodo';
 
 const PrivateRoute = ({ component: Component, ...rest }) => <Route {...rest} render={props => (sessionStorage.getItem('token') !== null ? <Component {...props} /> : <Redirect to={{ pathname: '/', state: { from: props.location } }} />)} />;
@@ -36,6 +37,7 @@ const Routes = () => (
         <PrivateRoute exact path="/nos" component={Nodo} />
         <PrivateRoute exact path="/razao" component={RazaoTramite} />
         <PrivateRoute exact path="/setores" component={Setor} />
+        <PrivateRoute exact path="/lotacoes" component={Lotacao} />
         <PrivateRoute exact path="/tipos-manifestacao" component={TipoManifestacao} />
         <PrivateRoute exact path="/dados-processo/:id" component={DadosProcesso} />
         <Route path="*" component={Login} />

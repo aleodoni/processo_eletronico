@@ -18,6 +18,7 @@ import DadosProcessoController from './app/controllers/DadosProcessoController';
 import ArquivoController from './app/controllers/ArquivoController';
 import TipoManifestacaoController from './app/controllers/TipoManifestacaoController';
 import SetorController from './app/controllers/SetorController';
+import LotacaoController from './app/controllers/LotacaoController';
 import AuthMiddleware from './app/middlewares/auth';
 import path from 'path';
 import multer from 'multer';
@@ -177,5 +178,11 @@ routes.get(`${process.env.API_URL}/setores`, SetorController.index);
 routes.post(`${process.env.API_URL}/setores`, SetorController.store);
 routes.put(`${process.env.API_URL}/setores/:id`, SetorController.update);
 routes.delete(`${process.env.API_URL}/setores/:id`, SetorController.delete);
+
+// rotas do cadastro de lotações
+routes.get(`${process.env.API_URL}/lotacoes`, LotacaoController.index);
+routes.post(`${process.env.API_URL}/lotacoes`, LotacaoController.store);
+routes.put(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.update);
+routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 
 export default routes;

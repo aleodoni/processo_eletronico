@@ -3,6 +3,7 @@ import Autorizacao from '../app/models/Autorizacao';
 import SetorUsuario from '../app/models/SetorUsuario';
 import Area from '../app/models/Area';
 import Setor from '../app/models/Setor';
+import Lotacao from '../app/models/Lotacao';
 import Tela from '../app/models/Tela';
 import Genero from '../app/models/Genero';
 import ModeloMenu from '../app/models/ModeloMenu';
@@ -37,6 +38,7 @@ const models = [
     SetorUsuario,
     Area,
     Setor,
+    Lotacao,
     Tela,
     Menu,
     VMenu,
