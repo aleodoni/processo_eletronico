@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 import TipoProcesso from '../models/TipoProcesso';
 import VTipoProcesso from '../models/VTipoProcesso';
-import AuditoriaController from './AuditoriaController';
+// import AuditoriaController from './AuditoriaController';
 
 class TipoProcessoController {
     async index(req, res) {
@@ -41,7 +41,7 @@ class TipoProcessoController {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', tpr_id);
+        // AuditoriaController.audita(req.body, req, 'I', tpr_id);
         //
         return res.json({
             tpr_id,
@@ -55,12 +55,12 @@ class TipoProcessoController {
     async update(req, res) {
         const tipoProcesso = await TipoProcesso.findByPk(req.params.id, { logging: false });
         // auditoria de edição
-        AuditoriaController.audita(
-            tipoProcesso._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        // AuditoriaController.audita(
+        //    tipoProcesso._previousDataValues,
+        //    req,
+        //    'U',
+        //    req.params.id
+        // );
         //
         if (!tipoProcesso) {
             return res.status(400).json({ error: 'Tipo de processo não encontrado' });
@@ -78,12 +78,12 @@ class TipoProcessoController {
             .destroy({ logging: false })
             .then(auditoria => {
                 // auditoria de deleção
-                AuditoriaController.audita(
-                    tipoProcesso._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
+                // AuditoriaController.audita(
+                //    tipoProcesso._previousDataValues,
+                //    req,
+                //    'D',
+                //    req.params.id
+                // );
                 //
             })
             .catch(function(err) {

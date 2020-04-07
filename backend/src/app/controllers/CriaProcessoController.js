@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 import VDadosPessoa from '../models/VDadosPessoa';
 import Processo from '../models/Processo';
-import AuditoriaController from './AuditoriaController';
+// import AuditoriaController from './AuditoriaController';
 
 class CriaProcessoController {
     async dadosPessoa(req, res) {
@@ -63,7 +63,7 @@ class CriaProcessoController {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', pro_id);
+        // AuditoriaController.audita(req.body, req, 'I', pro_id);
         //
         return res.json({
             pro_id,

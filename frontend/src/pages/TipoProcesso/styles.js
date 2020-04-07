@@ -10,7 +10,6 @@ export const Container = styled.div`
 
     fieldset {
         border: 1px solid;
-        border-radius: 5px;
         border-color: #303f9f;
         padding: 5px;
     }
@@ -71,18 +70,24 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
-export const Container1 = styled.div`
-    display: grid;
-    grid-template-columns: 300px;
-    grid-template-rows: 70px;
-    margin-bottom: 10px;
-`;
-
 export const ContainerMenu1 = styled.div`
     display: grid;
-    grid-template-columns: 600px 150px 200px 300px;
+    grid-template-columns: 600px 145px;
     grid-template-rows: 70px;
-    margin-bottom: 10px;
+    select {
+        font-size: 16px;
+        height: 30px;
+    }
+`;
+
+export const ContainerMenu2 = styled.div`
+    display: grid;
+    grid-template-columns: 220px 160px;
+    grid-template-rows: 70px;
+    select {
+        font-size: 16px;
+        height: 30px;
+    }
 `;
 
 export const ContainerBotoes = styled.div`

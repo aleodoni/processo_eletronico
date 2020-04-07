@@ -10,7 +10,6 @@ export const Container = styled.div`
 
     fieldset {
         border: 1px solid;
-        border-radius: 5px;
         border-color: #303f9f;
         padding: 5px;
     }
