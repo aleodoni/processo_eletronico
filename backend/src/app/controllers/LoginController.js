@@ -9,10 +9,10 @@ import LdapClient from 'ldapjs-client';
 
 class LoginController {
     async index(req, res) {
-        // const client = new LdapClient({ url: process.env.LDAP_URL });
+        const client = new LdapClient({ url: process.env.LDAP_URL });
+
         const { usuario, senha, timeout } = req.body;
-        let pesIdLdap;
-        let nomeUsuarioLdap;
+
         let emailLdap;
 
         const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
@@ -29,32 +29,33 @@ class LoginController {
                 idle: 10000
             }
         });
-        const login = new LoginController();
 
+        const login = new LoginController();
         // procura o usuario no ldap, se existir ok, senão retorna erro
         try {
-            // comentado para logar sem ldap
-            /*
             await client.bind(`uid=${usuario},${process.env.OUS}`, senha);
+
             const options = {
                 filter: `(&(uid=${usuario}))`,
                 scope: 'sub',
-                attributes: ['uid', 'cn', 'employeeNumber', 'email']
+                attributes: ['uid', 'cn', 'mail']
             };
+
+            // O LDAP atual não deixa pesquisar com o usuário normal, só admin
+            await client.bind('cn=admin,dc=cmc,dc=pr,dc=gov,dc=br', 'admin');
+
             const entries = await client.search(
                 process.env.OUS,
                 options
             );
+
             entries.map(b => {
-                pesIdLdap = parseInt(b.employeeNumber);
-                nomeUsuarioLdap = b.cn;
-                emailLdap = b.email;
+                emailLdap = b.mail;
             });
 
             // limpa a sessão no ldap
             await client.unbind();
             await client.destroy();
-            */
 
             // procura o usuário na v_dados_login
             const dadosLogin = await VDadosLogin.findOne({
@@ -64,6 +65,7 @@ class LoginController {
                 logging: false,
                 plain: true
             });
+
             if (dadosLogin !== null) {
                 let idArea = dadosLogin.dataValues.set_id_area.toString();
                 let idSetor = dadosLogin.dataValues.set_id.toString();
@@ -88,6 +90,7 @@ class LoginController {
 
                 // monta o menu baseado na área do usuário
                 const sql = "select spa2.monta_menu_raiz('" + idArea + "')";
+
                 const montaMenu = await sequelize.query(sql,
                     {
                         logging: false,
@@ -95,13 +98,17 @@ class LoginController {
                         raw: true
                     }
                 );
+
                 if (process.env.NODE_ENV !== 'test') {
                     console.log(`Usuário: ${usuario} logado com sucesso no sistema SPA2.`);
                 }
+
                 const meuToken = login.geraToken(usuario, nome, matricula, timeout);
+
                 return res.status(201).json({
                     token: meuToken,
                     usuario: usuario,
+                    email: emailLdap,
                     nomeUsuario: nome,
                     setorUsuario: idSetor,
                     areaUsuario: idArea,
@@ -120,6 +127,7 @@ class LoginController {
             } else {
                 retorno = 'Usuário ou senha inválidos.';
             }
+
             return res.status(400).json({ error: retorno });
         }
     }
@@ -130,14 +138,14 @@ class LoginController {
             .json({ bd: process.env.DB_NAME, versao: process.env.VERSAO });
     }
 
-    geraToken(usuario, nomeUsuario, pesId, timeout) {
+    geraToken(usuario, nomeUsuario, matricula, timeout) {
         const adicionaMinutos = function(dt, minutos) {
             return new Date(dt.getTime() + minutos * 60000);
         };
         const claims = {
             sub: usuario, // login do usuario
-            nomeUsuarioLdap: nomeUsuario, // nome do usuario no LDAP
-            pesId: pesId, // pes_id no LDAP
+            nomeUsuarioLdap: nomeUsuario, // nome do usuario no BD
+            matricula: matricula, // matricula no BD
             iat: new Date().getTime(), // data e hora de criação do token
             exp: adicionaMinutos(new Date(), timeout) // data e hora de expiração do token
         };

@@ -8,7 +8,7 @@ dn: ou=usuarios,dc=cmc,dc=pr,dc=gov,dc=br
 objectClass: top
 objectClass: organizationalUnit
 ou: usuarios
-description:: TGlzdGEgZGUgdXN1w6FyaW9zCg==
+description: TGlzdGEgZGUgdXN1w6FyaW9zCg==
 
 dn: cn=rh,ou=grupos,dc=cmc,dc=pr,dc=gov,dc=br
 objectClass: top
@@ -30,6 +30,7 @@ memberUid: ismael.semedo
 memberUid: maria.gomez
 memberUid: neusa.fogaca
 memberUid: tiago.boga
+memberUid: alexandre.odoni
 cn: ti
 
 dn: cn=contab,ou=grupos,dc=cmc,dc=pr,dc=gov,dc=br
@@ -54,10 +55,10 @@ objectClass: shadowAccount
 uid: gavio.carrilho
 uidNumber: 1025
 gidNumber: 10195
-displayName:: R8OhdmlvIENhcnJpbGhvCg==
+displayName: R8OhdmlvIENhcnJpbGhvCg==
 sn: Carrilho
-cn:: R8OhdmlvIENhcnJpbGhvCg==
-givenName:: R8OhdmlvCg==
+cn: R8OhdmlvIENhcnJpbGhvCg==
+givenName: R8OhdmlvCg==
 mail: gavio.carrilho@cmc.pr.gov.br
 userPassword: {SHA}p4sEDlSko1mcAQQRL6AeSoW20fo=
 shadowLastChange: 18225
@@ -154,9 +155,9 @@ objectClass: shadowAccount
 uid: maria.gomez
 uidNumber: 1030
 gidNumber: 10196
-displayName:: TWFyaWEgR8OzbWV6Cg==
-sn:: R8OzbWV6Cg==
-cn:: TWFyaWEgR8OzbWV6Cg==
+displayName: TWFyaWEgR8OzbWV6Cg==
+sn: R8OzbWV6Cg==
+cn: TWFyaWEgR8OzbWV6Cg==
 givenName: Maria
 mail: maria.gomez@cmc.pr.gov.br
 userPassword: {SHA}p4sEDlSko1mcAQQRL6AeSoW20fo=
@@ -174,9 +175,9 @@ objectClass: shadowAccount
 uid: neusa.fogaca
 uidNumber: 1031
 gidNumber: 10196
-displayName:: TmV1c2EgRm9nYcOnYQo=
-sn:: Rm9nYcOnYQo=
-cn:: TmV1c2EgRm9nYcOnYQo=
+displayName: TmV1c2EgRm9nYcOnYQo=
+sn: Rm9nYcOnYQo=
+cn: TmV1c2EgRm9nYcOnYQo=
 givenName: Neusa
 mail: neusa.fogaca@cmc.pr.gov.br
 userPassword: {SHA}p4sEDlSko1mcAQQRL6AeSoW20fo=
@@ -234,10 +235,10 @@ objectClass: shadowAccount
 uid: xenia.tabosa
 uidNumber: 1034
 gidNumber: 10197
-displayName:: WMOpbmlhIFRhYm9zYQo=
+displayName: WMOpbmlhIFRhYm9zYQo=
 sn: Tabosa
-cn:: WMOpbmlhIFRhYm9zYQo=
-givenName:: WMOpbmlhCg==
+cn: WMOpbmlhIFRhYm9zYQo=
+givenName: WMOpbmlhCg==
 mail: xenia.tabosa@cmc.pr.gov.br
 userPassword: {SHA}p4sEDlSko1mcAQQRL6AeSoW20fo=
 shadowLastChange: 18315
@@ -254,10 +255,10 @@ objectClass: shadowAccount
 uid: adelio.figueiredo
 uidNumber: 1035
 gidNumber: 10197
-displayName:: QWTDqWxpbyBGaWd1ZWlyZWRvCg==
+displayName: QWTDqWxpbyBGaWd1ZWlyZWRvCg==
 sn: Figueiredo
-cn:: QWTDqWxpbyBGaWd1ZWlyZWRvCg==
-givenName:: QWTDqWxpbwo=
+cn: QWTDqWxpbyBGaWd1ZWlyZWRvCg==
+givenName: QWTDqWxpbwo=
 mail: adelio.figueiredo@cmc.pr.gov.br
 userPassword: {SHA}p4sEDlSko1mcAQQRL6AeSoW20fo=
 shadowLastChange: 18325
@@ -303,3 +304,23 @@ userPassword: {SHA}p4sEDlSko1mcAQQRL6AeSoW20fo=
 shadowLastChange: 18345
 shadowMax: 365
 homeDirectory: /home/daniela.bulhosa
+
+dn: uid=alexandre.odoni,ou=usuarios,dc=cmc,dc=pr,dc=gov,dc=br
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: alexandre.odoni
+uidNumber: 2179
+gidNumber: 10196
+displayName: Alexandre Odoni
+sn: Odoni
+cn: Alexandre Odoni
+givenName: Alexandre
+mail: alexandre.odoni@cmc.pr.gov.br
+userPassword: 123456
+shadowLastChange: 18345
+shadowMax: 365
+homeDirectory: /home/alexandre.odoni

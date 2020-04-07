@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
 
     input {
@@ -22,8 +22,9 @@ export const Container = styled.div`
         }
     }
 
-    span {
-        color: ${({ theme }) => theme.text};
+    span.error {
+        font-size: 14px;
+        color: ${({ theme }) => theme.error};
         align-self: flex-start;
         margin: 0 0 10px;
         font-weight: bold;

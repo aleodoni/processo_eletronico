@@ -11,7 +11,7 @@ export default function App() {
             <>
                 <Router />
                 <GlobalStyle />
-                <ToastContainer autoClose={700} position="bottom-right" />
+                <ToastContainer autoClose={3000} />
             </>
         </ThemeProvider>
     );
