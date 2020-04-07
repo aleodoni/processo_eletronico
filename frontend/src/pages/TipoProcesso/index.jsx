@@ -9,7 +9,7 @@ import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
 import { tabelas } from '../../configs/tabelas';
-import { Container, ContainerMenu1, ContainerBotoes, AsideLeft, Main, Erro, ModalApaga } from './styles';
+import { Container, ContainerMenu1, ContainerMenu2, ContainerBotoes, AsideLeft, Main, Erro, ModalApaga } from './styles';
 import Header from '../../components/Header';
 
 function TipoProcesso() {
@@ -55,12 +55,12 @@ function TipoProcesso() {
         setErro('');
     }
 
-    function preencheCampos(tprId, tprVisualizacao, tprNome, genId, fluId) {
-        setTprId(tprId);
-        setTprNome(tprNome);
-        setTprVisualizacao(tprVisualizacao);
-        setGenId(genId);
-        setFluId(fluId);
+    function preencheCampos(tprId1, tprVisualizacao1, tprNome1, genId1, fluId1) {
+        setTprId(tprId1);
+        setTprNome(tprNome1);
+        setTprVisualizacao(tprVisualizacao1);
+        setGenId(genId1);
+        setFluId(fluId1);
     }
 
     function carregaGrid() {
@@ -286,6 +286,9 @@ function TipoProcesso() {
                                         </option>
                                     </select>
                                 </fieldset>
+                            </ContainerMenu1>
+                            <br />
+                            <ContainerMenu2>
                                 <fieldset>
                                     <legend>Gênero</legend>
                                     <select id="selectGenero" onChange={handleGenId} value={genId}>
@@ -298,7 +301,7 @@ function TipoProcesso() {
                                         {fluxos}
                                     </select>
                                 </fieldset>
-                            </ContainerMenu1>
+                            </ContainerMenu2>
                         </form>
                         <ContainerBotoes>
                             <button type="button" id="btnSalva" onClick={salvaTela}>

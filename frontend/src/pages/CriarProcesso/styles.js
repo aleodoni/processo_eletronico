@@ -10,7 +10,6 @@ export const Container = styled.div`
 
     fieldset {
         border: 1px solid;
-        border-radius: 5px;
         border-color: #303f9f;
         padding: 5px;
     }
@@ -64,7 +63,6 @@ export const ContainerAssunto = styled.div`
 
     fieldset {
         border-color: #303f9f;
-        border-radius: 5px;
     }
 
     legend {
@@ -87,7 +85,6 @@ export const ContainerIniciativa = styled.div`
 
     fieldset {
         border-color: #303f9f;
-        border-radius: 5px;
     }
 `;
 
@@ -123,10 +120,12 @@ export const TextoCamposArea = styled.textarea`
 
 export const CustomSelect = styled.select`
     position: relative;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
+    height: 30px;
 `;
 
 export const CustomInput = styled.input`
     font-size: 16px;
+    height: 30px;
 `;

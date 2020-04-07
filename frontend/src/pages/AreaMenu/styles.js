@@ -10,6 +10,7 @@ export const Container = styled.div`
 
     fieldset {
         border: 1px solid;
+        border-radius: 5px;
         border-color: #303f9f;
         padding: 5px;
     }
@@ -70,20 +71,12 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
-export const ContainerMenu1 = styled.div`
+export const Container1 = styled.div`
     display: grid;
-    grid-template-columns: 600px 145px;
+    grid-template-columns: 300px;
     grid-template-rows: 70px;
-    select {
-        font-size: 16px;
-        height: 30px;
-    }
-`;
+    margin-bottom: 10px;
 
-export const ContainerMenu2 = styled.div`
-    display: grid;
-    grid-template-columns: 220px 160px;
-    grid-template-rows: 70px;
     select {
         font-size: 16px;
         height: 30px;
@@ -113,16 +106,4 @@ export const ContainerBotoes = styled.div`
             background: #4496db;
         }
     }
-`;
-
-export const ModalApaga = styled.div`
-    position: absolute;
-    width: 300;
-    border: 2px solid #116fbf;
-    border-radius: 5px;
-    background-color: #ffffff;
-    left: 40%;
-    top: 40%;
-    text-align: center;
-    padding: 10px;
 `;

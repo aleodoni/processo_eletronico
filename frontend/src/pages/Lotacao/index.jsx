@@ -7,21 +7,21 @@ import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
 import { tabelas } from '../../configs/tabelas';
-import { Container, Container1, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
+import { Container, Container1, Container2, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
 import Header from '../../components/Header';
 
-function AreaMenu() {
+function Lotacao() {
     const [erro, setErro] = useState('');
-    const [amuId, setAmuId] = useState('');
+    const [matricula, setMatricula] = useState('');
     const [setId, setSetId] = useState('');
-    const [mmuId, setMmuId] = useState('');
+    const [pesNome, setPesNome] = useState('');
+    const [pesLogin, setPesLogin] = useState('');
     const [setores, setSetores] = useState([]);
-    const [modelosMenu, setModelosMenu] = useState([]);
-    const [areasMenu, setAreasMenu] = useState([]);
+    const [lotacoes, setLotacoes] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
 
     function abreModalExcluir() {
-        if (setId === '') {
+        if (pesNome === '') {
             setErro('Selecione um registro para apagar.');
             return;
         }
@@ -32,22 +32,29 @@ function AreaMenu() {
         setModalExcluir(false);
     }
 
-    function handleAmuId(e) {
-        setAmuId(e.target.value);
-    }
-
     function handleSetId(e) {
         setSetId(e.target.value);
     }
 
-    function handleMmuId(e) {
-        setMmuId(e.target.value);
+    function handleMatricula(e) {
+        const re = /^[0-9\b]+$/;
+        if (e.target.value === '' || re.test(e.target.value)) {
+            setMatricula(e.target.value);
+        }
     }
 
-    function carregaArea() {
+    function handlePesNome(e) {
+        setPesNome(e.target.value);
+    }
+
+    function handlePesLogin(e) {
+        setPesLogin(e.target.value);
+    }
+
+    function carregaSetor() {
         axios({
             method: 'GET',
-            url: '/area',
+            url: '/setores',
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -73,58 +80,31 @@ function AreaMenu() {
             });
     }
 
-    function carregaModelosMenu() {
-        axios({
-            method: 'GET',
-            url: '/modelo-menu',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboModeloMenu = [];
-                comboModeloMenu.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboModeloMenu.push(
-                        <option key={res.data[i].mmu_id} data-key={res.data[i].mmu_id} value={res.data[i].mmu_id}>
-                            {res.data[i].mmu_nome}
-                        </option>
-                    );
-                }
-                setModelosMenu(comboModeloMenu);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar modelos de menu.');
-            });
-    }
-
     function limpaCampos() {
-        setAmuId('');
         setSetId('');
-        setMmuId('');
+        setMatricula('');
+        setPesNome('');
+        setPesLogin('');
         setErro('');
     }
 
-    function preencheCampos(amu_id, set_id, mmu_id) {
-        setAmuId(amu_id);
-        setSetId(parseInt(set_id, 10));
-        setMmuId(mmu_id);
+    function preencheCampos(set_id, matricula1, pes_nome, pes_login) {
+        setSetId(set_id);
+        setMatricula(matricula1);
+        setPesNome(pes_nome);
+        setPesLogin(pes_login);
     }
 
     function carregaGrid() {
         axios({
             method: 'GET',
-            url: '/areas-do-menu',
+            url: '/lotacoes',
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setAreasMenu(res.data);
+                setLotacoes(res.data);
             })
             .catch(() => {
                 setErro('Erro ao carregar registros.');
@@ -133,66 +113,57 @@ function AreaMenu() {
 
     useEffect(() => {
         async function carrega() {
-            carregaArea();
-            carregaModelosMenu();
+            carregaSetor();
             carregaGrid();
         }
         carrega();
     }, []);
 
-    function grava() {
+    function insere() {
+        if (matricula.trim() === '') {
+            setErro('Matrícula em branco.');
+            return;
+        }
+        if (pesNome.trim() === '') {
+            setErro('Nome da pessoa em branco.');
+            return;
+        }
+        if (pesLogin.trim() === '') {
+            setErro('Login em branco.');
+            return;
+        }
         if (setId === '') {
-            setErro('Selecione uma área.');
+            setErro('Selecione um setor.');
             return;
         }
-        if (mmuId === '') {
-            setErro('Selecione um modelo de menu.');
-            return;
-        }
-        if (amuId === '') {
-            axios({
-                method: 'POST',
-                url: '/area-menu',
-                data: { amu_id: null, set_id: setId, mmu_id: mmuId },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
+
+        axios({
+            method: 'POST',
+            url: '/lotacoes',
+            data: {
+                matricula: matricula.trim(),
+                pes_nome: pesNome.trim(),
+                set_id: setId,
+                pes_login: pesLogin.trim(),
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                limpaCampos();
+                carregaGrid();
+                mensagem.success('Inserido com sucesso.');
             })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid();
-                    mensagem.success('Inserido com sucesso.');
-                })
-                .catch(() => {
-                    setErro('Erro ao inserir registro.');
-                });
-        } else {
-            axios({
-                method: 'PUT',
-                url: `area-menu/${amuId}`,
-                data: {
-                    set_id: setId,
-                    mmu_id: mmuId,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid();
-                    mensagem.success('Editado com sucesso.');
-                })
-                .catch(() => {
-                    setErro('Erro ao editar registro.');
-                });
-        }
+            .catch(e => {
+                setErro('Erro ao inserir registro.');
+            });
     }
 
     function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `area-menu/${id}`,
+            url: `lotacoes/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -210,37 +181,43 @@ function AreaMenu() {
     return (
         <>
             <Container>
-                <Autorizacao tela="Áreas de menu" />
+                <Autorizacao tela="Lotações" />
                 <Header />
                 <AsideLeft>
                     <Menu />
                 </AsideLeft>
                 <Main>
                     <fieldset>
-                        <legend>Áreas de menu</legend>
+                        <legend>Lotações</legend>
                         <Erro>{erro}</Erro>
                         <form noValidate autoComplete="off">
-                            <input id="amuId" value={amuId} onChange={handleAmuId} type="hidden" />
                             <Container1>
                                 <fieldset>
-                                    <legend>Área</legend>
-                                    <select id="selectArea" onChange={handleSetId} value={setId}>
+                                    <legend>Matrícula</legend>
+                                    <input required id="matricula" type="text" value={matricula} autoFocus onChange={handleMatricula} size="6" maxLength="5" />
+                                </fieldset>
+                                <fieldset>
+                                    <legend>Nome</legend>
+                                    <input required id="pesNome" type="text" value={pesNome} onChange={handlePesNome} size="80" maxLength="80" />
+                                </fieldset>
+                                <fieldset>
+                                    <legend>Login</legend>
+                                    <input required id="pesLogin" type="text" value={pesLogin} onChange={handlePesLogin} size="25" maxLength="25" />
+                                </fieldset>
+                            </Container1>
+                            <Container2>
+                                <fieldset>
+                                    <legend>Setor</legend>
+                                    <select id="selectSetor" onChange={handleSetId} value={setId}>
                                         {setores}
                                     </select>
                                 </fieldset>
-                                <br />
-                                <fieldset>
-                                    <legend>Modelo de menu</legend>
-                                    <select id="selectModeloMenu" onChange={handleMmuId} value={mmuId}>
-                                        {modelosMenu}
-                                    </select>
-                                </fieldset>
-                            </Container1>
+                            </Container2>
                         </form>
                         <ContainerBotoes>
-                            <button type="button" id="btnSalva" onClick={grava}>
+                            <button type="button" id="btnInsere" onClick={insere}>
                                 <FaRegSave />
-                                &nbsp;Salvar
+                                &nbsp;Inserir
                             </button>
                             <button type="button" id="btnExclui" onClick={abreModalExcluir}>
                                 <FaRegTrashAlt />
@@ -253,15 +230,16 @@ function AreaMenu() {
                         </ContainerBotoes>
                         <MaterialTable
                             columns={[
-                                { title: 'Setor', field: 'set_nome' },
-                                { title: 'Modelo', field: 'mmu_nome' },
+                                { title: 'Matrícula', field: 'matricula' },
+                                { title: 'Nome', field: 'pes_nome' },
+                                { title: 'Login', field: 'pes_login' },
                             ]}
-                            data={areasMenu}
+                            data={lotacoes}
                             actions={[
                                 {
                                     icon: () => <FaRegEdit />,
                                     tooltip: 'Editar',
-                                    onClick: (_event, linha) => preencheCampos(linha.amu_id, linha.set_id, linha.mmu_id),
+                                    onClick: (_event, linha) => preencheCampos(linha.set_id, linha.matricula, linha.pes_nome, linha.pes_login),
                                 },
                             ]}
                             options={tabelas.opcoes}
@@ -270,10 +248,10 @@ function AreaMenu() {
                         />
                     </fieldset>
                 </Main>
-                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={amuId} />
+                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={matricula} />
             </Container>
         </>
     );
 }
 
-export default AreaMenu;
+export default Lotacao;

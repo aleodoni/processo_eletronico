@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 import AreaMenu from '../models/AreaMenu';
 import VAreaMenu from '../models/VAreaMenu';
-import AuditoriaController from './AuditoriaController';
+// import AuditoriaController from './AuditoriaController';
 
 class AreaMenuController {
     async index(req, res) {
@@ -24,10 +24,11 @@ class AreaMenuController {
 
     async store(req, res) {
         const { amu_id, set_id, mmu_id } = await AreaMenu.create(req.body, {
-            logging: false
+            logging: true
         });
+        console.log(JSON.stringify(req.body));
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', amu_id);
+        // AuditoriaController.audita(req.body, req, 'I', amu_id);
         //
         return res.json({
             amu_id,
@@ -39,12 +40,12 @@ class AreaMenuController {
     async update(req, res) {
         const areaMenu = await AreaMenu.findByPk(req.params.id, { logging: false });
         // auditoria de edição
-        AuditoriaController.audita(
-            areaMenu._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        // AuditoriaController.audita(
+        //    areaMenu._previousDataValues,
+        //    req,
+        //    'U',
+        //    req.params.id
+        // );
         //
         if (!areaMenu) {
             return res.status(400).json({ error: 'Área de menu não encontrado' });
@@ -56,12 +57,12 @@ class AreaMenuController {
     async delete(req, res) {
         const areaMenu = await AreaMenu.findByPk(req.params.id, { logging: false });
         // auditoria de edição
-        AuditoriaController.audita(
-            areaMenu._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        // AuditoriaController.audita(
+        //    areaMenu._previousDataValues,
+        //    req,
+        //    'U',
+        //    req.params.id
+        // );
         //
         if (!areaMenu) {
             return res.status(400).json({ error: 'Área de menu não encontrado' });
@@ -70,12 +71,12 @@ class AreaMenuController {
             .destroy({ logging: false })
             .then(auditoria => {
                 // auditoria de deleção
-                AuditoriaController.audita(
-                    areaMenu._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
+                // AuditoriaController.audita(
+                //    areaMenu._previousDataValues,
+                //    req,
+                //    'D',
+                //    req.params.id
+                // );
                 //
             })
             .catch(function(err) {

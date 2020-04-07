@@ -200,57 +200,59 @@ function DadosProcesso({ match }) {
                                 {proIniciativa} - {proTipoIniciativa}
                             </fieldset>
                         </ContainerIniciativa>
-                        <ContainerDados>
-                            <fieldset>
-                                <legend>Dados da Iniciativa</legend>
-                                {proMatricula ? (
+                        {proNome ? (
+                            <ContainerDados>
+                                <fieldset>
+                                    <legend>Dados da Iniciativa</legend>
+                                    {proMatricula ? (
+                                        <div>
+                                            <label>Matrícula:</label>
+                                            <span>{proMatricula}</span>
+                                        </div>
+                                    ) : null}
                                     <div>
-                                        <label>Matrícula:</label>
-                                        <span>{proMatricula}</span>
+                                        <label>Nome:</label>
+                                        <span>{proNome}</span>
                                     </div>
-                                ) : null}
-                                <div>
-                                    <label>Nome:</label>
-                                    <span>{proNome}</span>
-                                </div>
-                                {proCpf ? (
-                                    <div>
-                                        <label>Cpf:</label>
-                                        <span>{proCpf}</span>
-                                    </div>
-                                ) : null}
-                                {proCnpj ? (
-                                    <div>
-                                        <label>Cnpj:</label>
-                                        <span>{proCnpj}</span>
-                                    </div>
-                                ) : null}
-                                {proFone ? (
-                                    <div>
-                                        <label>Fone:</label>
-                                        <span>{proFone}</span>
-                                    </div>
-                                ) : null}
-                                {proCelular ? (
-                                    <div>
-                                        <label>Celular:</label>
-                                        <span>{proCelular}</span>
-                                    </div>
-                                ) : null}
-                                {proEmail ? (
-                                    <div>
-                                        <label>Email:</label>
-                                        <span>{proEmail}</span>
-                                    </div>
-                                ) : null}
-                                {proContatoPj ? (
-                                    <div>
-                                        <label>Contato PJ:</label>
-                                        <span>{proContatoPj}</span>
-                                    </div>
-                                ) : null}
-                            </fieldset>
-                        </ContainerDados>
+                                    {proCpf ? (
+                                        <div>
+                                            <label>Cpf:</label>
+                                            <span>{proCpf}</span>
+                                        </div>
+                                    ) : null}
+                                    {proCnpj ? (
+                                        <div>
+                                            <label>Cnpj:</label>
+                                            <span>{proCnpj}</span>
+                                        </div>
+                                    ) : null}
+                                    {proFone ? (
+                                        <div>
+                                            <label>Fone:</label>
+                                            <span>{proFone}</span>
+                                        </div>
+                                    ) : null}
+                                    {proCelular ? (
+                                        <div>
+                                            <label>Celular:</label>
+                                            <span>{proCelular}</span>
+                                        </div>
+                                    ) : null}
+                                    {proEmail ? (
+                                        <div>
+                                            <label>Email:</label>
+                                            <span>{proEmail}</span>
+                                        </div>
+                                    ) : null}
+                                    {proContatoPj ? (
+                                        <div>
+                                            <label>Contato PJ:</label>
+                                            <span>{proContatoPj}</span>
+                                        </div>
+                                    ) : null}
+                                </fieldset>
+                            </ContainerDados>
+                        ) : null}
                         <ContainerDados>
                             <fieldset>
                                 <legend>Dados do processo</legend>

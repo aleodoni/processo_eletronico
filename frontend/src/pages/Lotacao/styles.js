@@ -10,8 +10,10 @@ export const Container = styled.div`
 
     fieldset {
         border: 1px solid;
+        border-radius: 5px;
         border-color: #303f9f;
         padding: 5px;
+        margin: 5px;
     }
 
     legend {
@@ -46,7 +48,6 @@ export const AsideLeft = styled.aside`
 export const Main = styled.main`
     grid-area: main;
     background: #fff;
-    margin: 10px;
 
     form {
         display: flex;
@@ -70,20 +71,19 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
-export const ContainerMenu1 = styled.div`
+export const Container1 = styled.div`
     display: grid;
-    grid-template-columns: 600px 145px;
+    grid-template-columns: 100px 770px 120px;
     grid-template-rows: 70px;
-    select {
-        font-size: 16px;
-        height: 30px;
-    }
+    margin-bottom: 10px;
 `;
 
-export const ContainerMenu2 = styled.div`
+export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 220px 160px;
+    grid-template-columns: 330px;
     grid-template-rows: 70px;
+    margin-bottom: 10px;
+
     select {
         font-size: 16px;
         height: 30px;
@@ -115,14 +115,8 @@ export const ContainerBotoes = styled.div`
     }
 `;
 
-export const ModalApaga = styled.div`
-    position: absolute;
-    width: 300;
-    border: 2px solid #116fbf;
-    border-radius: 5px;
-    background-color: #ffffff;
-    left: 40%;
-    top: 40%;
-    text-align: center;
-    padding: 10px;
+export const CustomSelect = styled.select`
+    position: relative;
+    font-size: 14px;
+    cursor: pointer;
 `;

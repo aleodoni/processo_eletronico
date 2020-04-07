@@ -15,7 +15,6 @@ class SetorController {
     }
 
     async store(req, res) {
-        console.log('ativo: ' + JSON.stringify(req.body));
         const { set_id, set_nome, set_sigla, set_id_area, set_ativo, set_tipo } = await Setor.create(req.body, {
             logging: false
         });
