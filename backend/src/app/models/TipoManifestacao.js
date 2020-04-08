@@ -4,17 +4,23 @@ class TipoManifestacao extends Model {
     static init(sequelize) {
         super.init(
             {
-                tma_id: {
+                tmn_id: {
                     type: Sequelize.INTEGER,
-                    defaultValue: "nextval('spa2.tipo_manifestacao_tma_id_seq')",
+                    defaultValue: "nextval('spa2.tipo_manifestacao_tmn_id_seq')",
                     primaryKey: true,
                     autoIncrement: true
                 },
-                tma_nome: {
+                tmn_nome: {
                     type: Sequelize.STRING,
                     allowNull: false
+                },
+                versao: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0
                 }
             },
+
             {
                 tableName: 'tipo_manifestacao',
                 schema: 'spa2',
