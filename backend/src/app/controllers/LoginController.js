@@ -41,8 +41,9 @@ class LoginController {
                 attributes: ['uid', 'cn', 'mail']
             };
 
-            // O LDAP atual não deixa pesquisar com o usuário normal, só admin
-            await client.bind('cn=admin,dc=cmc,dc=pr,dc=gov,dc=br', 'admin');
+            // O LDAP atual não deixa pesquisar com o usuário normal, só admin ou authproxy
+            // await client.bind('cn=admin,dc=cmc,dc=pr,dc=gov,dc=br', 'admin');
+            await client.bind('cn=authproxy,dc=cmc,dc=pr,dc=gov,dc=br', 'authproxy');
 
             const entries = await client.search(
                 process.env.OUS,
