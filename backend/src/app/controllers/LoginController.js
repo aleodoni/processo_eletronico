@@ -1,96 +1,162 @@
-import Autorizacao from '../models/Autorizacao';
-import Ldapjs from 'ldapjs';
+/* eslint-disable func-names */
+/* eslint-disable no-console */
+
 import nJwt from 'njwt';
-const ERRO_USUARIO_INVALIDO = 'Usuário ou senha inválidos.';
-const ERRO_USUARIO_SENHA_BRANCO = 'Usuário ou senha em branco.';
-const ERRO_PROCURA_LDAP = 'Erro ao fazer a procura no LDAP.';
-const ERRO_PERMISSAO = 'Sem permissão de acessar o sistema.';
-const ldapOptions = {
-  url: process.env.LDAP_URL,
-  connectTimeout: 30000,
-  reconnect: true,
-};
+import VDadosLogin from '../models/VDadosLogin';
+import Sequelize from 'sequelize';
+
+import LdapClient from 'ldapjs-client';
+
 class LoginController {
-  async index(req, res) {
-    const ldapClient = Ldapjs.createClient(ldapOptions);
-    if (req.body.usuario && req.body.senha) {
-      const usuario = req.body.usuario;
-      const senha = req.body.senha;
-      const timeout = req.body.timeout;
-      const dn = 'uid=' + usuario + ',' + process.env.OUS;
-      ldapClient.bind(dn, senha, function(err) {
-        if (err != null) {
-          console.log(ERRO_USUARIO_INVALIDO);
-          res.status(412).json({ message: ERRO_USUARIO_INVALIDO });
-        } else {
-          const procura = {
-            scope: 'sub',
-            filter: '(&(objectClass=*)(uid=' + usuario + '))',
-            attrs: 'memberOf',
-          };
-          ldapClient.search(process.env.OUS, procura, function(err, resposta) {
-            if (err) {
-              console.log(ERRO_PROCURA_LDAP);
-              res.status(412).json({
-                message: ERRO_PROCURA_LDAP,
-              });
-            } else {
-              resposta.on('searchEntry', function(entry) {
-                const pesId = entry.object.employeeNumber;
-                Autorizacao.findAll({
-                  where: {
-                    pessoa: pesId,
-                  },
-                  plain: true,
-                  logging: false,
-                })
-                  .then(dados => {
-                    if (dados.length === 0) {
-                      console.log(ERRO_PERMISSAO);
-                      res.status(412).json({
-                        message: ERRO_PERMISSAO,
-                      });
-                    } else {
-                      const nomeUsuario = dados.dataValues.pes_nome;
-                      console.log(
-                        'Usuário: ' +
-                          usuario +
-                          ' logado com sucesso no sistema SPA2.');
-                      let adicionaMinutos = function(dt, minutos) {
-                        return new Date(dt.getTime() + minutos * 60000);
-                      };
-                      let claims = {
-                        sub: usuario, // login do usuario
-                        nomeUsuario: nomeUsuario, //nome do usuario
-                        pesId: entry.object.employeeNumber, //pes_id no LDAP
-                        iat: new Date().getTime(), //data e hora de criação do token
-                        exp: adicionaMinutos(new Date(), timeout), //data e hora de expiração do token
-                      };
-                      let jwt = nJwt.create(
-                        claims,
-                        process.env.CHAVE,
-                        'HS512'
-                      );
-                      let token = jwt.compact();
-                      res
-                        .status(201)
-                        .json({ token: token, usuario: usuario });
-                    }
-                  })
-                  .catch(function(err) {
-                    console.log(err);
-                  });
-              });
+    async index(req, res) {
+        const client = new LdapClient({ url: process.env.LDAP_URL });
+
+        const { usuario, senha, timeout } = req.body;
+
+        let emailLdap;
+
+        const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+            host: process.env.DB_HOST,
+            dialect: 'postgres',
+            define: {
+                timestamps: false,
+                underscoredAll: true
+            },
+            pool: {
+                max: 7,
+                min: 0,
+                acquire: 30000,
+                idle: 10000
             }
-          });
+        });
+
+        const login = new LoginController();
+        // procura o usuario no ldap, se existir ok, senão retorna erro
+        try {
+            await client.bind(`uid=${usuario},${process.env.OUS}`, senha);
+
+            const options = {
+                filter: `(&(uid=${usuario}))`,
+                scope: 'sub',
+                attributes: ['uid', 'cn', 'mail']
+            };
+
+            // O LDAP atual não deixa pesquisar com o usuário normal, só admin ou authproxy
+            // await client.bind('cn=admin,dc=cmc,dc=pr,dc=gov,dc=br', 'admin');
+            await client.bind('cn=authproxy,dc=cmc,dc=pr,dc=gov,dc=br', 'authproxy');
+
+            const entries = await client.search(
+                process.env.OUS,
+                options
+            );
+
+            entries.map(b => {
+                emailLdap = b.mail;
+            });
+
+            // limpa a sessão no ldap
+            await client.unbind();
+            await client.destroy();
+
+            // procura o usuário na v_dados_login
+            const dadosLogin = await VDadosLogin.findOne({
+                where: {
+                    login: usuario
+                },
+                logging: false,
+                plain: true
+            });
+
+            if (dadosLogin !== null) {
+                let idArea = dadosLogin.dataValues.set_id_area.toString();
+                let idSetor = dadosLogin.dataValues.set_id.toString();
+                const nomeArea = dadosLogin.dataValues.nome_area;
+                const nomeSetor = dadosLogin.dataValues.nome_setor;
+                const nome = dadosLogin.dataValues.nome;
+                const matricula = dadosLogin.dataValues.matricula;
+                if (idArea.length === 1) {
+                    idArea = `00${idArea}`;
+                }
+
+                if (idArea.length === 2) {
+                    idArea = `0${idArea}`;
+                }
+                if (idSetor.length === 1) {
+                    idSetor = `00${idSetor}`;
+                }
+
+                if (idSetor.length === 2) {
+                    idSetor = `0${idSetor}`;
+                }
+
+                // monta o menu baseado na área do usuário
+                const sql = "select spa2.monta_menu_raiz('" + idArea + "')";
+
+                const montaMenu = await sequelize.query(sql,
+                    {
+                        logging: false,
+                        plain: true,
+                        raw: true
+                    }
+                );
+
+                if (process.env.NODE_ENV !== 'test') {
+                    console.log(`Usuário: ${usuario} logado com sucesso no sistema SPA2.`);
+                }
+
+                const meuToken = login.geraToken(usuario, nome, matricula, timeout);
+
+                return res.status(201).json({
+                    token: meuToken,
+                    usuario: usuario,
+                    email: emailLdap,
+                    nomeUsuario: nome,
+                    setorUsuario: idSetor,
+                    areaUsuario: idArea,
+                    nomeSetorUsuario: nomeSetor,
+                    nomeAreaUsuario: nomeArea,
+                    menu: montaMenu.monta_menu_raiz
+                });
+            } else {
+                return res.status(400).json({ error: 'Usuário não cadastrado no sistema.' });
+            }
+        } catch (e) {
+            let retorno = '';
+            console.log(e);
+            if (e.errno === 'ECONNREFUSED') {
+                retorno = 'Conexão recusada, tente novamente mais tarde.';
+            } else {
+                retorno = 'Usuário ou senha inválidos.';
+            }
+
+            return res.status(400).json({ error: retorno });
         }
-      });
-    } else {
-      console.log(ERRO_USUARIO_SENHA_BRANCO);
-      res.status(412).json({
-        message: ERRO_USUARIO_SENHA_BRANCO,
-      });
     }
-  }
+
+    async getBd(req, res) {
+        return res
+            .status(200)
+            .json({ bd: process.env.DB_NAME, versao: process.env.VERSAO });
+    }
+
+    geraToken(usuario, nomeUsuario, matricula, timeout) {
+        const adicionaMinutos = function(dt, minutos) {
+            return new Date(dt.getTime() + minutos * 60000);
+        };
+        const claims = {
+            sub: usuario, // login do usuario
+            nomeUsuarioLdap: nomeUsuario, // nome do usuario no BD
+            matricula: matricula, // matricula no BD
+            iat: new Date().getTime(), // data e hora de criação do token
+            exp: adicionaMinutos(new Date(), timeout) // data e hora de expiração do token
+        };
+        const jwt = nJwt.create(
+            claims,
+            process.env.CHAVE,
+            'HS512'
+        );
+        const token = jwt.compact();
+        return token;
+    }
 }
 export default new LoginController();
