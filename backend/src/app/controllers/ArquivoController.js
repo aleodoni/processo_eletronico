@@ -2,7 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Arquivo from '../models/Arquivo';
-import AuditoriaController from './AuditoriaController';
+// import AuditoriaController from './AuditoriaController';
 import * as caminhos from '../../config/arquivos';
 import fs from 'fs';
 require('dotenv/config');
@@ -25,7 +25,7 @@ class ArquivoController {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', arq_id);
+        // AuditoriaController.audita(req.body, req, 'I', arq_id);
         //
         return res.json({
             arq_id,
@@ -41,12 +41,12 @@ class ArquivoController {
     async update(req, res) {
         const arquivo = await Arquivo.findByPk(req.params.id, { logging: false });
         // auditoria de edição
-        AuditoriaController.audita(
-            arquivo._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        // AuditoriaController.audita(
+        //    arquivo._previousDataValues,
+        //    req,
+        //    'U',
+        //    req.params.id
+        // );
         //
         if (!arquivo) {
             return res.status(400).json({ error: 'Arquivo não encontrado' });
@@ -64,12 +64,12 @@ class ArquivoController {
             .destroy({ logging: false })
             .then(() => {
                 // auditoria de deleção
-                AuditoriaController.audita(
-                    arquivo._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
+                // AuditoriaController.audita(
+                //    arquivo._previousDataValues,
+                //    req,
+                //    'D',
+                //    req.params.id
+                // );
                 //
             })
             .catch(function() {

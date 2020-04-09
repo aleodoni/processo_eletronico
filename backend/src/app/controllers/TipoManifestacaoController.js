@@ -2,40 +2,40 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import TipoManifestacao from '../models/TipoManifestacao';
-import AuditoriaController from './AuditoriaController';
+// import AuditoriaController from './AuditoriaController';
 
 class TipoManifestacaoController {
     async index(req, res) {
         const tiposManifestacao = await TipoManifestacao.findAll({
-            order: ['tma_nome'],
-            attributes: ['tma_id', 'tma_nome'],
+            order: ['tmn_nome'],
+            attributes: ['tmn_id', 'tmn_nome'],
             logging: false
         });
         return res.json(tiposManifestacao);
     }
 
     async store(req, res) {
-        const { tma_id, tma_nome } = await TipoManifestacao.create(req.body, {
+        const { tmn_id, tmn_nome } = await TipoManifestacao.create(req.body, {
             logging: false
         });
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', tma_id);
+        // AuditoriaController.audita(req.body, req, 'I', tmn_id);
         //
         return res.json({
-            tma_id,
-            tma_nome
+            tmn_id,
+            tmn_nome
         });
     }
 
     async update(req, res) {
         const tipoManifestacao = await TipoManifestacao.findByPk(req.params.id, { logging: false });
         // auditoria de edição
-        AuditoriaController.audita(
-            tipoManifestacao._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        // AuditoriaController.audita(
+        //    tipoManifestacao._previousDataValues,
+        //    req,
+        //    'U',
+        //    req.params.id
+        // );
         //
         if (!tipoManifestacao) {
             return res.status(400).json({ error: 'Tipo de manifestação não encontrada' });
@@ -53,12 +53,12 @@ class TipoManifestacaoController {
             .destroy({ logging: false })
             .then(auditoria => {
                 // auditoria de deleção
-                AuditoriaController.audita(
-                    tipoManifestacao._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
+                // AuditoriaController.audita(
+                //    tipoManifestacao._previousDataValues,
+                //    req,
+                //    'D',
+                //    req.params.id
+                // );
                 //
             })
             .catch(function(err) {
