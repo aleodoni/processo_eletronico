@@ -7,7 +7,7 @@ class Lotacao extends Model {
                 matricula: {
                     type: Sequelize.STRING,
                     allowNull: false,
-                    primaryKey: true,
+                    primaryKey: true
                 },
                 pes_nome: {
                     type: Sequelize.STRING,
@@ -15,12 +15,12 @@ class Lotacao extends Model {
                 },
                 set_id: {
                     type: Sequelize.INTEGER,
-                    allowNull: false,
+                    allowNull: false
                 },
                 pes_login: {
                     type: Sequelize.STRING,
                     allowNull: false
-                },
+                }
 
             },
             {

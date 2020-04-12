@@ -20,6 +20,7 @@ import CriaProcessoController from './app/controllers/CriaProcessoController';
 import DadosProcessoController from './app/controllers/DadosProcessoController';
 import ArquivoController from './app/controllers/ArquivoController';
 import TipoManifestacaoController from './app/controllers/TipoManifestacaoController';
+import ManifestacaoController from './app/controllers/ManifestacaoController';
 import SetorController from './app/controllers/SetorController';
 import LotacaoController from './app/controllers/LotacaoController';
 import AuthMiddleware from './app/middlewares/auth';
@@ -44,7 +45,24 @@ const storage = multer.diskStorage({
         callback(null, funcoesArquivo.nomeFisico(req.params.id) + path.extname(file.originalname));
     }
 });
+
+const storageManifestacao = multer.diskStorage({
+    destination: function(req, file, callback) {
+        const novoCaminho = funcoesArquivo.destino + funcoesArquivo.finalDoCaminho(req.params.id);
+        if (!fs.existsSync(novoCaminho)) {
+            fs.mkdirSync(novoCaminho);
+        }
+        callback(null, novoCaminho);
+    },
+    filename: function(req, file, callback) {
+        console.log('Id do arquivo: ' + req.params.id);
+        callback(null, funcoesArquivo.nomeFisico(req.params.id) + 'M' + path.extname(file.originalname));
+    }
+});
+
 const upload = multer({ storage: storage });
+
+const uploadManifestacao = multer({ storage: storageManifestacao });
 
 /**
  * Rotas sem autenticação
@@ -163,9 +181,16 @@ routes.put(`${process.env.API_URL}/arquivos/:id`, ArquivoController.update);
 routes.delete(`${process.env.API_URL}/arquivos/:id`, ArquivoController.delete);
 routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.index);
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
+routes.get(`${process.env.API_URL}/arquivos-manifestacao/:proId`, ArquivoController.indexManifestacao);
+routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
 
 // rota de inserção de anexo em processo
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {
+    res.status(204).end();
+});
+
+// rota de inserção de anexo em manifestação
+routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.single('file'), function(req, res) {
     res.status(204).end();
 });
 
@@ -186,5 +211,9 @@ routes.get(`${process.env.API_URL}/lotacoes`, LotacaoController.index);
 routes.post(`${process.env.API_URL}/lotacoes`, LotacaoController.store);
 routes.put(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.update);
 routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
+
+// rotas do cadastro de manifestacao
+routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
+routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
 
 export default routes;

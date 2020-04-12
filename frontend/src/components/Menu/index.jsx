@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Collapse, List, ListItem, ListItemText } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import { FaHome, FaChevronCircleRight, FaChevronCircleDown } from 'react-icons/fa';
+import { FaHome, FaChevronCircleRight, FaChevronCircleDown, FaCircle } from 'react-icons/fa';
 import { Container, Fundo } from './styles';
 
 require('dotenv').config();
@@ -60,9 +60,8 @@ class Menu extends Component {
                             <Fundo>
                                 <Link to={subOption.url} style={{ textDecoration: 'none' }}>
                                     <ListItem button key={subOption.name}>
-                                        <span>
-                                            <ListItemText inset primary={subOption.name} />
-                                        </span>
+                                        <FaCircle color="#fff" size="1em" />
+                                        <ListItemText inset primary={subOption.name} />
                                     </ListItem>
                                 </Link>
                             </Fundo>

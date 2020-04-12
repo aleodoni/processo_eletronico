@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Arquivo from '../models/Arquivo';
+import ArquivoManifestacao from '../models/ArquivoManifestacao';
 // import AuditoriaController from './AuditoriaController';
 import * as caminhos from '../../config/arquivos';
 import fs from 'fs';
@@ -20,9 +21,21 @@ class ArquivoController {
         return res.json(arquivos);
     }
 
+    async indexManifestacao(req, res) {
+        const arquivos = await ArquivoManifestacao.findAll({
+            order: ['man_id'],
+            attributes: ['arq_id', 'arq_nome', 'man_id', 'arq_tipo', 'data', 'man_login', 'situacao', 'man_login_cancelamento', 'data_cancelamento', 'tmn_nome', 'set_nome'],
+            logging: true,
+            where: {
+                pro_id: req.params.proId
+            }
+        });
+        return res.json(arquivos);
+    }
+
     async store(req, res) {
         const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo } = await Arquivo.create(req.body, {
-            logging: false
+            logging: true
         });
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', arq_id);
@@ -82,6 +95,17 @@ class ArquivoController {
 
     download(req, res) {
         const caminho = caminhos.destino + caminhos.finalDoCaminho(req.params.arqId) + caminhos.nomeFisico(req.params.arqId) + '.pdf';
+        fs.readFile(caminho, function(_err, data) {
+            if (_err) {
+                console.log(_err);
+            }
+            res.contentType('application/pdf');
+            return res.send(data);
+        });
+    }
+
+    downloadManifestacao(req, res) {
+        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.params.arqId) + caminhos.nomeFisico(req.params.arqId) + 'M' + '.pdf';
         fs.readFile(caminho, function(_err, data) {
             if (_err) {
                 console.log(_err);
