@@ -30,6 +30,16 @@ class Nodo extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     defaultValue: 0
+                },
+                nod_dias_prazo: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0
+                },
+                nod_ordem: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0
                 }
             },
             {

@@ -103,12 +103,13 @@ routes.post(`${process.env.API_URL}/telas`, TelaController.store);
 routes.put(`${process.env.API_URL}/telas/:id`, TelaController.update);
 routes.delete(`${process.env.API_URL}/telas/:id`, TelaController.delete);
 
-// rotas do cadastro de nós
-routes.get(`${process.env.API_URL}/nos`, NodoController.index);
-routes.get(`${process.env.API_URL}/grid-nos/:fluId`, NodoController.gridNodo);
-routes.post(`${process.env.API_URL}/nos`, NodoController.store);
-routes.put(`${process.env.API_URL}/nos/:id`, NodoController.update);
-routes.delete(`${process.env.API_URL}/nos/:id`, NodoController.delete);
+// rotas do cadastro de nodos
+routes.get(`${process.env.API_URL}/nodos`, NodoController.index);
+routes.get(`${process.env.API_URL}/grid-nodos/:fluId`, NodoController.gridNodo);
+routes.get(`${process.env.API_URL}/seleciona-nodo/:id`, NodoController.findOne);
+routes.post(`${process.env.API_URL}/nodos`, NodoController.store);
+routes.put(`${process.env.API_URL}/nodos/:id`, NodoController.update);
+routes.delete(`${process.env.API_URL}/nodos/:id`, NodoController.delete);
 
 // rotas do cadastro de gêneros
 routes.get(`${process.env.API_URL}/generos`, GeneroController.index);

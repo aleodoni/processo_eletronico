@@ -37,7 +37,7 @@ const Routes = () => (
         <PrivateRoute exact path="/modelo-menu" component={ModeloMenu} />
         <PrivateRoute exact path="/areas-menu" component={AreaMenu} />
         <PrivateRoute exact path="/menus" component={TelaMenu} />
-        <PrivateRoute exact path="/nos" component={Nodo} />
+        <PrivateRoute exact path="/nodos" component={Nodo} />
         <PrivateRoute exact path="/razao" component={RazaoTramite} />
         <PrivateRoute exact path="/setores" component={Setor} />
         <PrivateRoute exact path="/lotacoes" component={Lotacao} />

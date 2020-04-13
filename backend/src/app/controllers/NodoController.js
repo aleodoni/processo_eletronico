@@ -3,16 +3,24 @@
 /* eslint-disable func-names */
 import Nodo from '../models/Nodo';
 import VNodo from '../models/VNodo';
-import AuditoriaController from './AuditoriaController';
+// import AuditoriaController from './AuditoriaController';
 
 class NodoController {
     async index(req, res) {
         const nodos = await Nodo.findAll({
             order: ['nod_id'],
-            attributes: ['nod_id', 'nod_inicio', 'flu_id', 'area_id', 'nod_fim'],
+            attributes: ['nod_id', 'nod_inicio', 'flu_id', 'area_id', 'nod_fim', 'nod_dias_prazo', 'nod_ordem'],
             logging: false
         });
         return res.json(nodos);
+    }
+
+    async findOne(req, res) {
+        const nodo = await Nodo.findByPk(req.params.id, { logging: false });
+        if (!nodo) {
+            return res.status(400).json({ error: 'Nodo não encontrado' });
+        }
+        return res.json(nodo);
     }
 
     async gridNodo(req, res) {
@@ -20,37 +28,41 @@ class NodoController {
             where: {
                 flu_id: req.params.fluId
             },
-            order: ['nod_id'],
-            attributes: ['nod_id', 'nod_inicio', 'flu_id', 'area_id', 'nod_fim', 'fluxo', 'area', 'inicio', 'fim'],
+            order: ['nod_ordem'],
+            attributes: ['nod_id', 'nod_inicio', 'flu_id', 'area_id', 'nod_fim', 'fluxo', 'area', 'inicio', 'fim', 'nod_dias_prazo', 'nod_ordem'],
             logging: false
         });
         return res.json(gridNodos);
     }
 
     async store(req, res) {
-        const { nod_id, nod_inicio, flu_id, area_id } = await Nodo.create(req.body, {
-            logging: false
+        const { nod_id, nod_inicio, nod_fim, flu_id, area_id, nod_dias_prazo, nod_ordem } = await Nodo.create(req.body, {
+            logging: true
         });
+        console.log('requisição: ' + req.body);
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', nod_id);
+        // AuditoriaController.audita(req.body, req, 'I', nod_id);
         //
         return res.json({
             nod_id,
             nod_inicio,
+            nod_fim,
             flu_id,
-            area_id
+            area_id,
+            nod_dias_prazo,
+            nod_ordem
         });
     }
 
     async update(req, res) {
         const nodo = await Nodo.findByPk(req.params.id, { logging: false });
         // auditoria de edição
-        AuditoriaController.audita(
-            nodo._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        // AuditoriaController.audita(
+        //    nodo._previousDataValues,
+        //    req,
+        //    'U',
+        //    req.params.id
+        // );
         //
         if (!nodo) {
             return res.status(400).json({ error: 'Nodo não encontrado' });
@@ -68,12 +80,12 @@ class NodoController {
             .destroy({ logging: false })
             .then(auditoria => {
                 // auditoria de deleção
-                AuditoriaController.audita(
-                    nodo._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
+                // AuditoriaController.audita(
+                //    nodo._previousDataValues,
+                //    req,
+                //    'D',
+                //    req.params.id
+                // );
                 //
             })
             .catch(function(err) {
