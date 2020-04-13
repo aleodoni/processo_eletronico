@@ -23,8 +23,8 @@ assignees: ''
 
 **Descrição da issue**
 
-<! - Uma descrição clara do que precisa ser alterado, por que deveria ser alterado? Como isso é útil? ->
+<!-- Uma descrição clara do que precisa ser alterado, por que deveria ser alterado? Como isso é útil? -->
 
-** Exemplo de uso **
+**Exemplo de uso**
 
-<! - Existe um exemplo de uso? ->
+<!-- Existe um exemplo de uso? -->
