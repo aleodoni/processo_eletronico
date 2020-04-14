@@ -421,6 +421,17 @@ module.exports = {
                 mmu_id: 1,
                 men_ordem_pai: null,
                 tel_interna: false
+            },
+            {
+                men_id: 527,
+                men_id_pai: 43,
+                men_nome: 'Setores',
+                men_url: '/setores',
+                tel_id: 624,
+                versao: 0,
+                mmu_id: 1,
+                men_ordem_pai: null,
+                tel_interna: false
             }
         ],
         {}

@@ -15,9 +15,6 @@ module.exports = {
             set_sigla: {
                 type: Sequelize.STRING(100)
             },
-            set_inativacao: {
-                type: Sequelize.DATE
-            },
             set_id_area: {
                 type: Sequelize.INTEGER
             },

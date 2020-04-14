@@ -7,7 +7,6 @@ module.exports = {
             {
                 set_nome: 'Diretoria Geral',
                 set_sigla: 'DG',
-                set_inativacao: null,
                 set_id: 1,
                 set_id_area: 1,
                 set_ativo: true,
@@ -16,7 +15,6 @@ module.exports = {
             {
                 set_nome: 'Diretoria De Informática',
                 set_sigla: 'DIF',
-                set_inativacao: null,
                 set_id: 27,
                 set_id_area: 27,
                 set_ativo: true,
@@ -25,7 +23,6 @@ module.exports = {
             {
                 set_nome: 'Divisão De Desenvolvimento De Sistemas',
                 set_sigla: 'DDS-1',
-                set_inativacao: null,
                 set_id: 171,
                 set_id_area: 27,
                 set_ativo: true,
@@ -34,7 +31,6 @@ module.exports = {
             {
                 set_nome: 'Divisão De Suporte Em Informática',
                 set_sigla: 'DSI-2',
-                set_inativacao: null,
                 set_id: 172,
                 set_id_area: 27,
                 set_ativo: true,
