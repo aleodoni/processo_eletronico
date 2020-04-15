@@ -11,20 +11,24 @@ class ProximoTramite extends Model {
                     autoIncrement: true
                 },
                 prx_prioridade: {
-                    type: Sequelize.INTEGER
+                    type: Sequelize.INTEGER,
+                    defaultValue: 10
                 },
                 nod_id: {
-                    type: Sequelize.INTEGER
+                    type: Sequelize.INTEGER,
+                    allowNull: false
                 },
                 nod_id_proximo: {
                     type: Sequelize.INTEGER,
                     allowNull: false
                 },
                 raz_id: {
-                    type: Sequelize.INTEGER
+                    type: Sequelize.INTEGER,
+                    allowNull: false
                 },
                 flu_id: {
-                    type: Sequelize.INTEGER
+                    type: Sequelize.INTEGER,
+                    allowNull: false
                 },
                 versao: {
                     type: Sequelize.INTEGER,

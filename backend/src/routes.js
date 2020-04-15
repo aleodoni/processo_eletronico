@@ -23,6 +23,7 @@ import TipoManifestacaoController from './app/controllers/TipoManifestacaoContro
 import ManifestacaoController from './app/controllers/ManifestacaoController';
 import SetorController from './app/controllers/SetorController';
 import LotacaoController from './app/controllers/LotacaoController';
+import ProximoTramiteController from './app/controllers/ProximoTramiteController';
 import AuthMiddleware from './app/middlewares/auth';
 import * as funcoesArquivo from '../src/config/arquivos';
 
@@ -216,5 +217,15 @@ routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 // rotas do cadastro de manifestacao
 routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
 routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
+
+// rotas do cadastro de próximos trâmites
+routes.get(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.index);
+routes.get(`${process.env.API_URL}/combo-nodo/:id`, ProximoTramiteController.comboNodo);
+routes.get(`${process.env.API_URL}/grid-proximo-tramite/:id`, ProximoTramiteController.gridProximoTramite);
+routes.get(`${process.env.API_URL}/gera-grafo/:id`, ProximoTramiteController.geraGrafo);
+routes.get(`${process.env.API_URL}/seleciona-proximo-tramite/:id`, ProximoTramiteController.selecionaProximoTramite);
+routes.post(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.store);
+routes.put(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteController.update);
+routes.delete(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteController.delete);
 
 export default routes;

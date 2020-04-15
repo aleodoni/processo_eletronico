@@ -1,89 +1,183 @@
 import React, { useState, useEffect } from 'react';
-import { FaSyncAlt, FaRegSave, FaRegTrashAlt } from 'react-icons/fa';
+import { FaSyncAlt, FaRegSave, FaRegTrashAlt, FaSitemap } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import ModalApaga from '../../components/ModalExcluir';
+import ModalFluxo from '../../components/ModalFluxo';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
-import { Container, Container1, ContainerNomeFluxo, ContainerCamposNodos, Centralizado, BotaoComoLink, ContainerBotoes, ContainerTabela, AsideLeft, Main, Erro } from './styles';
+import { Container, Container1, ContainerNomeFluxo, ContainerCamposNodos, ContainerCamposNodos1, Centralizado, BotaoComoLink, ContainerBotoes, ContainerTabela, AsideLeft, Main, Erro } from './styles';
 import Header from '../../components/Header';
 
-function Nodo() {
+function ProximoTramite() {
     const [erro, setErro] = useState('');
+    const [prxId, setPrxId] = useState('');
+    const [prxPrioridade, setPrxPrioridade] = useState('');
     const [nodId, setNodId] = useState('');
+    const [nodIdProximo, setNodIdProximo] = useState('');
+    const [razId, setRazId] = useState('');
     const [fluId, setFluId] = useState('');
     const [fluxosVisiveis, setFluxosVisiveis] = useState(true);
     const [nomeFluxosVisiveis, setNomeFluxosVisiveis] = useState(false);
     const [nomeFluxo, setNomeFluxo] = useState('');
+    const [grafo, setGrafo] = useState('');
     const [nodosVisiveis, setNodosVisiveis] = useState(false);
-    const [areaId, setAreaId] = useState('');
-    const [nodInicio, setNodInicio] = useState('');
-    const [nodFim, setNodFim] = useState('');
     const [fluxos, setFluxos] = useState([]);
-    const [areas, setAreas] = useState([]);
+    const [razoesTramite, setRazoesTramite] = useState([]);
     const [nodos, setNodos] = useState([]);
-    const [nodDiasPrazo, setNodDiasPrazo] = useState('');
-    const [nodOrdem, setNodOrdem] = useState('');
+    const [nodosProximos, setNodosProximos] = useState([]);
+    const [proximosTramites, setProximosTramites] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
+    const [modalFluxo, setModalFluxo] = useState(false);
 
     function abreModalExcluir() {
-        if (nodId === '') {
+        if (prxId === '') {
             setErro('Selecione um registro para apagar.');
             return;
         }
         setModalExcluir(true);
     }
 
+    function abreModalFluxo() {
+        setModalFluxo(true);
+    }
+
     function fechaModalExcluir() {
         setModalExcluir(false);
+    }
+
+    function fechaModalFluxo() {
+        setModalFluxo(false);
+    }
+
+    function handlePrxId(e) {
+        setPrxId(e.target.value);
     }
 
     function handleNodId(e) {
         setNodId(e.target.value);
     }
 
-    function carregaArea() {
+    function handleNodIdProximo(e) {
+        setNodIdProximo(e.target.value);
+    }
+
+    function carregaRazoesTramite() {
         axios({
             method: 'GET',
-            url: '/area',
+            url: '/razao-tramite',
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                const comboArea = [];
-                comboArea.push(
+                const comboRazoesTramite = [];
+                comboRazoesTramite.push(
                     <option key="" data-key="" value="">
                         Selecione...
                     </option>
                 );
                 for (let i = 0; i < res.data.length; i++) {
-                    comboArea.push(
-                        <option key={res.data[i].set_id} data-key={res.data[i].set_id} value={res.data[i].set_id}>
+                    comboRazoesTramite.push(
+                        <option key={res.data[i].raz_id} data-key={res.data[i].raz_id} value={res.data[i].raz_id}>
+                            {res.data[i].raz_nome}
+                        </option>
+                    );
+                }
+                setRazoesTramite(comboRazoesTramite);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar razões de trâmite.');
+            });
+    }
+
+    function carregaNodos(fluId1) {
+        axios({
+            method: 'GET',
+            url: `/combo-nodo/${fluId1}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const comboNodos = [];
+                comboNodos.push(
+                    <option key="" data-key="" value="">
+                        Selecione...
+                    </option>
+                );
+                for (let i = 0; i < res.data.length; i++) {
+                    comboNodos.push(
+                        <option key={res.data[i].nod_id} data-key={res.data[i].nod_id} value={res.data[i].nod_id}>
                             {res.data[i].set_nome}
                         </option>
                     );
                 }
-                setAreas(comboArea);
+                setNodos(comboNodos);
             })
             .catch(() => {
-                setErro('Erro ao carregar áreas.');
+                setErro('Erro ao carregar nodos.');
+            });
+    }
+
+    function carregaNodosProximos(fluId2) {
+        axios({
+            method: 'GET',
+            url: `/combo-nodo/${fluId2}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const comboNodosProximos = [];
+                comboNodosProximos.push(
+                    <option key="" data-key="" value="">
+                        Selecione...
+                    </option>
+                );
+                for (let i = 0; i < res.data.length; i++) {
+                    comboNodosProximos.push(
+                        <option key={res.data[i].nod_id} data-key={res.data[i].nod_id} value={res.data[i].nod_id}>
+                            {res.data[i].set_nome}
+                        </option>
+                    );
+                }
+                setNodosProximos(comboNodosProximos);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar nodos.');
             });
     }
 
     function carregaGrid(fluxo) {
         axios({
             method: 'GET',
-            url: `/grid-nodos/${fluxo}`,
+            url: `/grid-proximo-tramite/${fluxo}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setNodos(res.data);
+                setProximosTramites(res.data);
             })
             .catch(() => {
                 setErro('Erro ao carregar registros.');
+            });
+    }
+
+    function carregaGrafo(fluxo) {
+        axios({
+            method: 'GET',
+            url: `/gera-grafo/${fluxo}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setGrafo(res.data);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar grafo.');
             });
     }
 
@@ -95,8 +189,11 @@ function Nodo() {
             const index = e.nativeEvent.target.selectedIndex;
             setNomeFluxo(e.nativeEvent.target[index].text);
             setFluId(e.target.value);
-            carregaArea();
+            carregaRazoesTramite();
+            carregaNodos(e.target.value);
+            carregaNodosProximos(e.target.value);
             carregaGrid(e.target.value);
+            carregaGrafo(e.target.value);
         } else {
             setNodosVisiveis(false);
             setFluxosVisiveis(true);
@@ -106,30 +203,15 @@ function Nodo() {
         }
     }
 
-    function handleAreaId(e) {
-        setAreaId(e.target.value);
+    function handleRazId(e) {
+        setRazId(e.target.value);
     }
 
-    function handleNodDiasPrazo(e) {
+    function handlePrxPrioridade(e) {
         const re = /^[0-9\b]+$/;
         if (e.target.value === '' || re.test(e.target.value)) {
-            setNodDiasPrazo(e.target.value);
+            setPrxPrioridade(e.target.value);
         }
-    }
-
-    function handleNodOrdem(e) {
-        const re = /^[0-9\b]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setNodOrdem(e.target.value);
-        }
-    }
-
-    function handleSetNodInicio(e) {
-        setNodInicio(e.target.value);
-    }
-
-    function handleSetNodFim(e) {
-        setNodFim(e.target.value);
     }
 
     function carregaFluxo() {
@@ -162,34 +244,32 @@ function Nodo() {
     }
 
     function limpaCampos() {
+        setPrxId('');
+        setPrxPrioridade('');
         setNodId('');
-        setAreaId('');
-        setNodInicio('');
-        setNodFim('');
-        setNodDiasPrazo('');
-        setNodOrdem('');
+        setNodIdProximo('');
+        setRazId('');
         setErro('');
     }
 
-    function preencheCampos(nodId1) {
+    function preencheCampos(prxId1) {
         axios({
             method: 'GET',
-            url: `/seleciona-nodo/${nodId1}`,
+            url: `/seleciona-proximo-tramite/${prxId1}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setNodId(nodId1);
-                setNodDiasPrazo(res.data.nod_dias_prazo);
-                setNodInicio(res.data.nod_inicio);
-                setNodFim(res.data.nod_fim);
+                setPrxId(prxId1);
+                setPrxPrioridade(res.data.prx_prioridade);
+                setNodId(res.data.nod_id);
+                setNodIdProximo(res.data.nod_id_proximo);
                 setFluId(res.data.flu_id);
-                setAreaId(parseInt(res.data.area_id, 10));
-                setNodOrdem(res.data.nod_ordem);
+                setRazId(res.data.raz_id);
             })
             .catch(() => {
-                setErro('Erro ao carregar fluxos.');
+                setErro('Erro ao carregar próximos trâmites.');
             });
     }
 
@@ -209,38 +289,35 @@ function Nodo() {
     }, []);
 
     function grava() {
-        if (areaId === '') {
-            setErro('Selecione a área.');
-            return;
-        }
-        if (nodInicio === '') {
-            setErro('Selecione se é nodo inicial.');
-            return;
-        }
-        if (nodFim === '') {
-            setErro('Selecione se é nodo final.');
-            return;
-        }
-        if (nodDiasPrazo.trim() === '') {
-            setErro('Dias de prazo em branco.');
-            return;
-        }
-        if (nodOrdem.trim() === '') {
-            setErro('Ordem em branco.');
-            return;
-        }
         if (nodId === '') {
+            setErro('Selecione o nodo.');
+            return;
+        }
+        if (nodIdProximo === '') {
+            setErro('Selecione o nodo próximo.');
+            return;
+        }
+        if (razId === '') {
+            setErro('Selecione a razão de trâmite.');
+            return;
+        }
+
+        if (prxPrioridade === '') {
+            setErro('Prioridade em branco.');
+            return;
+        }
+
+        if (prxId === '') {
             axios({
                 method: 'POST',
-                url: '/nodos',
+                url: '/proximos-tramites',
                 data: {
-                    nod_id: null,
+                    prx_id: null,
                     flu_id: fluId,
-                    area_id: areaId,
-                    nod_inicio: nodInicio,
-                    nod_fim: nodFim,
-                    nod_dias_prazo: nodDiasPrazo,
-                    nod_ordem: nodOrdem,
+                    nod_id: nodId,
+                    nod_id_proximo: nodIdProximo,
+                    raz_id: razId,
+                    prx_prioridade: prxPrioridade,
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
@@ -257,14 +334,13 @@ function Nodo() {
         } else {
             axios({
                 method: 'PUT',
-                url: `nodos/${nodId}`,
+                url: `proximos-tramites/${prxId}`,
                 data: {
                     flu_id: fluId,
-                    area_id: areaId,
-                    nod_inicio: nodInicio,
-                    nod_fim: nodFim,
-                    nod_dias_prazo: nodDiasPrazo,
-                    nod_ordem: nodOrdem,
+                    nod_id: nodId,
+                    nod_id_proximo: nodIdProximo,
+                    raz_id: razId,
+                    prx_prioridade: prxPrioridade,
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
@@ -284,7 +360,7 @@ function Nodo() {
     function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `nodos/${id}`,
+            url: `proximos-tramites/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -302,14 +378,14 @@ function Nodo() {
     return (
         <>
             <Container>
-                <Autorizacao tela="Nodos" />
+                <Autorizacao tela="Próximos trâmites" />
                 <Header />
                 <AsideLeft>
                     <Menu />
                 </AsideLeft>
                 <Main>
                     <fieldset>
-                        <legend>Nodos</legend>
+                        <legend>Próximos trâmites</legend>
                         <Erro>{erro}</Erro>
                         <form noValidate autoComplete="off">
                             {fluxosVisiveis ? (
@@ -336,51 +412,37 @@ function Nodo() {
                             ) : null}
                             {nodosVisiveis ? (
                                 <fieldset>
-                                    <legend>Nodos</legend>
+                                    <legend>Próximos trâmites</legend>
                                     <ContainerCamposNodos>
                                         <fieldset>
-                                            <legend>Área</legend>
-                                            <select id="selectArea" onChange={handleAreaId} value={areaId}>
-                                                {areas}
+                                            <legend>Nodo</legend>
+                                            <select id="selectNodo" onChange={handleNodId} value={nodId}>
+                                                {nodos}
                                             </select>
                                         </fieldset>
                                         <fieldset>
-                                            <legend>Nó inicial</legend>
-                                            <select id="selectNoInicial" value={nodInicio} onChange={handleSetNodInicio}>
-                                                <option key="" data-key="" value="">
-                                                    Selecione...
-                                                </option>
-                                                <option key data-key value>
-                                                    Sim
-                                                </option>
-                                                <option key={false} data-key={false} value={false}>
-                                                    Não
-                                                </option>
+                                            <legend>Nodo próximo</legend>
+                                            <select id="selectNodoProximo" onChange={handleNodIdProximo} value={nodIdProximo}>
+                                                {nodosProximos}
                                             </select>
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Nó final</legend>
-                                            <select id="selectNoFinal" value={nodFim} onChange={handleSetNodFim}>
-                                                <option key="" data-key="" value="">
-                                                    Selecione...
-                                                </option>
-                                                <option key data-key value>
-                                                    Sim
-                                                </option>
-                                                <option key={false} data-key={false} value={false}>
-                                                    Não
-                                                </option>
-                                            </select>
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Dias de prazo</legend>
-                                            <input id="nodDiasPrazo" type="text" value={nodDiasPrazo} onChange={handleNodDiasPrazo} size="3" maxLength="2" />
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Ordem</legend>
-                                            <input id="nodOrdem" type="text" value={nodOrdem} onChange={handleNodOrdem} size="3" maxLength="2" />
                                         </fieldset>
                                     </ContainerCamposNodos>
+                                    <ContainerCamposNodos1>
+                                        <fieldset>
+                                            <legend>Razão</legend>
+                                            <select id="selectRazao" onChange={handleRazId} value={razId}>
+                                                {razoesTramite}
+                                            </select>
+                                        </fieldset>
+                                        <fieldset>
+                                            <legend>Prioridade</legend>
+                                            <input id="prxPrioridade" type="text" value={prxPrioridade} onChange={handlePrxPrioridade} size="3" maxLength="2" />
+                                        </fieldset>
+                                        <button type="button" id="btnGrafico" onClick={abreModalFluxo}>
+                                            <FaSitemap />
+                                            &nbsp;Gerar fluxo
+                                        </button>
+                                    </ContainerCamposNodos1>
                                     <ContainerBotoes>
                                         <button type="button" id="btnSalva" onClick={grava}>
                                             <FaRegSave />
@@ -396,43 +458,41 @@ function Nodo() {
                                         </button>
                                     </ContainerBotoes>
                                     <ContainerTabela>
-                                        {nodos.length > 0 ? (
+                                        {proximosTramites.length > 0 ? (
                                             <table>
                                                 <thead>
                                                     <tr>
-                                                        <th>Área</th>
-                                                        <th>Início</th>
-                                                        <th>Fim</th>
-                                                        <th>Prazo(dias)</th>
-                                                        <th>Ordem</th>
+                                                        <th>Nodo</th>
+                                                        <th>Nodo próximo</th>
+                                                        <th>Razão</th>
+                                                        <th>Prioridade</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {nodos.map(nodo => (
-                                                        <tr key={nodo.nod_id}>
+                                                    {proximosTramites.map(proximos => (
+                                                        <tr key={proximos.prx_id}>
                                                             <td>
-                                                                <BotaoComoLink type="button" onClick={() => preencheCampos(nodo.nod_id)}>
-                                                                    {nodo.area}
+                                                                <BotaoComoLink type="button" onClick={() => preencheCampos(proximos.prx_id)}>
+                                                                    {proximos.nodo}
                                                                 </BotaoComoLink>
                                                             </td>
                                                             <td>
-                                                                <Centralizado>{nodo.inicio}</Centralizado>
+                                                                <BotaoComoLink type="button" onClick={() => preencheCampos(proximos.prx_id)}>
+                                                                    {proximos.nodo_proximo}
+                                                                </BotaoComoLink>
                                                             </td>
                                                             <td>
-                                                                <Centralizado>{nodo.fim}</Centralizado>
+                                                                <Centralizado>{proximos.raz_nome}</Centralizado>
                                                             </td>
                                                             <td>
-                                                                <Centralizado>{nodo.nod_dias_prazo}</Centralizado>
-                                                            </td>
-                                                            <td>
-                                                                <Centralizado>{nodo.nod_ordem}</Centralizado>
+                                                                <Centralizado>{proximos.prx_prioridade}</Centralizado>
                                                             </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                             </table>
                                         ) : (
-                                            <label>Sem nodos no momento.</label>
+                                            <label>Sem próximos trâmites no momento.</label>
                                         )}
                                     </ContainerTabela>
                                 </fieldset>
@@ -440,10 +500,11 @@ function Nodo() {
                         </form>
                     </fieldset>
                 </Main>
-                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={nodId} />
+                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={prxId} />
+                <ModalFluxo fechaModalFluxo={fechaModalFluxo} modalFluxo={modalFluxo} id={grafo} />
             </Container>
         </>
     );
 }
 
-export default Nodo;
+export default ProximoTramite;
