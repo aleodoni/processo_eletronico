@@ -11,7 +11,6 @@ export const Container = styled.div`
         border: 1px solid;
         border-color: #303f9f;
         padding: 5px;
-        margin: 5px;
     }
 
     legend {
@@ -46,8 +45,7 @@ export const AsideLeft = styled.aside`
 export const Main = styled.main`
     grid-area: main;
     background: #fff;
-    margin-left: 10px;
-    padding: 5px;
+    /*margin: 10px;*/
 
     form {
         display: flex;
@@ -71,52 +69,50 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
-export const Container1 = styled.div`
-    display: grid;
-    grid-template-columns: 450px;
-    grid-template-rows: 70px;
-    margin-bottom: 10px;
-`;
+export const ContainerTabela = styled.div`
+    thead {
+        color: black;
+        background: #d3d3d3;
 
-export const Container2 = styled.div`
-    display: grid;
-    grid-template-columns: 230px 520px 130px 120px;
-    grid-template-rows: 70px;
-    margin-bottom: 10px;
-
-    select {
-        font-size: 16px;
-        height: 30px;
-    }
-`;
-
-export const ContainerBotoes = styled.div`
-    display: grid;
-    grid-template-columns: 110px 110px 170px;
-    grid-template-rows: 30px;
-    margin-top: 10px;
-    margin-bottom: 20px;
-
-    button {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        color: #fff;
-        background: #303f9f;
-        padding: 7px;
-        text-align: center;
-        margin-right: 10px;
-        cursor: pointer;
-
-        &:hover {
-            background: #4496db;
+        tr,
+        th {
+            padding: 5px;
+            border: solid 1px #000000;
         }
     }
+    tbody {
+        color: black;
+
+        tr,
+        td,
+        th {
+            border: solid 1px #000000;
+            padding: 3px;
+        }
+    }
+
+    table {
+        margin-left: 5px;
+        margin-top: 10px;
+        border-collapse: collapse;
+        border: solid 1px #000000;
+    }
 `;
 
-export const CustomSelect = styled.select`
-    position: relative;
+export const Centralizado = styled.div`
+    text-align: center;
+`;
+
+export const BotaoComoLink = styled.button`
+    background: #fff !important;
+    border: none;
+    padding: 3px;
     font-size: 14px;
+    text-decoration: underline;
+    color: #303f9f !important;
     cursor: pointer;
+
+    span {
+        margin-left: 45px;
+    }
 `;

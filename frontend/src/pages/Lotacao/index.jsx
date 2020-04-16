@@ -69,7 +69,7 @@ function Lotacao() {
                 for (let i = 0; i < res.data.length; i++) {
                     comboSetor.push(
                         <option key={res.data[i].set_id} data-key={res.data[i].set_id} value={res.data[i].set_id}>
-                            {res.data[i].set_nome}
+                            {res.data[i].set_nome.substring(0, 140)}
                         </option>
                     );
                 }
@@ -198,7 +198,7 @@ function Lotacao() {
                                 </fieldset>
                                 <fieldset>
                                     <legend>Nome</legend>
-                                    <input required id="pesNome" type="text" value={pesNome} onChange={handlePesNome} size="80" maxLength="80" />
+                                    <input required id="pesNome" type="text" value={pesNome} onChange={handlePesNome} size="74" maxLength="80" />
                                 </fieldset>
                                 <fieldset>
                                     <legend>Login</legend>

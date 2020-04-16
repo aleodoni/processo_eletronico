@@ -33,6 +33,8 @@ import VDadosLogin from '../app/models/VDadosLogin';
 import ArquivoManifestacao from '../app/models/ArquivoManifestacao';
 import VNodoFluxo from '../app/models/VNodoFluxo';
 import VProximoTramite from '../app/models/VProximoTramite';
+import VProcessoEnvia from '../app/models/VProcessoEnvia';
+import Tramite from '../app/models/Tramite';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -69,7 +71,9 @@ const models = [
     VDadosLogin,
     ArquivoManifestacao,
     VNodoFluxo,
-    VProximoTramite
+    VProximoTramite,
+    Tramite,
+    VProcessoEnvia
 ];
 
 class Database {
