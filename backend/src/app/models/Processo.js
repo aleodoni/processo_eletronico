@@ -92,6 +92,9 @@ class Processo extends Model {
                 nod_id: {
                     type: Sequelize.INTEGER,
                     allowNull: false
+                },
+                area_id_pendente: {
+                    type: Sequelize.INTEGER
                 }
             },
             {

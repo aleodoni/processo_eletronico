@@ -5,6 +5,7 @@ import VDadosProcesso from '../models/VDadosProcesso';
 
 class DadosProcessoController {
     async dadosProcesso(req, res) {
+        console.log('id: ' + req.params.id);
         const dadosProcesso = await VDadosProcesso.findAll({
             attributes: [
                 'pro_id',
@@ -46,7 +47,7 @@ class DadosProcessoController {
                 'setor_finalizador_processo',
                 'visualizacao'
             ],
-            logging: false,
+            logging: true,
             plain: true,
             where: {
                 pro_id: req.params.id

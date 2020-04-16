@@ -18,7 +18,9 @@ import TipoManifestacao from './pages/TipoManifestacao';
 import Setor from './pages/Setor';
 import Lotacao from './pages/Lotacao';
 import Nodo from './pages/Nodo';
+import ProximoTramite from './pages/ProximoTramite';
 import CriarManifestacao from './pages/CriarManifestacao';
+import TramiteEnvio from './pages/TramiteEnvio';
 
 const PrivateRoute = ({ component: Component, ...rest }) => <Route {...rest} render={props => (sessionStorage.getItem('token') !== null ? <Component {...props} /> : <Redirect to={{ pathname: '/', state: { from: props.location } }} />)} />;
 
@@ -42,8 +44,10 @@ const Routes = () => (
         <PrivateRoute exact path="/setores" component={Setor} />
         <PrivateRoute exact path="/lotacoes" component={Lotacao} />
         <PrivateRoute exact path="/tipos-manifestacao" component={TipoManifestacao} />
+        <PrivateRoute exact path="/proximos-tramites" component={ProximoTramite} />
         <PrivateRoute exact path="/dados-processo/:id" component={DadosProcesso} />
         <PrivateRoute exact path="/manifestacao-cria/:proId" component={CriarManifestacao} />
+        <PrivateRoute exact path="/envia" component={TramiteEnvio} />
         <Route path="*" component={Login} />
     </Switch>
 );

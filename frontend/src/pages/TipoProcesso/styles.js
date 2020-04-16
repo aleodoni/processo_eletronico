@@ -5,7 +5,6 @@ export const Container = styled.div`
     grid-template-areas:
         'nav nav'
         'asideLeft main';
-    grid-template-rows: 1fr 10fr;
     grid-template-columns: 1fr 6fr;
 
     fieldset {
@@ -40,13 +39,14 @@ export const Container = styled.div`
 
 export const AsideLeft = styled.aside`
     grid-area: asideLeft;
-    background: #fff;
+    background: #303f9f;
 `;
 
 export const Main = styled.main`
     grid-area: main;
     background: #fff;
-    margin: 10px;
+    margin-left: 10px;
+    padding: 5px;
 
     form {
         display: flex;

@@ -5,12 +5,10 @@ export const Container = styled.div`
     grid-template-areas:
         'nav nav'
         'asideLeft main';
-    grid-template-rows: 1fr 10fr;
     grid-template-columns: 1fr 6fr;
 
     fieldset {
         border: 1px solid;
-        border-radius: 5px;
         border-color: #303f9f;
         padding: 5px;
         margin: 5px;
@@ -42,12 +40,14 @@ export const Container = styled.div`
 
 export const AsideLeft = styled.aside`
     grid-area: asideLeft;
-    background: #fff;
+    background: #303f9f;
 `;
 
 export const Main = styled.main`
     grid-area: main;
     background: #fff;
+    margin-left: 10px;
+    padding: 5px;
 
     form {
         display: flex;
@@ -73,14 +73,14 @@ export const Erro = styled.div`
 
 export const Container1 = styled.div`
     display: grid;
-    grid-template-columns: 100px 770px 120px;
+    grid-template-columns: 100px 710px 120px;
     grid-template-rows: 70px;
     margin-bottom: 10px;
 `;
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 330px;
+    grid-template-columns: 270px;
     grid-template-rows: 70px;
     margin-bottom: 10px;
 

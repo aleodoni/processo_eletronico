@@ -10,7 +10,6 @@ export const Container = styled.div`
 
     fieldset {
         border: 1px solid;
-        border-radius: 5px;
         border-color: #303f9f;
         padding: 5px;
     }
@@ -41,11 +40,12 @@ export const Container = styled.div`
 
 export const AsideLeft = styled.aside`
     grid-area: asideLeft;
-    background: #fff;
+    background: #303f9f;
 `;
 
 export const Main = styled.main`
     grid-area: main;
     background: #fff;
-    margin: 10px;
+    margin-left: 10px;
+    padding: 5px;
 `;
