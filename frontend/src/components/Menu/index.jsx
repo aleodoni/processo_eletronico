@@ -61,7 +61,7 @@ class Menu extends Component {
                                 <Link to={subOption.url} style={{ textDecoration: 'none' }}>
                                     <ListItem button key={subOption.name}>
                                         <FaCircle color="#fff" size="1em" />
-                                        <ListItemText inset primary={subOption.name} />
+                                        <ListItemText primary={subOption.name} style={{ marginLeft: 10 }} />
                                     </ListItem>
                                 </Link>
                             </Fundo>
@@ -74,7 +74,7 @@ class Menu extends Component {
                     <Fundo>
                         <ListItem button onClick={() => this.handleClick(subOption.name)}>
                             {state[subOption.name] ? <FaChevronCircleDown color="#fff" size="1em" /> : <FaChevronCircleRight color="#fff" size="1em" />}
-                            <ListItemText inset primary={subOption.name} />
+                            <ListItemText style={{ marginLeft: 10 }} primary={subOption.name} />
                         </ListItem>
                         <Collapse in={state[subOption.name]} timeout="auto" unmountOnExit>
                             {this.handler(subOption.children)}
@@ -90,7 +90,9 @@ class Menu extends Component {
         return (
             <>
                 <Container>
-                    <List>{this.handler(data)}</List>
+                    <List dense disablePadding>
+                        {this.handler(data)}
+                    </List>
                 </Container>
             </>
         );
