@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import React, { useState, useEffect, useRef } from 'react';
 import MaterialTable from 'material-table';
 import { FaRegSave, FaRegTrashAlt, FaRegEdit, FaSyncAlt } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
+import { Form } from '@unform/web';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
@@ -9,6 +12,11 @@ import Menu from '../../components/Menu';
 import { tabelas } from '../../configs/tabelas';
 import { Container, Container1, Container2, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
 import Header from '../../components/Header';
+import api from '../../service/api';
+import Input from '../../components/layout/Input';
+import Select from '../../components/layout/Select';
+import Ativo from '../../components/system/select/Ativo';
+import Tipo from '../../components/system/select/Tipo';
 
 function Setor() {
     const [erro, setErro] = useState('');
@@ -21,6 +29,8 @@ function Setor() {
     const [setores, setSetores] = useState([]);
     const [areas, setAreas] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
+
+    const formRef = useRef(null);
 
     function abreModalExcluir() {
         if (setNome === '') {
@@ -39,7 +49,7 @@ function Setor() {
     }
 
     function handleSetIdArea(e) {
-        setSetIdArea(e.target.value);
+        setSetIdArea(e.value);
     }
 
     function handleSetNome(e) {
@@ -51,40 +61,30 @@ function Setor() {
     }
 
     function handleSetAtivo(e) {
-        setSetAtivo(e.target.value);
+        setSetAtivo(e.value);
     }
 
     function handleSetTipo(e) {
-        setSetTipo(e.target.value);
+        setSetTipo(e.value);
     }
 
-    function carregaArea() {
-        axios({
-            method: 'GET',
-            url: '/area',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboArea = [];
-                comboArea.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboArea.push(
-                        <option key={res.data[i].set_id} data-key={res.data[i].set_id} value={res.data[i].set_id}>
-                            {res.data[i].set_nome}
-                        </option>
-                    );
-                }
-                setAreas(comboArea);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar áreas.');
+    async function carregaArea() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/area');
+
+            const data = response.data.map(area => {
+                return {
+                    label: area.set_nome,
+                    value: area.set_id,
+                };
             });
+
+            setAreas(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
     function limpaCampos() {
@@ -124,7 +124,7 @@ function Setor() {
 
     useEffect(() => {
         async function carrega() {
-            carregaArea();
+            await carregaArea();
             carregaGrid();
         }
         carrega();
@@ -231,59 +231,21 @@ function Setor() {
                     <fieldset>
                         <legend>Setores</legend>
                         <Erro>{erro}</Erro>
-                        <form noValidate autoComplete="off">
+                        <Form ref={formRef}>
                             <input id="setId" value={setId} onChange={handleSetId} type="hidden" />
                             <Container1>
-                                <fieldset>
-                                    <legend>Nome</legend>
-                                    <input required id="setNome" type="text" value={setNome} onChange={handleSetNome} autoFocus size="100" maxLength="100" />
-                                </fieldset>
+                                <Input required name="setNome" label="Nome" type="text" value={setNome} onChange={handleSetNome} autoFocus size="100" maxLength="100" />
                             </Container1>
                             <Container2>
-                                <fieldset>
-                                    <legend>Sigla</legend>
-                                    <input required id="setSigla" type="text" value={setSigla} onChange={handleSetSigla} size="20" maxLength="20" />
-                                </fieldset>
-                                <fieldset>
-                                    <legend>Área</legend>
-                                    <select id="selectArea" onChange={handleSetIdArea} value={setIdArea}>
-                                        {areas}
-                                    </select>
-                                </fieldset>
+                                <Input required name="setSigla" label="Sigla" type="text" value={setSigla} onChange={handleSetSigla} size="20" maxLength="20" />
 
-                                <fieldset>
-                                    <legend>Ativo?</legend>
-                                    <select id="selectAtivo" value={setAtivo} onChange={handleSetAtivo}>
-                                        <option key="" data-key="" value="">
-                                            Selecione...
-                                        </option>
-                                        <option key data-key value>
-                                            Sim
-                                        </option>
-                                        <option key={false} data-key={false} value={false}>
-                                            Não
-                                        </option>
-                                    </select>
-                                </fieldset>
-                                <fieldset>
-                                    <legend>Tipo</legend>
-                                    <select id="selectTipo" value={setTipo} onChange={handleSetTipo}>
-                                        <option key="" data-key="" value="">
-                                            Selecione...
-                                        </option>
-                                        <option key="N" data-key="N" value="N">
-                                            Normal
-                                        </option>
-                                        <option key="G" data-key="G" value="G">
-                                            Gabinete
-                                        </option>
-                                        <option key="E" data-key="E" value="E">
-                                            Especial
-                                        </option>
-                                    </select>
-                                </fieldset>
+                                <Select id="selectArea" name="selectArea" label="Área" options={areas} onChange={handleSetIdArea} value={areas.filter(({ value }) => value === setIdArea)} />
+
+                                <Ativo name="selectAtivo" val={setAtivo} changeHandler={handleSetAtivo} />
+
+                                <Tipo name="selectAtivo" val={setTipo} changeHandler={handleSetTipo} />
                             </Container2>
-                        </form>
+                        </Form>
                         <ContainerBotoes>
                             <button type="button" id="btnSalva" onClick={grava}>
                                 <FaRegSave />

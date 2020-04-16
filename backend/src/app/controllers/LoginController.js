@@ -105,6 +105,8 @@ class LoginController {
                 }
 
                 const meuToken = login.geraToken(usuario, nome, matricula, timeout);
+                console.log('========================================');
+                console.log(meuToken);
 
                 return res.status(201).json({
                     token: meuToken,

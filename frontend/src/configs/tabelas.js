@@ -22,6 +22,9 @@ export const tabelas = {
         search: false,
         toolbar: false,
         pageSize: 10,
+        headerStyle: {
+            zIndex: 0,
+        },
     },
     icones: {
         FirstPage: () => <FaAngleDoubleLeft />,

@@ -52,17 +52,16 @@ export const Main = styled.main`
     form {
         display: flex;
         flex-direction: column;
-        font-size: 16px;
     }
 
-    input {
+    /* input {
         background: #ffffff;
         border: 1px solid #c4c4c4;
         border-radius: 5px;
         font-size: 16px;
         padding-top: 5px;
         padding-bottom: 5px;
-    }
+    } */
 `;
 
 export const Erro = styled.div`
@@ -80,22 +79,18 @@ export const Container1 = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 230px 520px 130px 120px;
-    grid-template-rows: 70px;
-    margin-bottom: 10px;
-
-    select {
-        font-size: 16px;
-        height: 30px;
-    }
+    grid-template-columns: 180px 520px 180px 180px;
+    /* grid-template-rows: 70px; */
+    /* margin-bottom: 10px; */
 `;
 
 export const ContainerBotoes = styled.div`
     display: grid;
     grid-template-columns: 110px 110px 170px;
-    grid-template-rows: 30px;
+    /* grid-template-rows: 30px; */
     margin-top: 10px;
     margin-bottom: 20px;
+    margin-left: 5px;
 
     button {
         font-family: Arial, Helvetica, sans-serif;

@@ -53,7 +53,7 @@ export default createGlobalStyle`
     }
 
     input, textarea {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     a {

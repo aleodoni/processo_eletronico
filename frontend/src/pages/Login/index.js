@@ -34,7 +34,7 @@ function Login() {
     useEffect(() => {
         async function nomeBd() {
             try {
-                const response = await api.get('/spa2-api/bd');
+                const response = await api.get('/bd');
 
                 if (response.data.bd === 'des' || response.data.bd === 'postgres') {
                     setBd(`Desenvolvimento - versão:${response.data.versao}`);
@@ -70,7 +70,7 @@ function Login() {
             try {
                 const { usuario, senha, timeout } = data;
 
-                const response = await api.post('/spa2-api/autorizacao', {
+                const response = await api.post('/autorizacao', {
                     usuario,
                     senha,
                     timeout,
