@@ -41,7 +41,6 @@ function DadosProcesso({ match }) {
     const [setorAutuadorProcesso, setSetorAutuadorProcesso] = useState('');
     const [setorFinalizadorProcesso, setSetorFinalizadorProcesso] = useState('');
     const [anexos, setAnexos] = useState([]);
-    const [showModalManifestacao, setShowModalManifestacao] = useState(false);
 
     function carregaAnexos(id) {
         axios({
@@ -105,11 +104,7 @@ function DadosProcesso({ match }) {
             carregaAnexos(proId);
         }
         carrega();
-    }, [proId, showModalManifestacao]);
-
-    function mostraModalManifestacao() {
-        setShowModalManifestacao(!showModalManifestacao);
-    }
+    }, [proId]);
 
     function incluiAnexo(e) {
         setErro('');
@@ -179,6 +174,10 @@ function DadosProcesso({ match }) {
 
     function consulta() {
         history.push('/processo-consulta');
+    }
+
+    function criaManifestacao() {
+        history.push(`/manifestacao-cria/${proId}`);
     }
 
     return (
@@ -344,7 +343,7 @@ function DadosProcesso({ match }) {
                                 type="button"
                                 id="btnCriaManifestacao"
                                 onClick={() => {
-                                    mostraModalManifestacao();
+                                    criaManifestacao();
                                 }}>
                                 <FaFileAlt />
                                 &nbsp;Criar manifestação

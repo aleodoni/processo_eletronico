@@ -5,12 +5,10 @@ export const Container = styled.div`
     grid-template-areas:
         'nav nav'
         'asideLeft main';
-    grid-template-rows: 1fr 10fr;
     grid-template-columns: 1fr 6fr;
 
     fieldset {
         border: 1px solid;
-        border-radius: 5px;
         border-color: #303f9f;
         padding: 5px;
         margin: 5px;
@@ -42,27 +40,28 @@ export const Container = styled.div`
 
 export const AsideLeft = styled.aside`
     grid-area: asideLeft;
-    background: #fff;
+    background: #303f9f;
 `;
 
 export const Main = styled.main`
     grid-area: main;
     background: #fff;
+    margin-left: 10px;
+    padding: 5px;
 
     form {
         display: flex;
         flex-direction: column;
-        font-size: 16px;
     }
 
-    input {
+    /* input {
         background: #ffffff;
         border: 1px solid #c4c4c4;
         border-radius: 5px;
         font-size: 16px;
         padding-top: 5px;
         padding-bottom: 5px;
-    }
+    } */
 `;
 
 export const Erro = styled.div`
@@ -80,24 +79,20 @@ export const Container1 = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 230px 520px 130px 120px;
-    grid-template-rows: 70px;
-    margin-bottom: 10px;
-
-    select {
-        font-size: 16px;
-        height: 30px;
-    }
+    grid-template-columns: 180px 520px 180px 180px;
+    /* grid-template-rows: 70px; */
+    /* margin-bottom: 10px; */
 `;
 
 export const ContainerBotoes = styled.div`
     display: grid;
     grid-template-columns: 110px 110px 170px;
-    grid-template-rows: 30px;
+    /* grid-template-rows: 30px; */
     margin-top: 10px;
     margin-bottom: 20px;
+    margin-left: 5px;
 
-    button {
+    /* button {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 16px;
         border: none;
@@ -112,7 +107,7 @@ export const ContainerBotoes = styled.div`
         &:hover {
             background: #4496db;
         }
-    }
+    } */
 `;
 
 export const CustomSelect = styled.select`

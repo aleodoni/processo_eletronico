@@ -1,53 +1,47 @@
 import Sequelize, { Model } from 'sequelize';
 
-class VPessoaCeri extends Model {
+class VNodo extends Model {
     static init(sequelize) {
         super.init(
             {
-                pes_nome: {
-                    type: Sequelize.STRING,
+                nod_id: {
+                    type: Sequelize.INTEGER,
                     primaryKey: true
                 },
-                pes_aposentado: {
+                nod_inicio: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_fim: {
+                    type: Sequelize.BOOLEAN
+                },
+                inicio: {
+                    type: Sequelize.STRING
+                },
+                fim: {
+                    type: Sequelize.STRING
+                },
+                flu_id: {
                     type: Sequelize.INTEGER
                 },
-                pes_sexo: {
+                fluxo: {
                     type: Sequelize.STRING
                 },
-                pes_setor: {
-                    type: Sequelize.STRING
-                },
-                pes_mes_nascimento: {
-                    type: Sequelize.STRING
-                },
-                pes_dia_nascimento: {
-                    type: Sequelize.STRING
-                },
-                pes_logradouro: {
-                    type: Sequelize.STRING
-                },
-                pes_numero: {
-                    type: Sequelize.STRING
-                },
-                pes_complemento: {
-                    type: Sequelize.STRING
-                },
-                pes_cep: {
+                area_id: {
                     type: Sequelize.INTEGER
                 },
-                pes_cidade: {
+                area: {
                     type: Sequelize.STRING
                 },
-                pes_bairro: {
-                    type: Sequelize.STRING
+                nod_dias_prazo: {
+                    type: Sequelize.INTEGER
                 },
-                pes_uf: {
-                    type: Sequelize.STRING
+                nod_ordem: {
+                    type: Sequelize.INTEGER
                 }
             },
             {
-                tableName: 'v_pessoa_ceri',
-                schema: 'ceri',
+                tableName: 'v_nodo',
+                schema: 'spa2',
                 sequelize,
                 operatorsAliases: false
             }
@@ -57,4 +51,4 @@ class VPessoaCeri extends Model {
     }
 }
 
-export default VPessoaCeri;
+export default VNodo;

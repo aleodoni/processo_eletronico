@@ -1,183 +1,48 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import SalvaIcon from '@material-ui/icons/Check';
-import ApagaIcon from '@material-ui/icons/Clear';
-import LimpaIcon from '@material-ui/icons/Refresh';
-import MaterialTable from 'material-table';
-import EditIcon from '@material-ui/icons/Edit';
-import Check from '@material-ui/icons/Check';
-import Clear from '@material-ui/icons/Clear';
-import Snackbar from '@material-ui/core/Snackbar';
-import Modal from '@material-ui/core/Modal';
+import React, { useState, useEffect } from 'react';
+import { FaSyncAlt, FaRegSave, FaRegTrashAlt } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
+import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
-import { styles } from './estilos';
-import { tabelas } from '../../configs/tabelas';
+import { Container, Container1, ContainerNomeFluxo, ContainerCamposNodos, Centralizado, BotaoComoLink, ContainerBotoes, ContainerTabela, AsideLeft, Main, Erro } from './styles';
+import Header from '../../components/Header';
 
-class Nodo extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            erro: '',
-            nodId: undefined,
-            nodInicio: false,
-            nodFim: false,
-            areaId: '',
-            fluId: '',
-            nodos: [],
-            fluxos: [],
-            areas: [],
-            salva: false,
-            show: false,
-            mensagemHint: '',
-            mostraCampos: false,
-        };
-        this.setNodId = this.setNodId.bind(this);
-        this.setNodInicio = this.setNodInicio.bind(this);
-        this.setNodFim = this.setNodFim.bind(this);
-        this.setAreaId = this.setAreaId.bind(this);
-        this.setFluId = this.setFluId.bind(this);
-        this.setNodos = this.setNodos.bind(this);
-        this.setFluxos = this.setFluxos.bind(this);
-        this.setAreas = this.setAreas.bind(this);
-    }
+function Nodo() {
+    const [erro, setErro] = useState('');
+    const [nodId, setNodId] = useState('');
+    const [fluId, setFluId] = useState('');
+    const [fluxosVisiveis, setFluxosVisiveis] = useState(true);
+    const [nomeFluxosVisiveis, setNomeFluxosVisiveis] = useState(false);
+    const [nomeFluxo, setNomeFluxo] = useState('');
+    const [nodosVisiveis, setNodosVisiveis] = useState(false);
+    const [areaId, setAreaId] = useState('');
+    const [nodInicio, setNodInicio] = useState('');
+    const [nodFim, setNodFim] = useState('');
+    const [fluxos, setFluxos] = useState([]);
+    const [areas, setAreas] = useState([]);
+    const [nodos, setNodos] = useState([]);
+    const [nodDiasPrazo, setNodDiasPrazo] = useState('');
+    const [nodOrdem, setNodOrdem] = useState('');
+    const [modalExcluir, setModalExcluir] = useState(false);
 
-    componentDidMount() {
-        this.carregaFluxos();
-    }
-
-    setNodId = event => {
-        this.setState({
-            nodId: event.target.value,
-        });
-    };
-
-    setNodInicio = event => {
-        this.setState({
-            nodInicio: event.target.checked,
-        });
-    };
-
-    setNodFim = event => {
-        this.setState({
-            nodFim: event.target.checked,
-        });
-    };
-
-    setAreaId = event => {
-        this.setState({
-            areaId: event.target.value,
-        });
-    };
-
-    setFluId = event => {
-        if (event.target.value === '') {
-            this.setState({
-                mostraCampos: false,
-                nodos: [],
-            });
-            this.carregaArea();
-        } else {
-            this.setState({
-                mostraCampos: true,
-            });
-            this.carregaArea();
-            this.carregaGrid(event.target.value);
+    function abreModalExcluir() {
+        if (nodId === '') {
+            setErro('Selecione um registro para apagar.');
+            return;
         }
-        this.setState({
-            fluId: event.target.value,
-        });
-    };
+        setModalExcluir(true);
+    }
 
-    setNodos = event => {
-        this.setState({
-            nodos: event.target.value,
-        });
-    };
+    function fechaModalExcluir() {
+        setModalExcluir(false);
+    }
 
-    setFluxos = event => {
-        this.setState({
-            fluxos: event.target.value,
-        });
-    };
+    function handleNodId(e) {
+        setNodId(e.target.value);
+    }
 
-    setAreas = event => {
-        this.setState({
-            areas: event.target.value,
-        });
-    };
-
-    limpaCampos = () => {
-        this.setState({
-            nodId: undefined,
-            nodInicio: false,
-            nodFim: false,
-            areaId: '',
-            erro: '',
-        });
-    };
-
-    preencheCampos = (nodId, nodInicio, nodFim, areaId, fluId) => {
-        this.setState({
-            nodId,
-            nodInicio,
-            nodFim,
-            areaId,
-            fluId,
-        });
-    };
-
-    carregaGrid = fluId => {
-        axios({
-            method: 'GET',
-            url: `/grid-nos/${fluId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                this.setState({ nodos: res.data });
-            })
-            .catch(err => {
-                this.setState({ erro: 'Erro ao carregar registros.' });
-            });
-    };
-
-    carregaFluxos = () => {
-        axios({
-            method: 'GET',
-            url: '/fluxos',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboFluxo = [];
-                comboFluxo.push(
-                    <option key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboFluxo.push(
-                        <option key={res.data[i].flu_id} value={res.data[i].flu_id}>
-                            {res.data[i].flu_nome}
-                        </option>
-                    );
-                }
-                this.setState({ fluxos: comboFluxo });
-            })
-            .catch(err => {
-                this.setState({ erro: 'Erro ao carregar fluxos.' });
-            });
-    };
-
-    carregaArea = () => {
+    function carregaArea() {
         axios({
             method: 'GET',
             url: '/area',
@@ -188,238 +53,397 @@ class Nodo extends Component {
             .then(res => {
                 const comboArea = [];
                 comboArea.push(
-                    <option key="" value="">
+                    <option key="" data-key="" value="">
                         Selecione...
                     </option>
                 );
                 for (let i = 0; i < res.data.length; i++) {
                     comboArea.push(
-                        <option key={res.data[i].set_id} value={res.data[i].set_id}>
+                        <option key={res.data[i].set_id} data-key={res.data[i].set_id} value={res.data[i].set_id}>
                             {res.data[i].set_nome}
                         </option>
                     );
                 }
-                this.setState({ areas: comboArea });
+                setAreas(comboArea);
             })
-            .catch(err => {
-                this.setState({ erro: 'Erro ao carregar áreas.' });
+            .catch(() => {
+                setErro('Erro ao carregar áreas.');
             });
-    };
+    }
 
-    salva = () => {
-        if (this.state.areaId === '') {
-            this.setState({ erro: 'Selecione uma área.' });
-            return;
-        }
-        if (this.state.nodId === undefined) {
-            axios({
-                method: 'POST',
-                url: '/nos',
-                data: {
-                    nod_id: null,
-                    nod_inicio: this.state.nodInicio,
-                    nod_fim: this.state.nodFim,
-                    flu_id: this.state.fluId,
-                    area_id: this.state.areaId,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid(res.data.flu_id);
-                    this.abreHint('Inserido com sucesso.');
-                })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao inserir registro.' });
-                });
-        } else {
-            axios({
-                method: 'PUT',
-                url: `nos/${this.state.nodId}`,
-                data: {
-                    nod_inicio: this.state.nodInicio,
-                    nod_fim: this.state.nodFim,
-                    flu_id: this.state.fluId,
-                    area_id: this.state.areaId,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(res => {
-                    this.limpaCampos();
-                    this.carregaGrid(res.data.flu_id);
-                    this.abreHint('Editado com sucesso.');
-                })
-                .catch(err => {
-                    this.setState({ erro: 'Erro ao editar registro.' });
-                });
-        }
-    };
-
-    exclui = () => {
+    function carregaGrid(fluxo) {
         axios({
-            method: 'DELETE',
-            url: `nos/${this.state.nodId}`,
+            method: 'GET',
+            url: `/grid-nodos/${fluxo}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                this.limpaCampos();
-                this.carregaGrid(this.state.fluId);
-                this.abreHint('Excluído com sucesso.');
-                this.fechaModal();
+                setNodos(res.data);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }
+
+    function handleFluId(e) {
+        if (e.target.value !== '') {
+            setNodosVisiveis(true);
+            setFluxosVisiveis(false);
+            setNomeFluxosVisiveis(true);
+            const index = e.nativeEvent.target.selectedIndex;
+            setNomeFluxo(e.nativeEvent.target[index].text);
+            setFluId(e.target.value);
+            carregaArea();
+            carregaGrid(e.target.value);
+        } else {
+            setNodosVisiveis(false);
+            setFluxosVisiveis(true);
+            setNomeFluxo('');
+            setNomeFluxosVisiveis(false);
+            setFluId('');
+        }
+    }
+
+    function handleAreaId(e) {
+        setAreaId(e.target.value);
+    }
+
+    function handleNodDiasPrazo(e) {
+        const re = /^[0-9\b]+$/;
+        if (e.target.value === '' || re.test(e.target.value)) {
+            setNodDiasPrazo(e.target.value);
+        }
+    }
+
+    function handleNodOrdem(e) {
+        const re = /^[0-9\b]+$/;
+        if (e.target.value === '' || re.test(e.target.value)) {
+            setNodOrdem(e.target.value);
+        }
+    }
+
+    function handleSetNodInicio(e) {
+        setNodInicio(e.target.value);
+    }
+
+    function handleSetNodFim(e) {
+        setNodFim(e.target.value);
+    }
+
+    function carregaFluxo() {
+        axios({
+            method: 'GET',
+            url: '/fluxos',
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const comboFluxo = [];
+                comboFluxo.push(
+                    <option key="" data-key="" value="">
+                        Selecione...
+                    </option>
+                );
+                for (let i = 0; i < res.data.length; i++) {
+                    comboFluxo.push(
+                        <option key={res.data[i].flu_id} data-key={res.data[i].flu_id} value={res.data[i].flu_id}>
+                            {res.data[i].flu_nome}
+                        </option>
+                    );
+                }
+                setFluxos(comboFluxo);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar fluxos.');
+            });
+    }
+
+    function limpaCampos() {
+        setNodId('');
+        setAreaId('');
+        setNodInicio('');
+        setNodFim('');
+        setNodDiasPrazo('');
+        setNodOrdem('');
+        setErro('');
+    }
+
+    function preencheCampos(nodId1) {
+        axios({
+            method: 'GET',
+            url: `/seleciona-nodo/${nodId1}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setNodId(nodId1);
+                setNodDiasPrazo(res.data.nod_dias_prazo);
+                setNodInicio(res.data.nod_inicio);
+                setNodFim(res.data.nod_fim);
+                setFluId(res.data.flu_id);
+                setAreaId(parseInt(res.data.area_id, 10));
+                setNodOrdem(res.data.nod_ordem);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar fluxos.');
+            });
+    }
+
+    function selecionaOutroFluxo() {
+        setNodosVisiveis(false);
+        setFluxosVisiveis(true);
+        setNomeFluxosVisiveis(false);
+        setNomeFluxo('');
+        setFluId('');
+    }
+
+    useEffect(() => {
+        async function carrega() {
+            carregaFluxo();
+        }
+        carrega();
+    }, []);
+
+    function grava() {
+        if (areaId === '') {
+            setErro('Selecione a área.');
+            return;
+        }
+        if (nodInicio === '') {
+            setErro('Selecione se é nodo inicial.');
+            return;
+        }
+        if (nodFim === '') {
+            setErro('Selecione se é nodo final.');
+            return;
+        }
+        if (nodDiasPrazo.trim() === '') {
+            setErro('Dias de prazo em branco.');
+            return;
+        }
+        if (nodOrdem.trim() === '') {
+            setErro('Ordem em branco.');
+            return;
+        }
+        if (nodId === '') {
+            axios({
+                method: 'POST',
+                url: '/nodos',
+                data: {
+                    nod_id: null,
+                    flu_id: fluId,
+                    area_id: areaId,
+                    nod_inicio: nodInicio,
+                    nod_fim: nodFim,
+                    nod_dias_prazo: nodDiasPrazo,
+                    nod_ordem: nodOrdem,
+                },
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid(fluId);
+                    mensagem.success('Inserido com sucesso.');
+                })
+                .catch(() => {
+                    setErro('Erro ao inserir registro.');
+                });
+        } else {
+            axios({
+                method: 'PUT',
+                url: `nodos/${nodId}`,
+                data: {
+                    flu_id: fluId,
+                    area_id: areaId,
+                    nod_inicio: nodInicio,
+                    nod_fim: nodFim,
+                    nod_dias_prazo: nodDiasPrazo,
+                    nod_ordem: nodOrdem,
+                },
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(() => {
+                    limpaCampos();
+                    carregaGrid(fluId);
+                    mensagem.success('Editado com sucesso.');
+                })
+                .catch(() => {
+                    setErro('Erro ao editar registro.');
+                });
+        }
+    }
+
+    function apaga(id) {
+        axios({
+            method: 'DELETE',
+            url: `nodos/${id}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                limpaCampos();
+                carregaGrid(fluId);
+                mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {
-                this.setState({ erro: err.response.data.error });
-                this.fechaModal();
+                setErro(err.response.data.error);
             });
-    };
+    }
 
-    fechaHint = () => {
-        this.setState({ salva: false, mensagemHint: '' });
-    };
-
-    abreHint = mensagemHint => {
-        this.setState({ salva: true, mensagemHint });
-    };
-
-    abreModal = () => {
-        if (this.state.nodId === undefined) {
-            this.setState({ erro: 'Selecione um registro para excluir.' });
-        } else {
-            this.setState({ show: true });
-        }
-    };
-
-    fechaModal = () => {
-        this.setState({ show: false });
-    };
-
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className={classes.lateral}>
+    return (
+        <>
+            <Container>
                 <Autorizacao tela="Nodos" />
-                <Menu />
-                <Card>
-                    <CardHeader title="Nodos" className={classes.fundoHeader} />
-                    <CardContent>
-                        <span className={classes.erro}>{this.state.erro}</span>
-                        <form className={classes.formulario} noValidate autoComplete="off">
-                            <input id="nodId" value={this.state.nodId} onChange={this.setNodId} type="hidden" />
-                            <Card className={classes.cardFluxo}>
-                                <div className={classes.containerFluxo}>
-                                    <fieldset className={classes.legenda}>
-                                        <legend>Fluxo</legend>
-                                        <select id="fluxo" onChange={this.setFluId} value={this.state.fluId}>
-                                            {this.state.fluxos}
+                <Header />
+                <AsideLeft>
+                    <Menu />
+                </AsideLeft>
+                <Main>
+                    <fieldset>
+                        <legend>Nodos</legend>
+                        <Erro>{erro}</Erro>
+                        <form noValidate autoComplete="off">
+                            {fluxosVisiveis ? (
+                                <Container1>
+                                    <fieldset>
+                                        <legend>Selecione o fluxo</legend>
+                                        <select id="selectFluxo" onChange={handleFluId} value={fluId}>
+                                            {fluxos}
                                         </select>
                                     </fieldset>
-                                </div>
-                            </Card>
-                            {this.state.mostraCampos ? (
-                                <div>
-                                    <div className={classes.containerDados}>
-                                        <fieldset className={classes.legenda}>
-                                            <legend>Áreas</legend>
-                                            <select id="area" onChange={this.setAreaId} value={this.state.areaId}>
-                                                {this.state.areas}
+                                </Container1>
+                            ) : null}
+                            {nomeFluxosVisiveis ? (
+                                <ContainerNomeFluxo>
+                                    <fieldset>
+                                        <legend>Fluxo</legend>
+                                        {nomeFluxo}
+                                    </fieldset>
+                                    <button type="button" id="btnSelecionaOutroFluxo" onClick={selecionaOutroFluxo}>
+                                        <FaSyncAlt />
+                                        &nbsp;Selecionar outro fluxo
+                                    </button>
+                                </ContainerNomeFluxo>
+                            ) : null}
+                            {nodosVisiveis ? (
+                                <fieldset>
+                                    <legend>Nodos</legend>
+                                    <ContainerCamposNodos>
+                                        <fieldset>
+                                            <legend>Área</legend>
+                                            <select id="selectArea" onChange={handleAreaId} value={areaId}>
+                                                {areas}
                                             </select>
                                         </fieldset>
-                                        <div className={classes.estiloCheck}>
-                                            <input type="checkbox" name="inicio" id="inicio" value={this.state.nodInicio} checked={this.state.nodInicio} onChange={this.setNodInicio} />
-                                            Nó inicial
-                                        </div>
-                                        <div className={classes.estiloCheck}>
-                                            <input type="checkbox" name="fim" id="fim" value={this.state.nodFim} checked={this.state.nodFim} onChange={this.setNodFim} />
-                                            Nó final
-                                        </div>
-                                    </div>
-                                    <Button id="btnSalva" variant="contained" color="primary" onClick={this.salva}>
-                                        <SalvaIcon />
-                                        Salvar
-                                    </Button>
-                                    &nbsp;
-                                    <Button id="btnExclui" variant="contained" color="primary" onClick={this.abreModal}>
-                                        <ApagaIcon />
-                                        Excluir
-                                    </Button>
-                                    &nbsp;
-                                    <Button id="btnLimpa" variant="contained" color="primary" onClick={this.limpaCampos}>
-                                        <LimpaIcon />
-                                        Limpar campos
-                                    </Button>
-                                    <br />
-                                    <br />
-                                    <MaterialTable
-                                        columns={[
-                                            {
-                                                hidden: true,
-                                                field: 'nod_id',
-                                                type: 'numeric',
-                                            },
-                                            {
-                                                hidden: true,
-                                                field: 'flu_id',
-                                                type: 'numeric',
-                                            },
-                                            {
-                                                hidden: true,
-                                                field: 'area_id',
-                                                type: 'string',
-                                            },
-                                            {
-                                                title: 'Área',
-                                                field: 'area',
-                                            },
-                                            {
-                                                title: 'Início',
-                                                field: 'inicio',
-                                            },
-                                            {
-                                                title: 'Fim',
-                                                field: 'fim',
-                                            },
-                                        ]}
-                                        data={this.state.nodos}
-                                        actions={[
-                                            {
-                                                icon: () => <EditIcon />,
-                                                tooltip: 'Editar',
-                                                onClick: (event, rowData) => this.preencheCampos(rowData.nod_id, rowData.nod_inicio, rowData.nod_fim, rowData.area_id, rowData.flu_id),
-                                            },
-                                        ]}
-                                        options={tabelas.opcoes}
-                                        icons={tabelas.icones}
-                                        localization={tabelas.localizacao}
-                                    />
-                                </div>
+                                        <fieldset>
+                                            <legend>Nó inicial</legend>
+                                            <select id="selectNoInicial" value={nodInicio} onChange={handleSetNodInicio}>
+                                                <option key="" data-key="" value="">
+                                                    Selecione...
+                                                </option>
+                                                <option key data-key value>
+                                                    Sim
+                                                </option>
+                                                <option key={false} data-key={false} value={false}>
+                                                    Não
+                                                </option>
+                                            </select>
+                                        </fieldset>
+                                        <fieldset>
+                                            <legend>Nó final</legend>
+                                            <select id="selectNoFinal" value={nodFim} onChange={handleSetNodFim}>
+                                                <option key="" data-key="" value="">
+                                                    Selecione...
+                                                </option>
+                                                <option key data-key value>
+                                                    Sim
+                                                </option>
+                                                <option key={false} data-key={false} value={false}>
+                                                    Não
+                                                </option>
+                                            </select>
+                                        </fieldset>
+                                        <fieldset>
+                                            <legend>Dias de prazo</legend>
+                                            <input id="nodDiasPrazo" type="text" value={nodDiasPrazo} onChange={handleNodDiasPrazo} size="3" maxLength="2" />
+                                        </fieldset>
+                                        <fieldset>
+                                            <legend>Ordem</legend>
+                                            <input id="nodOrdem" type="text" value={nodOrdem} onChange={handleNodOrdem} size="3" maxLength="2" />
+                                        </fieldset>
+                                    </ContainerCamposNodos>
+                                    <ContainerBotoes>
+                                        <button type="button" id="btnSalva" onClick={grava}>
+                                            <FaRegSave />
+                                            &nbsp;Salvar
+                                        </button>
+                                        <button type="button" id="btnExclui" onClick={abreModalExcluir}>
+                                            <FaRegTrashAlt />
+                                            &nbsp;Excluir
+                                        </button>
+                                        <button type="button" id="btnLimpa" onClick={limpaCampos}>
+                                            <FaSyncAlt />
+                                            &nbsp;Limpar campos
+                                        </button>
+                                    </ContainerBotoes>
+                                    <ContainerTabela>
+                                        {nodos.length > 0 ? (
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Área</th>
+                                                        <th>Início</th>
+                                                        <th>Fim</th>
+                                                        <th>Prazo(dias)</th>
+                                                        <th>Ordem</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {nodos.map(nodo => (
+                                                        <tr key={nodo.nod_id}>
+                                                            <td>
+                                                                <BotaoComoLink type="button" onClick={() => preencheCampos(nodo.nod_id)}>
+                                                                    {nodo.area}
+                                                                </BotaoComoLink>
+                                                            </td>
+                                                            <td>
+                                                                <Centralizado>{nodo.inicio}</Centralizado>
+                                                            </td>
+                                                            <td>
+                                                                <Centralizado>{nodo.fim}</Centralizado>
+                                                            </td>
+                                                            <td>
+                                                                <Centralizado>{nodo.nod_dias_prazo}</Centralizado>
+                                                            </td>
+                                                            <td>
+                                                                <Centralizado>{nodo.nod_ordem}</Centralizado>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        ) : (
+                                            <label>Sem nodos no momento.</label>
+                                        )}
+                                    </ContainerTabela>
+                                </fieldset>
                             ) : null}
                         </form>
-                    </CardContent>
-                </Card>
-                <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={this.state.salva} onClose={this.fechaHint} autoHideDuration={500} message={this.state.mensagemHint} />
-                <Modal open={this.state.show} onClose={this.fechaModal}>
-                    <div className={classes.modal}>
-                        <h3>Deseja apagar o registro?</h3>
-                        <div>
-                            <Button variant="contained" color="primary" type="submit" startIcon={<Check />} onClick={this.exclui}>
-                                Sim
-                            </Button>
-                            <div className={classes.espacoBotoes} />
-                            <Button variant="contained" color="primary" type="submit" startIcon={<Clear />} onClick={this.fechaModal}>
-                                Não
-                            </Button>
-                        </div>
-                    </div>
-                </Modal>
-            </div>
-        );
-    }
+                    </fieldset>
+                </Main>
+                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={nodId} />
+            </Container>
+        </>
+    );
 }
 
-export default withStyles(styles)(Nodo);
+export default Nodo;

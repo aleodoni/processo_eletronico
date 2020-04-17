@@ -21,7 +21,7 @@ export default function Input({ name, label, ...rest }) {
         <Container>
             {label && <label htmlFor={fieldName}>{label}</label>}
 
-            <input id={fieldName} ref={inputRef} defaultValue={defaultValue} {...rest} />
+            <input name={fieldName} id={fieldName} ref={inputRef} defaultValue={defaultValue} {...rest} />
 
             {error && <span className="error">{error}</span>}
         </Container>

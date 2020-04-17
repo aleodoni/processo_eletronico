@@ -53,7 +53,7 @@ export default createGlobalStyle`
     }
 
     input, textarea {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     a {
@@ -67,9 +67,6 @@ export default createGlobalStyle`
     nav {
         grid-area: nav;
         /* background: ${({ theme }) => theme.primary}; */
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px;
         div {
             overflow: hidden;
             font-weight: bold;

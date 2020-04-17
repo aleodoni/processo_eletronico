@@ -7,7 +7,7 @@ export const Container = styled.button`
     background: ${({ theme }) => theme.primary};
     border: 0;
     border-radius: 4px;
-    height: 34px;
+    height: 36px;
     padding: 0 15px;
     color: ${({ theme }) => theme.text};
     margin: 0 0 10px;
@@ -20,5 +20,6 @@ export const Container = styled.button`
 
     svg {
         margin-right: 10px;
+        margin-left: 5px;
     }
 `;

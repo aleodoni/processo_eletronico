@@ -20,8 +20,11 @@ import CriaProcessoController from './app/controllers/CriaProcessoController';
 import DadosProcessoController from './app/controllers/DadosProcessoController';
 import ArquivoController from './app/controllers/ArquivoController';
 import TipoManifestacaoController from './app/controllers/TipoManifestacaoController';
+import ManifestacaoController from './app/controllers/ManifestacaoController';
 import SetorController from './app/controllers/SetorController';
 import LotacaoController from './app/controllers/LotacaoController';
+import ProximoTramiteController from './app/controllers/ProximoTramiteController';
+import TramiteController from './app/controllers/TramiteController';
 import AuthMiddleware from './app/middlewares/auth';
 import * as funcoesArquivo from '../src/config/arquivos';
 
@@ -44,7 +47,24 @@ const storage = multer.diskStorage({
         callback(null, funcoesArquivo.nomeFisico(req.params.id) + path.extname(file.originalname));
     }
 });
+
+const storageManifestacao = multer.diskStorage({
+    destination: function(req, file, callback) {
+        const novoCaminho = funcoesArquivo.destino + funcoesArquivo.finalDoCaminho(req.params.id);
+        if (!fs.existsSync(novoCaminho)) {
+            fs.mkdirSync(novoCaminho);
+        }
+        callback(null, novoCaminho);
+    },
+    filename: function(req, file, callback) {
+        console.log('Id do arquivo: ' + req.params.id);
+        callback(null, funcoesArquivo.nomeFisico(req.params.id) + 'M' + path.extname(file.originalname));
+    }
+});
+
 const upload = multer({ storage: storage });
+
+const uploadManifestacao = multer({ storage: storageManifestacao });
 
 /**
  * Rotas sem autenticação
@@ -85,12 +105,13 @@ routes.post(`${process.env.API_URL}/telas`, TelaController.store);
 routes.put(`${process.env.API_URL}/telas/:id`, TelaController.update);
 routes.delete(`${process.env.API_URL}/telas/:id`, TelaController.delete);
 
-// rotas do cadastro de nós
-routes.get(`${process.env.API_URL}/nos`, NodoController.index);
-routes.get(`${process.env.API_URL}/grid-nos/:fluId`, NodoController.gridNodo);
-routes.post(`${process.env.API_URL}/nos`, NodoController.store);
-routes.put(`${process.env.API_URL}/nos/:id`, NodoController.update);
-routes.delete(`${process.env.API_URL}/nos/:id`, NodoController.delete);
+// rotas do cadastro de nodos
+routes.get(`${process.env.API_URL}/nodos`, NodoController.index);
+routes.get(`${process.env.API_URL}/grid-nodos/:fluId`, NodoController.gridNodo);
+routes.get(`${process.env.API_URL}/seleciona-nodo/:id`, NodoController.findOne);
+routes.post(`${process.env.API_URL}/nodos`, NodoController.store);
+routes.put(`${process.env.API_URL}/nodos/:id`, NodoController.update);
+routes.delete(`${process.env.API_URL}/nodos/:id`, NodoController.delete);
 
 // rotas do cadastro de gêneros
 routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
@@ -163,9 +184,16 @@ routes.put(`${process.env.API_URL}/arquivos/:id`, ArquivoController.update);
 routes.delete(`${process.env.API_URL}/arquivos/:id`, ArquivoController.delete);
 routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.index);
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
+routes.get(`${process.env.API_URL}/arquivos-manifestacao/:proId`, ArquivoController.indexManifestacao);
+routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
 
 // rota de inserção de anexo em processo
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {
+    res.status(204).end();
+});
+
+// rota de inserção de anexo em manifestação
+routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.single('file'), function(req, res) {
     res.status(204).end();
 });
 
@@ -186,5 +214,28 @@ routes.get(`${process.env.API_URL}/lotacoes`, LotacaoController.index);
 routes.post(`${process.env.API_URL}/lotacoes`, LotacaoController.store);
 routes.put(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.update);
 routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
+
+// rotas do cadastro de manifestacao
+routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
+routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
+
+// rotas do cadastro de próximos trâmites
+routes.get(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.index);
+routes.get(`${process.env.API_URL}/combo-nodo/:id`, ProximoTramiteController.comboNodo);
+routes.get(`${process.env.API_URL}/grid-proximo-tramite/:id`, ProximoTramiteController.gridProximoTramite);
+routes.get(`${process.env.API_URL}/gera-grafo/:id`, ProximoTramiteController.geraGrafo);
+routes.get(`${process.env.API_URL}/seleciona-proximo-tramite/:id`, ProximoTramiteController.selecionaProximoTramite);
+routes.post(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.store);
+routes.put(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteController.update);
+routes.delete(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteController.delete);
+
+// rotas do cadastro de  trâmites
+routes.get(`${process.env.API_URL}/tramites`, TramiteController.index);
+routes.post(`${process.env.API_URL}/tramites`, TramiteController.store);
+routes.put(`${process.env.API_URL}/tramites/:id`, TramiteController.update);
+routes.delete(`${process.env.API_URL}/tramites/:id`, TramiteController.delete);
+
+// rota de envio de processo
+routes.get(`${process.env.API_URL}/processo-envia/:id`, TramiteController.processosEnvio);
 
 export default routes;
