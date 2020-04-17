@@ -92,7 +92,7 @@ export const ContainerBotoes = styled.div`
     margin-bottom: 20px;
     margin-left: 5px;
 
-    button {
+    /* button {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 16px;
         border: none;
@@ -107,7 +107,7 @@ export const ContainerBotoes = styled.div`
         &:hover {
             background: #4496db;
         }
-    }
+    } */
 `;
 
 export const CustomSelect = styled.select`

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import MaterialTable from 'material-table';
-import { FaRegSave, FaRegTrashAlt, FaRegEdit, FaSyncAlt } from 'react-icons/fa';
+import { FaRegEdit } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import ModalApaga from '../../components/ModalExcluir';
@@ -17,6 +17,9 @@ import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
 import Ativo from '../../components/system/select/Ativo';
 import Tipo from '../../components/system/select/Tipo';
+import Salvar from '../../components/layout/button/Salvar';
+import Excluir from '../../components/layout/button/Excluir';
+import Limpar from '../../components/layout/button/Limpar';
 
 function Setor() {
     const [erro, setErro] = useState('');
@@ -247,18 +250,11 @@ function Setor() {
                             </Container2>
                         </Form>
                         <ContainerBotoes>
-                            <button type="button" id="btnSalva" onClick={grava}>
-                                <FaRegSave />
-                                &nbsp;Salvar
-                            </button>
-                            <button type="button" id="btnExclui" onClick={abreModalExcluir}>
-                                <FaRegTrashAlt />
-                                &nbsp;Excluir
-                            </button>
-                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
-                                <FaSyncAlt />
-                                &nbsp;Limpar campos
-                            </button>
+                            <Salvar name="btnSalva" clickHandler={grava} />
+
+                            <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
+
+                            <Limpar name="btnLimpa" clickHandler={limpaCampos} />
                         </ContainerBotoes>
                         <MaterialTable
                             columns={[
