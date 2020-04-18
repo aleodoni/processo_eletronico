@@ -31,7 +31,7 @@ assignees: ''
 
 **Sua melhoria está relacionada com algum problema no sistema ? Descreva**
 
-<!-- Uma descrição clara e concisa do problema que você enfrenteta. Ex: Eu sempre fico frustado quando... -->
+<!-- Uma descrição clara e concisa do problema que você enfrenta. Ex: Eu sempre fico frustado quando... -->
 
 **Contexto Adicional**
 
