@@ -36,7 +36,7 @@ class LoginController {
             await client.bind(`uid=${usuario},${process.env.LDAP_USERS_OU}`, senha);
 
             const options = {
-                filter: (process.env.LDAP_USER_FILTER != null)
+                filter: (process.env.LDAP_USER_FILTER !== '')
                     ? `(&(uid=${usuario})(${process.env.LDAP_USER_FILTER}))`
                     : `(&(uid=${usuario}))`,
                 scope: 'sub',
@@ -45,6 +45,7 @@ class LoginController {
 
             // O LDAP atual não deixa pesquisar com o usuário normal, só admin ou authproxy
             // await client.bind('cn=admin,dc=cmc,dc=pr,dc=gov,dc=br', 'admin');
+
             await client.bind(process.env.LDAP_BIND_USER, process.env.LDAP_BIND_PASS);
 
             const entries = await client.search(
@@ -107,8 +108,6 @@ class LoginController {
                 }
 
                 const meuToken = login.geraToken(usuario, nome, matricula, timeout);
-                console.log('========================================');
-                console.log(meuToken);
 
                 return res.status(201).json({
                     token: meuToken,

@@ -1,0 +1,14 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 730
+    },
+    "auditLog": "~/log/spa2/.931428147d8af6e8f5a715f9cf31f3d311495ded-audit.json",
+    "files": [
+        {
+            "date": 1587558268280,
+            "name": "~/log/spa2/2020-04-22.log",
+            "hash": "ad0af48398ce33cbce7291558efcebec"
+        }
+    ]
+}
