@@ -34,6 +34,8 @@ import ArquivoManifestacao from '../app/models/ArquivoManifestacao';
 import VNodoFluxo from '../app/models/VNodoFluxo';
 import VProximoTramite from '../app/models/VProximoTramite';
 import VProcessoEnvia from '../app/models/VProcessoEnvia';
+import VProcessoRecebe from '../app/models/VProcessoRecebe';
+import VProximoTramiteNormal from '../app/models/VProximoTramiteNormal';
 import Tramite from '../app/models/Tramite';
 import databaseConfig from '../config/database';
 
@@ -73,7 +75,9 @@ const models = [
     VNodoFluxo,
     VProximoTramite,
     Tramite,
-    VProcessoEnvia
+    VProcessoEnvia,
+    VProximoTramiteNormal,
+    VProcessoRecebe
 ];
 
 class Database {

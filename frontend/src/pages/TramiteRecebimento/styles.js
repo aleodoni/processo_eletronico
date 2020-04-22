@@ -98,10 +98,6 @@ export const ContainerTabela = styled.div`
     }
 `;
 
-export const Centralizado = styled.div`
-    text-align: center;
-`;
-
 export const BotaoComoLink = styled.button`
     background: #fff !important;
     border: none;
@@ -111,7 +107,6 @@ export const BotaoComoLink = styled.button`
     color: #303f9f !important;
     cursor: pointer;
 
-    span {
-        margin-left: 45px;
-    }
+    display: block;
+    text-align: center;
 `;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { FaFileAlt, FaSistrix } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
 import { Container, AsideLeft, Main, ContainerAssunto, ContainerCriaProcesso, ContainerIniciativa, ContainerDadosServidorPublico, ContainerNome, Erro, TituloObrigatorio, TextoCamposArea, CustomSelect, CustomInput } from './styles';
 import Header from '../../components/Header';
 import Autorizacao from '../../components/Autorizacao';
@@ -160,7 +161,7 @@ function CriarProcesso() {
     }
 
     function handleAreaId(e) {
-        setAreaId(e.target.value);
+        setAreaId(parseInt(e.target.value, 10));
     }
 
     function handleTprId(e) {
@@ -556,7 +557,7 @@ function CriarProcesso() {
                 usu_alteracao: sessionStorage.getItem('usuario'),
                 nod_id: sessionStorage.getItem('areaUsuario'),
                 set_id_autuador: sessionStorage.getItem('setorUsuario'),
-                area_id: sessionStorage.getItem('areaUsuario'),
+                area_id: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 set_id_finalizador: null,
                 pro_iniciativa: proIniciativa,
                 pro_tipo_iniciativa: proTipoIniciativa,
@@ -570,6 +571,7 @@ function CriarProcesso() {
         })
             .then(res => {
                 history.push(`/dados-processo/${res.data.pro_id}`);
+                mensagem.success('Processo criado com sucesso.');
             })
             .catch(() => {
                 setErro('Erro ao inserir processo.');
@@ -610,6 +612,12 @@ function CriarProcesso() {
                     }
                     if (res.data.pes_celular === null) {
                         res.data.pes_celular = '';
+                    }
+                    if (res.data.pes_cpf.toString().length === 10) {
+                        res.data.pes_cpf = `0${res.data.pes_cpf.toString()}`;
+                    }
+                    if (res.data.pes_cpf.toString().length === 9) {
+                        res.data.pes_cpf = `00${res.data.pes_cpf.toString()}`;
                     }
                     setProNome(res.data.pes_nome);
                     setProCpf(res.data.pes_cpf);

@@ -180,6 +180,10 @@ function DadosProcesso({ match }) {
         history.push(`/manifestacao-cria/${proId}`);
     }
 
+    function tramita() {
+        history.push(`/tramita/${proId}`);
+    }
+
     return (
         <>
             <Container>
@@ -333,30 +337,37 @@ function DadosProcesso({ match }) {
                                 ) : null}
                             </fieldset>
                         </ContainerDados>
-                        <ContainerBotoes>
-                            <label htmlFor="anexo">
-                                <FaPaperclip />
-                                &nbsp;Inserir Anexo
-                            </label>
-                            <input type="file" name="file" onChange={incluiAnexo} id="anexo" />
-                            <button
-                                type="button"
-                                id="btnCriaManifestacao"
-                                onClick={() => {
-                                    criaManifestacao();
-                                }}>
-                                <FaFileAlt />
-                                &nbsp;Criar manifestação
-                            </button>
-                            <button type="button" id="btnTramita" onClick={null}>
-                                <FaNetworkWired />
-                                &nbsp;Tramitar
-                            </button>
-                            <button type="button" id="btnConsulta" onClick={consulta}>
-                                <FaExternalLinkAlt />
-                                &nbsp;Consultar outro
-                            </button>
-                        </ContainerBotoes>
+                        {!proEncerramento ? (
+                            <ContainerBotoes>
+                                <label htmlFor="anexo">
+                                    <FaPaperclip />
+                                    &nbsp;Inserir Anexo
+                                </label>
+                                <input type="file" name="file" onChange={incluiAnexo} id="anexo" />
+                                <button
+                                    type="button"
+                                    id="btnCriaManifestacao"
+                                    onClick={() => {
+                                        criaManifestacao();
+                                    }}>
+                                    <FaFileAlt />
+                                    &nbsp;Criar manifestação
+                                </button>
+                                <button
+                                    type="button"
+                                    id="btnTramita"
+                                    onClick={() => {
+                                        tramita();
+                                    }}>
+                                    <FaNetworkWired />
+                                    &nbsp;Tramitar
+                                </button>
+                                <button type="button" id="btnConsulta" onClick={consulta}>
+                                    <FaExternalLinkAlt />
+                                    &nbsp;Consultar outro
+                                </button>
+                            </ContainerBotoes>
+                        ) : null}
                         <br />
                         <ContainerArquivos>
                             <fieldset>

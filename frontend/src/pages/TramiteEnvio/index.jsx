@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaUpload } from 'react-icons/fa';
+import { useHistory } from 'react-router';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
@@ -7,18 +8,19 @@ import { Container, Centralizado, BotaoComoLink, ContainerTabela, AsideLeft, Mai
 import Header from '../../components/Header';
 
 function TramiteEnvio() {
+    const history = useHistory();
     const [erro, setErro] = useState('');
     const [areaNome, setAreaNome] = useState('');
     const [processos, setProcessos] = useState([]);
 
-    function abreModalEnviar() {
-        alert('Vai para a tela de trâmite.');
+    function tramita(proId) {
+        history.push(`/tramita/${proId}`);
     }
 
     function carregaGrid() {
         axios({
             method: 'GET',
-            url: `/processo-envia/${sessionStorage.getItem('areaUsuario')}`,
+            url: `/processo-envia/${parseInt(sessionStorage.getItem('areaUsuario'), 10)}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -75,7 +77,7 @@ function TramiteEnvio() {
                                                 <td>{proc.tpr_nome}</td>
                                                 <td>
                                                     <Centralizado>
-                                                        <button type="button" id="btnEnvia" onClick={() => abreModalEnviar(proc.pro_id)}>
+                                                        <button type="button" id="btnEnvia" onClick={() => tramita(proc.pro_id)}>
                                                             <FaUpload />
                                                             &nbsp;Enviar
                                                         </button>

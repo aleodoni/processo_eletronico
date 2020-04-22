@@ -7,7 +7,7 @@ class AreaTelaController {
         const setor = await AreaTela.findAll(
             {
                 where: {
-                    set_id: req.params.setId
+                    set_id: parseInt(req.params.setId, 10)
                 },
                 logging: false
             });

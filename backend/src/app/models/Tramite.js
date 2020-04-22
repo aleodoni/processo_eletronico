@@ -6,7 +6,9 @@ class Tramite extends Model {
             {
                 tra_id: {
                     type: Sequelize.INTEGER,
-                    primaryKey: true
+                    defaultValue: "nextval('spa2.tramite_tra_id_seq')",
+                    primaryKey: true,
+                    autoIncrement: true
                 },
                 tra_envio: {
                     type: Sequelize.NOW,

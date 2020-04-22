@@ -20,6 +20,7 @@ export const Container = styled.div`
     }
 
     button {
+        margin: 10px;
         font-family: Arial, Helvetica, sans-serif;
         font-size: 16px;
         border: none;
@@ -28,7 +29,6 @@ export const Container = styled.div`
         background: #303f9f;
         padding: 7px;
         text-align: center;
-        margin-right: 10px;
         cursor: pointer;
 
         &:hover {
@@ -45,57 +45,25 @@ export const AsideLeft = styled.aside`
 export const Main = styled.main`
     grid-area: main;
     background: #fff;
-    /*margin: 10px;*/
 
-    form {
-        display: flex;
-        flex-direction: column;
+    label {
         font-size: 16px;
+        font-weight: bold;
     }
 
-    input {
-        background: #ffffff;
-        border: 1px solid #c4c4c4;
-        border-radius: 5px;
+    div {
+        margin: 3px;
+    }
+    select {
         font-size: 16px;
-        padding-top: 5px;
-        padding-bottom: 5px;
+        height: 30px;
     }
 `;
 
 export const Erro = styled.div`
     font-size: 14px;
     color: red;
-    padding-bottom: 10px;
-`;
-
-export const ContainerTabela = styled.div`
-    thead {
-        color: black;
-        background: #d3d3d3;
-
-        tr,
-        th {
-            padding: 5px;
-            border: solid 1px #000000;
-        }
-    }
-    tbody {
-        color: black;
-
-        tr,
-        td {
-            border: solid 1px #000000;
-            padding: 3px;
-            text-align: center;
-        }
-    }
-
-    table {
-        border-collapse: collapse;
-        border: solid 1px #000000;
-        width: 100%;
-    }
+    padding-bottom: 5px;
 `;
 
 export const Centralizado = styled.div`
@@ -114,4 +82,8 @@ export const BotaoComoLink = styled.button`
     span {
         margin-left: 45px;
     }
+`;
+
+export const TextoCamposArea = styled.textarea`
+    resize: none;
 `;
