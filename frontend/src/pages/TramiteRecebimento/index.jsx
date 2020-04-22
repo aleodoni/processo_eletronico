@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
-import { useHistory } from 'react-router';
 import { toast as mensagem } from 'react-toastify';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
@@ -11,7 +10,6 @@ import { Container, BotaoComoLink, ContainerTabela, AsideLeft, Main, Erro } from
 import Header from '../../components/Header';
 
 function TramiteRecebimento() {
-    const history = useHistory();
     const [proId, setProId] = useState('');
     const [erro, setErro] = useState('');
     const [areaNome, setAreaNome] = useState('');

@@ -37,6 +37,7 @@ import VProcessoEnvia from '../app/models/VProcessoEnvia';
 import VProcessoRecebe from '../app/models/VProcessoRecebe';
 import VProximoTramiteNormal from '../app/models/VProximoTramiteNormal';
 import Tramite from '../app/models/Tramite';
+import VTramite from '../app/models/VTramite';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -77,7 +78,8 @@ const models = [
     Tramite,
     VProcessoEnvia,
     VProximoTramiteNormal,
-    VProcessoRecebe
+    VProcessoRecebe,
+    VTramite
 ];
 
 class Database {

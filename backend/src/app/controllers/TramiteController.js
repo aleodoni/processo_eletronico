@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Tramite from '../models/Tramite';
+import VTramite from '../models/VTramite';
 import VProcessoEnvia from '../models/VProcessoEnvia';
 import VProcessoRecebe from '../models/VProcessoRecebe';
 import Nodo from '../models/Nodo';
@@ -30,6 +31,24 @@ class TramiteController {
                 'tra_observacao',
                 'tra_inicial'],
             logging: false
+        });
+        return res.json(tramites);
+    }
+
+    async gridTramite(req, res) {
+        const tramites = await VTramite.findAll({
+            attributes: ['tra_id',
+                'envio',
+                'login_envia',
+                'setor_envia',
+                'recebimento',
+                'login_recebe',
+                'setor_recebe',
+                'tra_observacao'],
+            where: {
+                pro_id: req.params.id
+            },
+            logging: true
         });
         return res.json(tramites);
     }
@@ -117,7 +136,6 @@ class TramiteController {
                 }
             }
         }
-        // console.log(JSON.stringify(combo, null, 4));
         return res.json(combo);
     }
 

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router';
+import { toast as mensagem } from 'react-toastify';
 import { FaPaperclip, FaNetworkWired, FaExternalLinkAlt, FaFileAlt } from 'react-icons/fa';
 import Header from '../../components/Header';
 import Autorizacao from '../../components/Autorizacao';
 import axios from '../../configs/axiosConfig';
 import Menu from '../../components/Menu';
 import AnexoArquivo from './AnexoArquivo';
-import { Container, AsideLeft, Main, Erro, ContainerIniciativa, ContainerDados, ContainerBotoes, ContainerArquivos } from './styles';
+import { Container, AsideLeft, Main, Erro, ContainerIniciativa, Cancelado, Centralizado, ContainerDados, ContainerBotoes, ContainerArquivos, BotaoComoLink } from './styles';
 
 require('dotenv').config();
 
@@ -41,6 +42,8 @@ function DadosProcesso({ match }) {
     const [setorAutuadorProcesso, setSetorAutuadorProcesso] = useState('');
     const [setorFinalizadorProcesso, setSetorFinalizadorProcesso] = useState('');
     const [anexos, setAnexos] = useState([]);
+    const [anexosManifestacao, setAnexosManifestacao] = useState([]);
+    const [tramites, setTramites] = useState([]);
 
     function carregaAnexos(id) {
         axios({
@@ -54,7 +57,74 @@ function DadosProcesso({ match }) {
                 setAnexos(res.data);
             })
             .catch(() => {
-                console.log('Erro ao criar componente de anexo.');
+                console.log('Erro ao carregar anexos.');
+            });
+    }
+
+    function carregaAnexosManifestacao(id) {
+        axios({
+            method: 'GET',
+            url: `/arquivos-manifestacao/${id}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setAnexosManifestacao(res.data);
+            })
+            .catch(() => {
+                console.log('Erro ao carregar manifestações.');
+            });
+    }
+
+    function carregaTramites(id) {
+        axios({
+            method: 'GET',
+            url: `/grid-tramites/${id}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setTramites(res.data);
+            })
+            .catch(() => {
+                console.log('Erro ao carregar trâmites.');
+            });
+    }
+
+    function downloadAnexoManifestacao(e, arqId, id, arqNome) {
+        e.preventDefault();
+        axios({
+            method: 'GET',
+            url: `/download-manifestacao/${id}/${arqId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+                Accept: 'application/pdf',
+            },
+            responseType: 'blob',
+        })
+            .then(res => {
+                const blob = new Blob([res.data], { type: res.data.type });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const contentDisposition = res.headers['content-disposition'];
+                let fileName = arqNome;
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (fileNameMatch.length === 2) {
+                        fileName = fileNameMatch[1];
+                    }
+                }
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => {
+                console.log('Erro ao efetuar o download do anexo.');
             });
     }
 
@@ -101,7 +171,10 @@ function DadosProcesso({ match }) {
     useEffect(() => {
         async function carrega() {
             carregaDadosProcesso(proId);
+            mensagem.success('Carregando processo...');
             carregaAnexos(proId);
+            carregaAnexosManifestacao(proId);
+            carregaTramites(proId);
         }
         carrega();
     }, [proId]);
@@ -370,10 +443,82 @@ function DadosProcesso({ match }) {
                         ) : null}
                         <br />
                         <ContainerArquivos>
-                            <fieldset>
-                                <legend>Arquivo(s) do processo em anexo</legend>
-                                <AnexoArquivo proId={proId} anexos={anexos} />
-                            </fieldset>
+                            {anexos.length > 0 ? (
+                                <fieldset>
+                                    <legend>Arquivo(s) do processo em anexo</legend>
+                                    <AnexoArquivo proId={proId} anexos={anexos} />
+                                </fieldset>
+                            ) : null}
+                            <br />
+                            {anexosManifestacao.length > 0 ? (
+                                <fieldset>
+                                    <legend>Manifestações do processo</legend>
+
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Arquivo</th>
+                                                <th>Tipo</th>
+                                                <th>Data</th>
+                                                <th>Área</th>
+                                                <th>Login</th>
+                                                <th>Situação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {anexosManifestacao.map(anexo => (
+                                                <tr key={anexo.arq_id}>
+                                                    <td>
+                                                        <BotaoComoLink type="button" onClick={e => downloadAnexoManifestacao(e, anexo.arq_id, anexo.manId, anexo.arq_nome)}>
+                                                            {anexo.arq_nome}
+                                                        </BotaoComoLink>
+                                                    </td>
+                                                    <td>{anexo.tmn_nome}</td>
+                                                    <td>{anexo.data}</td>
+                                                    <td>{anexo.set_nome}</td>
+                                                    <td>{anexo.man_login}</td>
+                                                    <td>
+                                                        <Centralizado>{anexo.situacao === 'Cancelada' ? <Cancelado>{anexo.situacao}</Cancelado> : anexo.situacao}</Centralizado>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </fieldset>
+                            ) : null}
+                            <br />
+                            {tramites.length > 0 ? (
+                                <fieldset>
+                                    <legend>Tramitação</legend>
+
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Envio</th>
+                                                <th>Área</th>
+                                                <th>Recebimento</th>
+                                                <th>Área</th>
+                                                <th>Observação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {tramites.map(tramite => (
+                                                <tr key={tramite.tra_id}>
+                                                    <td>
+                                                        {tramite.envio} - {tramite.login_envia}
+                                                    </td>
+                                                    <td>{tramite.setor_envia}</td>
+                                                    <td>
+                                                        {tramite.recebimento} - {tramite.login_recebe}
+                                                    </td>
+                                                    <td>{tramite.setor_recebe}</td>
+                                                    <td>{tramite.tra_observacao}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </fieldset>
+                            ) : null}
                         </ContainerArquivos>
                     </fieldset>
                 </Main>

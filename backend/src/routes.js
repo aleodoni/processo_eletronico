@@ -231,6 +231,7 @@ routes.delete(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteCont
 
 // rotas do cadastro de  trâmites
 routes.get(`${process.env.API_URL}/tramites`, TramiteController.index);
+routes.get(`${process.env.API_URL}/grid-tramites/:id`, TramiteController.gridTramite);
 routes.post(`${process.env.API_URL}/tramites`, TramiteController.store);
 // rota de envio de processo
 routes.get(`${process.env.API_URL}/processo-envia/:id`, TramiteController.processosEnvio);

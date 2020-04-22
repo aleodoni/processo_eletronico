@@ -10,6 +10,7 @@ import { defaultTheme } from '../../../styles/theme';
 export default function Select({ name, label, options, ...rest }) {
     const selectRef = useRef(null);
 
+    // eslint-disable-next-line no-unused-vars
     const { fieldName, defaultValue, registerField, error } = useField(name);
 
     useEffect(() => {
