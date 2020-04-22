@@ -33,20 +33,22 @@ class LoginController {
         const login = new LoginController();
         // procura o usuario no ldap, se existir ok, senão retorna erro
         try {
-            await client.bind(`uid=${usuario},${process.env.OUS}`, senha);
+            await client.bind(`uid=${usuario},${process.env.LDAP_USERS_OU}`, senha);
 
             const options = {
-                filter: `(&(uid=${usuario}))`,
+                filter: (process.env.LDAP_USER_FILTER != null)
+                    ? `(&(uid=${usuario})(${process.env.LDAP_USER_FILTER}))`
+                    : `(&(uid=${usuario}))`,
                 scope: 'sub',
                 attributes: ['uid', 'cn', 'mail']
             };
 
             // O LDAP atual não deixa pesquisar com o usuário normal, só admin ou authproxy
             // await client.bind('cn=admin,dc=cmc,dc=pr,dc=gov,dc=br', 'admin');
-            await client.bind('cn=authproxy,dc=cmc,dc=pr,dc=gov,dc=br', 'authproxy');
+            await client.bind(process.env.LDAP_BIND_USER, process.env.LDAP_BIND_PASS);
 
             const entries = await client.search(
-                process.env.OUS,
+                process.env.LDAP_USERS_OU,
                 options
             );
 
