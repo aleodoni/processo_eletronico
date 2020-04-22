@@ -3,7 +3,7 @@ import axios from 'axios';
 require('dotenv').config();
 
 const instance = axios.create({
-    baseURL: `${process.env.REACT_APP_API_URL}/spa2-api/`,
+    baseURL: `${process.env.REACT_APP_API_URL}`,
     headers: {
         common: {
             authorization: sessionStorage.getItem('token'),
