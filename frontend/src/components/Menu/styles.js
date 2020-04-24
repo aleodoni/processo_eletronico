@@ -1,7 +1,10 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    background-color: transparent;
+    display: flex;
+
+    width: 200px;
+    max-width: 200px;
     color: #fff;
 
     span {
@@ -10,15 +13,19 @@ export const Container = styled.div`
 `;
 
 export const Fundo = styled.div`
+    width: 200px;
+    max-width: 200px;
+
     color: #fff;
+    transition: background 0.2s;
 
     hr {
         border-top: 1px solid #fff;
-        width: 95%;
+        width: 100%;
     }
 
-    &:hover {
-        background: #4496db;
+    /* &:hover {
+        background: ${({ theme }) => theme.hover};
         color: #fff;
-    }
+    } */
 `;

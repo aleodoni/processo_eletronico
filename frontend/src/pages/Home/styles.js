@@ -1,12 +1,9 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    display: grid;
-    grid-template-areas:
-        'nav nav'
-        'asideLeft main';
-    grid-template-rows: 1fr 10fr;
-    grid-template-columns: 1fr 6fr;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
 
     fieldset {
         border: 1px solid;
@@ -19,33 +16,11 @@ export const Container = styled.div`
         font-size: 16px;
         color: #303f9f;
     }
-
-    button {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        color: #fff;
-        background: #303f9f;
-        padding: 7px;
-        text-align: center;
-        margin-right: 10px;
-        cursor: pointer;
-
-        &:hover {
-            background: #4496db;
-        }
-    }
-`;
-
-export const AsideLeft = styled.aside`
-    grid-area: asideLeft;
-    background: #303f9f;
 `;
 
 export const Main = styled.main`
-    grid-area: main;
-    background: #fff;
-    margin-left: 10px;
-    padding: 5px;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: center;
 `;

@@ -39,6 +39,7 @@ export const Container = styled.div`
     label {
         font-size: 16px;
         font-weight: bold;
+        color: ${({ theme }) => theme.label};
         margin-left: 5px;
         margin-bottom: 3px;
     }

@@ -1,6 +1,8 @@
 import React from 'react';
 import { FaUserCircle, FaPowerOff } from 'react-icons/fa';
 import Logo from '../../assets/brasao.png';
+import Button from '../layout/button/Button';
+import { Container } from './styles';
 
 function Header() {
     function sair() {
@@ -16,7 +18,7 @@ function Header() {
     }
 
     return (
-        <>
+        <Container>
             <nav>
                 <div>
                     <img src={Logo} alt="Processo Eletrônico" />
@@ -24,17 +26,17 @@ function Header() {
                     <label>{sessionStorage.getItem('nomeSetorUsuario')}</label>
                     <div>
                         <span>
-                            <FaUserCircle size="2em" />
+                            <FaUserCircle size="20px" />
                         </span>
                         <label>&nbsp;{sessionStorage.getItem('nomeUsuario')}</label>
-                        <button type="button" onClick={() => sair()}>
+                        <Button onClick={() => sair()}>
                             <FaPowerOff />
-                            &nbsp; Sair
-                        </button>
+                            Sair
+                        </Button>
                     </div>
                 </div>
             </nav>
-        </>
+        </Container>
     );
 }
 

@@ -19,6 +19,7 @@ export const Container = styled.div`
         font-weight: bold;
         margin-left: 5px;
         margin-bottom: 3px;
+        color: ${({ theme }) => theme.label};
     }
 `;
 

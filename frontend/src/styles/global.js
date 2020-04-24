@@ -6,7 +6,7 @@ export default createGlobalStyle`
     @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
     * {
-        margin: 2;
+        margin: 0;
         padding: 0;
         outline: 0;
         box-sizing: border-box;
@@ -18,6 +18,7 @@ export default createGlobalStyle`
 
     html, body, #root {
         min-height: 100%;
+        height: 100%;
     }
 
     #root {
@@ -49,7 +50,20 @@ export default createGlobalStyle`
     }
 
     button {
+        font-family: Roboto, Arial, Helvetica, sans-serif;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        background: #303f9f;
+        padding: 7px;
+        text-align: center;
+        margin-right: 10px;
         cursor: pointer;
+
+        &:hover {
+            background: #4496db;
+        }
     }
 
     input, textarea {
@@ -63,50 +77,4 @@ export default createGlobalStyle`
     ul {
         list-style: none;
     }
-
-    nav {
-        grid-area: nav;
-        /* background: ${({ theme }) => theme.primary}; */
-        div {
-            overflow: hidden;
-            font-weight: bold;
-            font-size: 14px;
-            color: ${({ theme }) => theme.text};
-            img {
-                width: 50px;
-                vertical-align:middle;
-                margin-right: 15px;
-                margin-bottom: 5px;
-                margin-left: 5px;
-                margin-top: 5px;
-            }
-
-            div {
-                float: right;
-                span {
-                    display:inline-block;
-                    vertical-align:middle;
-                }
-
-                label {
-                    font-weight: bold;
-                    font-size: 14px;
-                    margin-top: 10px;
-                    color: ${({ theme }) => theme.text};
-                    margin-right: 25px;
-                }
-                button {
-                    margin-top: 10px;
-                    margin-left: 5px;
-                    padding-left: 15px !important;
-                    padding-right: 15px !important;
-                    border: 1px solid ${({ theme }) => theme.text} !important;
-                }
-            }
-        }
-
-    }
-
-
-
 `;

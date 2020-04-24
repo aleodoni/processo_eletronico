@@ -1,10 +1,19 @@
 import React, { Component } from 'react';
-import { Collapse, List, ListItem, ListItemText } from '@material-ui/core';
+import { Collapse, List, ListItem, ListItemText, withStyles } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { FaHome, FaChevronCircleRight, FaChevronCircleDown, FaCircle } from 'react-icons/fa';
 import { Container, Fundo } from './styles';
+import { defaultTheme } from '../../styles/theme';
 
 require('dotenv').config();
+
+const StyledListItem = withStyles({
+    root: {
+        '&:hover': {
+            backgroundColor: defaultTheme.hover,
+        },
+    },
+})(ListItem);
 
 class Menu extends Component {
     constructor() {
@@ -49,20 +58,20 @@ class Menu extends Component {
                         {subOption.name === 'Home' ? (
                             <Fundo>
                                 <Link to={subOption.url} style={{ textDecoration: 'none' }}>
-                                    <ListItem button key={subOption.name}>
-                                        <FaHome color="#fff" size="2em" />
+                                    <StyledListItem button key={subOption.name}>
+                                        <FaHome color="#fff" size="20px" />
                                         <ListItemText inset primary={subOption.name} />
-                                    </ListItem>
+                                    </StyledListItem>
                                 </Link>
                                 <hr />
                             </Fundo>
                         ) : (
                             <Fundo>
                                 <Link to={subOption.url} style={{ textDecoration: 'none' }}>
-                                    <ListItem button key={subOption.name}>
+                                    <StyledListItem button key={subOption.name}>
                                         <FaCircle color="#fff" size="1em" />
                                         <ListItemText primary={subOption.name} style={{ marginLeft: 10 }} />
-                                    </ListItem>
+                                    </StyledListItem>
                                 </Link>
                             </Fundo>
                         )}
@@ -72,10 +81,10 @@ class Menu extends Component {
             return (
                 <div key={subOption.name}>
                     <Fundo>
-                        <ListItem button onClick={() => this.handleClick(subOption.name)}>
+                        <StyledListItem button onClick={() => this.handleClick(subOption.name)}>
                             {state[subOption.name] ? <FaChevronCircleDown color="#fff" size="1em" /> : <FaChevronCircleRight color="#fff" size="1em" />}
                             <ListItemText style={{ marginLeft: 10 }} primary={subOption.name} />
-                        </ListItem>
+                        </StyledListItem>
                         <Collapse in={state[subOption.name]} timeout="auto" unmountOnExit>
                             {this.handler(subOption.children)}
                         </Collapse>
@@ -88,13 +97,11 @@ class Menu extends Component {
     render() {
         const { data } = this.state;
         return (
-            <>
-                <Container>
-                    <List dense disablePadding>
-                        {this.handler(data)}
-                    </List>
-                </Container>
-            </>
+            <Container>
+                <List dense disablePadding>
+                    {this.handler(data)}
+                </List>
+            </Container>
         );
     }
 }
