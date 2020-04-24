@@ -5,18 +5,28 @@ module.exports = {
         { tableName: 'genero', schema: 'spa2' },
         [
             {
-                gen_id: 1,
-                gen_nome: 'Genero de processo 01',
+                gen_id: 4,
+                gen_nome: 'Requerimentos RH',
                 versao: 0
             },
             {
-                gen_id: 2,
-                gen_nome: 'Genero de processo 02',
+                gen_id: 6,
+                gen_nome: 'Baixa de bens',
                 versao: 0
             },
             {
-                gen_id: 3,
-                gen_nome: 'Genero de processo 03',
+                gen_id: 7,
+                gen_nome: 'Execução de despesas',
+                versao: 0
+            },
+            {
+                gen_id: 29,
+                gen_nome: 'Presidência',
+                versao: 0
+            },
+            {
+                gen_id: 60,
+                gen_nome: 'Pronto pagamento',
                 versao: 0
             },
         ],
