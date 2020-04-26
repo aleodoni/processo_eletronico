@@ -6,15 +6,27 @@ import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
 import { Container, Centralizado, BotaoComoLink, ContainerTabela, AsideLeft, Main, Erro } from './styles';
 import Header from '../../components/Header';
+import ModalProcesso from '../../components/ModalProcesso';
 
 function TramiteEnvio() {
     const history = useHistory();
     const [erro, setErro] = useState('');
     const [areaNome, setAreaNome] = useState('');
     const [processos, setProcessos] = useState([]);
+    const [proId, setProId] = useState('');
+    const [modalProcesso, setModalProcesso] = useState(false);
 
-    function tramita(proId) {
-        history.push(`/tramita/${proId}`);
+    function tramita(id) {
+        history.push(`/tramita/${id}`);
+    }
+
+    function abreModalProcesso(id) {
+        setProId(id);
+        setModalProcesso(true);
+    }
+
+    function fechaModalProcesso() {
+        setModalProcesso(false);
     }
 
     function carregaGrid() {
@@ -31,10 +43,6 @@ function TramiteEnvio() {
             .catch(() => {
                 setErro('Erro ao carregar registros.');
             });
-    }
-
-    function abreProcesso(proId) {
-        alert(proId);
     }
 
     useEffect(() => {
@@ -69,7 +77,7 @@ function TramiteEnvio() {
                                             <tr key={proc.pro_id}>
                                                 <td>
                                                     <Centralizado>
-                                                        <BotaoComoLink type="button" onClick={() => abreProcesso(proc.pro_id)}>
+                                                        <BotaoComoLink type="button" onClick={() => abreModalProcesso(proc.pro_id)}>
                                                             {proc.pro_codigo}
                                                         </BotaoComoLink>
                                                     </Centralizado>
@@ -92,6 +100,7 @@ function TramiteEnvio() {
                             )}
                         </ContainerTabela>
                     </fieldset>
+                    <ModalProcesso fechaModalProcesso={fechaModalProcesso} modalProcesso={modalProcesso} id={proId} />
                 </Main>
             </Container>
         </>
