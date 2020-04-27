@@ -38,10 +38,6 @@ function Nodo() {
         setModalExcluir(false);
     }
 
-    function handleNodId(e) {
-        setNodId(e.target.value);
-    }
-
     function carregaArea() {
         axios({
             method: 'GET',

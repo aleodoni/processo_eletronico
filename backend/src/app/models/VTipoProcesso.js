@@ -28,6 +28,12 @@ class VTipoProcesso extends Model {
                 },
                 visualizacao: {
                     type: Sequelize.STRING
+                },
+                tpr_pessoal: {
+                    type: Sequelize.BOOLEAN
+                },
+                pessoal: {
+                    type: Sequelize.STRING
                 }
             },
             {

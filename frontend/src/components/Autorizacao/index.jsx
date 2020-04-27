@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { toast as mensagem } from 'react-toastify';
 import axios from '../../configs/axiosConfig';
 
 class Autorizacao extends Component {
@@ -10,7 +11,7 @@ class Autorizacao extends Component {
     verifica = () => {
         axios({
             method: 'GET',
-            url: `telas-por-area/${sessionStorage.getItem('areaUsuario')}`,
+            url: `telas-por-area/${parseInt(sessionStorage.getItem('areaUsuario'), 10)}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -19,7 +20,7 @@ class Autorizacao extends Component {
                 const achou = res.data.find(registro => registro.tel_nome === this.props.tela);
                 // se não achou não pode ver a tela
                 if (achou === undefined) {
-                    console.log(`Não achou a permissão para a tela:${this.props.tela}`);
+                    mensagem.error(`Não achou a permissão para a tela:${this.props.tela}`);
                     window.location.href = '/processo-eletronico';
                 }
             })

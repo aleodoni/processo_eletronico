@@ -143,10 +143,41 @@ export const ContainerArquivos = styled.div`
     grid-template-columns: 1050px;
     grid-gap: 5px;
     margin-bottom: 14px;
+
+    thead {
+        color: black;
+        background: #d3d3d3;
+
+        tr,
+        th {
+            padding: 3px;
+            border: solid 1px #000000;
+        }
+    }
+    tbody {
+        color: black;
+
+        tr:nth-child(even) {
+            background-color: #def0ff;
+        }
+
+        td {
+            border: solid 1px #000000;
+            text-align: center;
+            padding: 3px;
+        }
+    }
+
+    table {
+        border-collapse: collapse;
+        border: solid 1px #000000;
+        font-size: 12px;
+        width: 100%;
+    }
 `;
 
 export const BotaoComoLink = styled.button`
-    background: #fff !important;
+    background: transparent !important;
     border: none;
     padding: 3px;
     color: #000 !important;
@@ -161,4 +192,12 @@ export const BotaoComoLink = styled.button`
 
 export const ListaArquivo = styled.ul`
     list-style-type: none;
+`;
+
+export const Cancelado = styled.span`
+    color: red;
+`;
+
+export const Centralizado = styled.div`
+    text-align: center;
 `;

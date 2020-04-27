@@ -27,6 +27,11 @@ class TipoProcesso extends Model {
                 },
                 flu_id: {
                     type: Sequelize.INTEGER
+                },
+                tpr_pessoal: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                 }
             },
             {

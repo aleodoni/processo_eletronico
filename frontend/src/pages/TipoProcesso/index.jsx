@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { FaRegSave, FaRegTrashAlt, FaSyncAlt, FaRegEdit } from 'react-icons/fa';
-import MaterialTable from 'material-table';
-import Check from '@material-ui/icons/Check';
-import Clear from '@material-ui/icons/Clear';
-import Snackbar from '@material-ui/core/Snackbar';
-import Modal from '@material-ui/core/Modal';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect, useRef } from 'react';
+import { toast as mensagem } from 'react-toastify';
+import { Form } from '@unform/web';
+import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import Menu from '../../components/Menu';
-import { tabelas } from '../../configs/tabelas';
-import { Container, ContainerMenu1, ContainerMenu2, ContainerBotoes, AsideLeft, Main, Erro, ModalApaga } from './styles';
-import Header from '../../components/Header';
+import { Container, Container1, Container2, ContainerBotoes, Main, Erro } from './styles';
+import api from '../../service/api';
+import Input from '../../components/layout/Input';
+import Select from '../../components/layout/Select';
+import Pessoal from '../../components/system/select/Pessoal';
+import Visualizacao from '../../components/system/select/Visualizacao';
+import Salvar from '../../components/layout/button/Salvar';
+import Excluir from '../../components/layout/button/Excluir';
+import Limpar from '../../components/layout/button/Limpar';
+import DefaultLayout from '../_layouts/default';
+import Table from '../../components/layout/Table';
 
 function TipoProcesso() {
     const [erro, setErro] = useState('');
@@ -22,9 +27,22 @@ function TipoProcesso() {
     const [tiposProcesso, setTiposProcesso] = useState([]);
     const [generos, setGeneros] = useState([]);
     const [fluxos, setFluxos] = useState([]);
-    const [salva, setSalva] = useState(false);
-    const [show, setShow] = useState(false);
-    const [mensagemHint, setMensagemHint] = useState('');
+    const [tprPessoal, setTprPessoal] = useState('');
+    const [modalExcluir, setModalExcluir] = useState(false);
+
+    const formRef = useRef(null);
+
+    function abreModalExcluir() {
+        if (tprNome === '') {
+            setErro('Selecione um registro para apagar.');
+            return;
+        }
+        setModalExcluir(true);
+    }
+
+    function fechaModalExcluir() {
+        setModalExcluir(false);
+    }
 
     function handleTprId(e) {
         setTprId(e.target.value);
@@ -35,15 +53,56 @@ function TipoProcesso() {
     }
 
     function handleTprVisualizacao(e) {
-        setTprVisualizacao(e.target.value);
+        setTprVisualizacao(e.value);
     }
 
     function handleGenId(e) {
-        setGenId(e.target.value);
+        setGenId(e.value);
     }
 
     function handleFluId(e) {
-        setFluId(e.target.value);
+        setFluId(e.value);
+    }
+
+    function handleTprPessoal(e) {
+        setTprPessoal(e.value);
+    }
+
+    async function carregaGenero() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/generos');
+
+            const data = response.data.map(genero => {
+                return {
+                    label: genero.gen_nome,
+                    value: genero.gen_id,
+                };
+            });
+            setGeneros(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    async function carregaFluxo() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/fluxos');
+
+            const data = response.data.map(fluxo => {
+                return {
+                    label: fluxo.flu_nome,
+                    value: fluxo.flu_id,
+                };
+            });
+
+            setFluxos(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
     function limpaCampos() {
@@ -52,15 +111,17 @@ function TipoProcesso() {
         setTprVisualizacao('');
         setGenId('');
         setFluId('');
+        setTprPessoal('');
         setErro('');
     }
 
-    function preencheCampos(tprId1, tprVisualizacao1, tprNome1, genId1, fluId1) {
-        setTprId(tprId1);
-        setTprNome(tprNome1);
-        setTprVisualizacao(tprVisualizacao1);
-        setGenId(genId1);
-        setFluId(fluId1);
+    function preencheCampos(linha) {
+        setTprId(linha.tpr_id);
+        setTprNome(linha.tpr_nome);
+        setTprVisualizacao(linha.tpr_visualizacao);
+        setGenId(linha.gen_id);
+        setFluId(linha.flu_id);
+        setTprPessoal(linha.tpr_pessoal);
     }
 
     function carregaGrid() {
@@ -80,79 +141,16 @@ function TipoProcesso() {
             });
     }
 
-    function carregaGenero() {
-        axios({
-            method: 'GET',
-            url: '/generos',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboGenero = [];
-                comboGenero.push(
-                    <option key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboGenero.push(
-                        <option key={res.data[i].gen_id} value={res.data[i].gen_id}>
-                            {res.data[i].gen_nome}
-                        </option>
-                    );
-                }
-                setGeneros(comboGenero);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar gêneros.');
-            });
-    }
-
-    function carregaFluxo() {
-        axios({
-            method: 'GET',
-            url: '/fluxos',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboFluxo = [];
-                comboFluxo.push(
-                    <option key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboFluxo.push(
-                        <option key={res.data[i].flu_id} value={res.data[i].flu_id}>
-                            {res.data[i].flu_nome}
-                        </option>
-                    );
-                }
-                setFluxos(comboFluxo);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar fluxos.');
-            });
-    }
-
     useEffect(() => {
         async function carrega() {
+            await carregaGenero();
+            await carregaFluxo();
             carregaGrid();
-            carregaGenero();
-            carregaFluxo();
         }
         carrega();
     }, []);
 
-    function abreHint(mensagem) {
-        setSalva(true);
-        setMensagemHint(mensagem);
-    }
-
-    function salvaTela() {
+    function grava() {
         if (tprNome.trim() === '') {
             setErro('Tipo de processo em branco.');
             return;
@@ -165,6 +163,10 @@ function TipoProcesso() {
             setErro('Gênero não selecionado.');
             return;
         }
+        if (tprPessoal === '') {
+            setErro('Selecione se é pessoal ou não.');
+            return;
+        }
         if (tprId === undefined) {
             axios({
                 method: 'POST',
@@ -175,6 +177,7 @@ function TipoProcesso() {
                     tpr_nome: tprNome,
                     gen_id: genId,
                     flu_id: fluId,
+                    tpr_pessoal: tprPessoal,
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
@@ -183,7 +186,7 @@ function TipoProcesso() {
                 .then(() => {
                     limpaCampos();
                     carregaGrid();
-                    abreHint('Inserido com sucesso.');
+                    mensagem.success('Inserido com sucesso.');
                 })
                 .catch(() => {
                     setErro('Erro ao inserir registro.');
@@ -197,6 +200,7 @@ function TipoProcesso() {
                     tpr_nome: tprNome,
                     gen_id: genId,
                     flu_id: fluId,
+                    tpr_pessoal: tprPessoal,
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
@@ -205,7 +209,7 @@ function TipoProcesso() {
                 .then(() => {
                     limpaCampos();
                     carregaGrid();
-                    abreHint('Editado com sucesso.');
+                    mensagem.success('Editado com sucesso.');
                 })
                 .catch(() => {
                     setErro('Erro ao editar registro.');
@@ -213,14 +217,10 @@ function TipoProcesso() {
         }
     }
 
-    function fechaModal() {
-        setShow(false);
-    }
-
-    function exclui() {
+    function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `tipos-processo/${tprId}`,
+            url: `tipos-processo/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -228,164 +228,54 @@ function TipoProcesso() {
             .then(() => {
                 limpaCampos();
                 carregaGrid();
-                abreHint('Excluído com sucesso.');
-                fechaModal();
+                mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {
                 setErro(err.response.data.error);
-                fechaModal();
             });
     }
 
-    function fechaHint() {
-        setSalva(false);
-        setMensagemHint('');
-    }
-
-    function abreModal() {
-        if (tprId === undefined) {
-            setErro('Selecione um registro para excluir.');
-        } else {
-            setShow(true);
-        }
-    }
-
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Tipos de processo" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>Tipos de processo</legend>
-                        <Erro>{erro}</Erro>
-                        <form noValidate autoComplete="off">
-                            <input id="tprId" value={tprId} onChange={handleTprId} type="hidden" />
-                            <ContainerMenu1>
-                                <fieldset>
-                                    <legend>Tipo</legend>
-                                    <input required id="tprNome" type="text" value={tprNome} onChange={handleTprNome} size="60" maxLength="60" />
-                                </fieldset>
-                                <fieldset>
-                                    <legend>Visualização</legend>
-                                    <select id="selectVisualizacao" onChange={handleTprVisualizacao} value={tprVisualizacao}>
-                                        <option key="" value="">
-                                            Selecione...
-                                        </option>
-                                        <option key="0" value="0">
-                                            Normal
-                                        </option>
-                                        <option key="1" value="1">
-                                            Restrito
-                                        </option>
-                                        <option key="2" value="2">
-                                            Sigiloso
-                                        </option>
-                                    </select>
-                                </fieldset>
-                            </ContainerMenu1>
-                            <br />
-                            <ContainerMenu2>
-                                <fieldset>
-                                    <legend>Gênero</legend>
-                                    <select id="selectGenero" onChange={handleGenId} value={genId}>
-                                        {generos}
-                                    </select>
-                                </fieldset>
-                                <fieldset>
-                                    <legend>Fluxo</legend>
-                                    <select id="selectFluxo" onChange={handleFluId} value={fluId}>
-                                        {fluxos}
-                                    </select>
-                                </fieldset>
-                            </ContainerMenu2>
-                        </form>
-                        <ContainerBotoes>
-                            <button type="button" id="btnSalva" onClick={salvaTela}>
-                                <FaRegSave />
-                                &nbsp;Salvar
-                            </button>
-                            <button type="button" id="btnExclui" onClick={abreModal}>
-                                <FaRegTrashAlt />
-                                &nbsp;Excluir
-                            </button>
-                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
-                                <FaSyncAlt />
-                                &nbsp;Limpar campos
-                            </button>
-                        </ContainerBotoes>
-                        <MaterialTable
-                            columns={[
-                                {
-                                    hidden: true,
-                                    field: 'tpr_id',
-                                    type: 'numeric',
-                                },
-                                {
-                                    hidden: true,
-                                    field: 'gen_id',
-                                    type: 'numeric',
-                                },
-                                {
-                                    hidden: true,
-                                    field: 'flu_id',
-                                    type: 'numeric',
-                                },
-                                {
-                                    hidden: true,
-                                    field: 'tpr_visualizacao',
-                                    type: 'numeric',
-                                },
-                                {
-                                    title: 'Nome',
-                                    field: 'tpr_nome',
-                                },
-                                {
-                                    title: 'Visualização',
-                                    field: 'visualizacao',
-                                },
-                                {
-                                    title: 'Gênero',
-                                    field: 'gen_nome',
-                                },
-                                {
-                                    title: 'Fluxo',
-                                    field: 'flu_nome',
-                                },
-                            ]}
-                            data={tiposProcesso}
-                            actions={[
-                                {
-                                    icon: () => <FaRegEdit />,
-                                    tooltip: 'Editar',
-                                    onClick: (event, rowData) => preencheCampos(rowData.tpr_id, rowData.tpr_visualizacao, rowData.tpr_nome, rowData.gen_id, rowData.flu_id),
-                                },
-                            ]}
-                            options={tabelas.opcoes}
-                            icons={tabelas.icones}
-                            localization={tabelas.localizacao}
-                        />
-                        <Snackbar anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }} open={salva} onClose={fechaHint} autoHideDuration={500} message={mensagemHint} />
-                        <Modal open={show} onClose={fechaModal}>
-                            <ModalApaga>
-                                <h3>Deseja apagar o registro?</h3>
-                                <div>
-                                    <button type="submit" startIcon={<Check />} onClick={exclui}>
-                                        Sim
-                                    </button>
-                                    <button type="submit" startIcon={<Clear />} onClick={fechaModal}>
-                                        Não
-                                    </button>
-                                </div>
-                            </ModalApaga>
-                        </Modal>
-                    </fieldset>
+                    <Erro>{erro}</Erro>
+                    <Form ref={formRef}>
+                        <input id="tprId" value={tprId} onChange={handleTprId} type="hidden" />
+                        <Container1>
+                            <Input required name="tprNome" label="Tipo" type="text" value={tprNome} onChange={handleTprNome} size="100" maxLength="100" />
+                            <Visualizacao name="selectVisualizacao" val={tprVisualizacao} onChange={handleTprVisualizacao} />
+                        </Container1>
+                        <Container2>
+                            <Select id="selectGenero" name="selectGenero" label="Gênero" options={generos} onChange={handleGenId} value={generos.filter(({ value }) => value === genId)} />
+                            <Select id="selectFluxo" name="selectFluxo" label="Fluxo" options={fluxos} onChange={handleFluId} value={fluxos.filter(({ value }) => value === fluId)} />
+                            <Pessoal name="selectPessoal" val={tprPessoal} changeHandler={handleTprPessoal} />
+                        </Container2>
+                    </Form>
+                    <br />
+                    <ContainerBotoes>
+                        <Salvar name="btnSalva" clickHandler={grava} />
+
+                        <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
+
+                        <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+                    </ContainerBotoes>
+                    <Table
+                        columns={[
+                            { title: 'Tipo', field: 'tpr_nome' },
+                            { title: 'Visualização', field: 'visualizacao' },
+                            { title: 'Gênero', field: 'gen_nome' },
+                            { title: 'Fluxo', field: 'flu_nome' },
+                            { title: 'Pessoal', field: 'pessoal' },
+                        ]}
+                        data={tiposProcesso}
+                        fillData={preencheCampos}
+                    />
                 </Main>
+                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={tprId} />
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 

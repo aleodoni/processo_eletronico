@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FaRegQuestionCircle, FaRegTimesCircle, FaRegCheckCircle } from 'react-icons/fa';
+import { FaRegQuestionCircle } from 'react-icons/fa';
 import Modal from 'react-modal';
+import Sim from '../layout/button/Sim';
+import Nao from '../layout/button/Nao';
 import { ContainerModal } from './styles';
 
 const ModalExcluir = props => {
@@ -22,6 +24,7 @@ const ModalExcluir = props => {
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
             border: '1px solid #303f9f',
+            backgroundColor: '#292E61',
         },
     };
     const { fechaModalExcluir, modalExcluir, apaga, id } = props;
@@ -42,19 +45,13 @@ const ModalExcluir = props => {
             <Modal isOpen={modalExcluir} onRequestClose={fechaHandler} style={dialogs} ariaHideApp={false}>
                 <ContainerModal>
                     <p>
-                        <FaRegQuestionCircle color="#303f9f" size="3em" />
+                        <FaRegQuestionCircle color="#fff" size="3em" />
                     </p>
                     <h1>Deseja apagar o registro?</h1>
                     <hr />
                     <div>
-                        <button type="button" onClick={apagaHandler}>
-                            <FaRegCheckCircle />
-                            &nbsp;Ok
-                        </button>
-                        <button type="button" onClick={fechaModalExcluir}>
-                            <FaRegTimesCircle />
-                            &nbsp;Fechar
-                        </button>
+                        <Sim name="btnSim" clickHandler={apagaHandler} />
+                        <Nao name="btnNao" clickHandler={fechaModalExcluir} />
                     </div>
                 </ContainerModal>
             </Modal>
@@ -65,7 +62,7 @@ const ModalExcluir = props => {
 ModalExcluir.propTypes = {
     apaga: PropTypes.func.isRequired,
     fechaModalExcluir: PropTypes.func.isRequired,
-    modalExcluirAberto: PropTypes.bool.isRequired,
+    modalExcluir: PropTypes.bool.isRequired,
     id: PropTypes.number.isRequired,
 };
 

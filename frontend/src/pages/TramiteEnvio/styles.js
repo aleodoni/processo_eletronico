@@ -84,18 +84,17 @@ export const ContainerTabela = styled.div`
         color: black;
 
         tr,
-        td,
-        th {
+        td {
             border: solid 1px #000000;
             padding: 3px;
+            text-align: center;
         }
     }
 
     table {
-        margin-left: 5px;
-        margin-top: 10px;
         border-collapse: collapse;
         border: solid 1px #000000;
+        width: 100%;
     }
 `;
 

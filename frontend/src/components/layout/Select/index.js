@@ -10,7 +10,7 @@ import { defaultTheme } from '../../../styles/theme';
 export default function Select({ name, label, options, ...rest }) {
     const selectRef = useRef(null);
 
-    const { fieldName, defaultValue, registerField, error } = useField(name);
+    const { fieldName, defaultValue, registerField } = useField(name);
 
     useEffect(() => {
         registerField({

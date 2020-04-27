@@ -1,45 +1,48 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaFileAlt, FaSistrix, FaUpload } from 'react-icons/fa';
+import { FaFileAlt, FaSistrix, FaUpload, FaDownload } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
-import Header from '../../components/Header';
-import Menu from '../../components/Menu';
-import { Container, AsideLeft, Main } from './styles';
+
+import { Container, Main } from './styles';
+import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapido';
+import DefaultLayout from '../_layouts/default';
 
 function Home() {
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Home" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>Acesso rápido</legend>
+                    <ButtonAcessoRapido>
                         <Link to="/processo-cria">
-                            <button type="button">
-                                <FaFileAlt />
-                                &nbsp;Criar processo
-                            </button>
+                            <FaFileAlt />
+                            Criar processo
                         </Link>
+                    </ButtonAcessoRapido>
+
+                    <ButtonAcessoRapido>
                         <Link to="/processo-consulta">
-                            <button type="button">
-                                <FaSistrix />
-                                &nbsp;Consultar processos
-                            </button>
+                            <FaSistrix />
+                            Consultar processos
                         </Link>
+                    </ButtonAcessoRapido>
+
+                    <ButtonAcessoRapido>
                         <Link to="/envia">
-                            <button type="button">
-                                <FaUpload />
-                                &nbsp;Enviar
-                            </button>
+                            <FaUpload />
+                            Enviar
                         </Link>
-                    </fieldset>
+                    </ButtonAcessoRapido>
+
+                    <ButtonAcessoRapido>
+                        <Link to="/recebe">
+                            <FaDownload />
+                            Receber
+                        </Link>
+                    </ButtonAcessoRapido>
                 </Main>
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 

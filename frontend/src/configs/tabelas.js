@@ -24,6 +24,7 @@ export const tabelas = {
         pageSize: 10,
         headerStyle: {
             zIndex: 0,
+            borderRadius: 4,
         },
     },
     icones: {

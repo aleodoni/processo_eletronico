@@ -1,17 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import React, { useState, useEffect, useRef } from 'react';
-import MaterialTable from 'material-table';
-import { FaRegEdit } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import Menu from '../../components/Menu';
-import { tabelas } from '../../configs/tabelas';
-import { Container, Container1, Container2, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
-import Header from '../../components/Header';
+import { Container, Container1, Container2, ContainerBotoes, Main, Erro } from './styles';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
@@ -20,6 +15,8 @@ import Tipo from '../../components/system/select/Tipo';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
 import Limpar from '../../components/layout/button/Limpar';
+import DefaultLayout from '../_layouts/default';
+import Table from '../../components/layout/Table';
 
 function Setor() {
     const [erro, setErro] = useState('');
@@ -100,13 +97,13 @@ function Setor() {
         setErro('');
     }
 
-    function preencheCampos(set_id, set_id_area, set_nome, set_sigla, set_ativo, set_tipo) {
-        setSetId(set_id);
-        setSetIdArea(set_id_area);
-        setSetNome(set_nome);
-        setSetSigla(set_sigla);
-        setSetAtivo(set_ativo);
-        setSetTipo(set_tipo);
+    function preencheCampos(linha) {
+        setSetId(linha.set_id);
+        setSetIdArea(linha.set_id_area);
+        setSetNome(linha.set_nome);
+        setSetSigla(linha.set_sigla);
+        setSetAtivo(linha.set_ativo);
+        setSetTipo(linha.set_tipo);
     }
 
     function carregaGrid() {
@@ -223,61 +220,46 @@ function Setor() {
     }
 
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Setores" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>Setores</legend>
-                        <Erro>{erro}</Erro>
-                        <Form ref={formRef}>
-                            <input id="setId" value={setId} onChange={handleSetId} type="hidden" />
-                            <Container1>
-                                <Input required name="setNome" label="Nome" type="text" value={setNome} onChange={handleSetNome} autoFocus size="100" maxLength="100" />
-                            </Container1>
-                            <Container2>
-                                <Input required name="setSigla" label="Sigla" type="text" value={setSigla} onChange={handleSetSigla} size="20" maxLength="20" />
+                    <Erro>{erro}</Erro>
+                    <Form ref={formRef}>
+                        <input id="setId" value={setId} onChange={handleSetId} type="hidden" />
+                        <Container1>
+                            <Input required name="setNome" label="Nome" type="text" value={setNome} onChange={handleSetNome} autoFocus size="100" maxLength="100" />
+                        </Container1>
+                        <Container2>
+                            <Input required name="setSigla" label="Sigla" type="text" value={setSigla} onChange={handleSetSigla} size="20" maxLength="20" />
 
-                                <Select id="selectArea" name="selectArea" label="Área" options={areas} onChange={handleSetIdArea} value={areas.filter(({ value }) => value === setIdArea)} />
+                            <Select id="selectArea" name="selectArea" label="Área" options={areas} onChange={handleSetIdArea} value={areas.filter(({ value }) => value === setIdArea)} />
 
-                                <Ativo name="selectAtivo" val={setAtivo} changeHandler={handleSetAtivo} />
+                            <Ativo name="selectAtivo" val={setAtivo} changeHandler={handleSetAtivo} />
 
-                                <Tipo name="selectAtivo" val={setTipo} changeHandler={handleSetTipo} />
-                            </Container2>
-                        </Form>
-                        <ContainerBotoes>
-                            <Salvar name="btnSalva" clickHandler={grava} />
+                            <Tipo name="selectAtivo" val={setTipo} changeHandler={handleSetTipo} />
+                        </Container2>
+                    </Form>
+                    <ContainerBotoes>
+                        <Salvar name="btnSalva" clickHandler={grava} />
 
-                            <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
+                        <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
 
-                            <Limpar name="btnLimpa" clickHandler={limpaCampos} />
-                        </ContainerBotoes>
-                        <MaterialTable
-                            columns={[
-                                { title: 'Nome', field: 'set_nome' },
-                                { title: 'Sigla', field: 'set_sigla' },
-                            ]}
-                            data={setores}
-                            actions={[
-                                {
-                                    icon: () => <FaRegEdit />,
-                                    tooltip: 'Editar',
-                                    onClick: (_event, linha) => preencheCampos(linha.set_id, linha.set_id_area, linha.set_nome, linha.set_sigla, linha.set_ativo, linha.set_tipo),
-                                },
-                            ]}
-                            options={tabelas.opcoes}
-                            icons={tabelas.icones}
-                            localization={tabelas.localizacao}
-                        />
-                    </fieldset>
+                        <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+                    </ContainerBotoes>
+
+                    <Table
+                        columns={[
+                            { title: 'Nome', field: 'set_nome' },
+                            { title: 'Sigla', field: 'set_sigla' },
+                        ]}
+                        data={setores}
+                        fillData={preencheCampos}
+                    />
                 </Main>
                 <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={setId} />
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 

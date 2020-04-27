@@ -25,6 +25,7 @@ import SetorController from './app/controllers/SetorController';
 import LotacaoController from './app/controllers/LotacaoController';
 import ProximoTramiteController from './app/controllers/ProximoTramiteController';
 import TramiteController from './app/controllers/TramiteController';
+import TipoDocumentoController from './app/controllers/TipoDocumentoController';
 import AuthMiddleware from './app/middlewares/auth';
 import * as funcoesArquivo from '../src/config/arquivos';
 
@@ -231,11 +232,20 @@ routes.delete(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteCont
 
 // rotas do cadastro de  trâmites
 routes.get(`${process.env.API_URL}/tramites`, TramiteController.index);
+routes.get(`${process.env.API_URL}/grid-tramites/:id`, TramiteController.gridTramite);
 routes.post(`${process.env.API_URL}/tramites`, TramiteController.store);
-routes.put(`${process.env.API_URL}/tramites/:id`, TramiteController.update);
-routes.delete(`${process.env.API_URL}/tramites/:id`, TramiteController.delete);
-
 // rota de envio de processo
 routes.get(`${process.env.API_URL}/processo-envia/:id`, TramiteController.processosEnvio);
+// rotas de recebimento de processo
+routes.get(`${process.env.API_URL}/processo-recebe/:id`, TramiteController.processosRecebimento);
+routes.post(`${process.env.API_URL}/tramite-recebe-ou-nega`, TramiteController.recebeOuNega);
+// rota de retorno de próximo trâmite
+routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proximoTramite);
+
+// rotas do cadastro de tipos de documento
+routes.get(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.index);
+routes.post(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.store);
+routes.put(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.update);
+routes.delete(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.delete);
 
 export default routes;

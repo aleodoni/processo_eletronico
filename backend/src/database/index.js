@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 import Autorizacao from '../app/models/Autorizacao';
-import SetorUsuario from '../app/models/SetorUsuario';
 import Area from '../app/models/Area';
 import Setor from '../app/models/Setor';
 import Lotacao from '../app/models/Lotacao';
@@ -34,14 +33,17 @@ import ArquivoManifestacao from '../app/models/ArquivoManifestacao';
 import VNodoFluxo from '../app/models/VNodoFluxo';
 import VProximoTramite from '../app/models/VProximoTramite';
 import VProcessoEnvia from '../app/models/VProcessoEnvia';
+import VProcessoRecebe from '../app/models/VProcessoRecebe';
+import VProximoTramiteNormal from '../app/models/VProximoTramiteNormal';
 import Tramite from '../app/models/Tramite';
+import VTramite from '../app/models/VTramite';
+import TipoDocumento from '../app/models/TipoDocumento';
 import databaseConfig from '../config/database';
 
 const models = [
     Autorizacao,
     Auditoria,
     DataHoraAtual,
-    SetorUsuario,
     Area,
     Setor,
     Lotacao,
@@ -73,7 +75,11 @@ const models = [
     VNodoFluxo,
     VProximoTramite,
     Tramite,
-    VProcessoEnvia
+    VProcessoEnvia,
+    VProximoTramiteNormal,
+    VProcessoRecebe,
+    VTramite,
+    TipoDocumento
 ];
 
 class Database {

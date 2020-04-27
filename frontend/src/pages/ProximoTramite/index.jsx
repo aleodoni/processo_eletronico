@@ -50,10 +50,6 @@ function ProximoTramite() {
         setModalFluxo(false);
     }
 
-    function handlePrxId(e) {
-        setPrxId(e.target.value);
-    }
-
     function handleNodId(e) {
         setNodId(e.target.value);
     }

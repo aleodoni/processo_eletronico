@@ -1,14 +1,24 @@
 import React from 'react';
 import { FaUserCircle, FaPowerOff } from 'react-icons/fa';
 import Logo from '../../assets/brasao.png';
-import ModalSair from '../ModalSair';
-import useModal from '../ModalSair/useModal';
+import Button from '../layout/button/Button';
+import { Container } from './styles';
 
 function Header() {
-    const { isShowing, toggle } = useModal();
+    function sair() {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('usuario');
+        sessionStorage.removeItem('nomeUsuario');
+        sessionStorage.removeItem('areaUsuario');
+        sessionStorage.removeItem('setorUsuario');
+        sessionStorage.removeItem('nomeSetorUsuario');
+        sessionStorage.removeItem('nomeAreaUsuario');
+        sessionStorage.removeItem('menu');
+        window.location.href = '/processo-eletronico';
+    }
 
     return (
-        <>
+        <Container>
             <nav>
                 <div>
                     <img src={Logo} alt="Processo Eletrônico" />
@@ -16,18 +26,17 @@ function Header() {
                     <label>{sessionStorage.getItem('nomeSetorUsuario')}</label>
                     <div>
                         <span>
-                            <FaUserCircle size="2em" />
+                            <FaUserCircle size="20px" />
                         </span>
                         <label>&nbsp;{sessionStorage.getItem('nomeUsuario')}</label>
-                        <button type="button" onClick={toggle}>
+                        <Button onClick={() => sair()}>
                             <FaPowerOff />
-                            &nbsp; Sair
-                        </button>
+                            Sair
+                        </Button>
                     </div>
-                    <ModalSair isShowing={isShowing} hide={toggle} />
                 </div>
             </nav>
-        </>
+        </Container>
     );
 }
 
