@@ -28,7 +28,7 @@ module.exports = {
                 gen_id: 60,
                 gen_nome: 'Pronto pagamento',
                 versao: 0
-            },
+            }
         ],
         {}
     ),

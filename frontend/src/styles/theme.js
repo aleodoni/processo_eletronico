@@ -10,9 +10,6 @@ export const defaultTheme = {
     backGround: lighten(0.1, '#293689'),
 
     hover: lighten(0.2, '#303f9f'),
-    // hover: '#4496db',
-    // gradient: 'linear-gradient(#25212e, #303f9f)',
-    // gradient: 'linear-gradient(#303f9f, #1d2762)',
     gradient: 'linear-gradient(#25212e, #303f9f)',
     text: '#fff',
     label: '#ccc',
