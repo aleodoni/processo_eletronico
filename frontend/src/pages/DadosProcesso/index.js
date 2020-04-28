@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router';
 import { toast as mensagem } from 'react-toastify';
-import { FaPaperclip, FaNetworkWired, FaExternalLinkAlt, FaFileAlt } from 'react-icons/fa';
-import Header from '../../components/Header';
+import { FaPaperclip, FaFileAlt } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
 import axios from '../../configs/axiosConfig';
-import Menu from '../../components/Menu';
 import AnexoArquivo from './AnexoArquivo';
-import { Container, AsideLeft, Main, Erro, ContainerIniciativa, Cancelado, Centralizado, ContainerDados, ContainerBotoes, ContainerArquivos, BotaoComoLink } from './styles';
+import DefaultLayout from '../_layouts/default';
+import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
+import Tramitar from '../../components/layout/button/Tramitar';
+import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
+import { Container, Main, Erro, ContainerIniciativa, Cancelado, Centralizado, ContainerDados, ContainerBotoes, ContainerArquivos, BotaoComoLink } from './styles';
 
 require('dotenv').config();
 
@@ -44,6 +47,8 @@ function DadosProcesso({ match }) {
     const [anexos, setAnexos] = useState([]);
     const [anexosManifestacao, setAnexosManifestacao] = useState([]);
     const [tramites, setTramites] = useState([]);
+
+    const formRef = useRef(null);
 
     function carregaAnexos(id) {
         axios({
@@ -258,28 +263,29 @@ function DadosProcesso({ match }) {
     }
 
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Dados processo" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>{`Processo ${proCodigo}`}</legend>
+                    <Form ref={formRef}>
+                        <h3>
+                            <FaFileAlt />
+                            {` Processo nº ${proCodigo}`}
+                        </h3>
                         <Erro dangerouslySetInnerHTML={{ __html: erro }} />
                         <input id="proId" value={proId} type="hidden" />
                         <ContainerIniciativa>
+                            <p>Iniciativa</p>
                             <fieldset>
-                                <legend>Iniciativa</legend>
                                 {proIniciativa} - {proTipoIniciativa}
                             </fieldset>
                         </ContainerIniciativa>
+                        <br />
                         {proNome ? (
                             <ContainerDados>
+                                <p>Dados da Iniciativa</p>
+                                <br />
                                 <fieldset>
-                                    <legend>Dados da Iniciativa</legend>
                                     {proMatricula ? (
                                         <div>
                                             <label>Matrícula:</label>
@@ -329,9 +335,11 @@ function DadosProcesso({ match }) {
                                 </fieldset>
                             </ContainerDados>
                         ) : null}
+                        <br />
                         <ContainerDados>
+                            <p>Dados do processo</p>
+                            <br />
                             <fieldset>
-                                <legend>Dados do processo</legend>
                                 {genNome ? (
                                     <div>
                                         <label>Espécie:</label>
@@ -410,6 +418,7 @@ function DadosProcesso({ match }) {
                                 ) : null}
                             </fieldset>
                         </ContainerDados>
+                        <br />
                         {!proEncerramento ? (
                             <ContainerBotoes>
                                 <label htmlFor="anexo">
@@ -417,113 +426,114 @@ function DadosProcesso({ match }) {
                                     &nbsp;Inserir Anexo
                                 </label>
                                 <input type="file" name="file" onChange={incluiAnexo} id="anexo" />
-                                <button
-                                    type="button"
-                                    id="btnCriaManifestacao"
-                                    onClick={() => {
+                                <CriaManifestacao
+                                    name="btnCriaManifestacao"
+                                    clickHandler={() => {
                                         criaManifestacao();
-                                    }}>
-                                    <FaFileAlt />
-                                    &nbsp;Criar manifestação
-                                </button>
-                                <button
-                                    type="button"
-                                    id="btnTramita"
-                                    onClick={() => {
+                                    }}
+                                />
+                                <Tramitar
+                                    name="btnTramita"
+                                    clickHandler={() => {
                                         tramita();
-                                    }}>
-                                    <FaNetworkWired />
-                                    &nbsp;Tramitar
-                                </button>
-                                <button type="button" id="btnConsulta" onClick={consulta}>
-                                    <FaExternalLinkAlt />
-                                    &nbsp;Consultar outro
-                                </button>
+                                    }}
+                                />
+                                <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
+                                <br />
                             </ContainerBotoes>
-                        ) : null}
-                        <br />
+                        ) : (
+                            <ContainerBotoes>
+                                <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
+                                <br />
+                            </ContainerBotoes>
+                        )}
+
                         <ContainerArquivos>
                             {anexos.length > 0 ? (
-                                <fieldset>
-                                    <legend>Arquivo(s) do processo em anexo</legend>
-                                    <AnexoArquivo proId={proId} anexos={anexos} />
-                                </fieldset>
+                                <div>
+                                    <p>Arquivo(s) em anexo</p>
+                                    <fieldset>
+                                        <AnexoArquivo proId={proId} anexos={anexos} />
+                                    </fieldset>
+                                    <br />
+                                </div>
                             ) : null}
-                            <br />
                             {anexosManifestacao.length > 0 ? (
-                                <fieldset>
-                                    <legend>Manifestações do processo</legend>
-
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Arquivo</th>
-                                                <th>Tipo</th>
-                                                <th>Data</th>
-                                                <th>Área</th>
-                                                <th>Login</th>
-                                                <th>Situação</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {anexosManifestacao.map(anexo => (
-                                                <tr key={anexo.arq_id}>
-                                                    <td>
-                                                        <BotaoComoLink type="button" onClick={e => downloadAnexoManifestacao(e, anexo.arq_id, anexo.manId, anexo.arq_nome)}>
-                                                            {anexo.arq_nome}
-                                                        </BotaoComoLink>
-                                                    </td>
-                                                    <td>{anexo.tmn_nome}</td>
-                                                    <td>{anexo.data}</td>
-                                                    <td>{anexo.set_nome}</td>
-                                                    <td>{anexo.man_login}</td>
-                                                    <td>
-                                                        <Centralizado>{anexo.situacao === 'Cancelada' ? <Cancelado>{anexo.situacao}</Cancelado> : anexo.situacao}</Centralizado>
-                                                    </td>
+                                <div>
+                                    <p>Manifestações</p>
+                                    <fieldset>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Arquivo</th>
+                                                    <th>Tipo</th>
+                                                    <th>Data</th>
+                                                    <th>Área</th>
+                                                    <th>Login</th>
+                                                    <th>Situação</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </fieldset>
+                                            </thead>
+                                            <tbody>
+                                                {anexosManifestacao.map(anexo => (
+                                                    <tr key={anexo.arq_id}>
+                                                        <td>
+                                                            <BotaoComoLink type="button" onClick={e => downloadAnexoManifestacao(e, anexo.arq_id, anexo.manId, anexo.arq_nome)}>
+                                                                {anexo.arq_nome}
+                                                            </BotaoComoLink>
+                                                        </td>
+                                                        <td>{anexo.tmn_nome}</td>
+                                                        <td>{anexo.data}</td>
+                                                        <td>{anexo.set_nome}</td>
+                                                        <td>{anexo.man_login}</td>
+                                                        <td>
+                                                            <Centralizado>{anexo.situacao === 'Cancelada' ? <Cancelado>{anexo.situacao}</Cancelado> : anexo.situacao}</Centralizado>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </fieldset>
+                                    <br />
+                                </div>
                             ) : null}
-                            <br />
                             {tramites.length > 0 ? (
-                                <fieldset>
-                                    <legend>Tramitação</legend>
-
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Envio</th>
-                                                <th>Área</th>
-                                                <th>Recebimento</th>
-                                                <th>Área</th>
-                                                <th>Observação</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {tramites.map(tramite => (
-                                                <tr key={tramite.tra_id}>
-                                                    <td>
-                                                        {tramite.envio} - {tramite.login_envia}
-                                                    </td>
-                                                    <td>{tramite.setor_envia}</td>
-                                                    <td>
-                                                        {tramite.recebimento} - {tramite.login_recebe}
-                                                    </td>
-                                                    <td>{tramite.setor_recebe}</td>
-                                                    <td>{tramite.tra_observacao}</td>
+                                <div>
+                                    <p>Tramitação</p>
+                                    <fieldset>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Envio</th>
+                                                    <th>Área</th>
+                                                    <th>Recebimento</th>
+                                                    <th>Área</th>
+                                                    <th>Observação</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </fieldset>
+                                            </thead>
+                                            <tbody>
+                                                {tramites.map(tramite => (
+                                                    <tr key={tramite.tra_id}>
+                                                        <td>
+                                                            {tramite.envio} - {tramite.login_envia}
+                                                        </td>
+                                                        <td>{tramite.setor_envia}</td>
+                                                        <td>
+                                                            {tramite.recebimento} - {tramite.login_recebe}
+                                                        </td>
+                                                        <td>{tramite.setor_recebe}</td>
+                                                        <td>{tramite.tra_observacao}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </fieldset>
+                                </div>
                             ) : null}
                         </ContainerArquivos>
-                    </fieldset>
+                    </Form>
                 </Main>
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 DadosProcesso.propTypes = {
