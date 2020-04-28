@@ -15,12 +15,22 @@ export default function Iniciativa({ name, val, changeHandler, ...rest }) {
     },
   ];
 
-  return <Select id={name} name={name} label="Iniciativa" options={options} value={options.filter(({ value }) => value === val)} onChange={changeHandler} {...rest} />;
+  return (
+    <Select
+      id={name}
+      name={name}
+      label="Iniciativa"
+      options={options}
+      value={options.filter(({ value }) => value === val)}
+      onChange={changeHandler}
+      {...rest}
+    />
+  );
 }
 
 Iniciativa.propTypes = {
   name: PropTypes.string.isRequired,
-  val: PropTypes.oneOfType([PropTypes.string, PropTypes.string, null]),
+  val: PropTypes.oneOfType([PropTypes.string, PropTypes.string]),
   changeHandler: PropTypes.func.isRequired,
 };
 

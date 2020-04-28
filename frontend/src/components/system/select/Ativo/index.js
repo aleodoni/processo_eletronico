@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Select from '../../../layout/Select';
 
-export default function Ativo({ name, val, changeHandler, ...rest }) {
+export default function Ativo({ name, changeHandler, ...rest }) {
   const options = [
     {
       label: 'Sim',
@@ -15,15 +15,14 @@ export default function Ativo({ name, val, changeHandler, ...rest }) {
     },
   ];
 
-  return <Select id={name} name={name} label="Ativo" options={options} value={options.filter(({ value }) => value === val)} onChange={changeHandler} {...rest} />;
+  return <Select name={name} label="Ativo" options={options} onChange={changeHandler} {...rest} />;
 }
 
 Ativo.propTypes = {
   name: PropTypes.string.isRequired,
-  val: PropTypes.oneOfType([PropTypes.string, PropTypes.number, null]),
-  changeHandler: PropTypes.func.isRequired,
+  changeHandler: PropTypes.func,
 };
 
 Ativo.defaultProps = {
-  val: null,
+  changeHandler: null,
 };
