@@ -1,12 +1,8 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    display: grid;
-    grid-template-areas:
-        'nav nav'
-        'asideLeft main';
-    /*grid-template-rows: 1fr 10fr;*/
-    grid-template-columns: 1fr 6fr;
+    display: flex;
+    flex: 1;
 `;
 
 export const Main = styled.main`

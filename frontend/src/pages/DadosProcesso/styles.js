@@ -1,57 +1,36 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    display: grid;
-    grid-template-areas:
-        'nav nav'
-        'asideLeft main';
-    grid-template-columns: 1fr 6fr;
+    display: flex;
+    flex: 1;
 
     fieldset {
         border: 1px solid;
-        border-color: #303f9f;
+        border-color: #fff;
+        background: #fff;
         padding: 5px;
+        border-radius: 3px;
     }
 
-    legend {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16px;
-        color: #303f9f;
-    }
-
-    button {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
+    p {
         color: #fff;
-        background: #303f9f;
-        padding: 7px;
-        text-align: center;
-        margin-right: 10px;
-        cursor: pointer;
-
-        &:hover {
-            background: #4496db;
-        }
+        font-weight: bold;
     }
-`;
 
-export const AsideLeft = styled.aside`
-    grid-area: asideLeft;
-    background: #303f9f;
+    h3 {
+        color: #fff;
+        font-weight: bold;
+    }
 `;
 
 export const Main = styled.main`
-    grid-area: main;
-    background: #fff;
     margin-left: 10px;
     padding: 5px;
+    width: 100%;
 
     form {
         display: flex;
         flex-direction: column;
-        font-size: 16px;
     }
 `;
 
@@ -64,40 +43,26 @@ export const Erro = styled.div`
 export const ContainerIniciativa = styled.div`
     display: grid;
     grid-template-columns: 1050px;
-    grid-template-rows: 58px;
-    grid-gap: 5px;
-    margin-bottom: 14px;
 `;
 
 export const ContainerDados = styled.div`
     display: grid;
-    grid-template-columns: 240px 500px;
-    grid-gap: 5px;
-    margin-bottom: 14px;
-
-    fieldset {
-        div {
-            display: grid;
-            grid-template-columns: 240px 788px;
-            grid-gap: 5px;
-            margin-bottom: 10px;
-            label {
-                font-size: 16px;
-                font-weight: bold;
-            }
-            span {
-                font-size: 16px;
-            }
+    grid-template-columns: 240px 800px;
+    grid-column-gap: 10px;
+    div {
+        display: grid;
+        grid-template-columns: 240px 800px;
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
         }
     }
 `;
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 145px 195px 120px 180px;
+    grid-template-columns: 155px 195px 120px 180px;
     grid-gap: 5px;
-    margin-bottom: 14px;
-
     input {
         opacity: 0;
         position: absolute;
@@ -106,34 +71,25 @@ export const ContainerBotoes = styled.div`
 
     label {
         cursor: pointer;
-        font-size: 16px;
-        border: 1px solid #303f9f;
-        border-radius: 5px;
-        padding-top: 10px;
-        padding-bottom: 5px;
-        padding-left: 10px;
-        background: #303f9f;
-        color: #fff;
+        padding-top: 9px;
+        padding-left: 9px;
+        background: ${({ theme }) => theme.primary};
+        border: 0;
+        border-radius: 4px;
+        height: 36px;
+        padding: 5 9 15px;
+        color: ${({ theme }) => theme.text};
+        margin: 0 0 10px;
+        font-size: 14px;
+        transition: background 0.2s;
 
         &:hover {
-            background-color: #4496db;
-            border: 1px solid #4496db;
+            background: ${({ theme }) => theme.hover};
         }
-    }
-    button {
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        color: #fff;
-        background: #303f9f;
-        padding-top: 8px;
-        padding-bottom: 5px;
-        padding-left: 5px;
-        text-align: center;
-        cursor: pointer;
 
-        &:hover {
-            background: #4496db;
+        svg {
+            margin-right: 10px;
+            margin-left: 5px;
         }
     }
 `;
@@ -142,8 +98,6 @@ export const ContainerArquivos = styled.div`
     display: grid;
     grid-template-columns: 1050px;
     grid-gap: 5px;
-    margin-bottom: 14px;
-
     thead {
         color: black;
         background: #d3d3d3;
@@ -170,7 +124,7 @@ export const ContainerArquivos = styled.div`
 
     table {
         border-collapse: collapse;
-        border: solid 1px #000000;
+        border: 1px solid #000000;
         font-size: 12px;
         width: 100%;
     }
