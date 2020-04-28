@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize';
 import Autorizacao from '../app/models/Autorizacao';
 import Area from '../app/models/Area';
+import AreaCombo from '../app/models/AreaCombo';
 import Setor from '../app/models/Setor';
 import Lotacao from '../app/models/Lotacao';
 import Tela from '../app/models/Tela';
@@ -45,6 +46,7 @@ const models = [
     Auditoria,
     DataHoraAtual,
     Area,
+    AreaCombo,
     Setor,
     Lotacao,
     Tela,

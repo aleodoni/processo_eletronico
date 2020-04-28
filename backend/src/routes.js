@@ -81,6 +81,7 @@ routes.use(AuthMiddleware);
 
 // rota que retorna as áreas
 routes.get(`${process.env.API_URL}/area`, AreaController.index);
+routes.get(`${process.env.API_URL}/area-combo`, AreaController.areaNormal);
 
 // rota que retorna a área por código
 routes.get(
