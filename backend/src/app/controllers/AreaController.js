@@ -1,4 +1,5 @@
 import Setor from '../models/Setor';
+import AreaCombo from '../models/AreaCombo';
 import Sequelize from 'sequelize';
 
 class AreaController {
@@ -23,6 +24,16 @@ class AreaController {
                 sequelize.col('set_id_area')
             ),
 
+            order: ['set_nome'],
+            attributes: ['set_id', 'set_nome'],
+            logging: true
+        });
+        return res.json(areas);
+    }
+
+    async areaNormal(req, res) {
+        const areas = await AreaCombo.findAll({
+            where: { set_tipo: 'N' },
             order: ['set_nome'],
             attributes: ['set_id', 'set_nome'],
             logging: true

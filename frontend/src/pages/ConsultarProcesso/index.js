@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { FaSistrix } from 'react-icons/fa';
+import React, { useState, useRef } from 'react';
+import { Form } from '@unform/web';
 import { useHistory } from 'react-router';
 import Autorizacao from '../../components/Autorizacao';
-import Menu from '../../components/Menu';
-import Header from '../../components/Header';
 import axios from '../../configs/axiosConfig';
-import { Container, ContainerConsultaProcesso, AsideLeft, Main, Erro } from './styles';
+import DefaultLayout from '../_layouts/default';
+import Input from '../../components/layout/Input';
+import Localizar from '../../components/layout/button/Localizar';
+import { Container, ContainerConsultaProcesso, Main, Erro } from './styles';
 
 require('dotenv').config();
 
@@ -13,6 +14,8 @@ function ConsultarProcesso() {
     const history = useHistory();
     const [erro, setErro] = useState('');
     const [proCodigo, setProCodigo] = useState('');
+
+    const formRef = useRef(null);
 
     function handleProCodigo(e) {
         // eslint-disable-next-line no-useless-escape
@@ -71,30 +74,22 @@ function ConsultarProcesso() {
     }
 
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Consultar processo" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>Consultar processos</legend>
+                    <Form ref={formRef}>
                         <ContainerConsultaProcesso>
-                            <input id="proCodigo" name="proCodigo" value={proCodigo} onKeyDown={onKeyPressed} onChange={handleProCodigo} type="text" size="10" maxLength="10" autoFocus />
-                            <button type="button" id="btnConsultaProcesso" onClick={consultaProcesso}>
-                                <FaSistrix />
-                                &nbsp;Consultar
-                            </button>
+                            <Input id="proCodigo" name="proCodigo" label="Digite o código" type="text" value={proCodigo} onKeyDown={onKeyPressed} onChange={handleProCodigo} size="10" maxLength="10" autoFocus />
+                            <Localizar name="btnConsultaProcesso" clickHandler={consultaProcesso} />
                             <div>
                                 <Erro>{erro}</Erro>
                             </div>
                         </ContainerConsultaProcesso>
-                    </fieldset>
+                    </Form>
                 </Main>
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 
