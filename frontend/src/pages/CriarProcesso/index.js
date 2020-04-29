@@ -5,7 +5,17 @@ import { Form } from '@unform/web';
 import Input from '../../components/layout/Input';
 import TextArea from '../../components/layout/TextArea';
 import Select from '../../components/layout/Select';
-import { Container, Main, ContainerAssunto, ContainerMatricula, ContainerCriaProcesso, ContainerIniciativa, ContainerDadosServidorPublico, ContainerNome, Erro } from './styles';
+import {
+    Container,
+    Main,
+    ContainerAssunto,
+    ContainerMatricula,
+    ContainerCriaProcesso,
+    ContainerIniciativa,
+    ContainerDadosServidorPublico,
+    ContainerNome,
+    Erro,
+} from './styles';
 import api from '../../service/api';
 import Autorizacao from '../../components/Autorizacao';
 import axios from '../../configs/axiosConfig';
@@ -71,12 +81,6 @@ function CriarProcesso() {
         setTiposProcesso([]);
         setGenId('');
         setTprId('');
-        const comboTipoProcesso = [];
-        comboTipoProcesso.push({
-            label: 'Selecione...',
-            value: '',
-        });
-        setTiposProcesso(comboTipoProcesso);
     }
 
     useEffect(() => {
@@ -88,7 +92,7 @@ function CriarProcesso() {
     }, []);
 
     async function selecionaTipoProcesso(e) {
-        const codGenId = e.value;
+        const codGenId = e.target.value;
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
@@ -135,17 +139,17 @@ function CriarProcesso() {
     }
 
     function handleAreaId(e) {
-        setAreaId(parseInt(e.value, 10));
+        setAreaId(parseInt(e.target.value, 10));
     }
 
     function handleTprId(e) {
         // demais processos
-        if (e.value === 26) {
+        if (e.target.value === 26) {
             setAssuntoVisivel(true);
         } else {
             setAssuntoVisivel(false);
         }
-        setTprId(e.value);
+        setTprId(e.target.value);
     }
 
     function handleProNome(e) {
@@ -207,16 +211,12 @@ function CriarProcesso() {
         limpaCamposIniciativa();
         iniciaTipoProcesso();
         setErro('');
-        const iniciativa = e.value;
+        const iniciativa = e.target.value;
         if (iniciativa !== '') {
             const comboTipoIniciativa = [];
             setTipoIniciativaVisivel(true);
             setProIniciativa(iniciativa);
             if (iniciativa === 'Interna') {
-                comboTipoIniciativa.push({
-                    label: 'Selecione...',
-                    value: '',
-                });
                 comboTipoIniciativa.push({
                     label: 'Servidor Público',
                     value: 'Servidor Público',
@@ -234,10 +234,6 @@ function CriarProcesso() {
                 setAssuntoVisivel(false);
             }
             if (iniciativa === 'Externa') {
-                comboTipoIniciativa.push({
-                    label: 'Selecione...',
-                    value: '',
-                });
                 comboTipoIniciativa.push({
                     label: 'Pessoa Física',
                     value: 'Pessoa Física',
@@ -266,20 +262,13 @@ function CriarProcesso() {
             setAssuntoVisivel(false);
             setProIniciativa(iniciativa);
         }
-
-        const comboTipoProcesso = [];
-        comboTipoProcesso.push({
-            label: 'Selecione...',
-            value: '',
-        });
-        setTiposProcesso(comboTipoProcesso);
     }
 
     function carregaDadosIniciativa(e) {
         limpaCamposIniciativa();
         iniciaTipoProcesso();
         setErro('');
-        const tipoIniciativa = e.value;
+        const tipoIniciativa = e.target.value;
         if (tipoIniciativa !== '') {
             setProTipoIniciativa(tipoIniciativa);
             if (tipoIniciativa === 'Servidor Público') {
@@ -347,7 +336,12 @@ function CriarProcesso() {
                 if (proNome.trim() === '') {
                     erros = `${erros}Nome obrigatório.<br />`;
                 }
-                if (proCpf.trim() === '' && proFone.trim() === '' && proCelular.trim() === '' && proEmail.trim() === '') {
+                if (
+                    proCpf.trim() === '' &&
+                    proFone.trim() === '' &&
+                    proCelular.trim() === '' &&
+                    proEmail.trim() === ''
+                ) {
                     erros = `${erros}Pelo menos um campo (Cpf, Fone, Celular, E-mail) deve ser preenchido.`;
                 }
                 if (erros !== '') {
@@ -390,7 +384,12 @@ function CriarProcesso() {
                 if (proNome.trim() === '') {
                     erros += 'Nome obrigatório.<br />';
                 }
-                if (proCpf.trim() === '' && proFone.trim() === '' && proCelular.trim() === '' && proEmail.trim() === '') {
+                if (
+                    proCpf.trim() === '' &&
+                    proFone.trim() === '' &&
+                    proCelular.trim() === '' &&
+                    proEmail.trim() === ''
+                ) {
                     erros = `${erros}Pelo menos um campo (Cpf, Fone, Celular, E-mail) deve ser preenchido.`;
                 }
                 if (erros !== '') {
@@ -489,6 +488,10 @@ function CriarProcesso() {
     }
 
     function localiza() {
+        if (proMatricula.trim() === '') {
+            setErro('Digite a matrícula.');
+            return;
+        }
         setProNome('');
         setProCpf('');
         setProCnpj('');
@@ -550,7 +553,11 @@ function CriarProcesso() {
                     <Form ref={formRef}>
                         <input id="proId" value={proId} onChange={handleProId} type="hidden" />
                         <ContainerIniciativa>
-                            <Iniciativa name="selectIniciativa" val={proIniciativa} changeHandler={carregaTipoIniciativa} />
+                            <Iniciativa
+                                name="selectIniciativa"
+                                val={proIniciativa}
+                                changeHandler={carregaTipoIniciativa}
+                            />
                             {tipoIniciativaVisivel ? (
                                 <Select
                                     id="selectTipoIniciativa"
@@ -558,53 +565,161 @@ function CriarProcesso() {
                                     label="Tipo da iniciativa"
                                     options={tiposIniciativa}
                                     onChange={carregaDadosIniciativa}
-                                    value={tiposIniciativa.filter(({ value }) => value === proTipoIniciativa)}
                                 />
                             ) : null}
                             {matriculaVisivel ? (
                                 <ContainerMatricula>
-                                    <Input name="proMatricula" label="Matrícula" type="text" value={proMatricula} onChange={handleProMatricula} size="5" maxLength="5" />
-                                    <Localizar name="btnLocaliza" clickHandler={localiza} />
+                                    <Input
+                                        name="proMatricula"
+                                        label="Matrícula"
+                                        type="text"
+                                        value={proMatricula}
+                                        onChange={handleProMatricula}
+                                        size="5"
+                                        maxLength="5"
+                                    />
+                                    <Localizar
+                                        name="btnLocaliza"
+                                        clickHandler={() => {
+                                            localiza();
+                                        }}
+                                    />
                                 </ContainerMatricula>
                             ) : null}
-                            {areaVisivel ? <Select id="selectArea" name="selectArea" label="Área" options={areas} onChange={handleAreaId} value={areas.filter(({ value }) => value === areaId)} /> : null}
+                            {areaVisivel ? (
+                                <Select
+                                    name="selectArea"
+                                    label="Área"
+                                    options={areas}
+                                    onChange={handleAreaId}
+                                />
+                            ) : null}
                         </ContainerIniciativa>
                         {nomeVisivel ? (
                             <ContainerNome>
-                                <Input name="proNome" label="Nome" type="text" value={proNome} onChange={handleProNome} size="100" maxLength="100" />
+                                <Input
+                                    name="proNome"
+                                    label="Nome"
+                                    type="text"
+                                    value={proNome}
+                                    onChange={handleProNome}
+                                    size="100"
+                                    maxLength="100"
+                                />
                             </ContainerNome>
                         ) : null}
                         {dadosServidorPublico ? (
                             <ContainerDadosServidorPublico>
-                                <Input name="proCpf" label="Cpf" type="text" value={proCpf} onChange={handleProCpf} size="10" maxLength="11" />
-                                <Input name="proFone" label="Fone" type="text" value={proFone} onChange={handleProFone} size="30" maxLength="31" />
-                                <Input name="proCelular" label="Celular" type="text" value={proCelular} onChange={handleProCelular} size="30" maxLength="30" />
+                                <Input
+                                    name="proCpf"
+                                    label="Cpf"
+                                    type="text"
+                                    value={proCpf}
+                                    onChange={handleProCpf}
+                                    size="10"
+                                    maxLength="11"
+                                />
+                                <Input
+                                    name="proFone"
+                                    label="Fone"
+                                    type="text"
+                                    value={proFone}
+                                    onChange={handleProFone}
+                                    size="30"
+                                    maxLength="31"
+                                />
+                                <Input
+                                    name="proCelular"
+                                    label="Celular"
+                                    type="text"
+                                    value={proCelular}
+                                    onChange={handleProCelular}
+                                    size="30"
+                                    maxLength="30"
+                                />
                             </ContainerDadosServidorPublico>
                         ) : null}
                         {cnpjVisivel ? (
                             <div>
                                 <ContainerNome>
-                                    <Input name="proContatoPj" label="Responsável" type="text" value={proContatoPj} onChange={handleProContatoPj} size="100" maxLength="100" />
+                                    <Input
+                                        name="proContatoPj"
+                                        label="Responsável"
+                                        type="text"
+                                        value={proContatoPj}
+                                        onChange={handleProContatoPj}
+                                        size="100"
+                                        maxLength="100"
+                                    />
                                 </ContainerNome>
                                 <ContainerDadosServidorPublico>
-                                    <Input name="proCnpj" label="Cnpj" type="text" value={proCnpj} onChange={handleProCnpj} size="12" maxLength="14" />
-                                    <Input name="proFone" label="Fone" type="text" value={proFone} onChange={handleProFone} size="30" maxLength="30" />
-                                    <Input name="proCelular" label="Celular" type="text" value={proCelular} onChange={handleProCelular} size="30" maxLength="30" />
+                                    <Input
+                                        name="proCnpj"
+                                        label="Cnpj"
+                                        type="text"
+                                        value={proCnpj}
+                                        onChange={handleProCnpj}
+                                        size="12"
+                                        maxLength="14"
+                                    />
+                                    <Input
+                                        name="proFone"
+                                        label="Fone"
+                                        type="text"
+                                        value={proFone}
+                                        onChange={handleProFone}
+                                        size="30"
+                                        maxLength="30"
+                                    />
+                                    <Input
+                                        name="proCelular"
+                                        label="Celular"
+                                        type="text"
+                                        value={proCelular}
+                                        onChange={handleProCelular}
+                                        size="30"
+                                        maxLength="30"
+                                    />
                                 </ContainerDadosServidorPublico>
                             </div>
                         ) : null}
                         {emailVisivel ? (
                             <ContainerNome>
-                                <Input name="proEmail" label="E-mail" type="text" value={proEmail} onChange={handleProEmail} size="101" maxLength="100" />
+                                <Input
+                                    name="proEmail"
+                                    label="E-mail"
+                                    type="text"
+                                    value={proEmail}
+                                    onChange={handleProEmail}
+                                    size="101"
+                                    maxLength="100"
+                                />
                             </ContainerNome>
                         ) : null}
                         <ContainerCriaProcesso>
-                            <Select id="selectGenero" name="selectGenero" label="Gênero" options={generos} onChange={selecionaTipoProcesso} value={generos.filter(({ value }) => value === genId)} />
-                            <Select id="selectTiposProcesso" name="selectTiposProcesso" label="Tipo do processo" options={tiposProcesso} onChange={handleTprId} value={tiposProcesso.filter(({ value }) => value === tprId)} />
+                            <Select
+                                name="selectGenero"
+                                label="Gênero"
+                                options={generos}
+                                onChange={selecionaTipoProcesso}
+                            />
+                            <Select
+                                name="selectTiposProcesso"
+                                label="Tipo do processo"
+                                options={tiposProcesso}
+                                onChange={handleTprId}
+                            />
                         </ContainerCriaProcesso>
                         {assuntoVisivel ? (
                             <ContainerAssunto>
-                                <TextArea name="proAssunto" label="Assunto" rows={30} cols={100} value={proAssunto} onChange={handleProAssunto} />
+                                <TextArea
+                                    name="proAssunto"
+                                    label="Assunto"
+                                    rows={30}
+                                    cols={100}
+                                    value={proAssunto}
+                                    onChange={handleProAssunto}
+                                />
                             </ContainerAssunto>
                         ) : null}
                     </Form>

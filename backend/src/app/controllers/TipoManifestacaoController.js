@@ -2,20 +2,26 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import TipoManifestacao from '../models/TipoManifestacao';
+import Sequelize from 'sequelize';
 // import AuditoriaController from './AuditoriaController';
 
 class TipoManifestacaoController {
     async index(req, res) {
         const tiposManifestacao = await TipoManifestacao.findAll({
             order: ['tmn_nome'],
-            attributes: ['tmn_id', 'tmn_nome'],
-            logging: false
+            attributes: [
+                'tmn_id',
+                'tmn_nome',
+                'tmn_publica',
+                [Sequelize.literal('CASE WHEN "tmn_publica" = true THEN \'Sim\' ELSE \'Não\' END'), 'publica']
+            ],
+            logging: true
         });
         return res.json(tiposManifestacao);
     }
 
     async store(req, res) {
-        const { tmn_id, tmn_nome } = await TipoManifestacao.create(req.body, {
+        const { tmn_id, tmn_nome, tmn_publica } = await TipoManifestacao.create(req.body, {
             logging: false
         });
         // auditoria de inserção
@@ -23,7 +29,8 @@ class TipoManifestacaoController {
         //
         return res.json({
             tmn_id,
-            tmn_nome
+            tmn_nome,
+            tmn_publica
         });
     }
 

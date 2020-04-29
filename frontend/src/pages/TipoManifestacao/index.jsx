@@ -1,51 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import MaterialTable from 'material-table';
-import { FaRegSave, FaRegTrashAlt, FaRegEdit, FaSyncAlt } from 'react-icons/fa';
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
+import { Form } from '@unform/web';
+import * as Yup from 'yup';
+
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import Menu from '../../components/Menu';
-import { tabelas } from '../../configs/tabelas';
-import { Container, Container1, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
-import Header from '../../components/Header';
+import { Container, ContainerDados, Main, Erro } from './styles';
+import Input from '../../components/layout/Input';
+import ManifestacaoPublica from '../../components/system/select/ManifestacaoPublica';
+import Salvar from '../../components/layout/button/Salvar';
+import Excluir from '../../components/layout/button/Excluir';
+import Limpar from '../../components/layout/button/Limpar';
+import DefaultLayout from '../_layouts/default';
+import Table from '../../components/layout/Table';
+import FormLine from '../../components/layout/FormLine';
+import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
 function TipoManifestacao() {
     const [erro, setErro] = useState('');
-    const [tmnId, setTmnId] = useState(undefined);
-    const [tmnNome, setTmnNome] = useState('');
+    const [tipoManifestacao, setTipoManifestacao] = useState({
+        tmnId: undefined,
+        tmnNome: null,
+        tmnPublica: -1,
+    });
+
     const [tiposManifestacao, setTiposManifestacao] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
 
+    const formRef = useRef(null);
+
+    useEffect(() => {
+        formRef.current.setData(tipoManifestacao);
+    }, [tipoManifestacao]);
+
     function abreModalExcluir() {
-        if (tmnNome === '') {
-            setErro('Selecione um registro para apagar.');
-            return;
+        if (tipoManifestacao.tmnNome !== null) {
+            setModalExcluir(true);
         }
-        setModalExcluir(true);
     }
 
     function fechaModalExcluir() {
         setModalExcluir(false);
     }
 
-    function handleTmnId(e) {
-        setTmnId(e.target.value);
-    }
-
-    function handleTmnNome(e) {
-        setTmnNome(e.target.value);
-    }
-
     function limpaCampos() {
-        setTmnId(undefined);
-        setTmnNome('');
-        setErro('');
+        setTipoManifestacao({
+            ...tipoManifestacao,
+            tmnId: null,
+            tmnNome: null,
+            tmnPublica: '-1',
+        });
+
+        formRef.current.setErrors({});
     }
 
-    function preencheCampos(id, nome) {
-        setTmnId(id);
-        setTmnNome(nome);
+    function preencheCampos(linha) {
+        formRef.current.setErrors({});
+
+        setTipoManifestacao({
+            ...tipoManifestacao,
+            tmnId: linha.tmn_id,
+            tmnNome: linha.tmn_nome,
+            tmnPublica: linha.tmn_publica,
+        });
     }
 
     function carregaGrid() {
@@ -65,50 +85,75 @@ function TipoManifestacao() {
     }
 
     useEffect(() => {
-        carregaGrid();
+        async function carrega() {
+            await carregaGrid();
+        }
+        carrega();
     }, []);
 
-    function grava() {
-        if (tmnNome.trim() === '') {
-            setErro('Nome em branco.');
-            return;
-        }
-        if (tmnId === undefined) {
-            axios({
-                method: 'POST',
-                url: '/tipos-manifestacao',
-                data: { tmn_id: null, tmn_nome: tmnNome.trim() },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid();
-                    mensagem.success('Inserido com sucesso.');
+    async function grava({ tmnId, tmnNome, tmnPublica }) {
+        try {
+            const schema = Yup.object().shape({
+                tmnNome: Yup.string()
+                    .max(100, 'Tamanho máximo 100 caracteres')
+                    .required('Tipo de manifestação é obrigatória'),
+                tmnPublica: Yup.boolean().oneOf([true, false], 'Selecione pública ou não'),
+            });
+
+            await schema.validate({ tmnId, tmnNome, tmnPublica }, { abortEarly: false });
+
+            if (!tmnId) {
+                axios({
+                    method: 'POST',
+                    url: '/tipos-manifestacao',
+                    data: {
+                        tmn_id: null,
+                        tmn_nome: tmnNome,
+                        tmn_publica: tmnPublica,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao inserir registro.');
-                });
-        } else {
-            axios({
-                method: 'PUT',
-                url: `tipos-manifestacao/${tmnId}`,
-                data: {
-                    tmn_nome: tmnNome.trim(),
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid();
-                    mensagem.success('Editado com sucesso.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid();
+                        mensagem.success('Inserido com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao inserir registro.');
+                    });
+            } else {
+                axios({
+                    method: 'PUT',
+                    url: `tipos-manifestacao/${tmnId}`,
+                    data: {
+                        tmn_nome: tmnNome,
+                        tmn_publica: tmnPublica,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao editar registro.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid();
+                        mensagem.success('Editado com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao editar registro.');
+                    });
+            }
+        } catch (err) {
+            const validationErrors = {};
+
+            if (err instanceof Yup.ValidationError) {
+                err.inner.forEach(error => {
+                    validationErrors[error.path] = error.message;
                 });
+
+                formRef.current.setErrors(validationErrors);
+            }
         }
     }
 
@@ -131,66 +176,52 @@ function TipoManifestacao() {
     }
 
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Tipos de manifestação" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>Tipos de manifestação</legend>
-                        <Erro>{erro}</Erro>
-                        <form noValidate autoComplete="off">
-                            <input id="tmnId" value={tmnId} onChange={handleTmnId} type="hidden" />
-                            <Container1>
-                                <fieldset>
-                                    <legend>Nome</legend>
-                                    <input required id="tmnNome" type="text" value={tmnNome} onChange={handleTmnNome} autoFocus size="100" maxLength="100" />
-                                </fieldset>
-                            </Container1>
-                        </form>
-                        <ContainerBotoes>
-                            <button type="button" id="btnSalva" onClick={grava}>
-                                <FaRegSave />
-                                &nbsp;Salvar
-                            </button>
-                            <button type="button" id="btnExclui" onClick={abreModalExcluir}>
-                                <FaRegTrashAlt />
-                                &nbsp;Excluir
-                            </button>
-                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
-                                <FaSyncAlt />
-                                &nbsp;Limpar campos
-                            </button>
-                        </ContainerBotoes>
-                        <MaterialTable
-                            columns={[
-                                {
-                                    hidden: true,
-                                    field: 'tmn_id',
-                                    type: 'numeric',
-                                },
-                                { title: 'Nome', field: 'tmn_nome' },
-                            ]}
-                            data={tiposManifestacao}
-                            actions={[
-                                {
-                                    icon: () => <FaRegEdit />,
-                                    tooltip: 'Editar',
-                                    onClick: (_event, linha) => preencheCampos(linha.tmn_id, linha.tmn_nome),
-                                },
-                            ]}
-                            options={tabelas.opcoes}
-                            icons={tabelas.icones}
-                            localization={tabelas.localizacao}
-                        />
-                        <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={tmnId} />
-                    </fieldset>
+                    <Erro>{erro}</Erro>
+                    <Form ref={formRef} initialData={tipoManifestacao} onSubmit={grava}>
+                        <Input name="tmnId" type="hidden" />
+                        <ContainerDados>
+                            <FormLine>
+                                <Input
+                                    name="tmnNome"
+                                    label="Nome"
+                                    type="text"
+                                    autoFocus
+                                    maxLength="100"
+                                />
+                            </FormLine>
+                            <FormLine>
+                                <ManifestacaoPublica name="tmnPublica" />
+                            </FormLine>
+                        </ContainerDados>
+                        <ButtonContainer>
+                            <Salvar name="btnSalva" type="submit" />
+
+                            <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
+
+                            <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+                        </ButtonContainer>
+                    </Form>
+                    <Table
+                        columns={[
+                            { title: 'Nome', field: 'tmn_nome' },
+                            { title: 'Publica', field: 'publica' },
+                        ]}
+                        data={tiposManifestacao}
+                        fillData={preencheCampos}
+                    />
                 </Main>
+                <ModalApaga
+                    modalExcluir={modalExcluir}
+                    fechaModalExcluir={fechaModalExcluir}
+                    apaga={apaga}
+                    id={tipoManifestacao.tmnId}
+                />
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 

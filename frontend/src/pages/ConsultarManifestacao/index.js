@@ -6,7 +6,7 @@ import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import Input from '../../components/layout/Input';
 import Localizar from '../../components/layout/button/Localizar';
-import { Container, ContainerConsultaManifestacao, AsideLeft, Main, Erro } from './styles';
+import { Container, ContainerConsultaManifestacao, Main, Erro } from './styles';
 
 require('dotenv').config();
 
