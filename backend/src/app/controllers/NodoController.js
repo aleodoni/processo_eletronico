@@ -9,7 +9,16 @@ class NodoController {
     async index(req, res) {
         const nodos = await Nodo.findAll({
             order: ['nod_id'],
-            attributes: ['nod_id', 'nod_inicio', 'flu_id', 'area_id', 'nod_fim', 'nod_dias_prazo', 'nod_ordem'],
+            attributes: [
+                'nod_id',
+                'nod_inicio',
+                'flu_id',
+                'area_id',
+                'nod_fim',
+                'nod_dias_prazo',
+                'nod_ordem',
+                'nod_aval_executiva'
+            ],
             logging: false
         });
         return res.json(nodos);
@@ -29,14 +38,37 @@ class NodoController {
                 flu_id: req.params.fluId
             },
             order: ['nod_ordem'],
-            attributes: ['nod_id', 'nod_inicio', 'flu_id', 'area_id', 'nod_fim', 'fluxo', 'area', 'inicio', 'fim', 'nod_dias_prazo', 'nod_ordem'],
+            attributes: [
+                'nod_id',
+                'nod_inicio',
+                'flu_id',
+                'area_id',
+                'nod_fim',
+                'fluxo',
+                'area',
+                'inicio',
+                'fim',
+                'nod_dias_prazo',
+                'nod_ordem',
+                'nod_aval_executiva',
+                'aval_executiva'
+            ],
             logging: false
         });
         return res.json(gridNodos);
     }
 
     async store(req, res) {
-        const { nod_id, nod_inicio, nod_fim, flu_id, area_id, nod_dias_prazo, nod_ordem } = await Nodo.create(req.body, {
+        const {
+            nod_id,
+            nod_inicio,
+            nod_fim,
+            flu_id,
+            area_id,
+            nod_dias_prazo,
+            nod_ordem,
+            nod_aval_executiva
+        } = await Nodo.create(req.body, {
             logging: true
         });
         console.log('requisição: ' + req.body);
@@ -50,7 +82,8 @@ class NodoController {
             flu_id,
             area_id,
             nod_dias_prazo,
-            nod_ordem
+            nod_ordem,
+            nod_aval_executiva
         });
     }
 

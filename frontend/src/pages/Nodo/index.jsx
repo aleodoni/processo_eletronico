@@ -1,70 +1,104 @@
-import React, { useState, useEffect } from 'react';
-import { FaSyncAlt, FaRegSave, FaRegTrashAlt } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
+import { Form } from '@unform/web';
+import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import Menu from '../../components/Menu';
-import { Container, Container1, ContainerNomeFluxo, ContainerCamposNodos, Centralizado, BotaoComoLink, ContainerBotoes, ContainerTabela, AsideLeft, Main, Erro } from './styles';
-import Header from '../../components/Header';
+import {
+    Container,
+    Main,
+    Erro,
+    ContainerNomeFluxo,
+    ContainerCamposNodos,
+    ContainerCamposNodos1,
+} from './styles';
+import api from '../../service/api';
+import Input from '../../components/layout/Input';
+import Select from '../../components/layout/Select';
+import Salvar from '../../components/layout/button/Salvar';
+import Excluir from '../../components/layout/button/Excluir';
+import Limpar from '../../components/layout/button/Limpar';
+import ConsultarOutroFluxo from '../../components/layout/button/ConsultarOutroFluxo';
+import DefaultLayout from '../_layouts/default';
+import Table from '../../components/layout/Table';
+import FormLine from '../../components/layout/FormLine';
+import ButtonContainer from '../../components/layout/button/ButtonContainer';
+import NoInicio from '../../components/system/select/NoInicio';
+import NoFim from '../../components/system/select/NoFim';
+import NoAvalExecutiva from '../../components/system/select/NoAvalExecutiva';
 
 function Nodo() {
     const [erro, setErro] = useState('');
-    const [nodId, setNodId] = useState('');
-    const [fluId, setFluId] = useState('');
+    const [nodo, setNodo] = useState({
+        nodId: undefined,
+        fluId: -1,
+        areaId: -1,
+        nodInicio: -1,
+        nodFim: -1,
+        nodAvalExecutiva: -1,
+        nodDiasPrazo: 0,
+        nodOrdem: 0,
+    });
+
     const [fluxosVisiveis, setFluxosVisiveis] = useState(true);
     const [nomeFluxosVisiveis, setNomeFluxosVisiveis] = useState(false);
     const [nomeFluxo, setNomeFluxo] = useState('');
     const [nodosVisiveis, setNodosVisiveis] = useState(false);
-    const [areaId, setAreaId] = useState('');
-    const [nodInicio, setNodInicio] = useState('');
-    const [nodFim, setNodFim] = useState('');
     const [fluxos, setFluxos] = useState([]);
     const [areas, setAreas] = useState([]);
     const [nodos, setNodos] = useState([]);
-    const [nodDiasPrazo, setNodDiasPrazo] = useState('');
-    const [nodOrdem, setNodOrdem] = useState('');
     const [modalExcluir, setModalExcluir] = useState(false);
 
+    const formRef = useRef(null);
+
+    useEffect(() => {
+        formRef.current.setData(nodo);
+    }, [nodo]);
+
     function abreModalExcluir() {
-        if (nodId === '') {
-            setErro('Selecione um registro para apagar.');
-            return;
+        if (nodo.nodId !== null) {
+            setModalExcluir(true);
         }
-        setModalExcluir(true);
     }
 
     function fechaModalExcluir() {
         setModalExcluir(false);
     }
 
-    function carregaArea() {
-        axios({
-            method: 'GET',
-            url: '/area',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboArea = [];
-                comboArea.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboArea.push(
-                        <option key={res.data[i].set_id} data-key={res.data[i].set_id} value={res.data[i].set_id}>
-                            {res.data[i].set_nome}
-                        </option>
-                    );
-                }
-                setAreas(comboArea);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar áreas.');
+    async function carregaArea() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/area');
+
+            const data = response.data.map(area => {
+                return {
+                    label: area.set_nome,
+                    value: area.set_id,
+                };
             });
+
+            setAreas(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    function limpaCampos() {
+        setNodo({
+            ...nodo,
+            nodId: null,
+            fluId: -1,
+            areaId: -1,
+            nodInicio: -1,
+            nodFim: -1,
+            nodAvalExecutiva: -1,
+            nodDiasPrazo: 0,
+            nodOrdem: 0,
+        });
+
+        formRef.current.setErrors({});
     }
 
     function carregaGrid(fluxo) {
@@ -90,7 +124,7 @@ function Nodo() {
             setNomeFluxosVisiveis(true);
             const index = e.nativeEvent.target.selectedIndex;
             setNomeFluxo(e.nativeEvent.target[index].text);
-            setFluId(e.target.value);
+            setNodo({ fluId: e.target.value });
             carregaArea();
             carregaGrid(e.target.value);
         } else {
@@ -98,95 +132,42 @@ function Nodo() {
             setFluxosVisiveis(true);
             setNomeFluxo('');
             setNomeFluxosVisiveis(false);
-            setFluId('');
+            setNodo({ fluId: '' });
         }
     }
 
-    function handleAreaId(e) {
-        setAreaId(e.target.value);
-    }
+    async function carregaFluxo() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
-    function handleNodDiasPrazo(e) {
-        const re = /^[0-9\b]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setNodDiasPrazo(e.target.value);
-        }
-    }
+        try {
+            const response = await api.get('/fluxos');
 
-    function handleNodOrdem(e) {
-        const re = /^[0-9\b]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setNodOrdem(e.target.value);
-        }
-    }
-
-    function handleSetNodInicio(e) {
-        setNodInicio(e.target.value);
-    }
-
-    function handleSetNodFim(e) {
-        setNodFim(e.target.value);
-    }
-
-    function carregaFluxo() {
-        axios({
-            method: 'GET',
-            url: '/fluxos',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboFluxo = [];
-                comboFluxo.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboFluxo.push(
-                        <option key={res.data[i].flu_id} data-key={res.data[i].flu_id} value={res.data[i].flu_id}>
-                            {res.data[i].flu_nome}
-                        </option>
-                    );
-                }
-                setFluxos(comboFluxo);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar fluxos.');
+            const data = response.data.map(fluxo => {
+                return {
+                    label: fluxo.flu_nome,
+                    value: fluxo.flu_id,
+                };
             });
+
+            setFluxos(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
-    function limpaCampos() {
-        setNodId('');
-        setAreaId('');
-        setNodInicio('');
-        setNodFim('');
-        setNodDiasPrazo('');
-        setNodOrdem('');
-        setErro('');
-    }
-
-    function preencheCampos(nodId1) {
-        axios({
-            method: 'GET',
-            url: `/seleciona-nodo/${nodId1}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setNodId(nodId1);
-                setNodDiasPrazo(res.data.nod_dias_prazo);
-                setNodInicio(res.data.nod_inicio);
-                setNodFim(res.data.nod_fim);
-                setFluId(res.data.flu_id);
-                setAreaId(parseInt(res.data.area_id, 10));
-                setNodOrdem(res.data.nod_ordem);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar fluxos.');
-            });
+    function preencheCampos(linha) {
+        formRef.current.setErrors({});
+        setNodo({
+            ...nodo,
+            nodId: linha.nod_id,
+            fluId: linha.flu_id,
+            areaId: linha.area_id,
+            nodInicio: linha.nod_inicio,
+            nodFim: linha.nod_fim,
+            nodDiasPrazo: linha.nod_dias_prazo,
+            nodOrdem: linha.nod_ordem,
+            nodAvalExecutiva: linha.nod_aval_executiva,
+        });
     }
 
     function selecionaOutroFluxo() {
@@ -194,86 +175,103 @@ function Nodo() {
         setFluxosVisiveis(true);
         setNomeFluxosVisiveis(false);
         setNomeFluxo('');
-        setFluId('');
+        setNodo({ fluId: '' });
     }
 
     useEffect(() => {
         async function carrega() {
-            carregaFluxo();
+            await carregaFluxo();
         }
         carrega();
     }, []);
 
-    function grava() {
-        if (areaId === '') {
-            setErro('Selecione a área.');
-            return;
-        }
-        if (nodInicio === '') {
-            setErro('Selecione se é nodo inicial.');
-            return;
-        }
-        if (nodFim === '') {
-            setErro('Selecione se é nodo final.');
-            return;
-        }
-        if (nodDiasPrazo.trim() === '') {
-            setErro('Dias de prazo em branco.');
-            return;
-        }
-        if (nodOrdem.trim() === '') {
-            setErro('Ordem em branco.');
-            return;
-        }
-        if (nodId === '') {
-            axios({
-                method: 'POST',
-                url: '/nodos',
-                data: {
-                    nod_id: null,
-                    flu_id: fluId,
-                    area_id: areaId,
-                    nod_inicio: nodInicio,
-                    nod_fim: nodFim,
-                    nod_dias_prazo: nodDiasPrazo,
-                    nod_ordem: nodOrdem,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid(fluId);
-                    mensagem.success('Inserido com sucesso.');
+    async function grava({
+        nodId,
+        fluId,
+        areaId,
+        nodInicio,
+        nodFim,
+        nodDiasPrazo,
+        nodOrdem,
+        nodAvalExecutiva,
+    }) {
+        try {
+            const schema = Yup.object().shape({
+                areaId: Yup.number().positive('Área do setor é obrigatória'),
+                nodInicio: Yup.boolean().oneOf([true, false], 'Selecione o nó inicial'),
+                nodFim: Yup.boolean().oneOf([true, false], 'Selecione o nó final'),
+                nodDiasPrazo: Yup.string().required('Prazo é obrigatório'),
+                nodOrdem: Yup.string().required('Ordem é obrigatória'),
+                nodAvalExecutiva: Yup.boolean().oneOf([true, false], 'Tem o aval da executiva?'),
+            });
+
+            await schema.validate(
+                { areaId, nodInicio, nodFim, nodDiasPrazo, nodOrdem, nodAvalExecutiva },
+                { abortEarly: false }
+            );
+
+            if (!nodId) {
+                axios({
+                    method: 'POST',
+                    url: '/nodos',
+                    data: {
+                        nod_id: null,
+                        area_id: areaId,
+                        flu_id: fluId,
+                        nod_inicio: nodInicio,
+                        nod_fim: nodFim,
+                        nod_dias_prazo: nodDiasPrazo,
+                        nod_ordem: nodOrdem,
+                        nod_aval_executiva: nodAvalExecutiva,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao inserir registro.');
-                });
-        } else {
-            axios({
-                method: 'PUT',
-                url: `nodos/${nodId}`,
-                data: {
-                    flu_id: fluId,
-                    area_id: areaId,
-                    nod_inicio: nodInicio,
-                    nod_fim: nodFim,
-                    nod_dias_prazo: nodDiasPrazo,
-                    nod_ordem: nodOrdem,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid(fluId);
-                    mensagem.success('Editado com sucesso.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid(fluId);
+                        mensagem.success('Inserido com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao inserir registro.');
+                    });
+            } else {
+                axios({
+                    method: 'PUT',
+                    url: `nodos/${nodId}`,
+                    data: {
+                        area_id: areaId,
+                        flu_id: fluId,
+                        nod_inicio: nodInicio,
+                        nod_fim: nodFim,
+                        nod_dias_prazo: nodDiasPrazo,
+                        nod_ordem: nodOrdem,
+                        nod_aval_executiva: nodAvalExecutiva,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao editar registro.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid(fluId);
+                        mensagem.success('Editado com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao editar registro.');
+                    });
+            }
+        } catch (err) {
+            const validationErrors = {};
+
+            if (err instanceof Yup.ValidationError) {
+                err.inner.forEach(error => {
+                    validationErrors[error.path] = error.message;
                 });
+
+                formRef.current.setErrors(validationErrors);
+            }
         }
     }
 
@@ -287,7 +285,7 @@ function Nodo() {
         })
             .then(() => {
                 limpaCampos();
-                carregaGrid(fluId);
+                carregaGrid(nodo.fluId);
                 mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {
@@ -296,149 +294,95 @@ function Nodo() {
     }
 
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Nodos" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>Nodos</legend>
-                        <Erro>{erro}</Erro>
-                        <form noValidate autoComplete="off">
-                            {fluxosVisiveis ? (
-                                <Container1>
-                                    <fieldset>
-                                        <legend>Selecione o fluxo</legend>
-                                        <select id="selectFluxo" onChange={handleFluId} value={fluId}>
-                                            {fluxos}
-                                        </select>
-                                    </fieldset>
-                                </Container1>
-                            ) : null}
-                            {nomeFluxosVisiveis ? (
-                                <ContainerNomeFluxo>
-                                    <fieldset>
-                                        <legend>Fluxo</legend>
-                                        {nomeFluxo}
-                                    </fieldset>
-                                    <button type="button" id="btnSelecionaOutroFluxo" onClick={selecionaOutroFluxo}>
-                                        <FaSyncAlt />
-                                        &nbsp;Selecionar outro fluxo
-                                    </button>
-                                </ContainerNomeFluxo>
-                            ) : null}
-                            {nodosVisiveis ? (
+                    <Erro>{erro}</Erro>
+                    <Form ref={formRef} initialData={nodo} onSubmit={grava}>
+                        <Input name="nodId" type="hidden" />
+                        <Input name="fluId" type="hidden" />
+                        {fluxosVisiveis ? (
+                            <FormLine>
+                                <Select
+                                    name="selectFluxo"
+                                    label="Selecione o fluxo"
+                                    size={3}
+                                    options={fluxos}
+                                    onChange={handleFluId}
+                                />
+                            </FormLine>
+                        ) : null}
+                        {nomeFluxosVisiveis ? (
+                            <ContainerNomeFluxo>
                                 <fieldset>
-                                    <legend>Nodos</legend>
-                                    <ContainerCamposNodos>
-                                        <fieldset>
-                                            <legend>Área</legend>
-                                            <select id="selectArea" onChange={handleAreaId} value={areaId}>
-                                                {areas}
-                                            </select>
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Nó inicial</legend>
-                                            <select id="selectNoInicial" value={nodInicio} onChange={handleSetNodInicio}>
-                                                <option key="" data-key="" value="">
-                                                    Selecione...
-                                                </option>
-                                                <option key data-key value>
-                                                    Sim
-                                                </option>
-                                                <option key={false} data-key={false} value={false}>
-                                                    Não
-                                                </option>
-                                            </select>
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Nó final</legend>
-                                            <select id="selectNoFinal" value={nodFim} onChange={handleSetNodFim}>
-                                                <option key="" data-key="" value="">
-                                                    Selecione...
-                                                </option>
-                                                <option key data-key value>
-                                                    Sim
-                                                </option>
-                                                <option key={false} data-key={false} value={false}>
-                                                    Não
-                                                </option>
-                                            </select>
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Dias de prazo</legend>
-                                            <input id="nodDiasPrazo" type="text" value={nodDiasPrazo} onChange={handleNodDiasPrazo} size="3" maxLength="2" />
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Ordem</legend>
-                                            <input id="nodOrdem" type="text" value={nodOrdem} onChange={handleNodOrdem} size="3" maxLength="2" />
-                                        </fieldset>
-                                    </ContainerCamposNodos>
-                                    <ContainerBotoes>
-                                        <button type="button" id="btnSalva" onClick={grava}>
-                                            <FaRegSave />
-                                            &nbsp;Salvar
-                                        </button>
-                                        <button type="button" id="btnExclui" onClick={abreModalExcluir}>
-                                            <FaRegTrashAlt />
-                                            &nbsp;Excluir
-                                        </button>
-                                        <button type="button" id="btnLimpa" onClick={limpaCampos}>
-                                            <FaSyncAlt />
-                                            &nbsp;Limpar campos
-                                        </button>
-                                    </ContainerBotoes>
-                                    <ContainerTabela>
-                                        {nodos.length > 0 ? (
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Área</th>
-                                                        <th>Início</th>
-                                                        <th>Fim</th>
-                                                        <th>Prazo(dias)</th>
-                                                        <th>Ordem</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {nodos.map(nodo => (
-                                                        <tr key={nodo.nod_id}>
-                                                            <td>
-                                                                <BotaoComoLink type="button" onClick={() => preencheCampos(nodo.nod_id)}>
-                                                                    {nodo.area}
-                                                                </BotaoComoLink>
-                                                            </td>
-                                                            <td>
-                                                                <Centralizado>{nodo.inicio}</Centralizado>
-                                                            </td>
-                                                            <td>
-                                                                <Centralizado>{nodo.fim}</Centralizado>
-                                                            </td>
-                                                            <td>
-                                                                <Centralizado>{nodo.nod_dias_prazo}</Centralizado>
-                                                            </td>
-                                                            <td>
-                                                                <Centralizado>{nodo.nod_ordem}</Centralizado>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        ) : (
-                                            <label>Sem nodos no momento.</label>
-                                        )}
-                                    </ContainerTabela>
+                                    <label>Fluxo: {nomeFluxo}</label>
                                 </fieldset>
-                            ) : null}
-                        </form>
-                    </fieldset>
+                                <div>
+                                    <ConsultarOutroFluxo
+                                        name="btnSelecionaOutroFluxo"
+                                        clickHandler={selecionaOutroFluxo}
+                                    />
+                                </div>
+                            </ContainerNomeFluxo>
+                        ) : null}
+                        {nodosVisiveis ? (
+                            <div>
+                                <ContainerCamposNodos>
+                                    <Select name="areaId" label="Área" options={areas} />
+                                    <NoInicio name="nodInicio" />
+                                    <NoFim name="nodFim" />
+                                </ContainerCamposNodos>
+                                <ContainerCamposNodos1>
+                                    <Input
+                                        name="nodDiasPrazo"
+                                        label="Dias de prazo"
+                                        type="text"
+                                        maxLength="2"
+                                    />
+                                    <Input
+                                        name="nodOrdem"
+                                        label="Ordem"
+                                        type="text"
+                                        maxLength="2"
+                                    />
+                                    <NoAvalExecutiva name="nodAvalExecutiva" />
+                                </ContainerCamposNodos1>
+                                <ButtonContainer>
+                                    <Salvar name="btnSalva" type="submit" />
+
+                                    <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
+
+                                    <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+                                </ButtonContainer>
+                                <Table
+                                    columns={[
+                                        { title: 'Área', field: 'area', width: 480 },
+                                        { title: 'Início', field: 'inicio', width: 100 },
+                                        { title: 'Fim', field: 'fim', width: 100 },
+                                        {
+                                            title: 'Prazo(dias)',
+                                            field: 'nod_dias_prazo',
+                                            width: 100,
+                                        },
+                                        { title: 'Ordem', field: 'nod_ordem', width: 100 },
+                                        { title: 'Aval', field: 'aval_executiva', width: 150 },
+                                    ]}
+                                    data={nodos}
+                                    fillData={preencheCampos}
+                                />
+                            </div>
+                        ) : null}
+                    </Form>
                 </Main>
-                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={nodId} />
+                <ModalApaga
+                    modalExcluir={modalExcluir}
+                    fechaModalExcluir={fechaModalExcluir}
+                    apaga={apaga}
+                    id={nodo.nodId}
+                />
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 

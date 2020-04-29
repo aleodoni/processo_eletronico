@@ -37,6 +37,12 @@ class VNodo extends Model {
                 },
                 nod_ordem: {
                     type: Sequelize.INTEGER
+                },
+                nod_aval_executiva: {
+                    type: Sequelize.BOOLEAN
+                },
+                aval_executiva: {
+                    type: Sequelize.STRING
                 }
             },
             {
