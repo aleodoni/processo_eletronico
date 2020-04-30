@@ -11,6 +11,15 @@ class VProximoTramite extends Model {
                 flu_id: {
                     type: Sequelize.INTEGER
                 },
+                nod_id: {
+                    type: Sequelize.INTEGER
+                },
+                nod_id_proximo: {
+                    type: Sequelize.INTEGER
+                },
+                raz_id: {
+                    type: Sequelize.INTEGER
+                },
                 nodo: {
                     type: Sequelize.STRING
                 },

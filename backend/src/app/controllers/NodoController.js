@@ -71,7 +71,6 @@ class NodoController {
         } = await Nodo.create(req.body, {
             logging: true
         });
-        console.log('requisição: ' + req.body);
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', nod_id);
         //

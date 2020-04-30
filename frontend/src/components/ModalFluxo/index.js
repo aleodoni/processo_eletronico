@@ -35,7 +35,11 @@ const ModalFluxo = props => {
 
     return (
         <>
-            <Modal isOpen={modalFluxo} onRequestClose={fechaHandler} style={dialogs} ariaHideApp={false}>
+            <Modal
+                isOpen={modalFluxo}
+                onRequestClose={fechaHandler}
+                style={dialogs}
+                ariaHideApp={false}>
                 <ContainerModal>
                     <div>
                         <Centralizado>

@@ -2,9 +2,6 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     display: grid;
-    grid-template-areas:
-        'nav nav'
-        'asideLeft main';
     grid-template-columns: 1fr 6fr;
 
     fieldset {
@@ -62,7 +59,7 @@ export const Erro = styled.div`
 
 export const ContainerNomeFluxo = styled.div`
     display: grid;
-    grid-template-columns: 700px 210px;
+    grid-template-columns: 820px 210px;
     margin-bottom: 10px;
     fieldset {
         border: 1px solid #ffffff;
@@ -81,7 +78,7 @@ export const ContainerNomeFluxo = styled.div`
 
 export const ContainerCamposNodos = styled.div`
     display: grid;
-    grid-template-columns: 760px 140px 140px;
+    grid-template-columns: 740px 140px 140px;
     margin-bottom: 10px;
 `;
 

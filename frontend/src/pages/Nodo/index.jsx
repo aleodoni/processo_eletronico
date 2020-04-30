@@ -231,6 +231,7 @@ function Nodo() {
                     .then(() => {
                         limpaCampos();
                         carregaGrid(fluId);
+                        setNodo({ fluId });
                         mensagem.success('Inserido com sucesso.');
                     })
                     .catch(() => {
@@ -256,6 +257,7 @@ function Nodo() {
                     .then(() => {
                         limpaCampos();
                         carregaGrid(fluId);
+                        setNodo({ fluId });
                         mensagem.success('Editado com sucesso.');
                     })
                     .catch(() => {
@@ -286,6 +288,7 @@ function Nodo() {
             .then(() => {
                 limpaCampos();
                 carregaGrid(nodo.fluId);
+                setNodo({ fluId: nodo.fluId });
                 mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {

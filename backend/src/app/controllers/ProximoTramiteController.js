@@ -33,7 +33,7 @@ class ProximoTramiteController {
             where: {
                 flu_id: req.params.id
             },
-            attributes: ['prx_id', 'flu_id', 'nodo', 'nodo_proximo', 'raz_nome', 'prx_prioridade'],
+            attributes: ['prx_id', 'flu_id', 'nod_id', 'nod_id_proximo', 'raz_id', 'nodo', 'nodo_proximo', 'raz_nome', 'prx_prioridade'],
             logging: true
         });
         return res.json(gridProximoTramite);

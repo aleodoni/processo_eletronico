@@ -1,22 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import { FaSyncAlt, FaRegSave, FaRegTrashAlt, FaSitemap } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
+import { Form } from '@unform/web';
+import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import ModalFluxo from '../../components/ModalFluxo';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import Menu from '../../components/Menu';
-import { Container, Container1, ContainerNomeFluxo, ContainerCamposNodos, ContainerCamposNodos1, Centralizado, BotaoComoLink, ContainerBotoes, ContainerTabela, AsideLeft, Main, Erro } from './styles';
-import Header from '../../components/Header';
+import {
+    Container,
+    Main,
+    Erro,
+    ContainerNomeFluxo,
+    ContainerCamposNodos,
+    ContainerCamposNodos1,
+} from './styles';
+import api from '../../service/api';
+import Input from '../../components/layout/Input';
+import Select from '../../components/layout/Select';
+import Salvar from '../../components/layout/button/Salvar';
+import Excluir from '../../components/layout/button/Excluir';
+import GeraFluxo from '../../components/layout/button/GeraFluxo';
+import Limpar from '../../components/layout/button/Limpar';
+import ConsultarOutroFluxo from '../../components/layout/button/ConsultarOutroFluxo';
+import DefaultLayout from '../_layouts/default';
+import Table from '../../components/layout/Table';
+import FormLine from '../../components/layout/FormLine';
+import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
 function ProximoTramite() {
     const [erro, setErro] = useState('');
-    const [prxId, setPrxId] = useState('');
-    const [prxPrioridade, setPrxPrioridade] = useState('');
-    const [nodId, setNodId] = useState('');
-    const [nodIdProximo, setNodIdProximo] = useState('');
-    const [razId, setRazId] = useState('');
-    const [fluId, setFluId] = useState('');
+    const [proximoTramite, setProximoTramite] = useState({
+        prxId: undefined,
+        nodId: -1,
+        nodIdProximo: -1,
+        razId: -1,
+        fluId: -1,
+        prxPrioridade: 0,
+    });
+
     const [fluxosVisiveis, setFluxosVisiveis] = useState(true);
     const [nomeFluxosVisiveis, setNomeFluxosVisiveis] = useState(false);
     const [nomeFluxo, setNomeFluxo] = useState('');
@@ -30,119 +51,85 @@ function ProximoTramite() {
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalFluxo, setModalFluxo] = useState(false);
 
-    function abreModalExcluir() {
-        if (prxId === '') {
-            setErro('Selecione um registro para apagar.');
-            return;
-        }
-        setModalExcluir(true);
-    }
+    const formRef = useRef(null);
 
-    function abreModalFluxo() {
-        setModalFluxo(true);
+    useEffect(() => {
+        formRef.current.setData(proximoTramite);
+    }, [proximoTramite]);
+
+    function abreModalExcluir() {
+        if (proximoTramite.prxId !== null) {
+            setModalExcluir(true);
+        }
     }
 
     function fechaModalExcluir() {
         setModalExcluir(false);
     }
 
+    function abreModalFluxo() {
+        setModalFluxo(true);
+    }
+
     function fechaModalFluxo() {
         setModalFluxo(false);
     }
 
-    function handleNodId(e) {
-        setNodId(e.target.value);
-    }
+    async function carregaRazoesTramite() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
-    function handleNodIdProximo(e) {
-        setNodIdProximo(e.target.value);
-    }
+        try {
+            const response = await api.get('/razao-tramite');
 
-    function carregaRazoesTramite() {
-        axios({
-            method: 'GET',
-            url: '/razao-tramite',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboRazoesTramite = [];
-                comboRazoesTramite.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboRazoesTramite.push(
-                        <option key={res.data[i].raz_id} data-key={res.data[i].raz_id} value={res.data[i].raz_id}>
-                            {res.data[i].raz_nome}
-                        </option>
-                    );
-                }
-                setRazoesTramite(comboRazoesTramite);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar razões de trâmite.');
+            const data = response.data.map(razaoTramite => {
+                return {
+                    label: razaoTramite.raz_nome,
+                    value: razaoTramite.raz_id,
+                };
             });
+
+            setRazoesTramite(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
-    function carregaNodos(fluId1) {
-        axios({
-            method: 'GET',
-            url: `/combo-nodo/${fluId1}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboNodos = [];
-                comboNodos.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboNodos.push(
-                        <option key={res.data[i].nod_id} data-key={res.data[i].nod_id} value={res.data[i].nod_id}>
-                            {res.data[i].set_nome}
-                        </option>
-                    );
-                }
-                setNodos(comboNodos);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar nodos.');
+    async function carregaNodos(fluId1) {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(`/combo-nodo/${fluId1}`);
+
+            const data = response.data.map(nodo => {
+                return {
+                    label: nodo.set_nome,
+                    value: nodo.nod_id,
+                };
             });
+
+            setNodos(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
-    function carregaNodosProximos(fluId2) {
-        axios({
-            method: 'GET',
-            url: `/combo-nodo/${fluId2}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboNodosProximos = [];
-                comboNodosProximos.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboNodosProximos.push(
-                        <option key={res.data[i].nod_id} data-key={res.data[i].nod_id} value={res.data[i].nod_id}>
-                            {res.data[i].set_nome}
-                        </option>
-                    );
-                }
-                setNodosProximos(comboNodosProximos);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar nodos.');
+    async function carregaNodosProximos(fluId2) {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(`/combo-nodo/${fluId2}`);
+
+            const data = response.data.map(nodo => {
+                return {
+                    label: nodo.set_nome,
+                    value: nodo.nod_id,
+                };
             });
+
+            setNodosProximos(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
     function carregaGrid(fluxo) {
@@ -184,7 +171,7 @@ function ProximoTramite() {
             setNomeFluxosVisiveis(true);
             const index = e.nativeEvent.target.selectedIndex;
             setNomeFluxo(e.nativeEvent.target[index].text);
-            setFluId(e.target.value);
+            setProximoTramite({ fluId: e.target.value });
             carregaRazoesTramite();
             carregaNodos(e.target.value);
             carregaNodosProximos(e.target.value);
@@ -195,78 +182,54 @@ function ProximoTramite() {
             setFluxosVisiveis(true);
             setNomeFluxo('');
             setNomeFluxosVisiveis(false);
-            setFluId('');
+            setProximoTramite({ fluId: '' });
         }
     }
 
-    function handleRazId(e) {
-        setRazId(e.target.value);
-    }
+    async function carregaFluxo() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
-    function handlePrxPrioridade(e) {
-        const re = /^[0-9\b]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
-            setPrxPrioridade(e.target.value);
-        }
-    }
+        try {
+            const response = await api.get('/fluxos');
 
-    function carregaFluxo() {
-        axios({
-            method: 'GET',
-            url: '/fluxos',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboFluxo = [];
-                comboFluxo.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboFluxo.push(
-                        <option key={res.data[i].flu_id} data-key={res.data[i].flu_id} value={res.data[i].flu_id}>
-                            {res.data[i].flu_nome}
-                        </option>
-                    );
-                }
-                setFluxos(comboFluxo);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar fluxos.');
+            const data = response.data.map(fluxo => {
+                return {
+                    label: fluxo.flu_nome,
+                    value: fluxo.flu_id,
+                };
             });
+
+            setFluxos(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
     function limpaCampos() {
-        setPrxId('');
-        setPrxPrioridade('');
-        setNodId('');
-        setNodIdProximo('');
-        setRazId('');
-        setErro('');
+        setProximoTramite({
+            ...proximoTramite,
+            prxId: null,
+            nodId: -1,
+            nodIdProximo: -1,
+            razId: -1,
+            fluId: -1,
+            prxPrioridade: 0,
+        });
+
+        formRef.current.setErrors({});
     }
 
-    function preencheCampos(prxId1) {
-        axios({
-            method: 'GET',
-            url: `/seleciona-proximo-tramite/${prxId1}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setPrxId(prxId1);
-                setPrxPrioridade(res.data.prx_prioridade);
-                setNodId(res.data.nod_id);
-                setNodIdProximo(res.data.nod_id_proximo);
-                setFluId(res.data.flu_id);
-                setRazId(res.data.raz_id);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar próximos trâmites.');
-            });
+    function preencheCampos(linha) {
+        formRef.current.setErrors({});
+        setProximoTramite({
+            ...proximoTramite,
+            prxId: linha.prx_id,
+            nodId: linha.nod_id,
+            nodIdProximo: linha.nod_id_proximo,
+            razId: linha.raz_id,
+            fluId: linha.flu_id,
+            prxPrioridade: linha.prx_prioridade,
+        });
     }
 
     function selecionaOutroFluxo() {
@@ -274,82 +237,92 @@ function ProximoTramite() {
         setFluxosVisiveis(true);
         setNomeFluxosVisiveis(false);
         setNomeFluxo('');
-        setFluId('');
+        setProximoTramite({ fluId: '' });
     }
 
     useEffect(() => {
         async function carrega() {
-            carregaFluxo();
+            await carregaFluxo();
         }
         carrega();
     }, []);
 
-    function grava() {
-        if (nodId === '') {
-            setErro('Selecione o nodo.');
-            return;
-        }
-        if (nodIdProximo === '') {
-            setErro('Selecione o nodo próximo.');
-            return;
-        }
-        if (razId === '') {
-            setErro('Selecione a razão de trâmite.');
-            return;
-        }
+    async function grava({ prxId, fluId, nodId, nodIdProximo, razId, prxPrioridade }) {
+        try {
+            const schema = Yup.object().shape({
+                nodId: Yup.number().positive('Nó é obrigatório'),
+                nodIdProximo: Yup.number().positive('Nó próximo é obrigatório'),
+                razId: Yup.number().positive('Razão é obrigatória'),
+                prxPrioridade: Yup.string().required('Prioridade é obrigatória'),
+            });
 
-        if (prxPrioridade === '') {
-            setErro('Prioridade em branco.');
-            return;
-        }
+            await schema.validate(
+                { nodId, nodIdProximo, razId, prxPrioridade },
+                { abortEarly: false }
+            );
 
-        if (prxId === '') {
-            axios({
-                method: 'POST',
-                url: '/proximos-tramites',
-                data: {
-                    prx_id: null,
-                    flu_id: fluId,
-                    nod_id: nodId,
-                    nod_id_proximo: nodIdProximo,
-                    raz_id: razId,
-                    prx_prioridade: prxPrioridade,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid(fluId);
-                    mensagem.success('Inserido com sucesso.');
+            if (!prxId) {
+                axios({
+                    method: 'POST',
+                    url: '/proximos-tramites',
+                    data: {
+                        prx_id: null,
+                        flu_id: fluId,
+                        nod_id: nodId,
+                        nod_id_proximo: nodIdProximo,
+                        raz_id: razId,
+                        prx_prioridade: prxPrioridade,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao inserir registro.');
-                });
-        } else {
-            axios({
-                method: 'PUT',
-                url: `proximos-tramites/${prxId}`,
-                data: {
-                    flu_id: fluId,
-                    nod_id: nodId,
-                    nod_id_proximo: nodIdProximo,
-                    raz_id: razId,
-                    prx_prioridade: prxPrioridade,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid(fluId);
-                    mensagem.success('Editado com sucesso.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid(fluId);
+                        setProximoTramite({ fluId });
+                        carregaGrafo(fluId);
+                        mensagem.success('Inserido com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao inserir registro.');
+                    });
+            } else {
+                axios({
+                    method: 'PUT',
+                    url: `proximos-tramites/${prxId}`,
+                    data: {
+                        flu_id: fluId,
+                        nod_id: nodId,
+                        nod_id_proximo: nodIdProximo,
+                        raz_id: razId,
+                        prx_prioridade: prxPrioridade,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao editar registro.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid(fluId);
+                        setProximoTramite({ fluId });
+                        carregaGrafo(fluId);
+                        mensagem.success('Editado com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao editar registro.');
+                    });
+            }
+        } catch (err) {
+            const validationErrors = {};
+
+            if (err instanceof Yup.ValidationError) {
+                err.inner.forEach(error => {
+                    validationErrors[error.path] = error.message;
                 });
+
+                formRef.current.setErrors(validationErrors);
+            }
         }
     }
 
@@ -363,7 +336,9 @@ function ProximoTramite() {
         })
             .then(() => {
                 limpaCampos();
-                carregaGrid(fluId);
+                carregaGrid(proximoTramite.fluId);
+                setProximoTramite({ fluId: proximoTramite.fluId });
+                carregaGrafo(proximoTramite.fluId);
                 mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {
@@ -372,134 +347,97 @@ function ProximoTramite() {
     }
 
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Próximos trâmites" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>Próximos trâmites</legend>
-                        <Erro>{erro}</Erro>
-                        <form noValidate autoComplete="off">
-                            {fluxosVisiveis ? (
-                                <Container1>
-                                    <fieldset>
-                                        <legend>Selecione o fluxo</legend>
-                                        <select id="selectFluxo" onChange={handleFluId} value={fluId}>
-                                            {fluxos}
-                                        </select>
-                                    </fieldset>
-                                </Container1>
-                            ) : null}
-                            {nomeFluxosVisiveis ? (
-                                <ContainerNomeFluxo>
-                                    <fieldset>
-                                        <legend>Fluxo</legend>
-                                        {nomeFluxo}
-                                    </fieldset>
-                                    <button type="button" id="btnSelecionaOutroFluxo" onClick={selecionaOutroFluxo}>
-                                        <FaSyncAlt />
-                                        &nbsp;Selecionar outro fluxo
-                                    </button>
-                                </ContainerNomeFluxo>
-                            ) : null}
-                            {nodosVisiveis ? (
+                    <Erro>{erro}</Erro>
+                    <Form ref={formRef} initialData={proximoTramite} onSubmit={grava}>
+                        <Input name="prxId" type="hidden" />
+                        <Input name="fluId" type="hidden" />
+                        {fluxosVisiveis ? (
+                            <FormLine>
+                                <Select
+                                    name="selectFluxo"
+                                    label="Selecione o fluxo"
+                                    size={3}
+                                    options={fluxos}
+                                    onChange={handleFluId}
+                                />
+                            </FormLine>
+                        ) : null}
+                        {nomeFluxosVisiveis ? (
+                            <ContainerNomeFluxo>
                                 <fieldset>
-                                    <legend>Próximos trâmites</legend>
-                                    <ContainerCamposNodos>
-                                        <fieldset>
-                                            <legend>Nodo</legend>
-                                            <select id="selectNodo" onChange={handleNodId} value={nodId}>
-                                                {nodos}
-                                            </select>
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Nodo próximo</legend>
-                                            <select id="selectNodoProximo" onChange={handleNodIdProximo} value={nodIdProximo}>
-                                                {nodosProximos}
-                                            </select>
-                                        </fieldset>
-                                    </ContainerCamposNodos>
-                                    <ContainerCamposNodos1>
-                                        <fieldset>
-                                            <legend>Razão</legend>
-                                            <select id="selectRazao" onChange={handleRazId} value={razId}>
-                                                {razoesTramite}
-                                            </select>
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Prioridade</legend>
-                                            <input id="prxPrioridade" type="text" value={prxPrioridade} onChange={handlePrxPrioridade} size="3" maxLength="2" />
-                                        </fieldset>
-                                        <button type="button" id="btnGrafico" onClick={abreModalFluxo}>
-                                            <FaSitemap />
-                                            &nbsp;Gerar fluxo
-                                        </button>
-                                    </ContainerCamposNodos1>
-                                    <ContainerBotoes>
-                                        <button type="button" id="btnSalva" onClick={grava}>
-                                            <FaRegSave />
-                                            &nbsp;Salvar
-                                        </button>
-                                        <button type="button" id="btnExclui" onClick={abreModalExcluir}>
-                                            <FaRegTrashAlt />
-                                            &nbsp;Excluir
-                                        </button>
-                                        <button type="button" id="btnLimpa" onClick={limpaCampos}>
-                                            <FaSyncAlt />
-                                            &nbsp;Limpar campos
-                                        </button>
-                                    </ContainerBotoes>
-                                    <ContainerTabela>
-                                        {proximosTramites.length > 0 ? (
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Nodo</th>
-                                                        <th>Nodo próximo</th>
-                                                        <th>Razão</th>
-                                                        <th>Prioridade</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {proximosTramites.map(proximos => (
-                                                        <tr key={proximos.prx_id}>
-                                                            <td>
-                                                                <BotaoComoLink type="button" onClick={() => preencheCampos(proximos.prx_id)}>
-                                                                    {proximos.nodo}
-                                                                </BotaoComoLink>
-                                                            </td>
-                                                            <td>
-                                                                <BotaoComoLink type="button" onClick={() => preencheCampos(proximos.prx_id)}>
-                                                                    {proximos.nodo_proximo}
-                                                                </BotaoComoLink>
-                                                            </td>
-                                                            <td>
-                                                                <Centralizado>{proximos.raz_nome}</Centralizado>
-                                                            </td>
-                                                            <td>
-                                                                <Centralizado>{proximos.prx_prioridade}</Centralizado>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        ) : (
-                                            <label>Sem próximos trâmites no momento.</label>
-                                        )}
-                                    </ContainerTabela>
+                                    <label>Fluxo: {nomeFluxo}</label>
                                 </fieldset>
-                            ) : null}
-                        </form>
-                    </fieldset>
+                                <div>
+                                    <ConsultarOutroFluxo
+                                        name="btnSelecionaOutroFluxo"
+                                        clickHandler={selecionaOutroFluxo}
+                                    />
+                                </div>
+                            </ContainerNomeFluxo>
+                        ) : null}
+                        {nodosVisiveis ? (
+                            <div>
+                                <ContainerCamposNodos>
+                                    <Select name="nodId" label="Nodo" options={nodos} />
+                                    <Select
+                                        name="nodIdProximo"
+                                        label="Nodo próximo"
+                                        options={nodosProximos}
+                                    />
+                                </ContainerCamposNodos>
+                                <ContainerCamposNodos1>
+                                    <Select name="razId" label="Razão" options={razoesTramite} />
+                                    <Input
+                                        name="prxPrioridade"
+                                        label="Prioridade"
+                                        type="text"
+                                        maxLength="2"
+                                    />
+                                </ContainerCamposNodos1>
+                                <ButtonContainer>
+                                    <Salvar name="btnSalva" type="submit" />
+
+                                    <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
+
+                                    <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+
+                                    <GeraFluxo name="btnGrafico" clickHandler={abreModalFluxo} />
+                                </ButtonContainer>
+                                <Table
+                                    columns={[
+                                        { title: 'Nodo', field: 'nodo', width: 300 },
+                                        {
+                                            title: 'Nodo próximo',
+                                            field: 'nodo_proximo',
+                                            width: 300,
+                                        },
+                                        { title: 'Razão', field: 'raz_nome', width: 200 },
+                                        {
+                                            title: 'Prioridade',
+                                            field: 'prx_prioridade',
+                                            width: 100,
+                                        },
+                                    ]}
+                                    data={proximosTramites}
+                                    fillData={preencheCampos}
+                                />
+                            </div>
+                        ) : null}
+                    </Form>
                 </Main>
-                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={prxId} />
+                <ModalApaga
+                    modalExcluir={modalExcluir}
+                    fechaModalExcluir={fechaModalExcluir}
+                    apaga={apaga}
+                    id={proximoTramite.prxId}
+                />
                 <ModalFluxo fechaModalFluxo={fechaModalFluxo} modalFluxo={modalFluxo} id={grafo} />
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 
