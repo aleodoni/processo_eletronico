@@ -45,7 +45,8 @@ class DadosProcessoController {
                 'area_iniciativa_processo',
                 'setor_autuador_processo',
                 'setor_finalizador_processo',
-                'visualizacao'
+                'visualizacao',
+                'nod_aval_executiva'
             ],
             logging: true,
             plain: true,

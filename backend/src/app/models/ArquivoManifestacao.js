@@ -41,6 +41,15 @@ class ArquivoManifestacao extends Model {
                 },
                 set_nome: {
                     type: Sequelize.STRING
+                },
+                tpd_nome: {
+                    type: Sequelize.STRING
+                },
+                contador: {
+                    type: Sequelize.STRING
+                },
+                man_visto_executiva: {
+                    type: Sequelize.STRING
                 }
             },
             {

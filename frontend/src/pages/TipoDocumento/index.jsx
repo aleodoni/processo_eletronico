@@ -152,7 +152,16 @@ function TipoDocumento() {
                     <Form ref={formRef}>
                         <input id="tpdId" value={tpdId} onChange={handleTpdId} type="hidden" />
                         <Container1>
-                            <Input required name="tpdNome" label="Tipo de documento" type="text" value={tpdNome} onChange={handleTpdNome} size="100" maxLength="100" />
+                            <Input
+                                required
+                                name="tpdNome"
+                                label="Tipo de documento"
+                                type="text"
+                                value={tpdNome}
+                                onChange={handleTpdNome}
+                                size="100"
+                                maxLength="100"
+                            />
                         </Container1>
                     </Form>
                     <br />
@@ -163,9 +172,18 @@ function TipoDocumento() {
 
                         <Limpar name="btnLimpa" clickHandler={limpaCampos} />
                     </ContainerBotoes>
-                    <Table columns={[{ title: 'Tipo de documento', field: 'tpd_nome' }]} data={tiposDocumento} fillData={preencheCampos} />
+                    <Table
+                        columns={[{ title: 'Tipo de documento', field: 'tpd_nome' }]}
+                        data={tiposDocumento}
+                        fillData={preencheCampos}
+                    />
                 </Main>
-                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={tpdId} />
+                <ModalApaga
+                    modalExcluir={modalExcluir}
+                    fechaModalExcluir={fechaModalExcluir}
+                    apaga={apaga}
+                    id={tpdId}
+                />
             </Container>
         </DefaultLayout>
     );

@@ -50,6 +50,12 @@ export const Container = styled.div`
         width: 100%;
         background: #fff;
     }
+
+    div {
+        fieldset {
+            background: #fff;
+        }
+    }
 `;
 
 export const Main = styled.main`
@@ -71,45 +77,15 @@ export const Erro = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 400px 690px;
+    grid-template-columns: 180px;
     margin-bottom: 10px;
 `;
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 145px 155px 130px;
+    grid-template-columns: 185px 155px 130px;
     grid-gap: 5px;
     margin-bottom: 10px;
-
-    input {
-        opacity: 0;
-        position: absolute;
-        z-index: -1;
-    }
-
-    label {
-        cursor: pointer;
-        padding-top: 9px;
-        padding-left: 9px;
-        background: ${({ theme }) => theme.primary};
-        border: 0;
-        border-radius: 4px;
-        height: 36px;
-        padding: 5 9 15px;
-        color: ${({ theme }) => theme.text};
-        margin: 0 0 10px;
-        font-size: 14px;
-        transition: background 0.2s;
-
-        &:hover {
-            background: ${({ theme }) => theme.hover};
-        }
-
-        svg {
-            margin-right: 10px;
-            margin-left: 5px;
-        }
-    }
 `;
 
 export const BotaoComoLink = styled.button`
@@ -126,6 +102,6 @@ export const BotaoComoLink = styled.button`
     }
 `;
 
-export const Cancelado = styled.span`
+export const Vermelho = styled.span`
     color: red;
 `;

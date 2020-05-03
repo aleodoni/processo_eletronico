@@ -17,7 +17,9 @@ class ManifestacaoController {
             pro_id,
             tmn_id,
             man_login,
-            man_id_area
+            man_id_area,
+            tpd_id,
+            man_visto_executiva
         } = await Manifestacao.create(req.body, {
             logging: false
         });
@@ -29,7 +31,9 @@ class ManifestacaoController {
             pro_id,
             tmn_id,
             man_login,
-            man_id_area
+            man_id_area,
+            tpd_id,
+            man_visto_executiva
         });
     }
 
@@ -108,6 +112,33 @@ class ManifestacaoController {
         console.log(JSON.stringify(manifestacao));
 
         return res.json(manifestacao);
+    }
+
+    async delete(req, res) {
+        const manifestacao = await Manifestacao.findByPk(req.params.id, { logging: false });
+        if (!manifestacao) {
+            return res.status(400).json({ error: 'Manifestação não encontrada' });
+        }
+        await manifestacao
+            .destroy({ logging: false })
+            .then(auditoria => {
+                // auditoria de deleção
+                // AuditoriaController.audita(
+                //    manifestacao._previousDataValues,
+                //    req,
+                //    'D',
+                //    req.params.id
+                // );
+                //
+            })
+            .catch(function(err) {
+                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
+                    return res.status(400).json({
+                        error: 'Erro ao excluir manifestação. A manifestação possui uma ou mais ligações.'
+                    });
+                }
+            });
+        return res.send();
     }
 }
 export default new ManifestacaoController();

@@ -80,7 +80,17 @@ function ConsultarProcesso() {
                 <Main>
                     <Form ref={formRef}>
                         <ContainerConsultaProcesso>
-                            <Input id="proCodigo" name="proCodigo" label="Digite o código" type="text" value={proCodigo} onKeyDown={onKeyPressed} onChange={handleProCodigo} size="10" maxLength="10" autoFocus />
+                            <Input
+                                name="proCodigo"
+                                label="Digite o código"
+                                type="text"
+                                value={proCodigo}
+                                onKeyDown={onKeyPressed}
+                                onChange={handleProCodigo}
+                                size={10}
+                                maxLength="10"
+                                autoFocus
+                            />
                             <Localizar name="btnConsultaProcesso" clickHandler={consultaProcesso} />
                             <div>
                                 <Erro>{erro}</Erro>

@@ -9,9 +9,19 @@ import axios from '../../configs/axiosConfig';
 import AnexoArquivo from './AnexoArquivo';
 import DefaultLayout from '../_layouts/default';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
-import Tramitar from '../../components/layout/button/Tramitar';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
-import { Container, Main, Erro, ContainerIniciativa, Cancelado, Centralizado, ContainerDados, ContainerBotoes, ContainerArquivos, BotaoComoLink } from './styles';
+import {
+    Container,
+    Main,
+    Erro,
+    ContainerIniciativa,
+    Vermelho,
+    Centralizado,
+    ContainerDados,
+    ContainerBotoes,
+    ContainerArquivos,
+    BotaoComoLink,
+} from './styles';
 
 require('dotenv').config();
 
@@ -47,6 +57,7 @@ function DadosProcesso({ match }) {
     const [anexos, setAnexos] = useState([]);
     const [anexosManifestacao, setAnexosManifestacao] = useState([]);
     const [tramites, setTramites] = useState([]);
+    const [nodAvalExecutiva, setNodAvalExecutiva] = useState(false);
 
     const formRef = useRef(null);
 
@@ -167,6 +178,7 @@ function DadosProcesso({ match }) {
                 setAreaIniciativaProcesso(res.data.area_iniciativa_processo);
                 setSetorAutuadorProcesso(res.data.setor_autuador_processo);
                 setSetorFinalizadorProcesso(res.data.setor_finalizador_processo);
+                setNodAvalExecutiva(res.data.nod_aval_executiva);
             })
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
@@ -175,11 +187,11 @@ function DadosProcesso({ match }) {
 
     useEffect(() => {
         async function carrega() {
-            carregaDadosProcesso(proId);
+            await carregaDadosProcesso(proId);
             mensagem.success('Carregando processo...');
-            carregaAnexos(proId);
-            carregaAnexosManifestacao(proId);
-            carregaTramites(proId);
+            await carregaAnexos(proId);
+            await carregaAnexosManifestacao(proId);
+            await carregaTramites(proId);
         }
         carrega();
     }, [proId]);
@@ -255,11 +267,12 @@ function DadosProcesso({ match }) {
     }
 
     function criaManifestacao() {
-        history.push(`/manifestacao-cria/${proId}`);
-    }
-
-    function tramita() {
-        history.push(`/tramita/${proId}`);
+        // se tiver o aval da executiva a manifestação é diferenciada
+        if (nodAvalExecutiva) {
+            history.push(`/manifestacao-cria-executiva/${proId}`);
+        } else {
+            history.push(`/manifestacao-cria/${proId}`);
+        }
     }
 
     return (
@@ -432,12 +445,6 @@ function DadosProcesso({ match }) {
                                         criaManifestacao();
                                     }}
                                 />
-                                <Tramitar
-                                    name="btnTramita"
-                                    clickHandler={() => {
-                                        tramita();
-                                    }}
-                                />
                                 <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                                 <br />
                             </ContainerBotoes>
@@ -465,28 +472,58 @@ function DadosProcesso({ match }) {
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th>Arquivo</th>
+                                                    <th>Seq</th>
+                                                    <th>Documento</th>
                                                     <th>Tipo</th>
+                                                    <th>Arquivo</th>
                                                     <th>Data</th>
                                                     <th>Área</th>
-                                                    <th>Login</th>
                                                     <th>Situação</th>
+                                                    <th>Visto</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {anexosManifestacao.map(anexo => (
-                                                    <tr key={anexo.arq_id}>
+                                                    <tr key={anexo.man_id}>
+                                                        <td>{anexo.contador}</td>
+                                                        <td>{anexo.tpd_nome}</td>
+                                                        <td>{anexo.tmn_nome}</td>
                                                         <td>
-                                                            <BotaoComoLink type="button" onClick={e => downloadAnexoManifestacao(e, anexo.arq_id, anexo.manId, anexo.arq_nome)}>
+                                                            <BotaoComoLink
+                                                                type="button"
+                                                                onClick={e =>
+                                                                    downloadAnexoManifestacao(
+                                                                        e,
+                                                                        anexo.arq_id,
+                                                                        anexo.manId,
+                                                                        anexo.arq_nome
+                                                                    )
+                                                                }>
                                                                 {anexo.arq_nome}
                                                             </BotaoComoLink>
                                                         </td>
-                                                        <td>{anexo.tmn_nome}</td>
                                                         <td>{anexo.data}</td>
                                                         <td>{anexo.set_nome}</td>
-                                                        <td>{anexo.man_login}</td>
                                                         <td>
-                                                            <Centralizado>{anexo.situacao === 'Cancelada' ? <Cancelado>{anexo.situacao}</Cancelado> : anexo.situacao}</Centralizado>
+                                                            <Centralizado>
+                                                                {anexo.situacao === 'Cancelada' ? (
+                                                                    <Vermelho>
+                                                                        {anexo.situacao}
+                                                                    </Vermelho>
+                                                                ) : (
+                                                                    anexo.situacao
+                                                                )}
+                                                            </Centralizado>
+                                                        </td>
+                                                        <td>
+                                                            {anexo.man_visto_executiva ===
+                                                            'Negado' ? (
+                                                                <Vermelho>
+                                                                    {anexo.man_visto_executiva}
+                                                                </Vermelho>
+                                                            ) : (
+                                                                anexo.man_visto_executiva
+                                                            )}
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -518,7 +555,8 @@ function DadosProcesso({ match }) {
                                                         </td>
                                                         <td>{tramite.setor_envia}</td>
                                                         <td>
-                                                            {tramite.recebimento} - {tramite.login_recebe}
+                                                            {tramite.recebimento} -{' '}
+                                                            {tramite.login_recebe}
                                                         </td>
                                                         <td>{tramite.setor_recebe}</td>
                                                         <td>{tramite.tra_observacao}</td>

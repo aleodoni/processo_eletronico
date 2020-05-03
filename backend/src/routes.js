@@ -201,6 +201,7 @@ routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.
 
 // rotas do cadastro de tipos de manifestacao
 routes.get(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoController.index);
+routes.get(`${process.env.API_URL}/tipos-manifestacao-combo`, TipoManifestacaoController.combo);
 routes.post(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoController.store);
 routes.put(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.delete);
@@ -220,6 +221,7 @@ routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 // rotas do cadastro de manifestacao
 routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
 routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
+routes.delete(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.delete);
 
 // rotas do cadastro de próximos trâmites
 routes.get(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.index);

@@ -1,27 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { FaPaperclip, FaSyncAlt } from 'react-icons/fa';
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import React, { useState, useEffect, useRef, useHistory } from 'react';
 import { toast as mensagem } from 'react-toastify';
-import ModalCancela from '../../components/ModalCancelar';
+import { Form } from '@unform/web';
+import PropTypes from 'prop-types';
+import { FaPaperclip } from 'react-icons/fa';
+import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import Menu from '../../components/Menu';
-import { Container, Container1, Container2, ContainerBotoes, AsideLeft, Main, Erro, BotaoComoLink, Cancelado, Centralizado } from './styles';
-import Header from '../../components/Header';
+import api from '../../service/api';
+import Select from '../../components/layout/Select';
+import Input from '../../components/layout/Input';
+import DefaultLayout from '../_layouts/default';
+import Limpar from '../../components/layout/button/Limpar';
+import Tramitar from '../../components/layout/button/Tramitar';
+import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
+
+import ModalCancela from '../../components/ModalCancelar';
+import {
+    Container,
+    Container2,
+    Main,
+    Erro,
+    BotaoComoLink,
+    Cancelado,
+    ContainerBotoes,
+} from './styles';
 
 function CriarManifestacao(props) {
     const [erro, setErro] = useState('');
+    const history = useHistory();
+    const [manifestacao, setManifestacao] = useState({
+        manId: undefined,
+        proId: undefined,
+        manVistoExecutiva: '',
+    });
     const [manId, setManId] = useState(undefined);
-    const [proId, setProId] = useState('');
     const [tmnId, setTmnId] = useState('');
+    const [tpdId, setTpdId] = useState('');
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [tiposManifestacao, setTiposManifestacao] = useState([]);
+    const [tiposDocumento, setTiposDocumento] = useState([]);
     const [anexos, setAnexos] = useState([]);
     const [modalCancelar, setModalCancelar] = useState(false);
+    const [modalExcluir, setModalExcluir] = useState(false);
 
-    function abreModalCancelar(manId2) {
-        setManId(manId2);
+    const formRef = useRef(null);
+
+    useEffect(() => {
+        formRef.current.setData(manifestacao);
+    }, [manifestacao]);
+
+    function handleTmnId(e) {
+        setTmnId(e.target.value);
+    }
+
+    function handleTpdId(e) {
+        setTpdId(e.target.value);
+    }
+
+    function abreModalCancelar(id) {
+        setManId(id);
         setModalCancelar(true);
     }
 
@@ -29,41 +69,45 @@ function CriarManifestacao(props) {
         setModalCancelar(false);
     }
 
-    function handleManId(e) {
-        setManId(e.target.value);
+    function abreModalExcluir(id) {
+        setManId(id);
+        setModalExcluir(true);
     }
 
-    function handleTmnId(e) {
-        setErro('');
-        setTmnId(e.target.value);
+    function fechaModalExcluir() {
+        setModalExcluir(false);
     }
 
     function limpaCampos() {
-        setManId(undefined);
         setTmnId('');
-        setErro('');
+        setTpdId('');
+        setManId(null);
+        setManifestacao({
+            ...manifestacao,
+            manVistoExecutiva: '',
+        });
+
+        formRef.current.setErrors({});
     }
 
-    function carregaAnexos(id) {
-        axios({
-            method: 'GET',
-            url: `/arquivos-manifestacao/${id}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setAnexos(res.data);
-            })
-            .catch(() => {
-                console.log('Erro ao criar componente de anexo.');
-            });
+    async function carregaAnexos(id) {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(`/arquivos-manifestacao/${id}`);
+            setAnexos(response.data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
-    const verificaTipoManifestacao = event => {
+    const verificaTipos = e => {
         if (tmnId === '') {
             setErro('Selecione o tipo da manifestação.');
-            event.preventDefault();
+            e.preventDefault();
+        } else if (tpdId === '') {
+            setErro('Selecione o tipo de documento.');
+            e.preventDefault();
         }
     };
 
@@ -80,10 +124,12 @@ function CriarManifestacao(props) {
                     url: '/manifestacoes',
                     data: {
                         man_id: null,
-                        pro_id: proId,
+                        pro_id: manifestacao.proId,
                         tmn_id: tmnId,
+                        tpd_id: tpdId,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
+                        man_visto_executiva: 'Não necessário',
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -122,7 +168,7 @@ function CriarManifestacao(props) {
                                         if (resAnexos.status === 204) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
-                                            carregaAnexos(proId);
+                                            carregaAnexos(manifestacao.proId);
                                         }
                                     })
                                     .catch(() => {
@@ -145,7 +191,7 @@ function CriarManifestacao(props) {
                                 setErro('Erro ao inserir na tabela arquivo.');
                             });
                     })
-                    .catch(err => {
+                    .catch(() => {
                         setErro('Erro ao inserir manifestação.');
                     });
                 //
@@ -157,33 +203,40 @@ function CriarManifestacao(props) {
         }
     }
 
-    function carregaTipoManifestacao() {
-        axios({
-            method: 'GET',
-            url: '/tipos-manifestacao',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboTipoManifestacao = [];
-                comboTipoManifestacao.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboTipoManifestacao.push(
-                        <option key={res.data[i].tmn_id} data-key={res.data[i].tmn_id} value={res.data[i].tmn_id}>
-                            {res.data[i].tmn_nome}
-                        </option>
-                    );
-                }
-                setTiposManifestacao(comboTipoManifestacao);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar setores.');
+    async function carregaTipoManifestacao() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/tipos-manifestacao-combo');
+
+            const data = response.data.map(tipoManifestacao => {
+                return {
+                    label: tipoManifestacao.tmn_nome,
+                    value: tipoManifestacao.tmn_id,
+                };
             });
+            setTiposManifestacao(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    async function carregaTipoDocumento() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/tipos-documento');
+
+            const data = response.data.map(tipoDocumento => {
+                return {
+                    label: tipoDocumento.tpd_nome,
+                    value: tipoDocumento.tpd_id,
+                };
+            });
+            setTiposDocumento(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
     function carregaDadosProcesso(id) {
@@ -195,7 +248,7 @@ function CriarManifestacao(props) {
             },
         })
             .then(res => {
-                setProId(res.data.pro_id);
+                setManifestacao({ proId: res.data.pro_id });
                 setProCodigo(res.data.pro_codigo);
                 setTprNome(res.data.tpr_nome);
             })
@@ -218,7 +271,7 @@ function CriarManifestacao(props) {
             },
         })
             .then(() => {
-                carregaAnexos(proId);
+                carregaAnexos(manifestacao.proId);
                 mensagem.success('Cancelada com sucesso.');
             })
             .catch(() => {
@@ -262,103 +315,185 @@ function CriarManifestacao(props) {
     }
 
     useEffect(() => {
-        carregaDadosProcesso(props.match.params.proId);
-        carregaTipoManifestacao();
-        carregaAnexos(props.match.params.proId);
-    }, [props.match.params.proId]);
+        async function carrega() {
+            await carregaDadosProcesso(props.match.params.proId);
+            await carregaTipoManifestacao();
+            await carregaTipoDocumento();
+            await carregaAnexos(props.match.params.proId);
+            await setManifestacao({ proId: props.match.params.proId });
+        }
+        carrega();
+    }, []);
+
+    function apaga(id) {
+        axios({
+            method: 'DELETE',
+            url: `manifestacoes/${id}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                limpaCampos();
+                carregaAnexos(manifestacao.proId);
+                mensagem.success('Excluído com sucesso.');
+            })
+            .catch(err => {
+                setErro(err.response.data.error);
+            });
+    }
+
+    function tramita() {
+        alert('tramitar');
+    }
+
+    function consulta() {
+        history.push('/processo-consulta');
+    }
 
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Criar manifestação" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
+                    <Erro>{erro}</Erro>
                     <fieldset>
-                        <legend>Manifestações</legend>
-                        <Erro>{erro}</Erro>
-                        <form noValidate autoComplete="off">
-                            <input id="manId" value={manId} onChange={handleManId} type="hidden" />
-                            <Container1>
-                                <div>
-                                    <label>Processo:</label>
-                                    <span>
-                                        {proCodigo} - {tprNome}
-                                    </span>
-                                </div>
-                            </Container1>
-                            <Container2>
-                                <fieldset>
-                                    <legend>Tipo da manifestação</legend>
-                                    <select id="selectTipoManifestacao" onChange={handleTmnId} value={tmnId}>
-                                        {tiposManifestacao}
-                                    </select>
-                                </fieldset>
-                            </Container2>
-                        </form>
+                        <label>Processo: </label>
+                        <span>
+                            {proCodigo} - {tprNome}
+                        </span>
+                    </fieldset>
+                    <Form ref={formRef} initialData={manifestacao} onSubmit={incluiAnexo}>
+                        <Input name="manId" type="hidden" />
+                        <Input name="proId" type="hidden" />
+
+                        <Container2>
+                            <Select
+                                name="tmnId"
+                                label="Tipo da manifestação"
+                                options={tiposManifestacao}
+                                onChange={handleTmnId}
+                            />
+                            <Select
+                                name="tpdId"
+                                label="Tipo do documento"
+                                options={tiposDocumento}
+                                onChange={handleTpdId}
+                            />
+                        </Container2>
                         <ContainerBotoes>
                             <label htmlFor="anexo">
                                 <FaPaperclip />
-                                &nbsp;Inserir manifestação
+                                &nbsp;Inserir Anexo
                             </label>
-                            <input type="file" name="file" onChange={incluiAnexo} key={new Date()} id="anexo" onClick={verificaTipoManifestacao} />
-                            <button type="button" id="btnLimpa" onClick={limpaCampos}>
-                                <FaSyncAlt />
-                                &nbsp;Limpar campos
-                            </button>
+                            <input
+                                type="file"
+                                name="file"
+                                onChange={incluiAnexo}
+                                id="anexo"
+                                onClick={e => {
+                                    verificaTipos(e);
+                                }}
+                            />
+                            <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+                            <Tramitar name="btnTramita" clickHandler={tramita} />
+                            <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>
+                    </Form>
+                    <ModalCancela
+                        modalCancelar={modalCancelar}
+                        fechaModalCancelar={fechaModalCancelar}
+                        cancela={cancela}
+                        id={manId}
+                    />
+                    <ModalApaga
+                        modalExcluir={modalExcluir}
+                        fechaModalExcluir={fechaModalExcluir}
+                        apaga={apaga}
+                        id={manId}
+                    />
 
-                        <ModalCancela modalCancelar={modalCancelar} fechaModalCancelar={fechaModalCancelar} cancela={cancela} id={manId} />
-                    </fieldset>
-                    <br />
-                    <fieldset>
-                        <legend>Manifestações do processo</legend>
-                        {anexos.length > 0 ? (
+                    {anexos.length > 0 ? (
+                        <div>
+                            <p>Manifestações</p>
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Seq</th>
+                                        <th>Documento</th>
+                                        <th>Tipo</th>
                                         <th>Arquivo</th>
-                                        <th>Tipo da manifestação</th>
                                         <th>Data</th>
                                         <th>Área</th>
-                                        <th>Login</th>
                                         <th>Situação</th>
+                                        <th>Visto</th>
                                         <th>Cancelar</th>
+                                        <th>Excluir</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {anexos.map(anexo => (
                                         <tr key={anexo.arq_id}>
+                                            <td>{anexo.contador}</td>
+                                            <td>{anexo.tpd_nome}</td>
+                                            <td>{anexo.tmn_nome}</td>
                                             <td>
-                                                <BotaoComoLink type="button" onClick={e => downloadAnexo(e, anexo.arq_id, anexo.manId, anexo.arq_nome)}>
+                                                <BotaoComoLink
+                                                    type="button"
+                                                    onClick={e =>
+                                                        downloadAnexo(
+                                                            e,
+                                                            anexo.arq_id,
+                                                            anexo.manId,
+                                                            anexo.arq_nome
+                                                        )
+                                                    }>
                                                     {anexo.arq_nome}
                                                 </BotaoComoLink>
                                             </td>
-                                            <td>{anexo.tmn_nome}</td>
                                             <td>{anexo.data}</td>
                                             <td>{anexo.set_nome}</td>
-                                            <td>{anexo.man_login}</td>
                                             <td>
-                                                <Centralizado>{anexo.situacao === 'Cancelada' ? <Cancelado>{anexo.situacao}</Cancelado> : anexo.situacao}</Centralizado>
+                                                {anexo.situacao === 'Cancelada' ? (
+                                                    <Cancelado>{anexo.situacao}</Cancelado>
+                                                ) : (
+                                                    anexo.situacao
+                                                )}
+                                            </td>
+                                            <td>{anexo.man_visto_executiva}</td>
+                                            <td>
+                                                {anexo.man_login ===
+                                                    sessionStorage.getItem('usuario') &&
+                                                anexo.situacao === 'Ativa' ? (
+                                                    <BotaoComoLink
+                                                        onClick={() =>
+                                                            abreModalCancelar(anexo.man_id)
+                                                        }>
+                                                        Cancelar
+                                                    </BotaoComoLink>
+                                                ) : null}
                                             </td>
                                             <td>
-                                                <Centralizado>
-                                                    {anexo.man_login === sessionStorage.getItem('usuario') && anexo.situacao === 'Ativa' ? <BotaoComoLink onClick={() => abreModalCancelar(anexo.man_id)}>Cancelar</BotaoComoLink> : null}
-                                                </Centralizado>
+                                                {anexo.man_login ===
+                                                    sessionStorage.getItem('usuario') &&
+                                                anexo.situacao === 'Ativa' ? (
+                                                    <BotaoComoLink
+                                                        onClick={() =>
+                                                            abreModalExcluir(anexo.man_id)
+                                                        }>
+                                                        Excluir
+                                                    </BotaoComoLink>
+                                                ) : null}
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                        ) : (
-                            <label>Sem manifestações no momento.</label>
-                        )}
-                    </fieldset>
+                        </div>
+                    ) : null}
                 </Main>
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 

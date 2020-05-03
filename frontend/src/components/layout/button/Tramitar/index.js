@@ -2,14 +2,14 @@ import React from 'react';
 import { FaNetworkWired } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
-import Button from '../Button';
+import ButtonTramita from '../ButtonTramita';
 
 export default function Tramitar({ name, clickHandler }) {
     return (
-        <Button id={name} name={name} onClick={clickHandler}>
+        <ButtonTramita id={name} name={name} onClick={clickHandler}>
             <FaNetworkWired />
             Tramitar
-        </Button>
+        </ButtonTramita>
     );
 }
 

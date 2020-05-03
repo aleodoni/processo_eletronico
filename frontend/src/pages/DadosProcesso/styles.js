@@ -61,7 +61,7 @@ export const ContainerDados = styled.div`
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 155px 195px 120px 180px;
+    grid-template-columns: 155px 195px 180px;
     grid-gap: 5px;
     input {
         opacity: 0;
@@ -148,7 +148,7 @@ export const ListaArquivo = styled.ul`
     list-style-type: none;
 `;
 
-export const Cancelado = styled.span`
+export const Vermelho = styled.span`
     color: red;
 `;
 

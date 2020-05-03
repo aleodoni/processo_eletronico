@@ -20,6 +20,22 @@ class TipoManifestacaoController {
         return res.json(tiposManifestacao);
     }
 
+    async combo(req, res) {
+        const tiposManifestacao = await TipoManifestacao.findAll({
+            order: ['tmn_nome'],
+            attributes: [
+                'tmn_id',
+                'tmn_nome',
+                'tmn_publica'
+            ],
+            where: [
+                { tmn_publica: true }
+            ],
+            logging: true
+        });
+        return res.json(tiposManifestacao);
+    }
+
     async store(req, res) {
         const { tmn_id, tmn_nome, tmn_publica } = await TipoManifestacao.create(req.body, {
             logging: false
