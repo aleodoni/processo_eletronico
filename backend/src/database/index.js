@@ -39,6 +39,9 @@ import VProximoTramiteNormal from '../app/models/VProximoTramiteNormal';
 import Tramite from '../app/models/Tramite';
 import VTramite from '../app/models/VTramite';
 import TipoDocumento from '../app/models/TipoDocumento';
+import VAreaTramitacaoPessoal from '../app/models/VAreaTramitacaoPessoal';
+import VProcessosPessoais from '../app/models/VProcessosPessoais';
+import VProcessosArea from '../app/models/VProcessosArea';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -81,7 +84,10 @@ const models = [
     VProximoTramiteNormal,
     VProcessoRecebe,
     VTramite,
-    TipoDocumento
+    TipoDocumento,
+    VAreaTramitacaoPessoal,
+    VProcessosPessoais,
+    VProcessosArea
 ];
 
 class Database {

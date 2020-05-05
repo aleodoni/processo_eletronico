@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useState, useEffect, useRef, useHistory } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
+import { useHistory } from 'react-router';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
 import { FaPaperclip } from 'react-icons/fa';
@@ -17,6 +18,8 @@ import Tramitar from '../../components/layout/button/Tramitar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 
 import ModalCancela from '../../components/ModalCancelar';
+import ModalTramitaUm from '../../components/ModalTramitaUm';
+import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import {
     Container,
     Container2,
@@ -32,12 +35,12 @@ function CriarManifestacao(props) {
     const history = useHistory();
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
-        proId: undefined,
+        proId: props.match.params.proId,
         manVistoExecutiva: '',
     });
     const [manId, setManId] = useState(undefined);
-    const [tmnId, setTmnId] = useState('');
-    const [tpdId, setTpdId] = useState('');
+    const [tmnId, setTmnId] = useState(-1);
+    const [tpdId, setTpdId] = useState(-1);
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [tiposManifestacao, setTiposManifestacao] = useState([]);
@@ -45,6 +48,9 @@ function CriarManifestacao(props) {
     const [anexos, setAnexos] = useState([]);
     const [modalCancelar, setModalCancelar] = useState(false);
     const [modalExcluir, setModalExcluir] = useState(false);
+    const [modalTramitaUm, setModalTramitaUm] = useState(false);
+    const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
+    const [dadosTramite, setDadosTramite] = useState([]);
 
     const formRef = useRef(null);
 
@@ -78,9 +84,27 @@ function CriarManifestacao(props) {
         setModalExcluir(false);
     }
 
+    function abreModalTramitaUm(dados) {
+        setDadosTramite(dados);
+        setModalTramitaUm(true);
+    }
+
+    function fechaModalTramitaUm() {
+        setModalTramitaUm(false);
+    }
+
+    function abreModalTramitaVarios(dados) {
+        setDadosTramite(dados);
+        setModalTramitaVarios(true);
+    }
+
+    function fechaModalTramitaVarios() {
+        setModalTramitaVarios(false);
+    }
+
     function limpaCampos() {
-        setTmnId('');
-        setTpdId('');
+        setTmnId(-1);
+        setTpdId(-1);
         setManId(null);
         setManifestacao({
             ...manifestacao,
@@ -102,10 +126,10 @@ function CriarManifestacao(props) {
     }
 
     const verificaTipos = e => {
-        if (tmnId === '') {
+        if (tmnId === -1) {
             setErro('Selecione o tipo da manifestação.');
             e.preventDefault();
-        } else if (tpdId === '') {
+        } else if (tpdId === -1) {
             setErro('Selecione o tipo de documento.');
             e.preventDefault();
         }
@@ -316,11 +340,10 @@ function CriarManifestacao(props) {
 
     useEffect(() => {
         async function carrega() {
-            await carregaDadosProcesso(props.match.params.proId);
+            await carregaDadosProcesso(manifestacao.proId);
             await carregaTipoManifestacao();
             await carregaTipoDocumento();
-            await carregaAnexos(props.match.params.proId);
-            await setManifestacao({ proId: props.match.params.proId });
+            await carregaAnexos(manifestacao.proId);
         }
         carrega();
     }, []);
@@ -344,11 +367,60 @@ function CriarManifestacao(props) {
     }
 
     function tramita() {
-        alert('tramitar');
+        // aqui vai verificar se vai tramitar para um ou para vários
+        axios({
+            method: 'GET',
+            url: `/proximo-tramite/${manifestacao.proId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                // se não tiver registros
+                if (res.data.length === 0) {
+                    mensagem.info('Sem próximos trâmites.');
+                    return;
+                }
+                // se for um abre modal para um
+                if (res.data.length === 1) {
+                    abreModalTramitaUm(res.data[0]);
+                }
+                if (res.data.length > 1) {
+                    abreModalTramitaVarios(res.data);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao carregar próximos trâmites.');
+            });
     }
 
     function consulta() {
         history.push('/processo-consulta');
+    }
+
+    function insereTramite(prxId, setId) {
+        axios({
+            method: 'POST',
+            url: '/tramites',
+            data: {
+                tra_id: null,
+                prx_id: prxId,
+                pro_id: manifestacao.proId,
+                login_envia: sessionStorage.getItem('usuario'),
+                area_id_envia: sessionStorage.getItem('areaUsuario'),
+                area_id_recebe: setId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Trâmite inserido com sucesso.');
+                history.push(`/home/`);
+            })
+            .catch(() => {
+                setErro('Erro ao inserir trâmite.');
+            });
     }
 
     return (
@@ -411,6 +483,18 @@ function CriarManifestacao(props) {
                         fechaModalExcluir={fechaModalExcluir}
                         apaga={apaga}
                         id={manId}
+                    />
+                    <ModalTramitaUm
+                        modalTramitaUm={modalTramitaUm}
+                        fechaModalTramitaUm={fechaModalTramitaUm}
+                        tramita={insereTramite}
+                        dados={dadosTramite}
+                    />
+                    <ModalTramitaVarios
+                        modalTramitaVarios={modalTramitaVarios}
+                        fechaModalTramitaVarios={fechaModalTramitaVarios}
+                        tramita={insereTramite}
+                        dados={dadosTramite}
                     />
 
                     {anexos.length > 0 ? (

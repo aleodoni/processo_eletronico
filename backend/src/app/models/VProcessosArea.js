@@ -1,31 +1,31 @@
 import Sequelize, { Model } from 'sequelize';
 
-class VTramite extends Model {
+class VProcessosArea extends Model {
     static init(sequelize) {
         super.init(
             {
-                tra_id: {
+                pro_id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true
                 },
-                pro_id: {
+                pro_codigo: {
+                    type: Sequelize.STRING
+                },
+                tpr_nome: {
+                    type: Sequelize.STRING
+                },
+                area_id: {
                     type: Sequelize.INTEGER
                 },
-                envio: {
+                usu_autuador: {
                     type: Sequelize.STRING
                 },
-                login_envia: {
-                    type: Sequelize.STRING
-                },
-                setor_envia: {
-                    type: Sequelize.STRING
-                },
-                setor_recebe: {
-                    type: Sequelize.STRING
+                nod_aval_executiva: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {
-                tableName: 'v_tramite',
+                tableName: 'v_processos_area',
                 schema: 'spa2',
                 sequelize,
                 operatorsAliases: false
@@ -36,4 +36,4 @@ class VTramite extends Model {
     }
 }
 
-export default VTramite;
+export default VProcessosArea;

@@ -83,7 +83,7 @@ export const Container2 = styled.div`
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 185px 155px 130px;
+    grid-template-columns: 185px 155px 130px 155px;
     grid-gap: 5px;
     margin-bottom: 10px;
 `;

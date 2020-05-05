@@ -3,6 +3,7 @@
 /* eslint-disable camelcase */
 import Manifestacao from '../models/Manifestacao';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
+import DataHoraAtual from '../models/DataHoraAtual';
 import moment from 'moment';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import * as caminhos from '../../config/arquivos';
@@ -12,6 +13,11 @@ require('dotenv/config');
 
 class ManifestacaoController {
     async store(req, res) {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: true,
+            plain: true
+        });
         const {
             man_id,
             pro_id,
@@ -19,8 +25,18 @@ class ManifestacaoController {
             man_login,
             man_id_area,
             tpd_id,
-            man_visto_executiva
-        } = await Manifestacao.create(req.body, {
+            man_visto_executiva,
+            man_data
+        } = await Manifestacao.create({
+            man_id: req.body.man_id,
+            pro_id: req.body.pro_id,
+            tmn_id: req.body.tmn_id,
+            man_login: req.body.man_login,
+            man_id_area: req.body.man_id_area,
+            tpd_id: req.body.tpd_id,
+            man_visto_executiva: req.body.man_visto_executiva,
+            man_data: dataHoraAtual.dataValues.data_hora_atual
+        }, {
             logging: false
         });
             // auditoria de inserção
@@ -33,7 +49,8 @@ class ManifestacaoController {
             man_login,
             man_id_area,
             tpd_id,
-            man_visto_executiva
+            man_visto_executiva,
+            man_data
         });
     }
 
@@ -51,8 +68,12 @@ class ManifestacaoController {
             return res.status(400).json({ error: 'Manifestação não encontrada' });
         }
         if (req.body.man_data_cancelamento === null) {
-            const d = moment();
-            req.body.man_data_cancelamento = d.format('YYYY-MM-DD HH:mm:ss');
+            const dataHoraAtual = await DataHoraAtual.findAll({
+                attributes: ['data_hora_atual'],
+                logging: true,
+                plain: true
+            });
+            req.body.man_data_cancelamento = dataHoraAtual.dataValues.data_hora_atual;
         }
         const dataCancelamento = moment(req.body.man_data_cancelamento).format('DD/MM/YYYY HH:mm:ss');
         await manifestacao.update(req.body, { logging: false });

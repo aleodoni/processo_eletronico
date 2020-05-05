@@ -77,7 +77,7 @@ export const Container2 = styled.div`
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 145px 155px 130px;
+    grid-template-columns: 145px 155px 130px 155px;
     grid-gap: 5px;
     margin-bottom: 10px;
 
@@ -123,6 +123,10 @@ export const BotaoComoLink = styled.button`
 
     span {
         margin-left: 45px;
+    }
+
+    &:hover {
+        background: #fff;
     }
 `;
 

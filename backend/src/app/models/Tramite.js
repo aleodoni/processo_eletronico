@@ -14,9 +14,6 @@ class Tramite extends Model {
                     type: Sequelize.NOW,
                     allowNull: false
                 },
-                tra_recebimento: {
-                    type: Sequelize.NOW
-                },
                 pro_id: {
                     type: Sequelize.INTEGER,
                     allowNull: false
@@ -28,9 +25,6 @@ class Tramite extends Model {
                 login_envia: {
                     type: Sequelize.STRING,
                     allowNull: false
-                },
-                login_recebe: {
-                    type: Sequelize.STRING
                 },
                 area_id_envia: {
                     type: Sequelize.INTEGER
@@ -45,9 +39,6 @@ class Tramite extends Model {
                 nod_id_recebe: {
                     type: Sequelize.INTEGER,
                     allowNull: false
-                },
-                tra_observacao: {
-                    type: Sequelize.INTEGER
                 },
                 tra_inicial: {
                     type: Sequelize.BOOLEAN,

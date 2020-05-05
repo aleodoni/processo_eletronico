@@ -19,7 +19,7 @@ export default function VistoExecutiva({ name, changeHandler, ...rest }) {
     <Select
       id={name}
       name={name}
-      label="Tipo"
+      label="Visto"
       options={options}
       onChange={changeHandler}
       {...rest}

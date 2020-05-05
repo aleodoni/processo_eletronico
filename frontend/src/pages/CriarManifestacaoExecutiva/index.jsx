@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useState, useEffect, useRef, useHistory } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
+import { useHistory } from 'react-router';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
 import ModalApaga from '../../components/ModalExcluir';
@@ -16,6 +17,8 @@ import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
 import VistoExecutiva from '../../components/system/select/VistoExecutiva';
 import FormLine from '../../components/layout/FormLine';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
+import ModalTramitaUm from '../../components/ModalTramitaUm';
+import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 
 import {
     Container,
@@ -40,6 +43,9 @@ function CriarManifestacaoExecutiva(props) {
     const [tprNome, setTprNome] = useState('');
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
+    const [modalTramitaUm, setModalTramitaUm] = useState(false);
+    const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
+    const [dadosTramite, setDadosTramite] = useState([]);
 
     const formRef = useRef(null);
 
@@ -48,13 +54,30 @@ function CriarManifestacaoExecutiva(props) {
     }, [manifestacao]);
 
     function abreModalExcluir(id) {
-        alert(id);
         setManId(id);
         setModalExcluir(true);
     }
 
     function fechaModalExcluir() {
         setModalExcluir(false);
+    }
+
+    function abreModalTramitaUm(dados) {
+        setDadosTramite(dados);
+        setModalTramitaUm(true);
+    }
+
+    function fechaModalTramitaUm() {
+        setModalTramitaUm(false);
+    }
+
+    function abreModalTramitaVarios(dados) {
+        setDadosTramite(dados);
+        setModalTramitaVarios(true);
+    }
+
+    function fechaModalTramitaVarios() {
+        setModalTramitaVarios(false);
     }
 
     function limpaCampos() {
@@ -196,7 +219,31 @@ function CriarManifestacaoExecutiva(props) {
     }
 
     function tramita() {
-        alert('tramitar');
+        // aqui vai verificar se vai tramitar para um ou para vários
+        axios({
+            method: 'GET',
+            url: `/proximo-tramite/${manifestacao.proId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                // se não tiver registros
+                if (res.data.length === 0) {
+                    mensagem.info('Sem próximos trâmites.');
+                    return;
+                }
+                // se for um abre modal para um
+                if (res.data.length === 1) {
+                    abreModalTramitaUm(res.data[0]);
+                }
+                if (res.data.length > 1) {
+                    abreModalTramitaVarios(res.data);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao carregar próximos trâmites.');
+            });
     }
 
     function limpaErros() {
@@ -205,6 +252,31 @@ function CriarManifestacaoExecutiva(props) {
 
     function consulta() {
         history.push('/processo-consulta');
+    }
+
+    function insereTramite(prxId, setId) {
+        axios({
+            method: 'POST',
+            url: '/tramites',
+            data: {
+                tra_id: null,
+                prx_id: prxId,
+                pro_id: manifestacao.proId,
+                login_envia: sessionStorage.getItem('usuario'),
+                area_id_envia: sessionStorage.getItem('areaUsuario'),
+                area_id_recebe: setId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Trâmite inserido com sucesso.');
+                history.push(`/home/`);
+            })
+            .catch(() => {
+                setErro('Erro ao inserir trâmite.');
+            });
     }
 
     return (
@@ -243,6 +315,18 @@ function CriarManifestacaoExecutiva(props) {
                         fechaModalExcluir={fechaModalExcluir}
                         apaga={apaga}
                         id={manId}
+                    />
+                    <ModalTramitaUm
+                        modalTramitaUm={modalTramitaUm}
+                        fechaModalTramitaUm={fechaModalTramitaUm}
+                        tramita={insereTramite}
+                        dados={dadosTramite}
+                    />
+                    <ModalTramitaVarios
+                        modalTramitaVarios={modalTramitaVarios}
+                        fechaModalTramitaVarios={fechaModalTramitaVarios}
+                        tramita={insereTramite}
+                        dados={dadosTramite}
                     />
 
                     {anexos.length > 0 ? (

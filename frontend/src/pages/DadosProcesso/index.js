@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router';
@@ -58,13 +58,14 @@ function DadosProcesso({ match }) {
     const [anexosManifestacao, setAnexosManifestacao] = useState([]);
     const [tramites, setTramites] = useState([]);
     const [nodAvalExecutiva, setNodAvalExecutiva] = useState(false);
+    const [mostraProcesso, setMostraProcesso] = useState(false);
 
     const formRef = useRef(null);
 
-    function carregaAnexos(id) {
+    const carregaAnexos = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/arquivos-processo/${id}`,
+            url: `/arquivos-processo/${proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -75,12 +76,12 @@ function DadosProcesso({ match }) {
             .catch(() => {
                 console.log('Erro ao carregar anexos.');
             });
-    }
+    }, [proId]);
 
-    function carregaAnexosManifestacao(id) {
+    const carregaAnexosManifestacao = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/arquivos-manifestacao/${id}`,
+            url: `/arquivos-manifestacao/${proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -91,12 +92,12 @@ function DadosProcesso({ match }) {
             .catch(() => {
                 console.log('Erro ao carregar manifestações.');
             });
-    }
+    }, [proId]);
 
-    function carregaTramites(id) {
+    const carregaTramites = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/grid-tramites/${id}`,
+            url: `/grid-tramites/${proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -107,7 +108,7 @@ function DadosProcesso({ match }) {
             .catch(() => {
                 console.log('Erro ao carregar trâmites.');
             });
-    }
+    }, [proId]);
 
     function downloadAnexoManifestacao(e, arqId, id, arqNome) {
         e.preventDefault();
@@ -144,15 +145,16 @@ function DadosProcesso({ match }) {
             });
     }
 
-    function carregaDadosProcesso(id) {
+    const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${id}`,
+            url: `/ver-processo/${proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
+                setProEncerramento(res.data.pro_encerramento);
                 setProCodigo(res.data.pro_codigo);
                 setProIniciativa(res.data.pro_iniciativa);
                 setProTipoIniciativa(res.data.pro_tipo_iniciativa);
@@ -163,7 +165,6 @@ function DadosProcesso({ match }) {
                 setProEmail(res.data.pro_email);
                 setProCpf(res.data.cpf);
                 setProCnpj(res.data.cnpj);
-                setProEncerramento(res.data.pro_encerramento);
                 setGenNome(res.data.gen_nome);
                 setTprNome(res.data.tpr_nome);
                 setProAssunto(res.data.pro_assunto);
@@ -179,22 +180,20 @@ function DadosProcesso({ match }) {
                 setSetorAutuadorProcesso(res.data.setor_autuador_processo);
                 setSetorFinalizadorProcesso(res.data.setor_finalizador_processo);
                 setNodAvalExecutiva(res.data.nod_aval_executiva);
+                setMostraProcesso(true);
             })
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }
+    }, [proId]);
 
     useEffect(() => {
-        async function carrega() {
-            await carregaDadosProcesso(proId);
-            mensagem.success('Carregando processo...');
-            await carregaAnexos(proId);
-            await carregaAnexosManifestacao(proId);
-            await carregaTramites(proId);
-        }
-        carrega();
-    }, [proId]);
+        mensagem.success('Carregando processo...');
+        carregaDadosProcesso();
+        carregaAnexos();
+        carregaAnexosManifestacao();
+        carregaTramites();
+    }, [carregaDadosProcesso, carregaAnexos, carregaAnexosManifestacao, carregaTramites]);
 
     function incluiAnexo(e) {
         setErro('');
@@ -277,300 +276,305 @@ function DadosProcesso({ match }) {
 
     return (
         <DefaultLayout>
-            <Container>
-                <Autorizacao tela="Dados processo" />
-                <Main>
-                    <Form ref={formRef}>
-                        <h3>
-                            <FaFileAlt />
-                            {` Processo nº ${proCodigo}`}
-                        </h3>
-                        <Erro dangerouslySetInnerHTML={{ __html: erro }} />
-                        <input id="proId" value={proId} type="hidden" />
-                        <ContainerIniciativa>
-                            <p>Iniciativa</p>
-                            <fieldset>
-                                {proIniciativa} - {proTipoIniciativa}
-                            </fieldset>
-                        </ContainerIniciativa>
-                        <br />
-                        {proNome ? (
+            {mostraProcesso ? (
+                <Container>
+                    <Autorizacao tela="Dados processo" />
+                    <Main>
+                        <Form ref={formRef}>
+                            <h3>
+                                <FaFileAlt />
+                                {` Processo nº ${proCodigo}`}
+                            </h3>
+                            <Erro dangerouslySetInnerHTML={{ __html: erro }} />
+                            <input id="proId" value={proId} type="hidden" />
+                            {!proEncerramento ? (
+                                <ContainerBotoes>
+                                    <label htmlFor="anexo">
+                                        <FaPaperclip />
+                                        &nbsp;Inserir Anexo
+                                    </label>
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        onChange={incluiAnexo}
+                                        id="anexo"
+                                    />
+                                    <CriaManifestacao
+                                        name="btnCriaManifestacao"
+                                        clickHandler={() => {
+                                            criaManifestacao();
+                                        }}
+                                    />
+                                    <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
+                                    <br />
+                                </ContainerBotoes>
+                            ) : (
+                                <ContainerBotoes>
+                                    <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
+                                    <br />
+                                </ContainerBotoes>
+                            )}
+                            <ContainerIniciativa>
+                                <p>Iniciativa</p>
+                                <fieldset>
+                                    {proIniciativa} - {proTipoIniciativa}
+                                </fieldset>
+                            </ContainerIniciativa>
+                            <br />
+
+                            {proNome ? (
+                                <ContainerDados>
+                                    <p>Dados da Iniciativa</p>
+                                    <br />
+                                    <fieldset>
+                                        {proMatricula ? (
+                                            <div>
+                                                <label>Matrícula:</label>
+                                                <span>{proMatricula}</span>
+                                            </div>
+                                        ) : null}
+                                        <div>
+                                            <label>Nome:</label>
+                                            <span>{proNome}</span>
+                                        </div>
+                                        {proCpf ? (
+                                            <div>
+                                                <label>Cpf:</label>
+                                                <span>{proCpf}</span>
+                                            </div>
+                                        ) : null}
+                                        {proCnpj ? (
+                                            <div>
+                                                <label>Cnpj:</label>
+                                                <span>{proCnpj}</span>
+                                            </div>
+                                        ) : null}
+                                        {proFone ? (
+                                            <div>
+                                                <label>Fone:</label>
+                                                <span>{proFone}</span>
+                                            </div>
+                                        ) : null}
+                                        {proCelular ? (
+                                            <div>
+                                                <label>Celular:</label>
+                                                <span>{proCelular}</span>
+                                            </div>
+                                        ) : null}
+                                        {proEmail ? (
+                                            <div>
+                                                <label>Email:</label>
+                                                <span>{proEmail}</span>
+                                            </div>
+                                        ) : null}
+                                        {proContatoPj ? (
+                                            <div>
+                                                <label>Contato PJ:</label>
+                                                <span>{proContatoPj}</span>
+                                            </div>
+                                        ) : null}
+                                    </fieldset>
+                                </ContainerDados>
+                            ) : null}
+                            <br />
                             <ContainerDados>
-                                <p>Dados da Iniciativa</p>
+                                <p>Dados do processo</p>
                                 <br />
                                 <fieldset>
-                                    {proMatricula ? (
+                                    {genNome ? (
                                         <div>
-                                            <label>Matrícula:</label>
-                                            <span>{proMatricula}</span>
+                                            <label>Espécie:</label>
+                                            <span>{genNome}</span>
                                         </div>
                                     ) : null}
-                                    <div>
-                                        <label>Nome:</label>
-                                        <span>{proNome}</span>
-                                    </div>
-                                    {proCpf ? (
+                                    {tprNome ? (
                                         <div>
-                                            <label>Cpf:</label>
-                                            <span>{proCpf}</span>
+                                            <label>Tipo do processo:</label>
+                                            <span>{tprNome}</span>
                                         </div>
                                     ) : null}
-                                    {proCnpj ? (
+                                    {visualizacao ? (
                                         <div>
-                                            <label>Cnpj:</label>
-                                            <span>{proCnpj}</span>
+                                            <label>Visualização:</label>
+                                            <span>{visualizacao}</span>
                                         </div>
                                     ) : null}
-                                    {proFone ? (
+                                    {proAssunto ? (
                                         <div>
-                                            <label>Fone:</label>
-                                            <span>{proFone}</span>
+                                            <label>Assunto:</label>
+                                            <span>{proAssunto}</span>
                                         </div>
                                     ) : null}
-                                    {proCelular ? (
+                                    {proAutuacao ? (
                                         <div>
-                                            <label>Celular:</label>
-                                            <span>{proCelular}</span>
+                                            <label>Autuação:</label>
+                                            <span>{proAutuacao}</span>
                                         </div>
                                     ) : null}
-                                    {proEmail ? (
+                                    {usuAutuador ? (
                                         <div>
-                                            <label>Email:</label>
-                                            <span>{proEmail}</span>
+                                            <label>Usuário autuador:</label>
+                                            <span>
+                                                {usuAutuador} - {setorAutuadorProcesso}
+                                            </span>
                                         </div>
                                     ) : null}
-                                    {proContatoPj ? (
+                                    {fluNome ? (
                                         <div>
-                                            <label>Contato PJ:</label>
-                                            <span>{proContatoPj}</span>
+                                            <label>Fluxo:</label>
+                                            <span>{fluNome}</span>
+                                        </div>
+                                    ) : null}
+                                    {areaAtualProcesso ? (
+                                        <div>
+                                            <label>Área atual do processo:</label>
+                                            <span>{areaAtualProcesso}</span>
+                                        </div>
+                                    ) : null}
+                                    {areaIniciativaProcesso ? (
+                                        <div>
+                                            <label>Área de iniciativa do processo:</label>
+                                            <span>{areaIniciativaProcesso}</span>
+                                        </div>
+                                    ) : null}
+                                    {proUltimoTramite ? (
+                                        <div>
+                                            <label>Último trâmite:</label>
+                                            <span>{proUltimoTramite}</span>
+                                        </div>
+                                    ) : null}
+                                    {proEncerramento ? (
+                                        <div>
+                                            <label>Encerramento:</label>
+                                            <span>{proEncerramento}</span>
+                                        </div>
+                                    ) : null}
+                                    {usuFinalizador ? (
+                                        <div>
+                                            <label>Usuário finalizador:</label>
+                                            <span>
+                                                {usuFinalizador} - {setorFinalizadorProcesso}
+                                            </span>
                                         </div>
                                     ) : null}
                                 </fieldset>
                             </ContainerDados>
-                        ) : null}
-                        <br />
-                        <ContainerDados>
-                            <p>Dados do processo</p>
                             <br />
-                            <fieldset>
-                                {genNome ? (
-                                    <div>
-                                        <label>Espécie:</label>
-                                        <span>{genNome}</span>
-                                    </div>
-                                ) : null}
-                                {tprNome ? (
-                                    <div>
-                                        <label>Tipo do processo:</label>
-                                        <span>{tprNome}</span>
-                                    </div>
-                                ) : null}
-                                {visualizacao ? (
-                                    <div>
-                                        <label>Visualização:</label>
-                                        <span>{visualizacao}</span>
-                                    </div>
-                                ) : null}
-                                {proAssunto ? (
-                                    <div>
-                                        <label>Assunto:</label>
-                                        <span>{proAssunto}</span>
-                                    </div>
-                                ) : null}
-                                {proAutuacao ? (
-                                    <div>
-                                        <label>Autuação:</label>
-                                        <span>{proAutuacao}</span>
-                                    </div>
-                                ) : null}
-                                {usuAutuador ? (
-                                    <div>
-                                        <label>Usuário autuador:</label>
-                                        <span>
-                                            {usuAutuador} - {setorAutuadorProcesso}
-                                        </span>
-                                    </div>
-                                ) : null}
-                                {fluNome ? (
-                                    <div>
-                                        <label>Fluxo:</label>
-                                        <span>{fluNome}</span>
-                                    </div>
-                                ) : null}
-                                {areaAtualProcesso ? (
-                                    <div>
-                                        <label>Área atual do processo:</label>
-                                        <span>{areaAtualProcesso}</span>
-                                    </div>
-                                ) : null}
-                                {areaIniciativaProcesso ? (
-                                    <div>
-                                        <label>Área de iniciativa do processo:</label>
-                                        <span>{areaIniciativaProcesso}</span>
-                                    </div>
-                                ) : null}
-                                {proUltimoTramite ? (
-                                    <div>
-                                        <label>Último trâmite:</label>
-                                        <span>{proUltimoTramite}</span>
-                                    </div>
-                                ) : null}
-                                {proEncerramento ? (
-                                    <div>
-                                        <label>Encerramento:</label>
-                                        <span>{proEncerramento}</span>
-                                    </div>
-                                ) : null}
-                                {usuFinalizador ? (
-                                    <div>
-                                        <label>Usuário finalizador:</label>
-                                        <span>
-                                            {usuFinalizador} - {setorFinalizadorProcesso}
-                                        </span>
-                                    </div>
-                                ) : null}
-                            </fieldset>
-                        </ContainerDados>
-                        <br />
-                        {!proEncerramento ? (
-                            <ContainerBotoes>
-                                <label htmlFor="anexo">
-                                    <FaPaperclip />
-                                    &nbsp;Inserir Anexo
-                                </label>
-                                <input type="file" name="file" onChange={incluiAnexo} id="anexo" />
-                                <CriaManifestacao
-                                    name="btnCriaManifestacao"
-                                    clickHandler={() => {
-                                        criaManifestacao();
-                                    }}
-                                />
-                                <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
-                                <br />
-                            </ContainerBotoes>
-                        ) : (
-                            <ContainerBotoes>
-                                <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
-                                <br />
-                            </ContainerBotoes>
-                        )}
 
-                        <ContainerArquivos>
-                            {anexos.length > 0 ? (
-                                <div>
-                                    <p>Arquivo(s) em anexo</p>
-                                    <fieldset>
-                                        <AnexoArquivo proId={proId} anexos={anexos} />
-                                    </fieldset>
-                                    <br />
-                                </div>
-                            ) : null}
-                            {anexosManifestacao.length > 0 ? (
-                                <div>
-                                    <p>Manifestações</p>
-                                    <fieldset>
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Seq</th>
-                                                    <th>Documento</th>
-                                                    <th>Tipo</th>
-                                                    <th>Arquivo</th>
-                                                    <th>Data</th>
-                                                    <th>Área</th>
-                                                    <th>Situação</th>
-                                                    <th>Visto</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {anexosManifestacao.map(anexo => (
-                                                    <tr key={anexo.man_id}>
-                                                        <td>{anexo.contador}</td>
-                                                        <td>{anexo.tpd_nome}</td>
-                                                        <td>{anexo.tmn_nome}</td>
-                                                        <td>
-                                                            <BotaoComoLink
-                                                                type="button"
-                                                                onClick={e =>
-                                                                    downloadAnexoManifestacao(
-                                                                        e,
-                                                                        anexo.arq_id,
-                                                                        anexo.manId,
-                                                                        anexo.arq_nome
-                                                                    )
-                                                                }>
-                                                                {anexo.arq_nome}
-                                                            </BotaoComoLink>
-                                                        </td>
-                                                        <td>{anexo.data}</td>
-                                                        <td>{anexo.set_nome}</td>
-                                                        <td>
-                                                            <Centralizado>
-                                                                {anexo.situacao === 'Cancelada' ? (
+                            <ContainerArquivos>
+                                {anexos.length > 0 ? (
+                                    <div>
+                                        <p>Arquivo(s) em anexo</p>
+                                        <fieldset>
+                                            <AnexoArquivo proId={proId} anexos={anexos} />
+                                        </fieldset>
+                                        <br />
+                                    </div>
+                                ) : null}
+                                {anexosManifestacao.length > 0 ? (
+                                    <div>
+                                        <p>Manifestações</p>
+                                        <fieldset>
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Seq</th>
+                                                        <th>Documento</th>
+                                                        <th>Tipo</th>
+                                                        <th>Arquivo</th>
+                                                        <th>Data</th>
+                                                        <th>Área</th>
+                                                        <th>Situação</th>
+                                                        <th>Visto</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {anexosManifestacao.map(anexo => (
+                                                        <tr key={anexo.man_id}>
+                                                            <td>{anexo.contador}</td>
+                                                            <td>{anexo.tpd_nome}</td>
+                                                            <td>{anexo.tmn_nome}</td>
+                                                            <td>
+                                                                <BotaoComoLink
+                                                                    type="button"
+                                                                    onClick={e =>
+                                                                        downloadAnexoManifestacao(
+                                                                            e,
+                                                                            anexo.arq_id,
+                                                                            anexo.manId,
+                                                                            anexo.arq_nome
+                                                                        )
+                                                                    }>
+                                                                    {anexo.arq_nome}
+                                                                </BotaoComoLink>
+                                                            </td>
+                                                            <td>{anexo.data}</td>
+                                                            <td>{anexo.set_nome}</td>
+                                                            <td>
+                                                                <Centralizado>
+                                                                    {anexo.situacao ===
+                                                                    'Cancelada' ? (
+                                                                        <Vermelho>
+                                                                            {anexo.situacao}
+                                                                        </Vermelho>
+                                                                    ) : (
+                                                                        anexo.situacao
+                                                                    )}
+                                                                </Centralizado>
+                                                            </td>
+                                                            <td>
+                                                                {anexo.man_visto_executiva ===
+                                                                'Negado' ? (
                                                                     <Vermelho>
-                                                                        {anexo.situacao}
+                                                                        {anexo.man_visto_executiva}
                                                                     </Vermelho>
                                                                 ) : (
-                                                                    anexo.situacao
+                                                                    anexo.man_visto_executiva
                                                                 )}
-                                                            </Centralizado>
-                                                        </td>
-                                                        <td>
-                                                            {anexo.man_visto_executiva ===
-                                                            'Negado' ? (
-                                                                <Vermelho>
-                                                                    {anexo.man_visto_executiva}
-                                                                </Vermelho>
-                                                            ) : (
-                                                                anexo.man_visto_executiva
-                                                            )}
-                                                        </td>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </fieldset>
+                                        <br />
+                                    </div>
+                                ) : null}
+                                {tramites.length > 0 ? (
+                                    <div>
+                                        <p>Tramitação</p>
+                                        <fieldset>
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Envio</th>
+                                                        <th>Área que enviou</th>
+                                                        <th>Área que recebeu</th>
+                                                        <th>Observação</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </fieldset>
-                                    <br />
-                                </div>
-                            ) : null}
-                            {tramites.length > 0 ? (
-                                <div>
-                                    <p>Tramitação</p>
-                                    <fieldset>
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Envio</th>
-                                                    <th>Área</th>
-                                                    <th>Recebimento</th>
-                                                    <th>Área</th>
-                                                    <th>Observação</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {tramites.map(tramite => (
-                                                    <tr key={tramite.tra_id}>
-                                                        <td>
-                                                            {tramite.envio} - {tramite.login_envia}
-                                                        </td>
-                                                        <td>{tramite.setor_envia}</td>
-                                                        <td>
-                                                            {tramite.recebimento} -{' '}
-                                                            {tramite.login_recebe}
-                                                        </td>
-                                                        <td>{tramite.setor_recebe}</td>
-                                                        <td>{tramite.tra_observacao}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </fieldset>
-                                </div>
-                            ) : null}
-                        </ContainerArquivos>
-                    </Form>
-                </Main>
-            </Container>
+                                                </thead>
+                                                <tbody>
+                                                    {tramites.map(tramite => (
+                                                        <tr key={tramite.tra_id}>
+                                                            <td>
+                                                                {tramite.envio} -{' '}
+                                                                {tramite.login_envia}
+                                                            </td>
+                                                            <td>{tramite.setor_envia}</td>
+                                                            <td>{tramite.setor_recebe}</td>
+                                                            <td>{tramite.tra_observacao}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </fieldset>
+                                    </div>
+                                ) : null}
+                            </ContainerArquivos>
+                        </Form>
+                    </Main>
+                </Container>
+            ) : null}
         </DefaultLayout>
     );
 }

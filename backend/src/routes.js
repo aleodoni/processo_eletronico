@@ -166,6 +166,8 @@ routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 
 // rotas de dados do processo
 routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.dadosProcesso);
+routes.get(`${process.env.API_URL}/processos-pessoa/:areaId/:usuario`, DadosProcessoController.processosPessoais);
+routes.get(`${process.env.API_URL}/processos-area/:areaId`, DadosProcessoController.processosArea);
 routes.post(`${process.env.API_URL}/processo-por-codigo`, DadosProcessoController.processoPorCodigo);
 
 // rotas do cadastro de fluxos
