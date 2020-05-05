@@ -23,12 +23,6 @@ module.exports = {
         onUpdate: 'NO ACTION',
         onDelete: 'NO ACTION'
       },
-      versao: {
-        type: Sequelize.INTEGER,
-        allowNull:false,
-        defaultValue: 0,
-        comment: 'Versao para lock otimista'
-      },
       area_id: {
         type: Sequelize.STRING(4),
         allowNull: false,
@@ -56,6 +50,12 @@ module.exports = {
         allowNull: false,
         defaultValue: false,
         comment: 'Indica se neste nó só precisa de um "aval" da comissão executiva na manifestação.'
+      },
+      versao: {
+        type: Sequelize.INTEGER,
+        allowNull:false,
+        defaultValue: 0,
+        comment: 'Versao para lock otimista'
       },
     },
     {
