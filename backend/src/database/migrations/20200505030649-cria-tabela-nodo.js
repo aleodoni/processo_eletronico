@@ -5,7 +5,6 @@ module.exports = {
     return queryInterface.createTable('nodo', {
       nod_id: {
         type: Sequelize.INTEGER,
-        defaultValue: "nextval('spa2.nodo_nod_id_seq')",
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
