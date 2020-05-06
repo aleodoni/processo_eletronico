@@ -1,16 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
 import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, ContainerDados, Main, Erro } from './styles';
+import { Container, Main, Erro } from './styles';
 import Input from '../../components/layout/Input';
-import ManifestacaoPublica from '../../components/system/select/ManifestacaoPublica';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
 import Limpar from '../../components/layout/button/Limpar';
@@ -19,25 +16,24 @@ import Table from '../../components/layout/Table';
 import FormLine from '../../components/layout/FormLine';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
-function TipoManifestacao() {
+function TipoDocumento() {
     const [erro, setErro] = useState('');
-    const [tipoManifestacao, setTipoManifestacao] = useState({
-        tmnId: undefined,
-        tmnNome: null,
-        tmnPublica: -1,
+    const [tipoDocumento, setTipoDocumento] = useState({
+        tpdId: undefined,
+        tpdNome: '',
     });
 
-    const [tiposManifestacao, setTiposManifestacao] = useState([]);
+    const [tiposDocumento, setTiposDocumento] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
 
     const formRef = useRef(null);
 
     useEffect(() => {
-        formRef.current.setData(tipoManifestacao);
-    }, [tipoManifestacao]);
+        formRef.current.setData(tipoDocumento);
+    }, [tipoDocumento]);
 
     function abreModalExcluir() {
-        if (tipoManifestacao.tmnNome !== null) {
+        if (tipoDocumento.tpdNome !== '') {
             setModalExcluir(true);
         }
     }
@@ -47,12 +43,12 @@ function TipoManifestacao() {
     }
 
     function limpaCampos() {
-        setTipoManifestacao({
-            ...tipoManifestacao,
-            tmnId: null,
-            tmnNome: null,
-            tmnPublica: '-1',
+        setTipoDocumento({
+            ...tipoDocumento,
+            tpdId: null,
+            tpdNome: '',
         });
+        setErro('');
 
         formRef.current.setErrors({});
     }
@@ -60,56 +56,54 @@ function TipoManifestacao() {
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
-        setTipoManifestacao({
-            ...tipoManifestacao,
-            tmnId: linha.tmn_id,
-            tmnNome: linha.tmn_nome,
-            tmnPublica: linha.tmn_publica,
+        setTipoDocumento({
+            ...tipoDocumento,
+            tpdId: linha.tpd_id,
+            tpdNome: linha.tpd_nome,
         });
     }
 
     function carregaGrid() {
         axios({
             method: 'GET',
-            url: '/tipos-manifestacao',
+            url: '/tipos-documento',
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setTiposManifestacao(res.data);
+                setTiposDocumento(res.data);
             })
-            .catch(() => {
+            .catch(err => {
+                console.log(err);
                 setErro('Erro ao carregar registros.');
             });
     }
 
     useEffect(() => {
         async function carrega() {
-            await carregaGrid();
+            carregaGrid();
         }
         carrega();
     }, []);
 
-    async function grava({ tmnId, tmnNome, tmnPublica }) {
+    async function grava({ tpdId, tpdNome }) {
         try {
             const schema = Yup.object().shape({
-                tmnNome: Yup.string()
+                tpdNome: Yup.string()
                     .max(100, 'Tamanho máximo 100 caracteres')
-                    .required('Tipo de manifestação é obrigatória'),
-                tmnPublica: Yup.boolean().oneOf([true, false], 'Selecione pública ou não'),
+                    .required('Nome do tipo de documento é obrigatório'),
             });
 
-            await schema.validate({ tmnId, tmnNome, tmnPublica }, { abortEarly: false });
+            await schema.validate({ tpdId, tpdNome }, { abortEarly: false });
 
-            if (!tmnId) {
+            if (!tpdId) {
                 axios({
                     method: 'POST',
-                    url: '/tipos-manifestacao',
+                    url: '/tipos-documento',
                     data: {
-                        tmn_id: null,
-                        tmn_nome: tmnNome,
-                        tmn_publica: tmnPublica,
+                        tpd_id: null,
+                        tpd_nome: tpdNome,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -126,10 +120,9 @@ function TipoManifestacao() {
             } else {
                 axios({
                     method: 'PUT',
-                    url: `tipos-manifestacao/${tmnId}`,
+                    url: `tipos-documento/${tpdId}`,
                     data: {
-                        tmn_nome: tmnNome,
-                        tmn_publica: tmnPublica,
+                        tpd_nome: tpdNome,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -160,7 +153,7 @@ function TipoManifestacao() {
     function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `tipos-manifestacao/${id}`,
+            url: `tipos-documento/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -178,25 +171,20 @@ function TipoManifestacao() {
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Tipos de manifestação" />
+                <Autorizacao tela="Tipos de documento" />
                 <Main>
                     <Erro>{erro}</Erro>
-                    <Form ref={formRef} initialData={tipoManifestacao} onSubmit={grava}>
-                        <Input name="tmnId" type="hidden" />
-                        <ContainerDados>
-                            <FormLine>
-                                <Input
-                                    name="tmnNome"
-                                    label="Nome"
-                                    type="text"
-                                    autoFocus
-                                    maxLength="100"
-                                />
-                            </FormLine>
-                            <FormLine>
-                                <ManifestacaoPublica name="tmnPublica" />
-                            </FormLine>
-                        </ContainerDados>
+                    <Form ref={formRef} initialData={tipoDocumento} onSubmit={grava}>
+                        <Input name="tpdId" type="hidden" />
+                        <FormLine>
+                            <Input
+                                name="tpdNome"
+                                label="Nome"
+                                type="text"
+                                autoFocus
+                                maxLength="100"
+                            />
+                        </FormLine>
                         <ButtonContainer>
                             <Salvar name="btnSalva" type="submit" />
 
@@ -206,11 +194,8 @@ function TipoManifestacao() {
                         </ButtonContainer>
                     </Form>
                     <Table
-                        columns={[
-                            { title: 'Nome', field: 'tmn_nome' },
-                            { title: 'Publica', field: 'publica' },
-                        ]}
-                        data={tiposManifestacao}
+                        columns={[{ title: 'Tipo de documento', field: 'tpd_nome' }]}
+                        data={tiposDocumento}
                         fillData={preencheCampos}
                     />
                 </Main>
@@ -218,11 +203,11 @@ function TipoManifestacao() {
                     modalExcluir={modalExcluir}
                     fechaModalExcluir={fechaModalExcluir}
                     apaga={apaga}
-                    id={tipoManifestacao.tmnId}
+                    id={tipoDocumento.tpdId}
                 />
             </Container>
         </DefaultLayout>
     );
 }
 
-export default TipoManifestacao;
+export default TipoDocumento;

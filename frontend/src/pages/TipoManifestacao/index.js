@@ -1,12 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
+
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro } from './styles';
+import { Container, ContainerDados, Main, Erro } from './styles';
 import Input from '../../components/layout/Input';
+import ManifestacaoPublica from '../../components/system/select/ManifestacaoPublica';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
 import Limpar from '../../components/layout/button/Limpar';
@@ -15,23 +19,25 @@ import Table from '../../components/layout/Table';
 import FormLine from '../../components/layout/FormLine';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
-function Fluxo() {
+function TipoManifestacao() {
     const [erro, setErro] = useState('');
-    const [fluxo, setFluxo] = useState({
-        fluId: undefined,
-        fluNome: '',
+    const [tipoManifestacao, setTipoManifestacao] = useState({
+        tmnId: undefined,
+        tmnNome: '',
+        tmnPublica: -1,
     });
-    const [fluxos, setFluxos] = useState([]);
+
+    const [tiposManifestacao, setTiposManifestacao] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
 
     const formRef = useRef(null);
 
     useEffect(() => {
-        formRef.current.setData(fluxo);
-    }, [fluxo]);
+        formRef.current.setData(tipoManifestacao);
+    }, [tipoManifestacao]);
 
     function abreModalExcluir() {
-        if (fluxo.fluNome !== '') {
+        if (tipoManifestacao.tmnNome !== '') {
             setModalExcluir(true);
         }
     }
@@ -41,10 +47,11 @@ function Fluxo() {
     }
 
     function limpaCampos() {
-        setFluxo({
-            ...fluxo,
-            fluId: null,
-            fluNome: '',
+        setTipoManifestacao({
+            ...tipoManifestacao,
+            tmnId: null,
+            tmnNome: '',
+            tmnPublica: '-1',
         });
         setErro('');
 
@@ -54,23 +61,24 @@ function Fluxo() {
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
-        setFluxo({
-            ...fluxo,
-            fluId: linha.flu_id,
-            fluNome: linha.flu_nome,
+        setTipoManifestacao({
+            ...tipoManifestacao,
+            tmnId: linha.tmn_id,
+            tmnNome: linha.tmn_nome,
+            tmnPublica: linha.tmn_publica,
         });
     }
 
     function carregaGrid() {
         axios({
             method: 'GET',
-            url: '/fluxos',
+            url: '/tipos-manifestacao',
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setFluxos(res.data);
+                setTiposManifestacao(res.data);
             })
             .catch(() => {
                 setErro('Erro ao carregar registros.');
@@ -79,28 +87,30 @@ function Fluxo() {
 
     useEffect(() => {
         async function carrega() {
-            carregaGrid();
+            await carregaGrid();
         }
         carrega();
     }, []);
 
-    async function grava({ fluId, fluNome }) {
+    async function grava({ tmnId, tmnNome, tmnPublica }) {
         try {
             const schema = Yup.object().shape({
-                fluNome: Yup.string()
+                tmnNome: Yup.string()
                     .max(100, 'Tamanho máximo 100 caracteres')
-                    .required('Nome do fluxo é obrigatório'),
+                    .required('Tipo de manifestação é obrigatória'),
+                tmnPublica: Yup.boolean().oneOf([true, false], 'Selecione pública ou não'),
             });
 
-            await schema.validate({ fluId, fluNome }, { abortEarly: false });
+            await schema.validate({ tmnId, tmnNome, tmnPublica }, { abortEarly: false });
 
-            if (!fluId) {
+            if (!tmnId) {
                 axios({
                     method: 'POST',
-                    url: '/fluxos',
+                    url: '/tipos-manifestacao',
                     data: {
-                        flu_id: null,
-                        flu_nome: fluNome,
+                        tmn_id: null,
+                        tmn_nome: tmnNome,
+                        tmn_publica: tmnPublica,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -117,9 +127,10 @@ function Fluxo() {
             } else {
                 axios({
                     method: 'PUT',
-                    url: `fluxos/${fluId}`,
+                    url: `tipos-manifestacao/${tmnId}`,
                     data: {
-                        flu_nome: fluNome,
+                        tmn_nome: tmnNome,
+                        tmn_publica: tmnPublica,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -150,7 +161,7 @@ function Fluxo() {
     function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `fluxos/${id}`,
+            url: `tipos-manifestacao/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -168,20 +179,25 @@ function Fluxo() {
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Fluxos" />
+                <Autorizacao tela="Tipos de manifestação" />
                 <Main>
                     <Erro>{erro}</Erro>
-                    <Form ref={formRef} initialData={fluxo} onSubmit={grava}>
-                        <Input name="fluId" type="hidden" />
-                        <FormLine>
-                            <Input
-                                name="fluNome"
-                                label="Nome"
-                                type="text"
-                                autoFocus
-                                maxLength="100"
-                            />
-                        </FormLine>
+                    <Form ref={formRef} initialData={tipoManifestacao} onSubmit={grava}>
+                        <Input name="tmnId" type="hidden" />
+                        <ContainerDados>
+                            <FormLine>
+                                <Input
+                                    name="tmnNome"
+                                    label="Nome"
+                                    type="text"
+                                    autoFocus
+                                    maxLength="100"
+                                />
+                            </FormLine>
+                            <FormLine>
+                                <ManifestacaoPublica name="tmnPublica" />
+                            </FormLine>
+                        </ContainerDados>
                         <ButtonContainer>
                             <Salvar name="btnSalva" type="submit" />
 
@@ -190,10 +206,12 @@ function Fluxo() {
                             <Limpar name="btnLimpa" clickHandler={limpaCampos} />
                         </ButtonContainer>
                     </Form>
-
                     <Table
-                        columns={[{ title: 'Nome', field: 'flu_nome' }]}
-                        data={fluxos}
+                        columns={[
+                            { title: 'Nome', field: 'tmn_nome' },
+                            { title: 'Publica', field: 'publica' },
+                        ]}
+                        data={tiposManifestacao}
                         fillData={preencheCampos}
                     />
                 </Main>
@@ -201,11 +219,11 @@ function Fluxo() {
                     modalExcluir={modalExcluir}
                     fechaModalExcluir={fechaModalExcluir}
                     apaga={apaga}
-                    id={fluxo.fluId}
+                    id={tipoManifestacao.tmnId}
                 />
             </Container>
         </DefaultLayout>
     );
 }
 
-export default Fluxo;
+export default TipoManifestacao;
