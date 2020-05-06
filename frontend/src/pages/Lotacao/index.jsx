@@ -7,7 +7,15 @@ import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import Menu from '../../components/Menu';
 import { tabelas } from '../../configs/tabelas';
-import { Container, Container1, Container2, ContainerBotoes, AsideLeft, Main, Erro } from './styles';
+import {
+    Container,
+    Container1,
+    Container2,
+    ContainerBotoes,
+    AsideLeft,
+    Main,
+    Erro,
+} from './styles';
 import Header from '../../components/Header';
 
 function Lotacao() {
@@ -68,7 +76,10 @@ function Lotacao() {
                 );
                 for (let i = 0; i < res.data.length; i++) {
                     comboSetor.push(
-                        <option key={res.data[i].set_id} data-key={res.data[i].set_id} value={res.data[i].set_id}>
+                        <option
+                            key={res.data[i].set_id}
+                            data-key={res.data[i].set_id}
+                            value={res.data[i].set_id}>
                             {res.data[i].set_nome.substring(0, 140)}
                         </option>
                     );
@@ -194,15 +205,40 @@ function Lotacao() {
                             <Container1>
                                 <fieldset>
                                     <legend>Matrícula</legend>
-                                    <input required id="matricula" type="text" value={matricula} autoFocus onChange={handleMatricula} size="6" maxLength="5" />
+                                    <input
+                                        required
+                                        id="matricula"
+                                        type="text"
+                                        value={matricula}
+                                        autoFocus
+                                        onChange={handleMatricula}
+                                        size="6"
+                                        maxLength="5"
+                                    />
                                 </fieldset>
                                 <fieldset>
                                     <legend>Nome</legend>
-                                    <input required id="pesNome" type="text" value={pesNome} onChange={handlePesNome} size="74" maxLength="80" />
+                                    <input
+                                        required
+                                        id="pesNome"
+                                        type="text"
+                                        value={pesNome}
+                                        onChange={handlePesNome}
+                                        size="74"
+                                        maxLength="80"
+                                    />
                                 </fieldset>
                                 <fieldset>
                                     <legend>Login</legend>
-                                    <input required id="pesLogin" type="text" value={pesLogin} onChange={handlePesLogin} size="25" maxLength="25" />
+                                    <input
+                                        required
+                                        id="pesLogin"
+                                        type="text"
+                                        value={pesLogin}
+                                        onChange={handlePesLogin}
+                                        size="25"
+                                        maxLength="25"
+                                    />
                                 </fieldset>
                             </Container1>
                             <Container2>
@@ -239,7 +275,13 @@ function Lotacao() {
                                 {
                                     icon: () => <FaRegEdit />,
                                     tooltip: 'Editar',
-                                    onClick: (_event, linha) => preencheCampos(linha.set_id, linha.matricula, linha.pes_nome, linha.pes_login),
+                                    onClick: (_event, linha) =>
+                                        preencheCampos(
+                                            linha.set_id,
+                                            linha.matricula,
+                                            linha.pes_nome,
+                                            linha.pes_login
+                                        ),
                                 },
                             ]}
                             options={tabelas.opcoes}
@@ -248,7 +290,12 @@ function Lotacao() {
                         />
                     </fieldset>
                 </Main>
-                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={matricula} />
+                <ModalApaga
+                    modalExcluir={modalExcluir}
+                    fechaModalExcluir={fechaModalExcluir}
+                    apaga={apaga}
+                    id={matricula}
+                />
             </Container>
         </>
     );

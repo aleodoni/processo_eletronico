@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
@@ -15,23 +16,24 @@ import Table from '../../components/layout/Table';
 import FormLine from '../../components/layout/FormLine';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
-function Fluxo() {
+function TipoDocumento() {
     const [erro, setErro] = useState('');
-    const [fluxo, setFluxo] = useState({
-        fluId: undefined,
-        fluNome: '',
+    const [tipoDocumento, setTipoDocumento] = useState({
+        tpdId: undefined,
+        tpdNome: '',
     });
-    const [fluxos, setFluxos] = useState([]);
+
+    const [tiposDocumento, setTiposDocumento] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
 
     const formRef = useRef(null);
 
     useEffect(() => {
-        formRef.current.setData(fluxo);
-    }, [fluxo]);
+        formRef.current.setData(tipoDocumento);
+    }, [tipoDocumento]);
 
     function abreModalExcluir() {
-        if (fluxo.fluNome !== '') {
+        if (tipoDocumento.tpdNome !== '') {
             setModalExcluir(true);
         }
     }
@@ -41,10 +43,10 @@ function Fluxo() {
     }
 
     function limpaCampos() {
-        setFluxo({
-            ...fluxo,
-            fluId: null,
-            fluNome: '',
+        setTipoDocumento({
+            ...tipoDocumento,
+            tpdId: null,
+            tpdNome: '',
         });
         setErro('');
 
@@ -54,25 +56,26 @@ function Fluxo() {
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
-        setFluxo({
-            ...fluxo,
-            fluId: linha.flu_id,
-            fluNome: linha.flu_nome,
+        setTipoDocumento({
+            ...tipoDocumento,
+            tpdId: linha.tpd_id,
+            tpdNome: linha.tpd_nome,
         });
     }
 
     function carregaGrid() {
         axios({
             method: 'GET',
-            url: '/fluxos',
+            url: '/tipos-documento',
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setFluxos(res.data);
+                setTiposDocumento(res.data);
             })
-            .catch(() => {
+            .catch(err => {
+                console.log(err);
                 setErro('Erro ao carregar registros.');
             });
     }
@@ -84,23 +87,23 @@ function Fluxo() {
         carrega();
     }, []);
 
-    async function grava({ fluId, fluNome }) {
+    async function grava({ tpdId, tpdNome }) {
         try {
             const schema = Yup.object().shape({
-                fluNome: Yup.string()
+                tpdNome: Yup.string()
                     .max(100, 'Tamanho máximo 100 caracteres')
-                    .required('Nome do fluxo é obrigatório'),
+                    .required('Nome do tipo de documento é obrigatório'),
             });
 
-            await schema.validate({ fluId, fluNome }, { abortEarly: false });
+            await schema.validate({ tpdId, tpdNome }, { abortEarly: false });
 
-            if (!fluId) {
+            if (!tpdId) {
                 axios({
                     method: 'POST',
-                    url: '/fluxos',
+                    url: '/tipos-documento',
                     data: {
-                        flu_id: null,
-                        flu_nome: fluNome,
+                        tpd_id: null,
+                        tpd_nome: tpdNome,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -117,9 +120,9 @@ function Fluxo() {
             } else {
                 axios({
                     method: 'PUT',
-                    url: `fluxos/${fluId}`,
+                    url: `tipos-documento/${tpdId}`,
                     data: {
-                        flu_nome: fluNome,
+                        tpd_nome: tpdNome,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -150,7 +153,7 @@ function Fluxo() {
     function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `fluxos/${id}`,
+            url: `tipos-documento/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -168,14 +171,14 @@ function Fluxo() {
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Fluxos" />
+                <Autorizacao tela="Tipos de documento" />
                 <Main>
                     <Erro>{erro}</Erro>
-                    <Form ref={formRef} initialData={fluxo} onSubmit={grava}>
-                        <Input name="fluId" type="hidden" />
+                    <Form ref={formRef} initialData={tipoDocumento} onSubmit={grava}>
+                        <Input name="tpdId" type="hidden" />
                         <FormLine>
                             <Input
-                                name="fluNome"
+                                name="tpdNome"
                                 label="Nome"
                                 type="text"
                                 autoFocus
@@ -190,10 +193,9 @@ function Fluxo() {
                             <Limpar name="btnLimpa" clickHandler={limpaCampos} />
                         </ButtonContainer>
                     </Form>
-
                     <Table
-                        columns={[{ title: 'Nome', field: 'flu_nome' }]}
-                        data={fluxos}
+                        columns={[{ title: 'Tipo de documento', field: 'tpd_nome' }]}
+                        data={tiposDocumento}
                         fillData={preencheCampos}
                     />
                 </Main>
@@ -201,11 +203,11 @@ function Fluxo() {
                     modalExcluir={modalExcluir}
                     fechaModalExcluir={fechaModalExcluir}
                     apaga={apaga}
-                    id={fluxo.fluId}
+                    id={tipoDocumento.tpdId}
                 />
             </Container>
         </DefaultLayout>
     );
 }
 
-export default Fluxo;
+export default TipoDocumento;
