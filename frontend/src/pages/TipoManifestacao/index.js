@@ -23,7 +23,7 @@ function TipoManifestacao() {
     const [erro, setErro] = useState('');
     const [tipoManifestacao, setTipoManifestacao] = useState({
         tmnId: undefined,
-        tmnNome: null,
+        tmnNome: '',
         tmnPublica: -1,
     });
 
@@ -37,7 +37,7 @@ function TipoManifestacao() {
     }, [tipoManifestacao]);
 
     function abreModalExcluir() {
-        if (tipoManifestacao.tmnNome !== null) {
+        if (tipoManifestacao.tmnNome !== '') {
             setModalExcluir(true);
         }
     }
@@ -50,9 +50,10 @@ function TipoManifestacao() {
         setTipoManifestacao({
             ...tipoManifestacao,
             tmnId: null,
-            tmnNome: null,
+            tmnNome: '',
             tmnPublica: '-1',
         });
+        setErro('');
 
         formRef.current.setErrors({});
     }
