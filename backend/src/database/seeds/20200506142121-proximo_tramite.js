@@ -193,7 +193,6 @@ module.exports = {
                 versao: 0,
                 flu_id: 14
             }
-
         ],
         {}
     ),
