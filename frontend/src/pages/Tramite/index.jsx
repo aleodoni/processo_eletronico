@@ -7,7 +7,7 @@ import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import ModalTramita from '../../components/ModalTramita';
 import Menu from '../../components/Menu';
-import { Container, AsideLeft, BotaoComoLink, TextoCamposArea, Main, Erro } from './styles';
+import { Container, AsideLeft, BotaoComoLink, Main, Erro } from './styles';
 import Header from '../../components/Header';
 
 function Tramite(props) {

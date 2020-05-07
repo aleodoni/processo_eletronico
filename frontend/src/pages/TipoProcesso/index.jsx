@@ -2,10 +2,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
+import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Container1, Container2, ContainerBotoes, Main, Erro } from './styles';
+import { Container, Container1, Container2, Main, Erro } from './styles';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
@@ -16,56 +17,67 @@ import Excluir from '../../components/layout/button/Excluir';
 import Limpar from '../../components/layout/button/Limpar';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
+import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
 function TipoProcesso() {
     const [erro, setErro] = useState('');
-    const [tprId, setTprId] = useState(undefined);
-    const [tprNome, setTprNome] = useState('');
-    const [tprVisualizacao, setTprVisualizacao] = useState('');
-    const [genId, setGenId] = useState('');
-    const [fluId, setFluId] = useState('');
+    const [tipoProcesso, setTipoProcesso] = useState({
+        tprId: undefined,
+        tprNome: null,
+        tprVisualizacao: -1,
+        genId: -1,
+        fluId: -1,
+        tprPessoal: -1,
+    });
+
     const [tiposProcesso, setTiposProcesso] = useState([]);
     const [generos, setGeneros] = useState([]);
     const [fluxos, setFluxos] = useState([]);
-    const [tprPessoal, setTprPessoal] = useState('');
     const [modalExcluir, setModalExcluir] = useState(false);
 
     const formRef = useRef(null);
 
+    useEffect(() => {
+        formRef.current.setData(tipoProcesso);
+    }, [tipoProcesso]);
+
     function abreModalExcluir() {
-        if (tprNome === '') {
-            setErro('Selecione um registro para apagar.');
-            return;
+        if (tipoProcesso.tprId !== undefined) {
+            setModalExcluir(true);
         }
-        setModalExcluir(true);
     }
 
     function fechaModalExcluir() {
         setModalExcluir(false);
     }
 
-    function handleTprId(e) {
-        setTprId(e.target.value);
+    function limpaCampos() {
+        setTipoProcesso({
+            ...tipoProcesso,
+            tprId: undefined,
+            tprNome: null,
+            tprVisualizacao: -1,
+            genId: -1,
+            fluId: -1,
+            tprPessoal: -1,
+        });
+        setErro('');
+
+        formRef.current.setErrors({});
     }
 
-    function handleTprNome(e) {
-        setTprNome(e.target.value);
-    }
+    function preencheCampos(linha) {
+        formRef.current.setErrors({});
 
-    function handleTprVisualizacao(e) {
-        setTprVisualizacao(e.value);
-    }
-
-    function handleGenId(e) {
-        setGenId(e.value);
-    }
-
-    function handleFluId(e) {
-        setFluId(e.value);
-    }
-
-    function handleTprPessoal(e) {
-        setTprPessoal(e.value);
+        setTipoProcesso({
+            ...tipoProcesso,
+            tprId: linha.tpr_id,
+            tprNome: linha.tpr_nome,
+            tprVisualizacao: linha.tpr_visualizacao,
+            genId: linha.gen_id,
+            fluId: linha.flu_id,
+            tprPessoal: linha.tpr_pessoal,
+        });
     }
 
     async function carregaGenero() {
@@ -105,25 +117,6 @@ function TipoProcesso() {
         }
     }
 
-    function limpaCampos() {
-        setTprId(undefined);
-        setTprNome('');
-        setTprVisualizacao('');
-        setGenId('');
-        setFluId('');
-        setTprPessoal('');
-        setErro('');
-    }
-
-    function preencheCampos(linha) {
-        setTprId(linha.tpr_id);
-        setTprNome(linha.tpr_nome);
-        setTprVisualizacao(linha.tpr_visualizacao);
-        setGenId(linha.gen_id);
-        setFluId(linha.flu_id);
-        setTprPessoal(linha.tpr_pessoal);
-    }
-
     function carregaGrid() {
         axios({
             method: 'GET',
@@ -150,70 +143,82 @@ function TipoProcesso() {
         carrega();
     }, []);
 
-    function grava() {
-        if (tprNome.trim() === '') {
-            setErro('Tipo de processo em branco.');
-            return;
-        }
-        if (tprVisualizacao === undefined) {
-            setErro('Visualização não selecionada.');
-            return;
-        }
-        if (genId === '') {
-            setErro('Gênero não selecionado.');
-            return;
-        }
-        if (tprPessoal === '') {
-            setErro('Selecione se é pessoal ou não.');
-            return;
-        }
-        if (tprId === undefined) {
-            axios({
-                method: 'POST',
-                url: '/tipos-processo',
-                data: {
-                    tpr_id: null,
-                    tpr_visualizacao: tprVisualizacao,
-                    tpr_nome: tprNome,
-                    gen_id: genId,
-                    flu_id: fluId,
-                    tpr_pessoal: tprPessoal,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid();
-                    mensagem.success('Inserido com sucesso.');
+    async function grava({ tprId, tprNome, tprVisualizacao, genId, fluId, tprPessoal }) {
+        try {
+            const schema = Yup.object().shape({
+                tprNome: Yup.string()
+                    .max(150, 'Tamanho máximo 150 caracteres')
+                    .required('Nome é obrigatório'),
+
+                tprVisualizacao: Yup.number().oneOf([0, 1, 2], 'Visualização é obrigatória'),
+                genId: Yup.number().positive('Gênero é obrigatório'),
+                fluId: Yup.number().positive('Fluxo é obrigatório'),
+                tprPessoal: Yup.boolean().oneOf([true, false], 'Selecione se é pessoal'),
+            });
+
+            await schema.validate(
+                { tprId, tprNome, tprVisualizacao, genId, fluId, tprPessoal },
+                { abortEarly: false }
+            );
+
+            if (!tprId) {
+                axios({
+                    method: 'POST',
+                    url: '/tipos-processo',
+                    data: {
+                        tpr_id: null,
+                        tpr_nome: tprNome,
+                        tpr_visualizacao: tprVisualizacao,
+                        gen_id: genId,
+                        flu_id: fluId,
+                        tpr_pessoal: tprPessoal,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao inserir registro.');
-                });
-        } else {
-            axios({
-                method: 'PUT',
-                url: `tipos-processo/${tprId}`,
-                data: {
-                    tpr_visualizacao: tprVisualizacao,
-                    tpr_nome: tprNome,
-                    gen_id: genId,
-                    flu_id: fluId,
-                    tpr_pessoal: tprPessoal,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid();
-                    mensagem.success('Editado com sucesso.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid();
+                        mensagem.success('Inserido com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao inserir registro.');
+                    });
+            } else {
+                axios({
+                    method: 'PUT',
+                    url: `tipos-processo/${tprId}`,
+                    data: {
+                        tpr_nome: tprNome,
+                        tpr_visualizacao: tprVisualizacao,
+                        gen_id: genId,
+                        flu_id: fluId,
+                        tpr_pessoal: tprPessoal,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao editar registro.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid();
+                        mensagem.success('Editado com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao editar registro');
+                    });
+            }
+        } catch (err) {
+            const validationErrors = {};
+
+            if (err instanceof Yup.ValidationError) {
+                err.inner.forEach(error => {
+                    validationErrors[error.path] = error.message;
                 });
+
+                formRef.current.setErrors(validationErrors);
+            }
         }
     }
 
@@ -241,26 +246,33 @@ function TipoProcesso() {
                 <Autorizacao tela="Tipos de processo" />
                 <Main>
                     <Erro>{erro}</Erro>
-                    <Form ref={formRef}>
-                        <input id="tprId" value={tprId} onChange={handleTprId} type="hidden" />
+                    <Form ref={formRef} initialData={tipoProcesso} onSubmit={grava}>
+                        <Input name="tprId" type="hidden" />
                         <Container1>
-                            <Input required name="tprNome" label="Tipo" type="text" value={tprNome} onChange={handleTprNome} size="100" maxLength="100" />
-                            <Visualizacao name="selectVisualizacao" val={tprVisualizacao} onChange={handleTprVisualizacao} />
+                            <Input
+                                name="tprNome"
+                                label="Nome"
+                                type="text"
+                                autoFocus
+                                maxLength="150"
+                            />
+                            <Visualizacao name="tprVisualizacao" />
                         </Container1>
                         <Container2>
-                            <Select id="selectGenero" name="selectGenero" label="Gênero" options={generos} onChange={handleGenId} value={generos.filter(({ value }) => value === genId)} />
-                            <Select id="selectFluxo" name="selectFluxo" label="Fluxo" options={fluxos} onChange={handleFluId} value={fluxos.filter(({ value }) => value === fluId)} />
-                            <Pessoal name="selectPessoal" val={tprPessoal} changeHandler={handleTprPessoal} />
+                            <Select name="genId" label="Gênero" size={3} options={generos} />
+                            <Select name="fluId" label="Fluxo" size={3} options={fluxos} />
+                            <Pessoal name="tprPessoal" />
                         </Container2>
+                        <ButtonContainer>
+                            <Salvar name="btnSalva" clickHandler={grava} />
+
+                            <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
+
+                            <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+                        </ButtonContainer>
                     </Form>
                     <br />
-                    <ContainerBotoes>
-                        <Salvar name="btnSalva" clickHandler={grava} />
 
-                        <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
-
-                        <Limpar name="btnLimpa" clickHandler={limpaCampos} />
-                    </ContainerBotoes>
                     <Table
                         columns={[
                             { title: 'Tipo', field: 'tpr_nome' },
@@ -273,7 +285,12 @@ function TipoProcesso() {
                         fillData={preencheCampos}
                     />
                 </Main>
-                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={tprId} />
+                <ModalApaga
+                    modalExcluir={modalExcluir}
+                    fechaModalExcluir={fechaModalExcluir}
+                    apaga={apaga}
+                    id={tipoProcesso.tprId}
+                />
             </Container>
         </DefaultLayout>
     );

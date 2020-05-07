@@ -120,6 +120,7 @@ function Lotacao() {
         try {
             const schema = Yup.object().shape({
                 matricula: Yup.string()
+                    .matches(/^[0-9]*$/, 'Somente números')
                     .max(5, 'Tamanho máximo 5 caracteres')
                     .required('Matrícula é obrigatória'),
                 setId: Yup.number().positive('Setor é obrigatório'),

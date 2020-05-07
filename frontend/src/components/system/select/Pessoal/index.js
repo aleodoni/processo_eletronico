@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Select from '../../../layout/Select';
 
-export default function Pessoal({ name, val, changeHandler, ...rest }) {
+export default function Pessoal({ name, changeHandler, ...rest }) {
   const options = [
     {
       label: 'Sim',
@@ -16,25 +16,15 @@ export default function Pessoal({ name, val, changeHandler, ...rest }) {
   ];
 
   return (
-    <Select
-      id={name}
-      name={name}
-      label="Pessoal"
-      options={options}
-      value={options.filter(({ value }) => value === val)}
-      onChange={changeHandler}
-      {...rest}
-    />
+    <Select name={name} label="Pessoal" options={options} onChange={changeHandler} {...rest} />
   );
 }
 
 Pessoal.propTypes = {
   name: PropTypes.string.isRequired,
   changeHandler: PropTypes.func,
-  val: PropTypes.string,
 };
 
 Pessoal.defaultProps = {
-  val: null,
   changeHandler: null,
 };
