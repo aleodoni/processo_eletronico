@@ -35,25 +35,9 @@ export const Erro = styled.div`
 export const Container1 = styled.div`
     display: grid;
     grid-template-columns: 450px 200px;
-    grid-template-rows: 70px;
-    margin-bottom: 10px;
 `;
 
 export const Container2 = styled.div`
     display: grid;
     grid-template-columns: 280px 570px 180px;
-`;
-
-export const ContainerBotoes = styled.div`
-    display: grid;
-    grid-template-columns: 110px 110px 170px;
-    margin-top: 10px;
-    margin-bottom: 20px;
-    margin-left: 5px;
-`;
-
-export const CustomSelect = styled.select`
-    position: relative;
-    font-size: 14px;
-    cursor: pointer;
 `;

@@ -1,48 +1,43 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
+
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Container1, Container2, Main, Erro } from './styles';
+import { Container, Main, Erro } from './styles';
 import api from '../../service/api';
-import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
-import Pessoal from '../../components/system/select/Pessoal';
-import Visualizacao from '../../components/system/select/Visualizacao';
+import Input from '../../components/layout/Input';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
 import Limpar from '../../components/layout/button/Limpar';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
+import FormLine from '../../components/layout/FormLine';
 
-function TipoProcesso() {
+function AreaMenu() {
     const [erro, setErro] = useState('');
-    const [tipoProcesso, setTipoProcesso] = useState({
-        tprId: undefined,
-        tprNome: null,
-        tprVisualizacao: -1,
-        genId: -1,
-        fluId: -1,
-        tprPessoal: -1,
+    const [areaMenu, setAreaMenu] = useState({
+        amuId: undefined,
+        setId: -1,
+        mmuId: -1,
     });
-
-    const [tiposProcesso, setTiposProcesso] = useState([]);
-    const [generos, setGeneros] = useState([]);
-    const [fluxos, setFluxos] = useState([]);
+    const [setores, setSetores] = useState([]);
+    const [modelosMenu, setModelosMenu] = useState([]);
+    const [areasMenu, setAreasMenu] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
 
     const formRef = useRef(null);
 
     useEffect(() => {
-        formRef.current.setData(tipoProcesso);
-    }, [tipoProcesso]);
+        formRef.current.setData(areaMenu);
+    }, [areaMenu]);
 
     function abreModalExcluir() {
-        if (tipoProcesso.tprId !== undefined) {
+        if (areaMenu.amuId !== undefined) {
             setModalExcluir(true);
         }
     }
@@ -52,14 +47,11 @@ function TipoProcesso() {
     }
 
     function limpaCampos() {
-        setTipoProcesso({
-            ...tipoProcesso,
-            tprId: undefined,
-            tprNome: null,
-            tprVisualizacao: -1,
-            genId: -1,
-            fluId: -1,
-            tprPessoal: -1,
+        setAreaMenu({
+            ...areaMenu,
+            amuId: undefined,
+            setId: -1,
+            mmuId: -1,
         });
         setErro('');
 
@@ -69,49 +61,47 @@ function TipoProcesso() {
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
-        setTipoProcesso({
-            ...tipoProcesso,
-            tprId: linha.tpr_id,
-            tprNome: linha.tpr_nome,
-            tprVisualizacao: linha.tpr_visualizacao,
-            genId: linha.gen_id,
-            fluId: linha.flu_id,
-            tprPessoal: linha.tpr_pessoal,
+        setAreaMenu({
+            ...areaMenu,
+            amuId: linha.amu_id,
+            setId: linha.set_id,
+            mmuId: linha.mmu_id,
         });
     }
 
-    async function carregaGenero() {
+    async function carregaArea() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get('/generos');
+            const response = await api.get('/area');
 
-            const data = response.data.map(genero => {
+            const data = response.data.map(area => {
                 return {
-                    label: genero.gen_nome,
-                    value: genero.gen_id,
+                    label: area.set_nome,
+                    value: area.set_id,
                 };
             });
-            setGeneros(data);
+
+            setSetores(data);
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
         }
     }
 
-    async function carregaFluxo() {
+    async function carregaModelosMenu() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get('/fluxos');
+            const response = await api.get('/modelo-menu');
 
-            const data = response.data.map(fluxo => {
+            const data = response.data.map(modelo => {
                 return {
-                    label: fluxo.flu_nome,
-                    value: fluxo.flu_id,
+                    label: modelo.mmu_nome,
+                    value: modelo.mmu_id,
                 };
             });
 
-            setFluxos(data);
+            setModelosMenu(data);
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
         }
@@ -120,58 +110,45 @@ function TipoProcesso() {
     function carregaGrid() {
         axios({
             method: 'GET',
-            url: '/tipos-de-processo',
+            url: '/areas-do-menu',
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setTiposProcesso(res.data);
+                setAreasMenu(res.data);
             })
-            .catch(err => {
-                console.log(err);
+            .catch(() => {
                 setErro('Erro ao carregar registros.');
             });
     }
 
     useEffect(() => {
         async function carrega() {
-            await carregaGenero();
-            await carregaFluxo();
+            await carregaArea();
+            await carregaModelosMenu();
             carregaGrid();
         }
         carrega();
     }, []);
 
-    async function grava({ tprId, tprNome, tprVisualizacao, genId, fluId, tprPessoal }) {
+    async function grava({ amuId, setId, mmuId }) {
         try {
             const schema = Yup.object().shape({
-                tprNome: Yup.string()
-                    .max(150, 'Tamanho máximo 150 caracteres')
-                    .required('Nome é obrigatório'),
-
-                tprVisualizacao: Yup.number().oneOf([0, 1, 2], 'Visualização é obrigatória'),
-                genId: Yup.number().positive('Gênero é obrigatório'),
-                fluId: Yup.number().positive('Fluxo é obrigatório'),
-                tprPessoal: Yup.boolean().oneOf([true, false], 'Selecione se é pessoal'),
+                setId: Yup.number().positive('Área é obrigatória'),
+                mmuId: Yup.number().positive('Modelo é obrigatório'),
             });
 
-            await schema.validate(
-                { tprId, tprNome, tprVisualizacao, genId, fluId, tprPessoal },
-                { abortEarly: false }
-            );
+            await schema.validate({ amuId, setId, mmuId }, { abortEarly: false });
 
-            if (!tprId) {
+            if (!amuId) {
                 axios({
                     method: 'POST',
-                    url: '/tipos-processo',
+                    url: '/area-menu',
                     data: {
-                        tpr_id: null,
-                        tpr_nome: tprNome,
-                        tpr_visualizacao: tprVisualizacao,
-                        gen_id: genId,
-                        flu_id: fluId,
-                        tpr_pessoal: tprPessoal,
+                        amu_id: amuId,
+                        set_id: setId,
+                        mmu_id: mmuId,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -188,13 +165,10 @@ function TipoProcesso() {
             } else {
                 axios({
                     method: 'PUT',
-                    url: `tipos-processo/${tprId}`,
+                    url: `area-menu/${amuId}`,
                     data: {
-                        tpr_nome: tprNome,
-                        tpr_visualizacao: tprVisualizacao,
-                        gen_id: genId,
-                        flu_id: fluId,
-                        tpr_pessoal: tprPessoal,
+                        set_id: setId,
+                        mmu_id: mmuId,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -225,7 +199,7 @@ function TipoProcesso() {
     function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `tipos-processo/${id}`,
+            url: `area-menu/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -243,45 +217,31 @@ function TipoProcesso() {
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Tipos de processo" />
+                <Autorizacao tela="Áreas de menu" />
                 <Main>
                     <Erro>{erro}</Erro>
-                    <Form ref={formRef} initialData={tipoProcesso} onSubmit={grava}>
-                        <Input name="tprId" type="hidden" />
-                        <Container1>
-                            <Input
-                                name="tprNome"
-                                label="Nome"
-                                type="text"
-                                autoFocus
-                                maxLength="150"
-                            />
-                            <Visualizacao name="tprVisualizacao" />
-                        </Container1>
-                        <Container2>
-                            <Select name="genId" label="Gênero" size={3} options={generos} />
-                            <Select name="fluId" label="Fluxo" size={3} options={fluxos} />
-                            <Pessoal name="tprPessoal" />
-                        </Container2>
+                    <Form ref={formRef} initialData={areaMenu} onSubmit={grava}>
+                        <Input name="amuId" type="hidden" />
+                        <FormLine>
+                            <Select name="setId" label="Área" options={setores} />
+                        </FormLine>
+                        <FormLine>
+                            <Select name="mmuId" label="Modelo" options={modelosMenu} />
+                        </FormLine>
                         <ButtonContainer>
-                            <Salvar name="btnSalva" clickHandler={grava} />
+                            <Salvar name="btnSalva" type="submit" />
 
                             <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
 
                             <Limpar name="btnLimpa" clickHandler={limpaCampos} />
                         </ButtonContainer>
                     </Form>
-                    <br />
-
                     <Table
                         columns={[
-                            { title: 'Tipo', field: 'tpr_nome' },
-                            { title: 'Visualização', field: 'visualizacao' },
-                            { title: 'Gênero', field: 'gen_nome' },
-                            { title: 'Fluxo', field: 'flu_nome' },
-                            { title: 'Pessoal', field: 'pessoal' },
+                            { title: 'Área', field: 'set_nome' },
+                            { title: 'Modelo', field: 'mmu_nome' },
                         ]}
-                        data={tiposProcesso}
+                        data={areasMenu}
                         fillData={preencheCampos}
                     />
                 </Main>
@@ -289,11 +249,11 @@ function TipoProcesso() {
                     modalExcluir={modalExcluir}
                     fechaModalExcluir={fechaModalExcluir}
                     apaga={apaga}
-                    id={tipoProcesso.tprId}
+                    id={areaMenu.amuId}
                 />
             </Container>
         </DefaultLayout>
     );
 }
 
-export default TipoProcesso;
+export default AreaMenu;
