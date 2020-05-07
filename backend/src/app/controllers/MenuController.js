@@ -61,7 +61,7 @@ class MenuController {
     }
 
     async store(req, res) {
-        if (req.body.men_id_pai === '') {
+        if (req.body.men_id_pai === '-1') {
             req.body.men_id_pai = null;
         }
         if (req.body.men_ordem_pai === '') {
@@ -105,7 +105,7 @@ class MenuController {
         if (!menu) {
             return res.status(400).json({ error: 'Menu não encontrado' });
         }
-        if (req.body.men_id_pai === '') {
+        if (req.body.men_id_pai === '-1') {
             req.body.men_id_pai = null;
         }
         if (req.body.men_ordem_pai === '') {
