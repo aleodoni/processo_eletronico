@@ -15,5 +15,9 @@ export default function Localizar({ name, clickHandler }) {
 
 Localizar.propTypes = {
     name: PropTypes.string.isRequired,
-    clickHandler: PropTypes.func.isRequired,
+    clickHandler: PropTypes.func,
+};
+
+Localizar.defaultProps = {
+    clickHandler: null,
 };

@@ -19,7 +19,8 @@ export const Main = styled.main`
 export const Erro = styled.div`
     font-size: 14px;
     color: red;
-    padding-bottom: 10px;
+    padding-top: 30px;
+    padding-left: 10px;
 `;
 
 export const ContainerConsultaManifestacao = styled.div`

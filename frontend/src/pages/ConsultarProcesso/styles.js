@@ -19,12 +19,13 @@ export const Main = styled.main`
 export const Erro = styled.div`
     font-size: 14px;
     color: red;
-    padding-bottom: 10px;
+    padding-top: 30px;
+    padding-left: 10px;
 `;
 
 export const ContainerConsultaProcesso = styled.div`
     display: grid;
-    grid-template-columns: 140px 120px 300px;
+    grid-template-columns: 160px 120px 300px;
     grid-gap: 5px;
     margin-bottom: 14px;
 
