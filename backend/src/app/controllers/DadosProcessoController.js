@@ -2,10 +2,11 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import VDadosProcesso from '../models/VDadosProcesso';
+import VProcessosPessoais from '../models/VProcessosPessoais';
+import VProcessosArea from '../models/VProcessosArea';
 
 class DadosProcessoController {
     async dadosProcesso(req, res) {
-        console.log('id: ' + req.params.id);
         const dadosProcesso = await VDadosProcesso.findAll({
             attributes: [
                 'pro_id',
@@ -45,7 +46,8 @@ class DadosProcessoController {
                 'area_iniciativa_processo',
                 'setor_autuador_processo',
                 'setor_finalizador_processo',
-                'visualizacao'
+                'visualizacao',
+                'nod_aval_executiva'
             ],
             logging: true,
             plain: true,
@@ -69,6 +71,43 @@ class DadosProcessoController {
             }
         });
         return res.json(dadosProcesso);
+    }
+
+    async processosPessoais(req, res) {
+        const dadosProcessoPessoa = await VProcessosPessoais.findAll({
+            attributes: [
+                'pro_id',
+                'pro_codigo',
+                'tpr_nome',
+                'area_id',
+                'usu_autuador',
+                'nod_aval_executiva'
+            ],
+            logging: true,
+            where: {
+                area_id: req.params.areaId,
+                usu_autuador: req.params.usuario
+            }
+        });
+        return res.json(dadosProcessoPessoa);
+    }
+
+    async processosArea(req, res) {
+        const dadosProcessoArea = await VProcessosArea.findAll({
+            attributes: [
+                'pro_id',
+                'pro_codigo',
+                'tpr_nome',
+                'area_id',
+                'usu_autuador',
+                'nod_aval_executiva'
+            ],
+            logging: true,
+            where: {
+                area_id: req.params.areaId
+            }
+        });
+        return res.json(dadosProcessoArea);
     }
 }
 export default new DadosProcessoController();

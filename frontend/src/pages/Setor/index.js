@@ -3,10 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
+import * as Yup from 'yup';
+
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Container1, Container2, ContainerBotoes, Main, Erro } from './styles';
+import { Container, Main, Erro } from './styles';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
@@ -17,55 +19,38 @@ import Excluir from '../../components/layout/button/Excluir';
 import Limpar from '../../components/layout/button/Limpar';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
+import FormLine from '../../components/layout/FormLine';
+import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
 function Setor() {
     const [erro, setErro] = useState('');
-    const [setId, setSetId] = useState(undefined);
-    const [setIdArea, setSetIdArea] = useState('');
-    const [setNome, setSetNome] = useState('');
-    const [setSigla, setSetSigla] = useState('');
-    const [setAtivo, setSetAtivo] = useState('');
-    const [setTipo, setSetTipo] = useState('');
+    const [setor, setSetor] = useState({
+        setId: undefined,
+        setArea: -1,
+        setNome: null,
+        setSigla: null,
+        setAtivo: -1,
+        setTipo: -1,
+    });
+
     const [setores, setSetores] = useState([]);
     const [areas, setAreas] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
 
     const formRef = useRef(null);
 
+    useEffect(() => {
+        formRef.current.setData(setor);
+    }, [setor]);
+
     function abreModalExcluir() {
-        if (setNome === '') {
-            setErro('Selecione um registro para apagar.');
-            return;
+        if (setor.setNome !== null) {
+            setModalExcluir(true);
         }
-        setModalExcluir(true);
     }
 
     function fechaModalExcluir() {
         setModalExcluir(false);
-    }
-
-    function handleSetId(e) {
-        setSetId(e.target.value);
-    }
-
-    function handleSetIdArea(e) {
-        setSetIdArea(e.value);
-    }
-
-    function handleSetNome(e) {
-        setSetNome(e.target.value);
-    }
-
-    function handleSetSigla(e) {
-        setSetSigla(e.target.value);
-    }
-
-    function handleSetAtivo(e) {
-        setSetAtivo(e.value);
-    }
-
-    function handleSetTipo(e) {
-        setSetTipo(e.value);
     }
 
     async function carregaArea() {
@@ -88,22 +73,31 @@ function Setor() {
     }
 
     function limpaCampos() {
-        setSetId(undefined);
-        setSetIdArea('');
-        setSetNome('');
-        setSetSigla('');
-        setSetAtivo('');
-        setSetTipo('');
-        setErro('');
+        setSetor({
+            ...setor,
+            setId: null,
+            setArea: '-1',
+            setNome: null,
+            setSigla: null,
+            setAtivo: '-1',
+            setTipo: '-1',
+        });
+
+        formRef.current.setErrors({});
     }
 
     function preencheCampos(linha) {
-        setSetId(linha.set_id);
-        setSetIdArea(linha.set_id_area);
-        setSetNome(linha.set_nome);
-        setSetSigla(linha.set_sigla);
-        setSetAtivo(linha.set_ativo);
-        setSetTipo(linha.set_tipo);
+        formRef.current.setErrors({});
+
+        setSetor({
+            ...setor,
+            setId: linha.set_id,
+            setArea: linha.set_id_area,
+            setNome: linha.set_nome,
+            setSigla: linha.set_sigla,
+            setAtivo: linha.set_ativo,
+            setTipo: linha.set_tipo,
+        });
     }
 
     function carregaGrid() {
@@ -130,74 +124,83 @@ function Setor() {
         carrega();
     }, []);
 
-    function grava() {
-        if (setNome.trim() === '') {
-            setErro('Nome de setor em branco.');
-            return;
-        }
-        if (setSigla.trim() === '') {
-            setErro('Sigla de setor em branco.');
-            return;
-        }
-        if (setIdArea === '') {
-            setErro('Selecione uma área.');
-            return;
-        }
-        if (setAtivo === '') {
-            setErro('Selecione se está ativo o setor.');
-            return;
-        }
-        if (setTipo === '') {
-            setErro('Selecione o tipo do setor.');
-            return;
-        }
-        if (setId === undefined) {
-            axios({
-                method: 'POST',
-                url: '/setores',
-                data: {
-                    set_id: null,
-                    set_nome: setNome.trim(),
-                    set_sigla: setSigla.trim(),
-                    set_id_area: setIdArea,
-                    set_ativo: setAtivo,
-                    set_tipo: setTipo,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid();
-                    mensagem.success('Inserido com sucesso.');
+    async function grava({ setId, setArea, setNome, setSigla, setAtivo, setTipo }) {
+        try {
+            const schema = Yup.object().shape({
+                setNome: Yup.string()
+                    .max(200, 'Tamanho máximo 200 caracteres')
+                    .required('Nome do setor é obrigatório'),
+                setSigla: Yup.string()
+                    .max(100, 'Tamanho máximo 100 caracteres')
+                    .required('Sigla do setor é obrigatória'),
+                setArea: Yup.number().positive('Área do setor é obrigatória'),
+                setAtivo: Yup.boolean().oneOf([true, false], 'Selecione ativo ou inativo'),
+                setTipo: Yup.string().oneOf(['N', 'G', 'E'], 'Tipo do setor é obrigatório'),
+            });
+
+            await schema.validate(
+                { setId, setArea, setNome, setSigla, setAtivo, setTipo },
+                { abortEarly: false }
+            );
+
+            if (!setId) {
+                axios({
+                    method: 'POST',
+                    url: '/setores',
+                    data: {
+                        set_id: null,
+                        set_nome: setNome,
+                        set_sigla: setSigla,
+                        set_id_area: setArea,
+                        set_ativo: setAtivo,
+                        set_tipo: setTipo,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(e => {
-                    setErro('Erro ao inserir registro.');
-                });
-        } else {
-            axios({
-                method: 'PUT',
-                url: `setores/${setId}`,
-                data: {
-                    set_id_area: setIdArea,
-                    set_nome: setNome.trim(),
-                    set_sigla: setSigla.trim(),
-                    set_ativo: setAtivo,
-                    set_tipo: setTipo,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    limpaCampos();
-                    carregaGrid();
-                    mensagem.success('Editado com sucesso.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid();
+                        mensagem.success('Inserido com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao inserir registro.');
+                    });
+            } else {
+                axios({
+                    method: 'PUT',
+                    url: `setores/${setId}`,
+                    data: {
+                        set_nome: setNome,
+                        set_sigla: setSigla,
+                        set_id_area: setArea,
+                        set_ativo: setAtivo,
+                        set_tipo: setTipo,
+                    },
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
                 })
-                .catch(() => {
-                    setErro('Erro ao editar registro.');
+                    .then(() => {
+                        limpaCampos();
+                        carregaGrid();
+                        mensagem.success('Editado com sucesso.');
+                    })
+                    .catch(() => {
+                        setErro('Erro ao editar registro.');
+                    });
+            }
+        } catch (err) {
+            const validationErrors = {};
+
+            if (err instanceof Yup.ValidationError) {
+                err.inner.forEach(error => {
+                    validationErrors[error.path] = error.message;
                 });
+
+                formRef.current.setErrors(validationErrors);
+            }
         }
     }
 
@@ -225,28 +228,40 @@ function Setor() {
                 <Autorizacao tela="Setores" />
                 <Main>
                     <Erro>{erro}</Erro>
-                    <Form ref={formRef}>
-                        <input id="setId" value={setId} onChange={handleSetId} type="hidden" />
-                        <Container1>
-                            <Input required name="setNome" label="Nome" type="text" value={setNome} onChange={handleSetNome} autoFocus size="100" maxLength="100" />
-                        </Container1>
-                        <Container2>
-                            <Input required name="setSigla" label="Sigla" type="text" value={setSigla} onChange={handleSetSigla} size="20" maxLength="20" />
+                    <Form ref={formRef} initialData={setor} onSubmit={grava}>
+                        <Input name="setId" type="hidden" />
+                        <FormLine>
+                            <Input
+                                name="setNome"
+                                label="Nome"
+                                type="text"
+                                autoFocus
+                                maxLength="200"
+                            />
+                        </FormLine>
+                        <FormLine>
+                            <Input
+                                name="setSigla"
+                                label="Sigla"
+                                type="text"
+                                size={1}
+                                maxLength="100"
+                            />
 
-                            <Select id="selectArea" name="selectArea" label="Área" options={areas} onChange={handleSetIdArea} value={areas.filter(({ value }) => value === setIdArea)} />
+                            <Select name="setArea" label="Área" size={3} options={areas} />
 
-                            <Ativo name="selectAtivo" val={setAtivo} changeHandler={handleSetAtivo} />
+                            <Ativo name="setAtivo" size={2} />
 
-                            <Tipo name="selectAtivo" val={setTipo} changeHandler={handleSetTipo} />
-                        </Container2>
+                            <Tipo name="setTipo" size={2} />
+                        </FormLine>
+                        <ButtonContainer>
+                            <Salvar name="btnSalva" type="submit" />
+
+                            <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
+
+                            <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+                        </ButtonContainer>
                     </Form>
-                    <ContainerBotoes>
-                        <Salvar name="btnSalva" clickHandler={grava} />
-
-                        <Excluir name="btnExclui" clickHandler={abreModalExcluir} />
-
-                        <Limpar name="btnLimpa" clickHandler={limpaCampos} />
-                    </ContainerBotoes>
 
                     <Table
                         columns={[
@@ -257,7 +272,12 @@ function Setor() {
                         fillData={preencheCampos}
                     />
                 </Main>
-                <ModalApaga modalExcluir={modalExcluir} fechaModalExcluir={fechaModalExcluir} apaga={apaga} id={setId} />
+                <ModalApaga
+                    modalExcluir={modalExcluir}
+                    fechaModalExcluir={fechaModalExcluir}
+                    apaga={apaga}
+                    id={setor.setId}
+                />
             </Container>
         </DefaultLayout>
     );

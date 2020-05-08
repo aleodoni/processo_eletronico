@@ -6,7 +6,7 @@ import Button from '../Button';
 
 export default function Excluir({ name, clickHandler }) {
     return (
-        <Button id={name} name={name} onClick={clickHandler}>
+        <Button id={name} name={name} type="button" onClick={clickHandler}>
             <FaRegTrashAlt />
             Excluir
         </Button>

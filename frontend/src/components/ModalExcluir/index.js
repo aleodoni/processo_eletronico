@@ -42,7 +42,11 @@ const ModalExcluir = props => {
 
     return (
         <>
-            <Modal isOpen={modalExcluir} onRequestClose={fechaHandler} style={dialogs} ariaHideApp={false}>
+            <Modal
+                isOpen={modalExcluir}
+                onRequestClose={fechaHandler}
+                style={dialogs}
+                ariaHideApp={false}>
                 <ContainerModal>
                     <p>
                         <FaRegQuestionCircle color="#fff" size="3em" />
@@ -63,7 +67,11 @@ ModalExcluir.propTypes = {
     apaga: PropTypes.func.isRequired,
     fechaModalExcluir: PropTypes.func.isRequired,
     modalExcluir: PropTypes.bool.isRequired,
-    id: PropTypes.number.isRequired,
+    id: PropTypes.number,
+};
+
+ModalExcluir.defaultProps = {
+    id: null,
 };
 
 export default ModalExcluir;

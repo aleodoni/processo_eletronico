@@ -40,6 +40,11 @@ class Nodo extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     defaultValue: 0
+                },
+                nod_aval_executiva: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                 }
             },
             {

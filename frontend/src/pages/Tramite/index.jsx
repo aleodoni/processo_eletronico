@@ -7,7 +7,7 @@ import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import ModalTramita from '../../components/ModalTramita';
 import Menu from '../../components/Menu';
-import { Container, AsideLeft, BotaoComoLink, TextoCamposArea, Main, Erro } from './styles';
+import { Container, AsideLeft, BotaoComoLink, Main, Erro } from './styles';
 import Header from '../../components/Header';
 
 function Tramite(props) {
@@ -18,7 +18,6 @@ function Tramite(props) {
     const [areaIniciativaProcesso, setAreaIniciativaProcesso] = useState('');
     const [genNome, setGenNome] = useState('');
     const [tprNome, setTprNome] = useState('');
-    const [traObservacao, setTraObservacao] = useState('');
     const [prxId, setPrxId] = useState('');
     const [setId, setSetId] = useState('');
     const [comboTramite, setComboTramite] = useState('');
@@ -46,10 +45,6 @@ function Tramite(props) {
         setPrxId(proximo);
         setSetId(setor);
         setComboTramite(e.target.value);
-    }
-
-    function handleTraObservacao(e) {
-        setTraObservacao(e.target.value);
     }
 
     function carregaDadosProcesso(id) {
@@ -90,7 +85,10 @@ function Tramite(props) {
                 );
                 for (let i = 0; i < res.data.length; i++) {
                     comboProximoTramite.push(
-                        <option key={`${res.data[i].set_id}|${res.data[i].prx_id}`} data-key={`${res.data[i].set_id}|${res.data[i].prx_id}`} value={`${res.data[i].set_id}|${res.data[i].prx_id}`}>
+                        <option
+                            key={`${res.data[i].set_id}|${res.data[i].prx_id}`}
+                            data-key={`${res.data[i].set_id}|${res.data[i].prx_id}`}
+                            value={`${res.data[i].set_id}|${res.data[i].prx_id}`}>
                             {res.data[i].set_nome} - {res.data[i].raz_nome}
                         </option>
                     );
@@ -130,7 +128,6 @@ function Tramite(props) {
                     login_envia: sessionStorage.getItem('usuario'),
                     area_id_envia: sessionStorage.getItem('areaUsuario'),
                     area_id_recebe: setId,
-                    tra_observacao: traObservacao.trim(),
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
@@ -167,7 +164,9 @@ function Tramite(props) {
                         <div>
                             <label>Código:</label>
                             <span>
-                                <BotaoComoLink onClick={mostraDetalhesProcesso}>{proCodigo}</BotaoComoLink>
+                                <BotaoComoLink onClick={mostraDetalhesProcesso}>
+                                    {proCodigo}
+                                </BotaoComoLink>
                             </span>
                         </div>
                         <div>
@@ -194,20 +193,22 @@ function Tramite(props) {
                     <br />
                     <fieldset>
                         <legend>Tramitar para:</legend>
-                        <select id="selectProximoTramite" onChange={handleComboTramite} value={comboTramite}>
+                        <select
+                            id="selectProximoTramite"
+                            onChange={handleComboTramite}
+                            value={comboTramite}>
                             {proximosTramites}
                         </select>
-                    </fieldset>
-                    <br />
-                    <fieldset>
-                        <legend>Observações</legend>
-                        <TextoCamposArea id="traObservacao" name="traObservacao" rows="3" cols="80" value={traObservacao} onChange={handleTraObservacao} />
                     </fieldset>
                     <button type="button" id="btnTramita" onClick={() => abreModalTramitar()}>
                         <FaUpload />
                         &nbsp;Tramitar
                     </button>
-                    <ModalTramita modalTramitar={modalTramitar} fechaModalTramitar={fechaModalTramitar} tramita={tramita} />
+                    <ModalTramita
+                        modalTramitar={modalTramitar}
+                        fechaModalTramitar={fechaModalTramitar}
+                        tramita={tramita}
+                    />
                 </Main>
             </Container>
         </>

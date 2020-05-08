@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FaRegQuestionCircle, FaRegTimesCircle, FaRegCheckCircle } from 'react-icons/fa';
+import { FaRegQuestionCircle } from 'react-icons/fa';
 import Modal from 'react-modal';
+import Sim from '../layout/button/Sim';
+import Nao from '../layout/button/Nao';
 import { ContainerModal } from './styles';
 
 const ModalCancelar = props => {
@@ -22,6 +24,7 @@ const ModalCancelar = props => {
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
             border: '1px solid #303f9f',
+            backgroundColor: '#292E61',
         },
     };
     const { fechaModalCancelar, modalCancelar, cancela, id } = props;
@@ -39,22 +42,20 @@ const ModalCancelar = props => {
 
     return (
         <>
-            <Modal isOpen={modalCancelar} onRequestClose={fechaHandler} style={dialogs} ariaHideApp={false}>
+            <Modal
+                isOpen={modalCancelar}
+                onRequestClose={fechaHandler}
+                style={dialogs}
+                ariaHideApp={false}>
                 <ContainerModal>
                     <p>
-                        <FaRegQuestionCircle color="#303f9f" size="3em" />
+                        <FaRegQuestionCircle color="#fff" size="3em" />
                     </p>
                     <h1>Deseja cancelar a manifestação?</h1>
                     <hr />
                     <div>
-                        <button type="button" onClick={cancelaHandler}>
-                            <FaRegCheckCircle />
-                            &nbsp;Ok
-                        </button>
-                        <button type="button" onClick={fechaModalCancelar}>
-                            <FaRegTimesCircle />
-                            &nbsp;Fechar
-                        </button>
+                        <Sim name="btnSim" clickHandler={cancelaHandler} />
+                        <Nao name="btnNao" clickHandler={fechaModalCancelar} />
                     </div>
                 </ContainerModal>
             </Modal>
@@ -67,6 +68,10 @@ ModalCancelar.propTypes = {
     fechaModalCancelar: PropTypes.func.isRequired,
     modalCancelar: PropTypes.bool.isRequired,
     id: PropTypes.number,
+};
+
+ModalCancelar.defaultProps = {
+    id: null,
 };
 
 export default ModalCancelar;

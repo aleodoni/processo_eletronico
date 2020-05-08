@@ -81,6 +81,7 @@ routes.use(AuthMiddleware);
 
 // rota que retorna as áreas
 routes.get(`${process.env.API_URL}/area`, AreaController.index);
+routes.get(`${process.env.API_URL}/area-combo`, AreaController.areaNormal);
 
 // rota que retorna a área por código
 routes.get(
@@ -165,6 +166,8 @@ routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 
 // rotas de dados do processo
 routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.dadosProcesso);
+routes.get(`${process.env.API_URL}/processos-pessoa/:areaId/:usuario`, DadosProcessoController.processosPessoais);
+routes.get(`${process.env.API_URL}/processos-area/:areaId`, DadosProcessoController.processosArea);
 routes.post(`${process.env.API_URL}/processo-por-codigo`, DadosProcessoController.processoPorCodigo);
 
 // rotas do cadastro de fluxos
@@ -200,6 +203,7 @@ routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.
 
 // rotas do cadastro de tipos de manifestacao
 routes.get(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoController.index);
+routes.get(`${process.env.API_URL}/tipos-manifestacao-combo`, TipoManifestacaoController.combo);
 routes.post(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoController.store);
 routes.put(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.delete);
@@ -219,6 +223,7 @@ routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 // rotas do cadastro de manifestacao
 routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
 routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
+routes.delete(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.delete);
 
 // rotas do cadastro de próximos trâmites
 routes.get(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.index);

@@ -45,7 +45,7 @@ export default createGlobalStyle`
         background-image: ${({ theme }) => theme.gradient};
     }
 
-    body, input, button, textarea, pre {
+    body, input, button, textarea, pre, select {
         font-family: Roboto, Arial, Helvetica, sans-serif;
     }
 
@@ -66,7 +66,7 @@ export default createGlobalStyle`
         }
     }
 
-    input, textarea {
+    input, textarea, select {
         font-size: 16px;
     }
 

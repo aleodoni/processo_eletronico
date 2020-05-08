@@ -5,77 +5,113 @@ import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
 
 import { Container, BasicSelect } from './styles';
-import { defaultTheme } from '../../../styles/theme';
 
-export default function Select({ name, label, options, ...rest }) {
+export default function Select({ name, label, options, size, ...rest }) {
     const selectRef = useRef(null);
 
-    const { fieldName, defaultValue, registerField } = useField(name);
+    const { fieldName, registerField, error } = useField(name);
 
     useEffect(() => {
         registerField({
             name: fieldName,
             ref: selectRef.current,
-            path: 'select.state.value',
-            getValue: ref => {
-                if (rest.isMulti) {
-                    if (!ref.select.state.value) {
-                        return [];
-                    }
-
-                    return ref.select.state.value.map(option => option.value);
-                }
-                if (!ref.select.state.value) {
-                    return '';
-                }
-
-                return ref.select.state.value.value;
-            },
+            path: 'value',
         });
-    }, [fieldName, registerField, rest.isMulti]);
+    }, [fieldName, registerField]);
+
+    const montaOptions = () => {
+        return (
+            <>
+                <option value="-1">Selecione...</option>
+                {options.map(option => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </>
+        );
+    };
 
     return (
-        <Container>
+        <Container size={size}>
             {label && <label htmlFor={fieldName}>{label}</label>}
 
-            <BasicSelect
-                placeholder="Selecione..."
-                defaultValue={defaultValue}
-                ref={selectRef}
-                {...rest}
-                classNamePrefix="react-select"
-                className="react-select-container"
-                theme={theme => ({
-                    ...theme,
-                    borderRadius: 4,
-                    colors: {
-                        ...theme.colors,
-                        primary25: defaultTheme.inputBorder,
-                        primary: defaultTheme.primary,
-                        neutral0: defaultTheme.inputBackground,
+            <BasicSelect name={fieldName} id={fieldName} ref={selectRef} {...rest}>
+                {montaOptions()}
+            </BasicSelect>
 
-                        neutral40: defaultTheme.text,
-                        neutral50: defaultTheme.text,
-                        neutral80: defaultTheme.text,
-                    },
-                })}
-                options={options}
-            />
+            {error && <span className="error">{error}</span>}
         </Container>
     );
+
+    // useEffect(() => {
+    //     registerField({
+    //         name: fieldName,
+    //         ref: selectRef.current,
+    //         path: 'state.value',
+    //         getValue: ref => {
+    //             if (rest.isMulti) {
+    //                 if (!ref.state.value) {
+    //                     return [];
+    //                 }
+
+    //                 return ref.state.value.map(option => option.value);
+    //             }
+
+    //             if (!ref.state.value) {
+    //                 return '';
+    //             }
+
+    //             return ref.state.value.value;
+    //         },
+    //     });
+    // }, [fieldName, registerField, rest.isMulti]);
+
+    // return (
+    //     <Container size={size}>
+    //         {label && <label htmlFor={fieldName}>{label}</label>}
+
+    //         <BasicSelect
+    //             placeholder="Selecione..."
+    //             defaultValue={defaultValue}
+    //             ref={selectRef}
+    //             {...rest}
+    //             classNamePrefix="react-select"
+    //             className="react-select-container"
+    //             theme={theme => ({
+    //                 ...theme,
+    //                 borderRadius: 4,
+    //                 colors: {
+    //                     ...theme.colors,
+    //                     primary25: defaultTheme.inputBorder,
+    //                     primary: defaultTheme.primary,
+    //                     neutral0: defaultTheme.inputBackground,
+
+    //                     neutral40: defaultTheme.text,
+    //                     neutral50: defaultTheme.text,
+    //                     neutral80: defaultTheme.text,
+    //                 },
+    //             })}
+    //             options={options}
+    //         />
+    //     </Container>
+    // );
 }
 
 Select.propTypes = {
     name: PropTypes.string.isRequired,
     options: PropTypes.arrayOf(
         PropTypes.shape({
-            label: PropTypes.string.isRequired,
-            value: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.number.isRequired, null]),
+            label: PropTypes.string,
+            value: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.number]),
         })
-    ).isRequired,
+    ),
     label: PropTypes.string,
+    size: PropTypes.number,
 };
 
 Select.defaultProps = {
+    options: [],
     label: null,
+    size: 1,
 };

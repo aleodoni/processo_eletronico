@@ -20,16 +20,7 @@ class VTramite extends Model {
                 setor_envia: {
                     type: Sequelize.STRING
                 },
-                recebimento: {
-                    type: Sequelize.STRING
-                },
-                login_recebe: {
-                    type: Sequelize.STRING
-                },
                 setor_recebe: {
-                    type: Sequelize.STRING
-                },
-                tra_observacao: {
                     type: Sequelize.STRING
                 }
             },

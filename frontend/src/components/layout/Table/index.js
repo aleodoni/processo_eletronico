@@ -32,9 +32,14 @@ Table.propTypes = {
             title: PropTypes.string,
             field: PropTypes.string,
         })
-    ).isRequired,
+    ),
 
-    data: PropTypes.arrayOf(PropTypes.object).isRequired,
+    data: PropTypes.arrayOf(PropTypes.object),
 
     fillData: PropTypes.func.isRequired,
+};
+
+Table.defaultProps = {
+    columns: null,
+    data: null,
 };

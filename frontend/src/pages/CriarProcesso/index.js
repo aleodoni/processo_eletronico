@@ -1,12 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router';
-import { FaFileAlt, FaSistrix } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
-import { Container, AsideLeft, Main, ContainerAssunto, ContainerCriaProcesso, ContainerIniciativa, ContainerDadosServidorPublico, ContainerNome, Erro, TituloObrigatorio, TextoCamposArea, CustomSelect, CustomInput } from './styles';
-import Header from '../../components/Header';
+import { Form } from '@unform/web';
+import Input from '../../components/layout/Input';
+import TextArea from '../../components/layout/TextArea';
+import Select from '../../components/layout/Select';
+import {
+    Container,
+    Main,
+    ContainerAssunto,
+    ContainerMatricula,
+    ContainerCriaProcesso,
+    ContainerIniciativa,
+    ContainerDadosServidorPublico,
+    ContainerNome,
+    Erro,
+} from './styles';
+import api from '../../service/api';
 import Autorizacao from '../../components/Autorizacao';
 import axios from '../../configs/axiosConfig';
-import Menu from '../../components/Menu';
+import DefaultLayout from '../_layouts/default';
+import CriaProcesso from '../../components/layout/button/CriaProcesso';
+import Localizar from '../../components/layout/button/Localizar';
+import Iniciativa from '../../components/system/select/Iniciativa';
+import { cpf, cnpj } from '../../utils/validaCpfCnpj';
 
 function CriarProcesso() {
     const history = useHistory();
@@ -39,121 +56,82 @@ function CriarProcesso() {
     const [areaVisivel, setAreaVisivel] = useState(false);
     const [assuntoVisivel, setAssuntoVisivel] = useState(false);
 
-    function carregaGenero() {
-        axios({
-            method: 'GET',
-            url: '/generos',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboGenero = [];
-                comboGenero.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboGenero.push(
-                        <option key={res.data[i].gen_id} data-key={res.data[i].gen_id} value={res.data[i].gen_id}>
-                            {res.data[i].gen_nome}
-                        </option>
-                    );
-                }
-                setGeneros(comboGenero);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar gêneros.');
+    const formRef = useRef(null);
+    const somenteNumeros = /^[0-9\b]+$/;
+
+    async function carregaGenero() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/generos');
+
+            const data = response.data.map(genero => {
+                return {
+                    label: genero.gen_nome,
+                    value: genero.gen_id,
+                };
             });
+            setGeneros(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
     function iniciaTipoProcesso() {
         setTiposProcesso([]);
         setGenId('');
         setTprId('');
-        const comboTipoProcesso = [];
-        comboTipoProcesso.push(
-            <option key="" data-key="" value="">
-                Selecione...
-            </option>
-        );
-        setTiposProcesso(comboTipoProcesso);
     }
 
     useEffect(() => {
         async function carrega() {
-            carregaGenero();
+            await carregaGenero();
             iniciaTipoProcesso();
         }
         carrega();
     }, []);
 
-    function onSelect(e) {
-        const { selectedIndex } = e.target.options;
-        const codGenId = e.target.options[selectedIndex].getAttribute('data-key');
-        axios({
-            method: 'GET',
-            url: `/tipos-de-processo/${codGenId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboTipoProcesso = [];
-                comboTipoProcesso.push(
-                    <option key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboTipoProcesso.push(
-                        <option key={res.data[i].tpr_id} value={res.data[i].tpr_id}>
-                            {res.data[i].tpr_nome}
-                        </option>
-                    );
-                }
+    async function selecionaTipoProcesso(e) {
+        const codGenId = e.target.value;
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
-                if (codGenId === '') {
-                    iniciaTipoProcesso();
-                } else {
-                    setTiposProcesso(comboTipoProcesso);
-                    setGenId(codGenId);
-                    setTprId('');
-                }
-            })
-            .catch(() => {
-                setErro('Erro ao carregar tipos de processo.');
+        try {
+            const response = await api.get(`/tipos-de-processo/${codGenId}`);
+
+            const data = response.data.map(tipoProcesso => {
+                return {
+                    label: tipoProcesso.tpr_nome,
+                    value: tipoProcesso.tpr_id,
+                };
             });
+            if (codGenId === '') {
+                iniciaTipoProcesso();
+            } else {
+                setTiposProcesso(data);
+                setGenId(codGenId);
+                setTprId('');
+            }
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
-    function carregaArea() {
-        axios({
-            method: 'GET',
-            url: '/area',
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const comboArea = [];
-                comboArea.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                for (let i = 0; i < res.data.length; i++) {
-                    comboArea.push(
-                        <option key={res.data[i].set_id} data-key={res.data[i].set_id} value={res.data[i].set_id}>
-                            {res.data[i].set_nome}
-                        </option>
-                    );
-                }
-                setAreas(comboArea);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar áreas.');
+    async function carregaArea() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/area-combo');
+
+            const data = response.data.map(area => {
+                return {
+                    label: area.set_nome,
+                    value: area.set_id,
+                };
             });
+            setAreas(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
     function handleProId(e) {
@@ -165,7 +143,8 @@ function CriarProcesso() {
     }
 
     function handleTprId(e) {
-        if (e.target.value === '26') {
+        // demais processos
+        if (e.target.value === 26) {
             setAssuntoVisivel(true);
         } else {
             setAssuntoVisivel(false);
@@ -186,22 +165,19 @@ function CriarProcesso() {
     }
 
     function handleProMatricula(e) {
-        const re = /^[0-9\b]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
+        if (e.target.value === '' || somenteNumeros.test(e.target.value)) {
             setProMatricula(e.target.value);
         }
     }
 
     function handleProCpf(e) {
-        const re = /^[0-9\b]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
+        if (e.target.value === '' || somenteNumeros.test(e.target.value)) {
             setProCpf(e.target.value);
         }
     }
 
     function handleProCnpj(e) {
-        const re = /^[0-9\b]+$/;
-        if (e.target.value === '' || re.test(e.target.value)) {
+        if (e.target.value === '' || somenteNumeros.test(e.target.value)) {
             setProCnpj(e.target.value);
         }
     }
@@ -235,28 +211,20 @@ function CriarProcesso() {
         limpaCamposIniciativa();
         iniciaTipoProcesso();
         setErro('');
-        const { selectedIndex } = e.target.options;
-        const iniciativa = e.target.options[selectedIndex].getAttribute('data-key');
+        const iniciativa = e.target.value;
         if (iniciativa !== '') {
             const comboTipoIniciativa = [];
             setTipoIniciativaVisivel(true);
             setProIniciativa(iniciativa);
             if (iniciativa === 'Interna') {
-                comboTipoIniciativa.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                comboTipoIniciativa.push(
-                    <option key="Servidor Público" data-key="Servidor Público" value="Servidor Público">
-                        Servidor Público
-                    </option>
-                );
-                comboTipoIniciativa.push(
-                    <option key="Diretorias" data-key="Diretorias" value="Diretorias">
-                        Diretorias
-                    </option>
-                );
+                comboTipoIniciativa.push({
+                    label: 'Servidor Público',
+                    value: 'Servidor Público',
+                });
+                comboTipoIniciativa.push({
+                    label: 'Áreas',
+                    value: 'Áreas',
+                });
                 setCnpjVisivel(false);
                 setAreaVisivel(false);
                 setMatriculaVisivel(false);
@@ -266,21 +234,14 @@ function CriarProcesso() {
                 setAssuntoVisivel(false);
             }
             if (iniciativa === 'Externa') {
-                comboTipoIniciativa.push(
-                    <option key="" data-key="" value="">
-                        Selecione...
-                    </option>
-                );
-                comboTipoIniciativa.push(
-                    <option key="Pessoa Física" data-key="Pessoa Física" value="Pessoa Física">
-                        Pessoa Física
-                    </option>
-                );
-                comboTipoIniciativa.push(
-                    <option key="Pessoa Jurídica" data-key="Pessoa Jurídica" value="Pessoa Jurídica">
-                        Pessoa Jurídica
-                    </option>
-                );
+                comboTipoIniciativa.push({
+                    label: 'Pessoa Física',
+                    value: 'Pessoa Física',
+                });
+                comboTipoIniciativa.push({
+                    label: 'Pessoa Jurídica',
+                    value: 'Pessoa Jurídica',
+                });
                 setCnpjVisivel(false);
                 setMatriculaVisivel(false);
                 setNomeVisivel(false);
@@ -307,8 +268,7 @@ function CriarProcesso() {
         limpaCamposIniciativa();
         iniciaTipoProcesso();
         setErro('');
-        const { selectedIndex } = e.target.options;
-        const tipoIniciativa = e.target.options[selectedIndex].getAttribute('data-key');
+        const tipoIniciativa = e.target.value;
         if (tipoIniciativa !== '') {
             setProTipoIniciativa(tipoIniciativa);
             if (tipoIniciativa === 'Servidor Público') {
@@ -320,7 +280,7 @@ function CriarProcesso() {
                 setAreaVisivel(false);
                 setAssuntoVisivel(false);
             }
-            if (tipoIniciativa === 'Diretorias') {
+            if (tipoIniciativa === 'Áreas') {
                 carregaArea();
                 setMatriculaVisivel(false);
                 setNomeVisivel(false);
@@ -360,68 +320,7 @@ function CriarProcesso() {
         }
     }
 
-    function testaCPF(cpf) {
-        let soma;
-        let resto;
-        soma = 0;
-        if (cpf === '00000000000') return false;
-
-        for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i), 10) * (11 - i);
-        resto = (soma * 10) % 11;
-
-        if (resto === 10 || resto === 11) resto = 0;
-        if (resto !== parseInt(cpf.substring(9, 10), 10)) return false;
-
-        soma = 0;
-        for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i), 10) * (12 - i);
-        resto = (soma * 10) % 11;
-
-        if (resto === 10 || resto === 11) resto = 0;
-        if (resto !== parseInt(cpf.substring(10, 11), 10)) return false;
-        return true;
-    }
-
     function criaProcesso() {
-        function testaCNPJ(cnpj) {
-            cnpj = cnpj.replace(/[^\d]+/g, '');
-            if (cnpj.length !== 14) return false;
-            if (
-                cnpj === '00000000000000' ||
-                cnpj === '11111111111111' ||
-                cnpj === '22222222222222' ||
-                cnpj === '33333333333333' ||
-                cnpj === '44444444444444' ||
-                cnpj === '55555555555555' ||
-                cnpj === '66666666666666' ||
-                cnpj === '77777777777777' ||
-                cnpj === '88888888888888' ||
-                cnpj === '99999999999999'
-            )
-                return false;
-            let tamanho = cnpj.length - 2;
-            let numeros = cnpj.substring(0, tamanho);
-            const digitos = cnpj.substring(tamanho);
-            let soma = 0;
-            let pos = tamanho - 7;
-            for (let i = tamanho; i >= 1; i--) {
-                soma += numeros.charAt(tamanho - i) * pos--;
-                if (pos < 2) pos = 9;
-            }
-            let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-            if (resultado.toString() !== digitos.charAt(0)) return false;
-
-            tamanho += 1;
-            numeros = cnpj.substring(0, tamanho);
-            soma = 0;
-            pos = tamanho - 7;
-            for (let i = tamanho; i >= 1; i--) {
-                soma += numeros.charAt(tamanho - i) * pos--;
-                if (pos < 2) pos = 9;
-            }
-            resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-            if (resultado.toString() !== digitos.charAt(1)) return false;
-            return true;
-        }
         setErro('');
         if (proIniciativa === undefined || proIniciativa === '') {
             setErro('Selecione a iniciativa.');
@@ -437,7 +336,12 @@ function CriarProcesso() {
                 if (proNome.trim() === '') {
                     erros = `${erros}Nome obrigatório.<br />`;
                 }
-                if (proCpf.trim() === '' && proFone.trim() === '' && proCelular.trim() === '' && proEmail.trim() === '') {
+                if (
+                    proCpf.trim() === '' &&
+                    proFone.trim() === '' &&
+                    proCelular.trim() === '' &&
+                    proEmail.trim() === ''
+                ) {
                     erros = `${erros}Pelo menos um campo (Cpf, Fone, Celular, E-mail) deve ser preenchido.`;
                 }
                 if (erros !== '') {
@@ -445,7 +349,7 @@ function CriarProcesso() {
                     return;
                 }
                 if (proCpf.trim() !== '') {
-                    if (!testaCPF(proCpf.trim())) {
+                    if (!cpf(proCpf.trim())) {
                         setErro('Cpf inválido.');
                         return;
                     }
@@ -459,7 +363,7 @@ function CriarProcesso() {
                     return;
                 }
             }
-            if (proTipoIniciativa === 'Diretorias') {
+            if (proTipoIniciativa === 'Áreas') {
                 if (areaId === '') {
                     setErro('Selecione a área.');
                     return;
@@ -480,7 +384,12 @@ function CriarProcesso() {
                 if (proNome.trim() === '') {
                     erros += 'Nome obrigatório.<br />';
                 }
-                if (proCpf.trim() === '' && proFone.trim() === '' && proCelular.trim() === '' && proEmail.trim() === '') {
+                if (
+                    proCpf.trim() === '' &&
+                    proFone.trim() === '' &&
+                    proCelular.trim() === '' &&
+                    proEmail.trim() === ''
+                ) {
                     erros = `${erros}Pelo menos um campo (Cpf, Fone, Celular, E-mail) deve ser preenchido.`;
                 }
                 if (erros !== '') {
@@ -488,7 +397,7 @@ function CriarProcesso() {
                     return;
                 }
                 if (proCpf.trim() !== '') {
-                    if (!testaCPF(proCpf.trim())) {
+                    if (!cpf(proCpf.trim())) {
                         setErro('Cpf inválido.');
                         return;
                     }
@@ -521,7 +430,7 @@ function CriarProcesso() {
                     return;
                 }
                 if (proCnpj.trim() !== '') {
-                    if (!testaCNPJ(proCnpj.trim())) {
+                    if (!cnpj(proCnpj.trim())) {
                         setErro('Cnpj inválido.');
                         return;
                     }
@@ -579,6 +488,10 @@ function CriarProcesso() {
     }
 
     function localiza() {
+        if (proMatricula.trim() === '') {
+            setErro('Digite a matrícula.');
+            return;
+        }
         setProNome('');
         setProCpf('');
         setProCnpj('');
@@ -632,153 +545,188 @@ function CriarProcesso() {
     }
 
     return (
-        <>
+        <DefaultLayout>
             <Container>
                 <Autorizacao tela="Criar processo" />
-                <Header />
-                <AsideLeft>
-                    <Menu />
-                </AsideLeft>
                 <Main>
-                    <fieldset>
-                        <legend>Novo processo</legend>
-                        <Erro dangerouslySetInnerHTML={{ __html: erro }} />
-                        <form noValidate autoComplete="off">
-                            <input id="proId" value={proId} onChange={handleProId} type="hidden" />
-                            <ContainerIniciativa>
-                                <fieldset>
-                                    <legend>Iniciativa</legend>
-                                    <CustomSelect id="selectIniciativa" onChange={carregaTipoIniciativa} value={proIniciativa}>
-                                        <option key="" data-key="" value="">
-                                            Selecione...
-                                        </option>
-                                        <option key="Interna" data-key="Interna" value="Interna">
-                                            Interna
-                                        </option>
-                                        <option key="Externa" data-key="Externa" value="Externa">
-                                            Externa
-                                        </option>
-                                    </CustomSelect>
-                                </fieldset>
-                                {tipoIniciativaVisivel ? (
-                                    <fieldset>
-                                        <legend>Tipo da iniciativa</legend>
-                                        <CustomSelect id="selectTipoIniciativa" onChange={carregaDadosIniciativa} value={proTipoIniciativa}>
-                                            {tiposIniciativa}
-                                        </CustomSelect>
-                                    </fieldset>
-                                ) : null}
-                                {matriculaVisivel ? (
-                                    <fieldset>
-                                        <legend>Matrícula</legend>
-                                        <CustomInput id="proMatricula" name="proMatricula" value={proMatricula} onChange={handleProMatricula} type="text" size="5" maxLength="5" />
-                                        &nbsp;&nbsp;
-                                        <button type="button" id="btnLocaliza" variant="contained" color="primary" onClick={localiza}>
-                                            <FaSistrix />
-                                            &nbsp;Localizar
-                                        </button>
-                                    </fieldset>
-                                ) : null}
-                                {areaVisivel ? (
-                                    <fieldset>
-                                        <legend>Área</legend>
-                                        <CustomSelect id="selectArea" value={areaId} onChange={handleAreaId}>
-                                            {areas}
-                                        </CustomSelect>
-                                    </fieldset>
-                                ) : null}
-                            </ContainerIniciativa>
-                            {nomeVisivel ? (
-                                <ContainerNome>
-                                    <fieldset>
-                                        <legend>Nome</legend>
-                                        <CustomInput id="proNome" name="proNome" value={proNome} onChange={handleProNome} type="text" size="100" maxLength="100" />
-                                    </fieldset>
-                                </ContainerNome>
+                    <Erro dangerouslySetInnerHTML={{ __html: erro }} />
+                    <Form ref={formRef}>
+                        <input id="proId" value={proId} onChange={handleProId} type="hidden" />
+                        <ContainerIniciativa>
+                            <Iniciativa
+                                name="selectIniciativa"
+                                val={proIniciativa}
+                                changeHandler={carregaTipoIniciativa}
+                            />
+                            {tipoIniciativaVisivel ? (
+                                <Select
+                                    id="selectTipoIniciativa"
+                                    name="selectTipoIniciativa"
+                                    label="Tipo da iniciativa"
+                                    options={tiposIniciativa}
+                                    onChange={carregaDadosIniciativa}
+                                />
                             ) : null}
-                            {dadosServidorPublico ? (
+                            {matriculaVisivel ? (
+                                <ContainerMatricula>
+                                    <Input
+                                        name="proMatricula"
+                                        label="Matrícula"
+                                        type="text"
+                                        value={proMatricula}
+                                        onChange={handleProMatricula}
+                                        size="5"
+                                        maxLength="5"
+                                    />
+                                    <Localizar
+                                        name="btnLocaliza"
+                                        clickHandler={() => {
+                                            localiza();
+                                        }}
+                                    />
+                                </ContainerMatricula>
+                            ) : null}
+                            {areaVisivel ? (
+                                <Select
+                                    name="selectArea"
+                                    label="Área"
+                                    options={areas}
+                                    onChange={handleAreaId}
+                                />
+                            ) : null}
+                        </ContainerIniciativa>
+                        {nomeVisivel ? (
+                            <ContainerNome>
+                                <Input
+                                    name="proNome"
+                                    label="Nome"
+                                    type="text"
+                                    value={proNome}
+                                    onChange={handleProNome}
+                                    size="100"
+                                    maxLength="100"
+                                />
+                            </ContainerNome>
+                        ) : null}
+                        {dadosServidorPublico ? (
+                            <ContainerDadosServidorPublico>
+                                <Input
+                                    name="proCpf"
+                                    label="Cpf"
+                                    type="text"
+                                    value={proCpf}
+                                    onChange={handleProCpf}
+                                    size="10"
+                                    maxLength="11"
+                                />
+                                <Input
+                                    name="proFone"
+                                    label="Fone"
+                                    type="text"
+                                    value={proFone}
+                                    onChange={handleProFone}
+                                    size="30"
+                                    maxLength="31"
+                                />
+                                <Input
+                                    name="proCelular"
+                                    label="Celular"
+                                    type="text"
+                                    value={proCelular}
+                                    onChange={handleProCelular}
+                                    size="30"
+                                    maxLength="30"
+                                />
+                            </ContainerDadosServidorPublico>
+                        ) : null}
+                        {cnpjVisivel ? (
+                            <div>
+                                <ContainerNome>
+                                    <Input
+                                        name="proContatoPj"
+                                        label="Responsável"
+                                        type="text"
+                                        value={proContatoPj}
+                                        onChange={handleProContatoPj}
+                                        size="100"
+                                        maxLength="100"
+                                    />
+                                </ContainerNome>
                                 <ContainerDadosServidorPublico>
-                                    <fieldset>
-                                        <legend>Cpf</legend>
-                                        <CustomInput id="proCpf" name="proCpf" value={proCpf} onChange={handleProCpf} type="text" size="10" maxLength="11" />
-                                    </fieldset>
-                                    <fieldset>
-                                        <legend>Fone</legend>
-                                        <CustomInput id="proFone" name="proFone" value={proFone} onChange={handleProFone} type="text" size="30" maxLength="30" />
-                                    </fieldset>
-                                    <fieldset>
-                                        <legend>Celular</legend>
-                                        <CustomInput id="proCelular" name="proCelular" value={proCelular} onChange={handleProCelular} type="text" size="30" maxLength="30" />
-                                    </fieldset>
+                                    <Input
+                                        name="proCnpj"
+                                        label="Cnpj"
+                                        type="text"
+                                        value={proCnpj}
+                                        onChange={handleProCnpj}
+                                        size="12"
+                                        maxLength="14"
+                                    />
+                                    <Input
+                                        name="proFone"
+                                        label="Fone"
+                                        type="text"
+                                        value={proFone}
+                                        onChange={handleProFone}
+                                        size="30"
+                                        maxLength="30"
+                                    />
+                                    <Input
+                                        name="proCelular"
+                                        label="Celular"
+                                        type="text"
+                                        value={proCelular}
+                                        onChange={handleProCelular}
+                                        size="30"
+                                        maxLength="30"
+                                    />
                                 </ContainerDadosServidorPublico>
-                            ) : null}
-                            {cnpjVisivel ? (
-                                <div>
-                                    <ContainerNome>
-                                        <fieldset>
-                                            <legend>Responsável</legend>
-                                            <CustomInput id="proContatoPj" name="proContatoPj" value={proContatoPj} onChange={handleProContatoPj} type="text" size="100" maxLength="100" />
-                                        </fieldset>
-                                    </ContainerNome>
-                                    <ContainerDadosServidorPublico>
-                                        <fieldset>
-                                            <legend>Cnpj</legend>
-                                            <CustomInput id="proCnpj" name="proCnpj" value={proCnpj} onChange={handleProCnpj} type="text" size="12" maxLength="14" />
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Fone</legend>
-                                            <CustomInput id="proFone" name="proFone" value={proFone} onChange={handleProFone} type="text" size="30" maxLength="30" />
-                                        </fieldset>
-                                        <fieldset>
-                                            <legend>Celular</legend>
-                                            <CustomInput id="proCelular" name="proCelular" value={proCelular} onChange={handleProCelular} type="text" size="30" maxLength="30" />
-                                        </fieldset>
-                                    </ContainerDadosServidorPublico>
-                                </div>
-                            ) : null}
-                            {emailVisivel ? (
-                                <ContainerNome>
-                                    <fieldset>
-                                        <legend>E-mail</legend>
-                                        <CustomInput id="proEmail" name="proEmail" value={proEmail} onChange={handleProEmail} type="text" size="101" maxLength="100" />
-                                    </fieldset>
-                                </ContainerNome>
-                            ) : null}
-                            <ContainerCriaProcesso>
-                                <fieldset>
-                                    <legend>
-                                        <TituloObrigatorio>Gênero</TituloObrigatorio>
-                                    </legend>
-                                    <CustomSelect id="selectGenero" onChange={onSelect} value={genId}>
-                                        {generos}
-                                    </CustomSelect>
-                                </fieldset>
-                                <fieldset>
-                                    <legend>
-                                        <TituloObrigatorio>Tipo do processo</TituloObrigatorio>
-                                    </legend>
-                                    <CustomSelect id="selectTiposProcesso" onChange={handleTprId} value={tprId}>
-                                        {tiposProcesso}
-                                    </CustomSelect>
-                                </fieldset>
-                            </ContainerCriaProcesso>
-                            {assuntoVisivel ? (
-                                <ContainerAssunto>
-                                    <fieldset>
-                                        <legend>Assunto</legend>
-                                        <TextoCamposArea id="proAssunto" name="proAssunto" rows="3" cols="100" value={proAssunto} onChange={handleProAssunto} />
-                                    </fieldset>
-                                </ContainerAssunto>
-                            ) : null}
-                        </form>
-                        <button type="button" id="btnCriaProcesso" onClick={criaProcesso}>
-                            <FaFileAlt />
-                            &nbsp;Criar processo
-                        </button>
-                    </fieldset>
+                            </div>
+                        ) : null}
+                        {emailVisivel ? (
+                            <ContainerNome>
+                                <Input
+                                    name="proEmail"
+                                    label="E-mail"
+                                    type="text"
+                                    value={proEmail}
+                                    onChange={handleProEmail}
+                                    size="101"
+                                    maxLength="100"
+                                />
+                            </ContainerNome>
+                        ) : null}
+                        <ContainerCriaProcesso>
+                            <Select
+                                name="selectGenero"
+                                label="Gênero"
+                                options={generos}
+                                onChange={selecionaTipoProcesso}
+                            />
+                            <Select
+                                name="selectTiposProcesso"
+                                label="Tipo do processo"
+                                options={tiposProcesso}
+                                onChange={handleTprId}
+                            />
+                        </ContainerCriaProcesso>
+                        {assuntoVisivel ? (
+                            <ContainerAssunto>
+                                <TextArea
+                                    name="proAssunto"
+                                    label="Assunto"
+                                    rows={30}
+                                    cols={100}
+                                    value={proAssunto}
+                                    onChange={handleProAssunto}
+                                />
+                            </ContainerAssunto>
+                        ) : null}
+                    </Form>
+                    <CriaProcesso name="btnCriaProcesso" clickHandler={criaProcesso} />
                 </Main>
             </Container>
-        </>
+        </DefaultLayout>
     );
 }
 

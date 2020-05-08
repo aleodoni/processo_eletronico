@@ -17,9 +17,6 @@ class VProcessoRecebe extends Model {
                 login_envia: {
                     type: Sequelize.STRING
                 },
-                area_id_pendente: {
-                    type: Sequelize.INTEGER
-                },
                 tpr_nome: {
                     type: Sequelize.STRING
                 }

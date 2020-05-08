@@ -15,7 +15,12 @@ class LotacaoController {
     }
 
     async store(req, res) {
-        const { matricula, set_id, pes_nome, pes_login } = await Lotacao.create(req.body, {
+        const { matricula, set_id, pes_nome, pes_login } = await Lotacao.create({
+            matricula: req.body.matricula,
+            set_id: req.body.set_id,
+            pes_nome: req.body.pes_nome,
+            pes_login: req.body.pes_login
+        }, {
             logging: false
         });
         // auditoria de inserção
@@ -39,7 +44,12 @@ class LotacaoController {
         if (!lotacao) {
             return res.status(400).json({ error: 'Lotação não encontrada' });
         }
-        await lotacao.update(req.body, { logging: false });
+        await lotacao.update({
+            matricula: req.body.matricula,
+            set_id: req.body.set_id,
+            pes_nome: req.body.pes_nome,
+            pes_login: req.body.pes_login
+        }, { logging: false });
         return res.json(lotacao);
     }
 

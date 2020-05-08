@@ -15,5 +15,9 @@ export default function Salvar({ name, clickHandler }) {
 
 Salvar.propTypes = {
     name: PropTypes.string.isRequired,
-    clickHandler: PropTypes.func.isRequired,
+    clickHandler: PropTypes.func,
+};
+
+Salvar.defaultProps = {
+    clickHandler: null,
 };

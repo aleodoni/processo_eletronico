@@ -3,14 +3,16 @@ import styled from 'styled-components';
 export const Container = styled.div`
     display: flex;
     flex-direction: column;
+    flex: ${props => props.size};
+
     padding-left: 5px;
     padding-right: 4px;
-    width: 100%;
+    flex: 1;
 
     input {
         display: flex;
 
-        width: 100%;
+        /* width: 100%; */
         background: ${({ theme }) => theme.inputBackground};
         border: 0;
         border-radius: 4px;

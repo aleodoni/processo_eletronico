@@ -4,33 +4,24 @@ export const ContainerModal = styled.div`
     width: 270px;
     p {
         text-align: center;
+        margin-bottom: 15px;
     }
     h1 {
-        font-size: 16px;
-        color: #303f9f;
+        font-size: 14px;
+        color: #fff;
         text-align: center;
+        margin-bottom: 10px;
     }
 
     hr {
-        color: #303f9f;
+        color: #fff;
     }
 
     div {
-        text-align: right;
-        button {
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            background: #303f9f;
-            padding: 7px;
-            text-align: center;
-            margin-right: 10px;
-            cursor: pointer;
+        display: grid;
+        grid-template-columns: 132px 132px;
+        grid-column-gap: 0px;
+        margin-top: 20px;
+        justify-items: center;
 
-            &:hover {
-                background: #4496db;
-            }
-        }
-    }
 `;

@@ -2,65 +2,25 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     display: grid;
-    grid-template-areas:
-        'nav nav'
-        'asideLeft main';
-    grid-template-columns: 1fr 6fr;
+    grid-template-columns: 1100px;
 
     fieldset {
-        border: 1px solid;
-        border-color: #303f9f;
-        padding: 5px;
-    }
-
-    legend {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16px;
-        color: #303f9f;
-    }
-
-    button {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16px;
-        border: none;
+        border: 1px solid #ffffff;
         border-radius: 5px;
-        color: #fff;
-        background: #303f9f;
         padding: 7px;
-        text-align: center;
-        margin-right: 10px;
-        cursor: pointer;
-
-        &:hover {
-            background: #4496db;
+        label {
+            color: #ffffff;
+            font-weight: bold;
+        }
+        span {
+            color: #ffffff;
         }
     }
-`;
 
-export const AsideLeft = styled.aside`
-    grid-area: asideLeft;
-    background: #303f9f;
-`;
-
-export const Main = styled.main`
-    grid-area: main;
-    background: #fff;
-    margin-left: 10px;
-    padding: 5px;
-
-    form {
-        display: flex;
-        flex-direction: column;
-        font-size: 16px;
-    }
-
-    input {
-        background: #ffffff;
-        border: 1px solid #c4c4c4;
-        border-radius: 5px;
-        font-size: 16px;
-        padding-top: 5px;
-        padding-bottom: 5px;
+    p {
+        color: #fff;
+        font-weight: bold;
+        margin-bottom: 3px;
     }
 
     thead {
@@ -69,25 +29,37 @@ export const Main = styled.main`
 
         tr,
         th {
-            padding: 5px;
+            padding: 3px;
+            border: solid 1px #000000;
         }
     }
     tbody {
         color: black;
+
+        td {
+            border: solid 1px #000000;
+            text-align: center;
+            padding: 3px;
+        }
     }
 
     table {
         border-collapse: collapse;
-        /*
-        height: 500px;
-        overflow-y: scroll;
-        */
+        border: 1px solid #000000;
+        font-size: 12px;
+        width: 100%;
+        background: #fff;
     }
+`;
 
-    th,
-    td {
-        border: 1px solid black;
-        padding: 5px;
+export const Main = styled.main`
+    margin-left: 10px;
+    padding: 5px;
+    width: 100%;
+
+    form {
+        display: flex;
+        flex-direction: column;
     }
 `;
 
@@ -97,45 +69,16 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
-export const Container1 = styled.div`
-    display: grid;
-    grid-template-columns: 300px;
-    grid-template-rows: 30px;
-    margin-bottom: 10px;
-
-    div {
-        display: grid;
-        grid-template-columns: 80px 788px;
-        grid-gap: 5px;
-        margin-bottom: 10px;
-        label {
-            font-size: 16px;
-            font-weight: bold;
-        }
-        span {
-            font-size: 16px;
-        }
-    }
-`;
-
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 175px;
-    grid-template-rows: 65px;
+    grid-template-columns: 400px 690px;
     margin-bottom: 10px;
-
-    select {
-        font-size: 16px;
-        height: 30px;
-    }
 `;
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 190px 110px 170px;
-    grid-template-rows: 30px;
+    grid-template-columns: 145px 155px 130px 155px;
     grid-gap: 5px;
-    margin-top: 10px;
     margin-bottom: 10px;
 
     input {
@@ -146,61 +89,47 @@ export const ContainerBotoes = styled.div`
 
     label {
         cursor: pointer;
-        font-size: 16px;
-        border: 1px solid #303f9f;
-        border-radius: 5px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        padding-left: 10px;
-        background: #303f9f;
-        color: #fff;
+        padding-top: 9px;
+        padding-left: 9px;
+        background: ${({ theme }) => theme.primary};
+        border: 0;
+        border-radius: 4px;
+        height: 36px;
+        padding: 5 9 15px;
+        color: ${({ theme }) => theme.text};
+        margin: 0 0 10px;
+        font-size: 14px;
+        transition: background 0.2s;
 
         &:hover {
-            background-color: #4496db;
-            border: 1px solid #4496db;
+            background: ${({ theme }) => theme.hover};
         }
-    }
 
-    button {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        color: #fff;
-        background: #303f9f;
-        padding: 7px;
-        text-align: center;
-        margin-right: 10px;
-        cursor: pointer;
-
-        &:hover {
-            background: #4496db;
+        svg {
+            margin-right: 10px;
+            margin-left: 5px;
         }
     }
 `;
 
 export const BotaoComoLink = styled.button`
-    background: #fff !important;
+    background: #fff;
     border: none;
     padding: 3px;
-    font-size: 14px;
+    font-size: 12px;
     text-decoration: underline;
-    color: #303f9f !important;
+    color: #303f9f;
     cursor: pointer;
 
     span {
         margin-left: 45px;
     }
-`;
 
-export const ListaArquivo = styled.ul`
-    list-style-type: none;
+    &:hover {
+        background: #fff;
+    }
 `;
 
 export const Cancelado = styled.span`
     color: red;
-`;
-
-export const Centralizado = styled.div`
-    text-align: center;
 `;

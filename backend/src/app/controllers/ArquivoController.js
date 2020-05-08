@@ -24,7 +24,22 @@ class ArquivoController {
     async indexManifestacao(req, res) {
         const arquivos = await ArquivoManifestacao.findAll({
             order: ['man_id'],
-            attributes: ['arq_id', 'arq_nome', 'man_id', 'arq_tipo', 'data', 'man_login', 'situacao', 'man_login_cancelamento', 'data_cancelamento', 'tmn_nome', 'set_nome'],
+            attributes: [
+                'arq_id',
+                'arq_nome',
+                'man_id',
+                'arq_tipo',
+                'data',
+                'man_login',
+                'situacao',
+                'man_login_cancelamento',
+                'data_cancelamento',
+                'tmn_nome',
+                'set_nome',
+                'tpd_nome',
+                'contador',
+                'man_visto_executiva'
+            ],
             logging: true,
             where: {
                 pro_id: req.params.proId

@@ -18,6 +18,11 @@ class TipoManifestacao extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     defaultValue: 0
+                },
+                tmn_publica: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: true
                 }
             },
 

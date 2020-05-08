@@ -2,7 +2,7 @@ import React from 'react';
 import { FaUserCircle, FaPowerOff } from 'react-icons/fa';
 import Logo from '../../assets/brasao.png';
 import Button from '../layout/button/Button';
-import { Container } from './styles';
+import { Container, Titulo, UserData } from './styles';
 
 function Header() {
     function sair() {
@@ -21,14 +21,20 @@ function Header() {
         <Container>
             <nav>
                 <div>
-                    <img src={Logo} alt="Processo Eletrônico" />
-                    <label>{sessionStorage.getItem('nomeAreaUsuario')} - </label>
-                    <label>{sessionStorage.getItem('nomeSetorUsuario')}</label>
-                    <div>
-                        <span>
+                    <Titulo>
+                        <img src={Logo} alt="Processo Eletrônico" />
+                        Câmara Municipal de Curitiba - Processo Eletrônico
+                    </Titulo>
+                    <UserData>
+                        <div>
                             <FaUserCircle size="20px" />
+                            <label>{sessionStorage.getItem('nomeUsuario')}</label>
+                        </div>
+                        <span>
+                            <label>{sessionStorage.getItem('nomeSetorUsuario')}</label>
                         </span>
-                        <label>&nbsp;{sessionStorage.getItem('nomeUsuario')}</label>
+                    </UserData>
+                    <div>
                         <Button onClick={() => sair()}>
                             <FaPowerOff />
                             Sair
