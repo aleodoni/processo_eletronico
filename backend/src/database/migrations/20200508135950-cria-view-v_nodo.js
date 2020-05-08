@@ -1,6 +1,6 @@
 'use strict';
 
-const viewName = 'spa2.v_area';
+const viewName = 'spa2.v_nodo';
 
 const sql = `
     SELECT a.nod_id,
