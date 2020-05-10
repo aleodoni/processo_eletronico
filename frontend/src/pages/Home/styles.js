@@ -48,7 +48,7 @@ export const ContainerProcessos = styled.div`
 
         td {
             border: solid 1px #000000;
-            padding: 3px;
+            padding: 1px;
         }
     }
 
@@ -60,7 +60,7 @@ export const ContainerProcessos = styled.div`
 `;
 
 export const BotaoComoLink = styled.button`
-    background: #fff !important;
+    background: transparent !important;
     border: none;
     padding: 3px;
     font-size: 14px;

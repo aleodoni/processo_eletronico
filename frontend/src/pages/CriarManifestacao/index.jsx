@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { useHistory } from 'react-router';
 import { Form } from '@unform/web';
@@ -263,23 +263,26 @@ function CriarManifestacao(props) {
         }
     }
 
-    function carregaDadosProcesso(id) {
+    const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${id}`,
+            url: `/ver-processo/${manifestacao.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setManifestacao({ proId: res.data.pro_id });
-                setProCodigo(res.data.pro_codigo);
-                setTprNome(res.data.tpr_nome);
+                const processo = res.data;
+                for (let i = 0; i < processo.length; i++) {
+                    setManifestacao({ proId: processo[i].pro_id });
+                    setProCodigo(processo[i].pro_codigo);
+                    setTprNome(processo[i].tpr_nome);
+                }
             })
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }
+    }, [manifestacao.proId]);
 
     function cancela(manId1) {
         axios({
@@ -340,7 +343,7 @@ function CriarManifestacao(props) {
 
     useEffect(() => {
         async function carrega() {
-            await carregaDadosProcesso(manifestacao.proId);
+            await carregaDadosProcesso();
             await carregaTipoManifestacao();
             await carregaTipoDocumento();
             await carregaAnexos(manifestacao.proId);

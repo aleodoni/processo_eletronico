@@ -50,7 +50,7 @@ class DadosProcessoController {
                 'nod_aval_executiva'
             ],
             logging: true,
-            plain: true,
+            //plain: true,
             where: {
                 pro_id: req.params.id
             }

@@ -16,6 +16,7 @@ import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapid
 import DefaultLayout from '../_layouts/default';
 import axios from '../../configs/axiosConfig';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
+import ModalProcesso from '../../components/ModalProcesso';
 
 function Home() {
     const colunaCodigoProcesso = {
@@ -28,9 +29,16 @@ function Home() {
     const [gridProcessosPessoal, setGridProcessosPessoal] = useState([]);
     const [gridProcessosArea, setGridProcessosArea] = useState([]);
     const [erro, setErro] = useState('');
+    const [modalProcesso, setModalProcesso] = useState(false);
+    const [proId, setProId] = useState(-1);
 
-    function abreProcesso(id) {
-        alert(id);
+    function abreModalProcesso(id) {
+        setProId(id);
+        setModalProcesso(true);
+    }
+
+    function fechaModalProcesso() {
+        setModalProcesso(false);
     }
 
     const carregaGridPessoal = useCallback(() => {
@@ -107,7 +115,7 @@ function Home() {
                     <ContainerProcessos>
                         {gridProcessosPessoal.length > 0 ? (
                             <div>
-                                <p>Processos de {sessionStorage.getItem('nomeUsuario')}</p>
+                                <p>Processos de: {sessionStorage.getItem('nomeUsuario')}</p>
                                 <table>
                                     <thead>
                                         <tr>
@@ -122,7 +130,9 @@ function Home() {
                                                 <td style={colunaCodigoProcesso}>
                                                     <BotaoComoLink
                                                         type="button"
-                                                        onClick={() => abreProcesso(proc.pro_id)}>
+                                                        onClick={() =>
+                                                            abreModalProcesso(proc.pro_id)
+                                                        }>
                                                         {proc.pro_codigo}
                                                     </BotaoComoLink>
                                                 </td>
@@ -164,7 +174,9 @@ function Home() {
                                                 <td style={colunaCodigoProcesso}>
                                                     <BotaoComoLink
                                                         type="button"
-                                                        onClick={() => abreProcesso(proc.pro_id)}>
+                                                        onClick={() =>
+                                                            abreModalProcesso(proc.pro_id)
+                                                        }>
                                                         {proc.pro_codigo}
                                                     </BotaoComoLink>
                                                 </td>
@@ -187,6 +199,11 @@ function Home() {
                             </div>
                         ) : null}
                     </ContainerProcessos>
+                    <ModalProcesso
+                        fechaModalProcesso={fechaModalProcesso}
+                        modalProcesso={modalProcesso}
+                        proId={proId}
+                    />
                 </Main>
             </Container>
         </DefaultLayout>
