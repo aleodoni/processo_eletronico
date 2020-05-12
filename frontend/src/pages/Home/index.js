@@ -11,11 +11,11 @@ import {
     ContainerBotoes,
     BotaoComoLink,
     Erro,
+    BotaoCriaManifestacao,
 } from './styles';
 import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapido';
 import DefaultLayout from '../_layouts/default';
 import axios from '../../configs/axiosConfig';
-import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
 import ModalProcesso from '../../components/ModalProcesso';
 
 function Home() {
@@ -23,7 +23,7 @@ function Home() {
         width: '50px',
     };
     const colunaManifestacao = {
-        width: '190px',
+        width: '186px',
     };
     const history = useHistory();
     const [gridProcessosPessoal, setGridProcessosPessoal] = useState([]);
@@ -138,15 +138,17 @@ function Home() {
                                                 </td>
                                                 <td>{proc.tpr_nome}</td>
                                                 <td style={colunaManifestacao}>
-                                                    <CriaManifestacao
+                                                    <BotaoCriaManifestacao
                                                         name="btnCriaManifestacao"
-                                                        clickHandler={() => {
+                                                        onClick={() => {
                                                             criaManifestacao(
                                                                 proc.pro_id,
                                                                 proc.nod_aval_executiva
                                                             );
-                                                        }}
-                                                    />
+                                                        }}>
+                                                        <FaFileAlt />
+                                                        Criar manifestação
+                                                    </BotaoCriaManifestacao>
                                                 </td>
                                             </tr>
                                         ))}
@@ -182,15 +184,17 @@ function Home() {
                                                 </td>
                                                 <td>{proc.tpr_nome}</td>
                                                 <td style={colunaManifestacao}>
-                                                    <CriaManifestacao
+                                                    <BotaoCriaManifestacao
                                                         name="btnCriaManifestacao"
-                                                        clickHandler={() => {
+                                                        onClick={() => {
                                                             criaManifestacao(
                                                                 proc.pro_id,
                                                                 proc.nod_aval_executiva
                                                             );
-                                                        }}
-                                                    />
+                                                        }}>
+                                                        <FaFileAlt />
+                                                        Criar manifestação
+                                                    </BotaoCriaManifestacao>
                                                 </td>
                                             </tr>
                                         ))}

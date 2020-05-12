@@ -181,6 +181,7 @@ function DadosProcesso({ match }) {
                         })
                             .then(resAnexos => {
                                 if (resAnexos.status === 204) {
+                                    mensagem.success('Arquivo anexado ao processo');
                                     carregaAnexos(proId);
                                 }
                             })
@@ -451,9 +452,9 @@ function DadosProcesso({ match }) {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {anexosManifestacao.map(anexo => (
+                                                    {anexosManifestacao.map((anexo, index) => (
                                                         <tr key={anexo.man_id}>
-                                                            <td>{anexo.contador}</td>
+                                                            <td>{index + 1}</td>
                                                             <td>{anexo.tpd_nome}</td>
                                                             <td>{anexo.tmn_nome}</td>
                                                             <td>

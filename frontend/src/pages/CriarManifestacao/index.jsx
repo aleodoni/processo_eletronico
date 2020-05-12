@@ -459,7 +459,7 @@ function CriarManifestacao(props) {
                         <ContainerBotoes>
                             <label htmlFor="anexo">
                                 <FaPaperclip />
-                                &nbsp;Inserir Anexo
+                                &nbsp;Inserir Manifestação
                             </label>
                             <input
                                 type="file"

@@ -30,32 +30,35 @@ export const ContainerProcessos = styled.div`
     }
 
     thead {
-        color: black;
         background: #d3d3d3;
 
         tr,
         th {
             padding: 3px;
-            border: solid 1px #000000;
+            border: solid 1px #d3d3d3;
         }
     }
     tbody {
-        color: black;
         background: #fff;
         tr:nth-child(even) {
             background-color: #def0ff;
         }
 
         td {
-            border: solid 1px #000000;
+            border: solid 1px #fff;
             padding: 1px;
         }
     }
 
     table {
-        border-collapse: collapse;
-        border: 1px solid #000000;
+        padding: 3px;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #fff;
         width: 100%;
+        border-radius: 7px;
+        -moz-border-radius: 7px;
+        background: #fff;
     }
 `;
 
@@ -76,4 +79,23 @@ export const Erro = styled.div`
     font-size: 14px;
     color: red;
     padding-bottom: 10px;
+`;
+
+export const BotaoCriaManifestacao = styled.button`
+    background: ${({ theme }) => theme.primary};
+    border: 0;
+    border-radius: 4px;
+    height: 36px;
+    color: ${({ theme }) => theme.text};
+    font-size: 14px;
+    transition: background 0.2s;
+
+    &:hover {
+        background: ${({ theme }) => theme.hover};
+    }
+
+    svg {
+        margin-right: 10px;
+        margin-left: 5px;
+    }
 `;

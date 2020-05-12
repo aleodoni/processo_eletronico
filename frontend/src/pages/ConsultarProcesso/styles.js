@@ -14,6 +14,16 @@ export const Main = styled.main`
         display: flex;
         flex-direction: column;
     }
+
+    hr {
+        margin-left: 5px;
+        margin-bottom: 10px;
+    }
+
+    p {
+        color: #fff;
+        margin-left: 5px;
+    }
 `;
 
 export const Erro = styled.div`
@@ -25,11 +35,35 @@ export const Erro = styled.div`
 
 export const ContainerConsultaProcesso = styled.div`
     display: grid;
-    grid-template-columns: 160px 120px 300px;
+    grid-template-columns: 160px 120px 450px;
     grid-gap: 5px;
-    margin-bottom: 14px;
 
     button {
         margin-top: 22px;
     }
+`;
+
+export const ContainerPesquisa = styled.div`
+    display: grid;
+    grid-template-columns: 90px 90px 645px;
+    grid-gap: 5px;
+`;
+
+export const ContainerPesquisa1 = styled.div`
+    display: grid;
+    grid-template-columns: 415px 415px;
+    grid-gap: 5px;
+    margin-bottom: 7px;
+`;
+
+export const ContainerPesquisa2 = styled.div`
+    display: grid;
+    grid-template-columns: 197px 197px 100px 160px 160px;
+    grid-gap: 5px;
+`;
+
+export const ContainerPesquisa3 = styled.div`
+    display: grid;
+    grid-template-columns: 415px 415px;
+    grid-gap: 5px;
 `;
