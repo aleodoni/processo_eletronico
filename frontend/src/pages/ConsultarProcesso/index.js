@@ -9,6 +9,9 @@ import api from '../../service/api';
 import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import Input from '../../components/layout/Input';
+import ProcessoInputMask from '../../components/layout/InputMask/ProcessoInputMask';
+import CpfInputMask from '../../components/layout/InputMask/CpfInputMask';
+import CnpjInputMask from '../../components/layout/InputMask/CnpjInputMask';
 import Select from '../../components/layout/Select';
 import Localizar from '../../components/layout/button/Localizar';
 import Pesquisar from '../../components/layout/button/Pesquisa';
@@ -175,6 +178,7 @@ function ConsultarProcesso() {
         formRefPesquisa.current.setFieldValue('tprId', '-1');
         formRefPesquisa.current.setFieldValue('areaId', '-1');
         formRefPesquisa.current.setFieldValue('areaIdIniciativa', '-1');
+        setErro('');
     }
 
     function pesquisa({
@@ -254,12 +258,9 @@ function ConsultarProcesso() {
                         <div>
                             <Form ref={formRef} initialData={processo} onSubmit={localiza}>
                                 <ContainerConsultaProcesso>
-                                    <Input
+                                    <ProcessoInputMask
                                         name="proCodigo"
                                         label="Digite o código"
-                                        type="text"
-                                        size={10}
-                                        maxLength="10"
                                         autoFocus
                                     />
                                     <Localizar name="btnConsultaProcesso" type="submit" />
@@ -324,20 +325,8 @@ function ConsultarProcesso() {
                                         size={5}
                                         maxLength="5"
                                     />
-                                    <Input
-                                        name="proCpf"
-                                        label="Cpf"
-                                        type="text"
-                                        size={11}
-                                        maxLength="11"
-                                    />
-                                    <Input
-                                        name="proCnpj"
-                                        label="Cnpj"
-                                        type="text"
-                                        size={14}
-                                        maxLength="14"
-                                    />
+                                    <CpfInputMask name="proCpf" label="Cpf" />
+                                    <CnpjInputMask name="proCnpj" label="Cnpj" />
                                 </ContainerPesquisa2>
                                 <ContainerPesquisa3>
                                     <Input

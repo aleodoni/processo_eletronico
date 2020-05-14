@@ -13,7 +13,7 @@ import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Limpar from '../../components/layout/button/Limpar';
 import Tramitar from '../../components/layout/button/Tramitar';
-import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
+import BotaoVistoExecutiva from '../../components/layout/button/VistoExecutiva';
 import VistoExecutiva from '../../components/system/select/VistoExecutiva';
 import FormLine from '../../components/layout/FormLine';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
@@ -141,7 +141,7 @@ function CriarManifestacaoExecutiva(props) {
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${manifestacao.proId}`,
+            url: `/ver-processo/${props.match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -307,7 +307,7 @@ function CriarManifestacaoExecutiva(props) {
                             </FormLine>
                         </Container2>
                         <ContainerBotoes>
-                            <CriaManifestacao name="btnCriaManifestacao" type="submit" />
+                            <BotaoVistoExecutiva name="btnVistoExecutiva" type="submit" />
                             <Limpar name="btnLimpa" clickHandler={limpaCampos} />
                             <Tramitar name="btnTramita" clickHandler={tramita} />
                             <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
@@ -351,9 +351,9 @@ function CriarManifestacaoExecutiva(props) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {anexos.map(anexo => (
+                                        {anexos.map((anexo, index) => (
                                             <tr key={anexo.man_id}>
-                                                <td>{anexo.contador}</td>
+                                                <td>{index + 1}</td>
                                                 <td>{anexo.tpd_nome}</td>
                                                 <td>{anexo.tmn_nome}</td>
                                                 <td>

@@ -9,7 +9,9 @@ import axios from '../../configs/axiosConfig';
 import AnexoArquivo from './AnexoArquivo';
 import DefaultLayout from '../_layouts/default';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
+import GeraFluxo from '../../components/layout/button/GeraFluxo';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
+import ModalFluxo from '../../components/ModalFluxo';
 import {
     Container,
     Main,
@@ -31,11 +33,34 @@ function DadosProcesso({ match }) {
     const [erro, setErro] = useState('');
     const [processos, setProcessos] = useState([]);
     const [anexos, setAnexos] = useState([]);
+    const [grafo, setGrafo] = useState('');
     const [anexosManifestacao, setAnexosManifestacao] = useState([]);
     const [tramites, setTramites] = useState([]);
     const [mostraProcesso, setMostraProcesso] = useState(false);
+    const [modalFluxo, setModalFluxo] = useState(false);
 
     const formRef = useRef(null);
+
+    function abreModalFluxo(fluxo) {
+        axios({
+            method: 'GET',
+            url: `/gera-grafo/${fluxo}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setGrafo(res.data);
+                setModalFluxo(true);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar grafo.');
+            });
+    }
+
+    function fechaModalFluxo() {
+        setModalFluxo(false);
+    }
 
     const carregaAnexos = useCallback(() => {
         axios({
@@ -240,7 +265,10 @@ function DadosProcesso({ match }) {
                                     </h3>
                                     <Erro dangerouslySetInnerHTML={{ __html: erro }} />
                                     <input id="proId" value={proId} type="hidden" />
-                                    {!pro.pro_encerramento ? (
+                                    {!pro.pro_encerramento &&
+                                    parseInt(pro.area_id, 10) ===
+                                        parseInt(sessionStorage.getItem('areaUsuario'), 10) &&
+                                    !pro.nod_fim ? (
                                         <ContainerBotoes>
                                             <label htmlFor="anexo">
                                                 <FaPaperclip />
@@ -262,6 +290,10 @@ function DadosProcesso({ match }) {
                                                 name="btnConsulta"
                                                 clickHandler={consulta}
                                             />
+                                            <GeraFluxo
+                                                name="btnGrafico"
+                                                clickHandler={() => abreModalFluxo(pro.flu_id)}
+                                            />
                                             <br />
                                         </ContainerBotoes>
                                     ) : (
@@ -269,6 +301,10 @@ function DadosProcesso({ match }) {
                                             <ConsultarOutro
                                                 name="btnConsulta"
                                                 clickHandler={consulta}
+                                            />
+                                            <GeraFluxo
+                                                name="btnGrafico"
+                                                clickHandler={() => abreModalFluxo(pro.flu_id)}
                                             />
                                             <br />
                                         </ContainerBotoes>
@@ -420,6 +456,11 @@ function DadosProcesso({ match }) {
                                             ) : null}
                                         </fieldset>
                                     </ContainerDados>
+                                    <ModalFluxo
+                                        fechaModalFluxo={fechaModalFluxo}
+                                        modalFluxo={modalFluxo}
+                                        id={grafo}
+                                    />
                                 </div>
                             ))}
                             <br />

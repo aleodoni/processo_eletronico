@@ -250,6 +250,9 @@ routes.post(`${process.env.API_URL}/tramite-recebe-ou-nega`, TramiteController.r
 // rota de retorno de próximo trâmite
 routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proximoTramite);
 
+// rota de encerramento de processo
+routes.put(`${process.env.API_URL}/encerra/:id`, CriaProcessoController.encerra);
+
 // rotas do cadastro de tipos de documento
 routes.get(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.index);
 routes.post(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.store);

@@ -118,6 +118,9 @@ class VDadosProcesso extends Model {
                 },
                 nod_aval_executiva: {
                     type: Sequelize.BOOLEAN
+                },
+                nod_fim: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

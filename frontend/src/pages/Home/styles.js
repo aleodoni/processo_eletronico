@@ -27,27 +27,7 @@ export const ContainerProcessos = styled.div`
 
     p {
         color: #fff;
-    }
-
-    thead {
-        background: #d3d3d3;
-
-        tr,
-        th {
-            padding: 3px;
-            border: solid 1px #d3d3d3;
-        }
-    }
-    tbody {
-        background: #fff;
-        tr:nth-child(even) {
-            background-color: #def0ff;
-        }
-
-        td {
-            border: solid 1px #fff;
-            padding: 1px;
-        }
+        margin-bottom: 5px;
     }
 
     table {
@@ -59,6 +39,27 @@ export const ContainerProcessos = styled.div`
         border-radius: 7px;
         -moz-border-radius: 7px;
         background: #fff;
+
+        thead {
+            background: #d3d3d3;
+
+            tr,
+            th {
+                padding: 3px;
+                border: solid 1px #d3d3d3;
+            }
+        }
+        tbody {
+            background: #fff;
+            tr:nth-child(even) {
+                background-color: #def0ff;
+            }
+
+            td {
+                border: solid 1px #fff;
+                padding: 1px;
+            }
+        }
     }
 `;
 
@@ -85,13 +86,35 @@ export const BotaoCriaManifestacao = styled.button`
     background: ${({ theme }) => theme.primary};
     border: 0;
     border-radius: 4px;
-    height: 36px;
+    height: 27px;
+    width: 162px;
     color: ${({ theme }) => theme.text};
     font-size: 14px;
     transition: background 0.2s;
 
     &:hover {
         background: ${({ theme }) => theme.hover};
+    }
+
+    svg {
+        margin-right: 10px;
+        margin-left: 5px;
+    }
+`;
+
+export const BotaoFinalizaProcesso = styled.button`
+    background: #008000;
+    align-items: center;
+    border: 0;
+    border-radius: 4px;
+    height: 27px;
+    width: 162px;
+    color: ${({ theme }) => theme.text};
+    font-size: 14px;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #32cd32;
     }
 
     svg {

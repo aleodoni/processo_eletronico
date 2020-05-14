@@ -5,6 +5,7 @@ import VDadosPessoa from '../models/VDadosPessoa';
 import Processo from '../models/Processo';
 import TipoProcesso from '../models/TipoProcesso';
 import Nodo from '../models/Nodo';
+import DataHoraAtual from '../models/DataHoraAtual';
 // import AuditoriaController from './AuditoriaController';
 
 class CriaProcessoController {
@@ -121,6 +122,24 @@ class CriaProcessoController {
             pro_tipo_iniciativa,
             area_id_iniciativa
         });
+    }
+
+    async encerra(req, res) {
+        const processo = await Processo.findByPk(req.params.id, { logging: false });
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: true,
+            plain: true
+        });
+        if (!processo) {
+            return res.status(400).json({ error: 'Processo não encontrado' });
+        }
+        await processo.update({
+            pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,
+            usu_finalizador: req.body.usuario,
+            set_id_finalizador: req.body.areaId
+        }, { logging: false });
+        return res.json(processo);
     }
 }
 export default new CriaProcessoController();

@@ -355,29 +355,31 @@ const ModalProcesso = props => {
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {anexosManifestacao.map(anexo => (
-                                                                <tr key={anexo.man_id}>
-                                                                    <td>{anexo.contador}</td>
-                                                                    <td>{anexo.tpd_nome}</td>
-                                                                    <td>{anexo.tmn_nome}</td>
-                                                                    <td>
-                                                                        <BotaoComoLinkManifestacoes
-                                                                            type="button"
-                                                                            onClick={e =>
-                                                                                downloadAnexoManifestacao(
-                                                                                    e,
-                                                                                    anexo.arq_id,
-                                                                                    anexo.manId,
-                                                                                    anexo.arq_nome
-                                                                                )
-                                                                            }>
-                                                                            {anexo.arq_nome}
-                                                                        </BotaoComoLinkManifestacoes>
-                                                                    </td>
-                                                                    <td>{anexo.data}</td>
-                                                                    <td>{anexo.set_nome}</td>
-                                                                </tr>
-                                                            ))}
+                                                            {anexosManifestacao.map(
+                                                                (anexo, index) => (
+                                                                    <tr key={anexo.man_id}>
+                                                                        <td>{index + 1}</td>
+                                                                        <td>{anexo.tpd_nome}</td>
+                                                                        <td>{anexo.tmn_nome}</td>
+                                                                        <td>
+                                                                            <BotaoComoLinkManifestacoes
+                                                                                type="button"
+                                                                                onClick={e =>
+                                                                                    downloadAnexoManifestacao(
+                                                                                        e,
+                                                                                        anexo.arq_id,
+                                                                                        anexo.manId,
+                                                                                        anexo.arq_nome
+                                                                                    )
+                                                                                }>
+                                                                                {anexo.arq_nome}
+                                                                            </BotaoComoLinkManifestacoes>
+                                                                        </td>
+                                                                        <td>{anexo.data}</td>
+                                                                        <td>{anexo.set_nome}</td>
+                                                                    </tr>
+                                                                )
+                                                            )}
                                                         </tbody>
                                                     </table>
                                                 </div>

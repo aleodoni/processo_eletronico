@@ -5,7 +5,7 @@ import MaskedInput from 'react-text-mask';
 
 import { Container } from './styles';
 
-export default function ProcessoInputMask({ name, label, size, ...rest }) {
+export default function CnpjInputMask({ name, label, size, ...rest }) {
     const inputRef = useRef(null);
     const { fieldName, registerField, defaultValue, error } = useField(name);
 
@@ -16,21 +16,6 @@ export default function ProcessoInputMask({ name, label, size, ...rest }) {
             path: 'value',
         });
     }, [fieldName, registerField]);
-
-    function pad(n, width, z) {
-        z = z || '0';
-        n += '';
-        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-    }
-
-    function handleKeyDown({ keyCode }) {
-        const { value } = inputRef.current.inputElement;
-
-        if ((keyCode === 191 || keyCode === 111) && inputRef.current.value.length < 5) {
-            const newValue = pad(value, 5);
-            inputRef.current.inputElement.value = newValue;
-        }
-    }
 
     function handleChange(e) {
         inputRef.current.value = e.target.value;
@@ -44,10 +29,28 @@ export default function ProcessoInputMask({ name, label, size, ...rest }) {
                 id={fieldName}
                 ref={inputRef}
                 defaultValue={defaultValue}
-                mask={[/\d/, /\d/, /\d/, /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
+                mask={[
+                    /\d/,
+                    /\d/,
+                    '.',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    '.',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    '/',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    '-',
+                    /\d/,
+                    /\d/,
+                ]}
                 guide={false}
                 modelClean
-                onKeyDown={handleKeyDown}
                 onChange={handleChange}
                 {...rest}
             />
@@ -57,13 +60,13 @@ export default function ProcessoInputMask({ name, label, size, ...rest }) {
     );
 }
 
-ProcessoInputMask.propTypes = {
+CnpjInputMask.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string,
     size: PropTypes.number,
 };
 
-ProcessoInputMask.defaultProps = {
+CnpjInputMask.defaultProps = {
     label: null,
     size: 1,
 };

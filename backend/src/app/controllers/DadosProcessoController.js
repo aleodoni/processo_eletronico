@@ -47,7 +47,8 @@ class DadosProcessoController {
                 'setor_autuador_processo',
                 'setor_finalizador_processo',
                 'visualizacao',
-                'nod_aval_executiva'
+                'nod_aval_executiva',
+                'nod_fim'
             ],
             logging: true,
             where: {
@@ -192,7 +193,9 @@ class DadosProcessoController {
                 'area_id',
                 'usu_autuador',
                 'nod_aval_executiva',
-                'tpr_pessoal'
+                'tpr_pessoal',
+                'pessoal',
+                'nod_fim'
             ],
             logging: true,
             where: {

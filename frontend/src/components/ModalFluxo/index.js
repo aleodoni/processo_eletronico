@@ -23,6 +23,7 @@ const ModalFluxo = props => {
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
             border: '1px solid #303f9f',
+            borderRadius: '5px',
         },
     };
     const { fechaModalFluxo, modalFluxo, id } = props;

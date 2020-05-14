@@ -5,7 +5,7 @@ import MaskedInput from 'react-text-mask';
 
 import { Container } from './styles';
 
-export default function ProcessoInputMask({ name, label, size, ...rest }) {
+export default function CpfInputMask({ name, label, size, ...rest }) {
     const inputRef = useRef(null);
     const { fieldName, registerField, defaultValue, error } = useField(name);
 
@@ -17,23 +17,14 @@ export default function ProcessoInputMask({ name, label, size, ...rest }) {
         });
     }, [fieldName, registerField]);
 
-    function pad(n, width, z) {
-        z = z || '0';
-        n += '';
-        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-    }
-
-    function handleKeyDown({ keyCode }) {
+    function handleKeyDown() {
         const { value } = inputRef.current.inputElement;
-
-        if ((keyCode === 191 || keyCode === 111) && inputRef.current.value.length < 5) {
-            const newValue = pad(value, 5);
-            inputRef.current.inputElement.value = newValue;
-        }
+        inputRef.current.inputElement.value = value;
     }
 
     function handleChange(e) {
         inputRef.current.value = e.target.value;
+        // inputRef.current.inputElement.value = e.target.value;
     }
     return (
         <Container size={size}>
@@ -44,7 +35,22 @@ export default function ProcessoInputMask({ name, label, size, ...rest }) {
                 id={fieldName}
                 ref={inputRef}
                 defaultValue={defaultValue}
-                mask={[/\d/, /\d/, /\d/, /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
+                mask={[
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    '.',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    '.',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    '-',
+                    /\d/,
+                    /\d/,
+                ]}
                 guide={false}
                 modelClean
                 onKeyDown={handleKeyDown}
@@ -57,13 +63,13 @@ export default function ProcessoInputMask({ name, label, size, ...rest }) {
     );
 }
 
-ProcessoInputMask.propTypes = {
+CpfInputMask.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string,
     size: PropTypes.number,
 };
 
-ProcessoInputMask.defaultProps = {
+CpfInputMask.defaultProps = {
     label: null,
     size: 1,
 };

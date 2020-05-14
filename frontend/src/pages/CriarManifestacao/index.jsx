@@ -266,7 +266,7 @@ function CriarManifestacao(props) {
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${manifestacao.proId}`,
+            url: `/ver-processo/${props.match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -519,9 +519,9 @@ function CriarManifestacao(props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {anexos.map(anexo => (
+                                    {anexos.map((anexo, index) => (
                                         <tr key={anexo.arq_id}>
-                                            <td>{anexo.contador}</td>
+                                            <td>{index + 1}</td>
                                             <td>{anexo.tpd_nome}</td>
                                             <td>{anexo.tmn_nome}</td>
                                             <td>
