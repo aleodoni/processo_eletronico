@@ -170,6 +170,8 @@ function Fluxo() {
             <Container>
                 <Autorizacao tela="Fluxos" />
                 <Main>
+                    <p>Fluxos</p>
+                    <hr />
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={fluxo} onSubmit={grava}>
                         <Input name="fluId" type="hidden" />

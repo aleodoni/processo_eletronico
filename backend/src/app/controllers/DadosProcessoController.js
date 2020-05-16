@@ -25,8 +25,6 @@ class DadosProcessoController {
                 'usu_autuador',
                 'pro_ultimo_tramite',
                 'usu_finalizador',
-                'usu_alteracao',
-                'usu_data_hora_alteracao',
                 'nod_id',
                 'set_id_autuador',
                 'area_id',
@@ -84,19 +82,19 @@ class DadosProcessoController {
         if (proContatoPj !== '') {
             wherePesquisa.pro_contato_pj = { [Op.substring]: proContatoPj };
         }
-        if (proCpf !== '') {
+        if (proCpf !== '' && proCpf !== undefined) {
             wherePesquisa.cpf = proCpf;
         }
-        if (proCnpj !== '') {
+        if (proCnpj !== '' && proCnpj !== undefined) {
             wherePesquisa.cnpj = proCnpj;
         }
-        if (proDataIniAutuacao !== '' && proDataFimAutuacao === '') {
+        if (proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined && proDataFimAutuacao === '') {
             wherePesquisa.pro_autuacao = proDataIniAutuacao;
         }
-        if (proDataFimAutuacao !== '' && proDataIniAutuacao === '') {
+        if (proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined && proDataIniAutuacao === '') {
             wherePesquisa.pro_autuacao = { [Op.lte]: proDataFimAutuacao };
         }
-        if (proDataIniAutuacao !== '' && proDataFimAutuacao !== '') {
+        if (proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined && proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined) {
             wherePesquisa.pro_autuacao = { [Op.between]: [proDataIniAutuacao, proDataFimAutuacao] };
         }
         if (proNumero !== '') {
@@ -120,7 +118,6 @@ class DadosProcessoController {
         }
 
         console.log(JSON.stringify(wherePesquisa, null, 4));
-
         const pesquisaProcesso = await VDadosProcesso.findAll({
             attributes: [
                 'pro_id',

@@ -55,12 +55,16 @@ class CriaProcessoController {
         if (req.body.set_id_finalizador === '') {
             req.body.set_id_finalizador = null;
         }
-        if (req.body.usu_alteracao === '') {
-            req.body.usu_alteracao = null;
-        }
         if (req.body.area_id_iniciativa === '') {
             req.body.area_id_iniciativa = null;
         }
+
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: true,
+            plain: true
+        });
+        req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
 
         // com o tpr_id verifico qual é o nó de início do fluxo
         const tipoProcesso = await TipoProcesso.findAll({
@@ -90,7 +94,31 @@ class CriaProcessoController {
 
         console.log(JSON.stringify(req.body, null, 4));
 
-        const { pro_id, tpr_id, pro_iniciativa, pro_nome, pro_matricula, pro_cpf, pro_cnpj, pro_contato_pj, pro_fone, pro_celular, pro_email, pro_encerramento, pro_assunto, usu_autuador, set_id_autuador, area_id, pro_ultimo_tramite, usu_finalizador, set_id_finalizador, usu_alteracao, usu_data_hora_alteracao, nod_id, pro_tipo_iniciativa, area_id_iniciativa } = await Processo.create(req.body, {
+        const {
+            pro_id,
+            tpr_id,
+            pro_iniciativa,
+            pro_nome,
+            pro_matricula,
+            pro_cpf,
+            pro_cnpj,
+            pro_contato_pj,
+            pro_fone,
+            pro_celular,
+            pro_email,
+            pro_encerramento,
+            pro_assunto,
+            usu_autuador,
+            set_id_autuador,
+            area_id,
+            pro_ultimo_tramite,
+            usu_finalizador,
+            set_id_finalizador,
+            nod_id,
+            pro_tipo_iniciativa,
+            area_id_iniciativa,
+            pro_autuacao
+        } = await Processo.create(req.body, {
             logging: false
         });
         // auditoria de inserção
@@ -116,11 +144,10 @@ class CriaProcessoController {
             pro_ultimo_tramite,
             usu_finalizador,
             set_id_finalizador,
-            usu_alteracao,
-            usu_data_hora_alteracao,
             nod_id,
             pro_tipo_iniciativa,
-            area_id_iniciativa
+            area_id_iniciativa,
+            pro_autuacao
         });
     }
 

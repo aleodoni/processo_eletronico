@@ -443,7 +443,6 @@ function CriarProcesso() {
                 usu_autuador: sessionStorage.getItem('usuario'),
                 pro_ultimo_tramite: null,
                 usu_finalizador: null,
-                usu_alteracao: sessionStorage.getItem('usuario'),
                 nod_id: null,
                 set_id_autuador: sessionStorage.getItem('setorUsuario'),
                 area_id: parseInt(sessionStorage.getItem('areaUsuario'), 10),
@@ -453,6 +452,7 @@ function CriarProcesso() {
                 area_id_iniciativa: p.areaId,
                 tpr_id: p.tprId,
                 pro_contato_pj: p.proContatoPj,
+                pro_autuacao: null,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),

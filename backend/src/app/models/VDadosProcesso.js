@@ -74,12 +74,6 @@ class VDadosProcesso extends Model {
                 set_id_finalizador: {
                     type: Sequelize.STRING
                 },
-                usu_alteracao: {
-                    type: Sequelize.STRING
-                },
-                usu_data_hora_alteracao: {
-                    type: Sequelize.STRING
-                },
                 nod_id: {
                     type: Sequelize.INTEGER
                 },

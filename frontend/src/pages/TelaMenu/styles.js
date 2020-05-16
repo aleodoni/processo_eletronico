@@ -7,6 +7,13 @@ export const Container = styled.div`
     button {
         margin-right: 10px;
     }
+
+    p {
+        color: #fff;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 3px;
+    }
 `;
 
 export const Main = styled.main`

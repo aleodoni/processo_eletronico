@@ -58,7 +58,7 @@ export const ContainerPesquisa1 = styled.div`
 
 export const ContainerPesquisa2 = styled.div`
     display: grid;
-    grid-template-columns: 197px 197px 100px 160px 160px;
+    grid-template-columns: 197px 197px 100px 146px 174px;
     grid-gap: 5px;
 `;
 

@@ -10,14 +10,17 @@ import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import Input from '../../components/layout/Input';
 import ProcessoInputMask from '../../components/layout/InputMask/ProcessoInputMask';
+import InputMask from '../../components/layout/InputMask';
 import CpfInputMask from '../../components/layout/InputMask/CpfInputMask';
 import CnpjInputMask from '../../components/layout/InputMask/CnpjInputMask';
+import DateInputMask from '../../components/layout/InputMask/DateInputMask';
 import Select from '../../components/layout/Select';
 import Localizar from '../../components/layout/button/Localizar';
 import Pesquisar from '../../components/layout/button/Pesquisa';
 import Limpar from '../../components/layout/button/Limpar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
+import { cpf, cnpj } from '../../utils/validaCpfCnpj';
 import {
     Container,
     ContainerConsultaProcesso,
@@ -178,6 +181,13 @@ function ConsultarProcesso() {
         formRefPesquisa.current.setFieldValue('tprId', '-1');
         formRefPesquisa.current.setFieldValue('areaId', '-1');
         formRefPesquisa.current.setFieldValue('areaIdIniciativa', '-1');
+        document.getElementById('proDataIniAutuacao').value = '';
+        document.getElementById('proDataFimAutuacao').value = '';
+        document.getElementById('proNumero').value = '';
+        document.getElementById('proMatricula').value = '';
+        document.getElementById('proAno').value = '';
+        document.getElementById('proCpf').value = '';
+        document.getElementById('proCnpj').value = '';
         setErro('');
     }
 
@@ -196,6 +206,14 @@ function ConsultarProcesso() {
         areaIdIniciativa,
     }) {
         setErro('');
+        if (proCpf !== '' && proCpf !== undefined && !cpf(proCpf.replace(/[^\d]+/g, ''))) {
+            setErro('Cpf inválido.');
+            return;
+        }
+        if (proCnpj !== undefined && !cnpj(proCnpj.replace(/[^\d]+/g, ''))) {
+            setErro('Cnpj inválido.');
+            return;
+        }
         axios({
             method: 'POST',
             url: '/pesquisa-processo',
@@ -275,20 +293,13 @@ function ConsultarProcesso() {
                                 initialData={processoPesquisa}
                                 onSubmit={pesquisa}>
                                 <ContainerPesquisa>
-                                    <Input
+                                    <InputMask
                                         name="proNumero"
                                         label="Número"
-                                        type="text"
-                                        size={5}
-                                        maxLength="5"
+                                        mask="99999"
+                                        maskChar=" "
                                     />
-                                    <Input
-                                        name="proAno"
-                                        label="Ano"
-                                        type="text"
-                                        size={4}
-                                        maxLength="4"
-                                    />
+                                    <InputMask name="proAno" label="Ano" mask="9999" maskChar=" " />
                                     <Select
                                         name="tprId"
                                         label="Tipo do processo"
@@ -304,26 +315,19 @@ function ConsultarProcesso() {
                                     />
                                 </ContainerPesquisa1>
                                 <ContainerPesquisa2>
-                                    <Input
+                                    <DateInputMask
                                         name="proDataIniAutuacao"
                                         label="Data inicial de autuação"
-                                        type="text"
-                                        size={10}
-                                        maxLength="10"
                                     />
-                                    <Input
+                                    <DateInputMask
                                         name="proDataFimAutuacao"
                                         label="Data final de autuação"
-                                        type="text"
-                                        size={10}
-                                        maxLength="10"
                                     />
-                                    <Input
+                                    <InputMask
                                         name="proMatricula"
                                         label="Matrícula"
-                                        type="text"
-                                        size={5}
-                                        maxLength="5"
+                                        mask="99999"
+                                        maskChar=" "
                                     />
                                     <CpfInputMask name="proCpf" label="Cpf" />
                                     <CnpjInputMask name="proCnpj" label="Cnpj" />

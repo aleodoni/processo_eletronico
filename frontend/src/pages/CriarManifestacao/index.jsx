@@ -431,6 +431,8 @@ function CriarManifestacao(props) {
             <Container>
                 <Autorizacao tela="Criar manifestação" />
                 <Main>
+                    <p>Criar manifestação</p>
+                    <hr />
                     <Erro>{erro}</Erro>
                     <fieldset>
                         <label>Processo: </label>
