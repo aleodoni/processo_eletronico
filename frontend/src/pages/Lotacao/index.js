@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro, Container1, Container2 } from './styles';
+import { Container, Main, Erro, Container1, Container2, Titulo } from './styles';
 import api from '../../service/api';
 import Select from '../../components/layout/Select';
 import Input from '../../components/layout/Input';
@@ -218,6 +218,10 @@ function Lotacao() {
             <Container>
                 <Autorizacao tela="Lotações" />
                 <Main>
+                    <Titulo>
+                        <p>Lotações</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={lotacao} onSubmit={grava}>
                         <Input name="id" type="hidden" />

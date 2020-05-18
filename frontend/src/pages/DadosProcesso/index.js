@@ -9,7 +9,9 @@ import axios from '../../configs/axiosConfig';
 import AnexoArquivo from './AnexoArquivo';
 import DefaultLayout from '../_layouts/default';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
+import GeraFluxo from '../../components/layout/button/GeraFluxo';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
+import ModalFluxo from '../../components/ModalFluxo';
 import {
     Container,
     Main,
@@ -29,38 +31,36 @@ function DadosProcesso({ match }) {
     const proId = match.params.id;
     const history = useHistory();
     const [erro, setErro] = useState('');
-    const [proCodigo, setProCodigo] = useState('');
-    const [proIniciativa, setProIniciativa] = useState('');
-    const [proTipoIniciativa, setProTipoIniciativa] = useState('');
-    const [proMatricula, setProMatricula] = useState('');
-    const [proNome, setProNome] = useState('');
-    const [proCpf, setProCpf] = useState('');
-    const [proCnpj, setProCnpj] = useState('');
-    const [proFone, setProFone] = useState('');
-    const [proCelular, setProCelular] = useState('');
-    const [proEmail, setProEmail] = useState('');
-    const [genNome, setGenNome] = useState('');
-    const [tprNome, setTprNome] = useState('');
-    const [proEncerramento, setProEncerramento] = useState('');
-    const [proAssunto, setProAssunto] = useState('');
-    const [proAutuacao, setProAutuacao] = useState('');
-    const [usuAutuador, setUsuAutuador] = useState('');
-    const [proUltimoTramite, setProUltimoTramite] = useState('');
-    const [visualizacao, setVisualizacao] = useState('');
-    const [usuFinalizador, setUsuFinalizador] = useState('');
-    const [proContatoPj, setProContatoPj] = useState('');
-    const [fluNome, setFluNome] = useState('');
-    const [areaAtualProcesso, setAreaAtualProcesso] = useState('');
-    const [areaIniciativaProcesso, setAreaIniciativaProcesso] = useState('');
-    const [setorAutuadorProcesso, setSetorAutuadorProcesso] = useState('');
-    const [setorFinalizadorProcesso, setSetorFinalizadorProcesso] = useState('');
+    const [processos, setProcessos] = useState([]);
     const [anexos, setAnexos] = useState([]);
+    const [grafo, setGrafo] = useState('');
     const [anexosManifestacao, setAnexosManifestacao] = useState([]);
     const [tramites, setTramites] = useState([]);
-    const [nodAvalExecutiva, setNodAvalExecutiva] = useState(false);
     const [mostraProcesso, setMostraProcesso] = useState(false);
+    const [modalFluxo, setModalFluxo] = useState(false);
 
     const formRef = useRef(null);
+
+    function abreModalFluxo(fluxo) {
+        axios({
+            method: 'GET',
+            url: `/gera-grafo/${fluxo}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setGrafo(res.data);
+                setModalFluxo(true);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar grafo.');
+            });
+    }
+
+    function fechaModalFluxo() {
+        setModalFluxo(false);
+    }
 
     const carregaAnexos = useCallback(() => {
         axios({
@@ -154,32 +154,7 @@ function DadosProcesso({ match }) {
             },
         })
             .then(res => {
-                setProEncerramento(res.data.pro_encerramento);
-                setProCodigo(res.data.pro_codigo);
-                setProIniciativa(res.data.pro_iniciativa);
-                setProTipoIniciativa(res.data.pro_tipo_iniciativa);
-                setProMatricula(res.data.pro_matricula);
-                setProNome(res.data.pro_nome);
-                setProFone(res.data.pro_fone);
-                setProCelular(res.data.pro_celular);
-                setProEmail(res.data.pro_email);
-                setProCpf(res.data.cpf);
-                setProCnpj(res.data.cnpj);
-                setGenNome(res.data.gen_nome);
-                setTprNome(res.data.tpr_nome);
-                setProAssunto(res.data.pro_assunto);
-                setProAutuacao(res.data.pro_autuacao);
-                setUsuAutuador(res.data.usu_autuador);
-                setProUltimoTramite(res.data.pro_ultimo_tramite);
-                setVisualizacao(res.data.visualizacao);
-                setUsuFinalizador(res.data.usu_finalizador);
-                setProContatoPj(res.data.pro_contato_pj);
-                setFluNome(res.data.flu_nome);
-                setAreaAtualProcesso(res.data.area_atual_processo);
-                setAreaIniciativaProcesso(res.data.area_iniciativa_processo);
-                setSetorAutuadorProcesso(res.data.setor_autuador_processo);
-                setSetorFinalizadorProcesso(res.data.setor_finalizador_processo);
-                setNodAvalExecutiva(res.data.nod_aval_executiva);
+                setProcessos(res.data);
                 setMostraProcesso(true);
             })
             .catch(() => {
@@ -231,6 +206,7 @@ function DadosProcesso({ match }) {
                         })
                             .then(resAnexos => {
                                 if (resAnexos.status === 204) {
+                                    mensagem.success('Arquivo anexado ao processo');
                                     carregaAnexos(proId);
                                 }
                             })
@@ -267,7 +243,7 @@ function DadosProcesso({ match }) {
 
     function criaManifestacao() {
         // se tiver o aval da executiva a manifestação é diferenciada
-        if (nodAvalExecutiva) {
+        if (processos.nodAvalExecutiva) {
             history.push(`/manifestacao-cria-executiva/${proId}`);
         } else {
             history.push(`/manifestacao-cria/${proId}`);
@@ -281,184 +257,212 @@ function DadosProcesso({ match }) {
                     <Autorizacao tela="Dados processo" />
                     <Main>
                         <Form ref={formRef}>
-                            <h3>
-                                <FaFileAlt />
-                                {` Processo nº ${proCodigo}`}
-                            </h3>
-                            <Erro dangerouslySetInnerHTML={{ __html: erro }} />
-                            <input id="proId" value={proId} type="hidden" />
-                            {!proEncerramento ? (
-                                <ContainerBotoes>
-                                    <label htmlFor="anexo">
-                                        <FaPaperclip />
-                                        &nbsp;Inserir Anexo
-                                    </label>
-                                    <input
-                                        type="file"
-                                        name="file"
-                                        onChange={incluiAnexo}
-                                        id="anexo"
-                                    />
-                                    <CriaManifestacao
-                                        name="btnCriaManifestacao"
-                                        clickHandler={() => {
-                                            criaManifestacao();
-                                        }}
-                                    />
-                                    <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
+                            {processos.map(pro => (
+                                <div>
+                                    <h3>
+                                        <FaFileAlt />
+                                        {` Processo nº ${pro.pro_codigo}`}
+                                    </h3>
+                                    <Erro dangerouslySetInnerHTML={{ __html: erro }} />
+                                    <input id="proId" value={proId} type="hidden" />
+                                    {!pro.pro_encerramento &&
+                                    parseInt(pro.area_id, 10) ===
+                                        parseInt(sessionStorage.getItem('areaUsuario'), 10) &&
+                                    !pro.nod_fim ? (
+                                        <ContainerBotoes>
+                                            <label htmlFor="anexo">
+                                                <FaPaperclip />
+                                                &nbsp;Inserir Anexo
+                                            </label>
+                                            <input
+                                                type="file"
+                                                name="file"
+                                                onChange={incluiAnexo}
+                                                id="anexo"
+                                            />
+                                            <CriaManifestacao
+                                                name="btnCriaManifestacao"
+                                                clickHandler={() => {
+                                                    criaManifestacao();
+                                                }}
+                                            />
+                                            <ConsultarOutro
+                                                name="btnConsulta"
+                                                clickHandler={consulta}
+                                            />
+                                            <GeraFluxo
+                                                name="btnGrafico"
+                                                clickHandler={() => abreModalFluxo(pro.flu_id)}
+                                            />
+                                            <br />
+                                        </ContainerBotoes>
+                                    ) : (
+                                        <ContainerBotoes>
+                                            <ConsultarOutro
+                                                name="btnConsulta"
+                                                clickHandler={consulta}
+                                            />
+                                            <GeraFluxo
+                                                name="btnGrafico"
+                                                clickHandler={() => abreModalFluxo(pro.flu_id)}
+                                            />
+                                            <br />
+                                        </ContainerBotoes>
+                                    )}
+                                    <ContainerIniciativa>
+                                        <p>Iniciativa</p>
+                                        <fieldset>
+                                            {pro.pro_iniciativa} - {pro.pro_tipo_iniciativa}
+                                        </fieldset>
+                                    </ContainerIniciativa>
                                     <br />
-                                </ContainerBotoes>
-                            ) : (
-                                <ContainerBotoes>
-                                    <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
-                                    <br />
-                                </ContainerBotoes>
-                            )}
-                            <ContainerIniciativa>
-                                <p>Iniciativa</p>
-                                <fieldset>
-                                    {proIniciativa} - {proTipoIniciativa}
-                                </fieldset>
-                            </ContainerIniciativa>
-                            <br />
 
-                            {proNome ? (
-                                <ContainerDados>
-                                    <p>Dados da Iniciativa</p>
+                                    {pro.pro_nome ? (
+                                        <ContainerDados>
+                                            <p>Dados da Iniciativa</p>
+                                            <br />
+                                            <fieldset>
+                                                {pro.pro_matricula ? (
+                                                    <div>
+                                                        <label>Matrícula:</label>
+                                                        <span>{pro.pro_matricula}</span>
+                                                    </div>
+                                                ) : null}
+                                                <div>
+                                                    <label>Nome:</label>
+                                                    <span>{pro.pro_nome}</span>
+                                                </div>
+                                                {pro.pro_cpf ? (
+                                                    <div>
+                                                        <label>Cpf:</label>
+                                                        <span>{pro.pro_cpf}</span>
+                                                    </div>
+                                                ) : null}
+                                                {pro.pro_cnpj ? (
+                                                    <div>
+                                                        <label>Cnpj:</label>
+                                                        <span>{pro.pro_cnpj}</span>
+                                                    </div>
+                                                ) : null}
+                                                {pro.pro_fone ? (
+                                                    <div>
+                                                        <label>Fone:</label>
+                                                        <span>{pro.pro_fone}</span>
+                                                    </div>
+                                                ) : null}
+                                                {pro.pro_celular ? (
+                                                    <div>
+                                                        <label>Celular:</label>
+                                                        <span>{pro.pro_celular}</span>
+                                                    </div>
+                                                ) : null}
+                                                {pro.pro_email ? (
+                                                    <div>
+                                                        <label>Email:</label>
+                                                        <span>{pro.pro_email}</span>
+                                                    </div>
+                                                ) : null}
+                                                {pro.pro_contato_pj ? (
+                                                    <div>
+                                                        <label>Contato PJ:</label>
+                                                        <span>{pro.pro_contato_pj}</span>
+                                                    </div>
+                                                ) : null}
+                                            </fieldset>
+                                        </ContainerDados>
+                                    ) : null}
                                     <br />
-                                    <fieldset>
-                                        {proMatricula ? (
-                                            <div>
-                                                <label>Matrícula:</label>
-                                                <span>{proMatricula}</span>
-                                            </div>
-                                        ) : null}
-                                        <div>
-                                            <label>Nome:</label>
-                                            <span>{proNome}</span>
-                                        </div>
-                                        {proCpf ? (
-                                            <div>
-                                                <label>Cpf:</label>
-                                                <span>{proCpf}</span>
-                                            </div>
-                                        ) : null}
-                                        {proCnpj ? (
-                                            <div>
-                                                <label>Cnpj:</label>
-                                                <span>{proCnpj}</span>
-                                            </div>
-                                        ) : null}
-                                        {proFone ? (
-                                            <div>
-                                                <label>Fone:</label>
-                                                <span>{proFone}</span>
-                                            </div>
-                                        ) : null}
-                                        {proCelular ? (
-                                            <div>
-                                                <label>Celular:</label>
-                                                <span>{proCelular}</span>
-                                            </div>
-                                        ) : null}
-                                        {proEmail ? (
-                                            <div>
-                                                <label>Email:</label>
-                                                <span>{proEmail}</span>
-                                            </div>
-                                        ) : null}
-                                        {proContatoPj ? (
-                                            <div>
-                                                <label>Contato PJ:</label>
-                                                <span>{proContatoPj}</span>
-                                            </div>
-                                        ) : null}
-                                    </fieldset>
-                                </ContainerDados>
-                            ) : null}
-                            <br />
-                            <ContainerDados>
-                                <p>Dados do processo</p>
-                                <br />
-                                <fieldset>
-                                    {genNome ? (
-                                        <div>
-                                            <label>Espécie:</label>
-                                            <span>{genNome}</span>
-                                        </div>
-                                    ) : null}
-                                    {tprNome ? (
-                                        <div>
-                                            <label>Tipo do processo:</label>
-                                            <span>{tprNome}</span>
-                                        </div>
-                                    ) : null}
-                                    {visualizacao ? (
-                                        <div>
-                                            <label>Visualização:</label>
-                                            <span>{visualizacao}</span>
-                                        </div>
-                                    ) : null}
-                                    {proAssunto ? (
-                                        <div>
-                                            <label>Assunto:</label>
-                                            <span>{proAssunto}</span>
-                                        </div>
-                                    ) : null}
-                                    {proAutuacao ? (
-                                        <div>
-                                            <label>Autuação:</label>
-                                            <span>{proAutuacao}</span>
-                                        </div>
-                                    ) : null}
-                                    {usuAutuador ? (
-                                        <div>
-                                            <label>Usuário autuador:</label>
-                                            <span>
-                                                {usuAutuador} - {setorAutuadorProcesso}
-                                            </span>
-                                        </div>
-                                    ) : null}
-                                    {fluNome ? (
-                                        <div>
-                                            <label>Fluxo:</label>
-                                            <span>{fluNome}</span>
-                                        </div>
-                                    ) : null}
-                                    {areaAtualProcesso ? (
-                                        <div>
-                                            <label>Área atual do processo:</label>
-                                            <span>{areaAtualProcesso}</span>
-                                        </div>
-                                    ) : null}
-                                    {areaIniciativaProcesso ? (
-                                        <div>
-                                            <label>Área de iniciativa do processo:</label>
-                                            <span>{areaIniciativaProcesso}</span>
-                                        </div>
-                                    ) : null}
-                                    {proUltimoTramite ? (
-                                        <div>
-                                            <label>Último trâmite:</label>
-                                            <span>{proUltimoTramite}</span>
-                                        </div>
-                                    ) : null}
-                                    {proEncerramento ? (
-                                        <div>
-                                            <label>Encerramento:</label>
-                                            <span>{proEncerramento}</span>
-                                        </div>
-                                    ) : null}
-                                    {usuFinalizador ? (
-                                        <div>
-                                            <label>Usuário finalizador:</label>
-                                            <span>
-                                                {usuFinalizador} - {setorFinalizadorProcesso}
-                                            </span>
-                                        </div>
-                                    ) : null}
-                                </fieldset>
-                            </ContainerDados>
+                                    <ContainerDados>
+                                        <p>Dados do processo</p>
+                                        <br />
+                                        <fieldset>
+                                            {pro.gen_nome ? (
+                                                <div>
+                                                    <label>Espécie:</label>
+                                                    <span>{pro.gen_nome}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.tpr_nome ? (
+                                                <div>
+                                                    <label>Tipo do processo:</label>
+                                                    <span>{pro.tpr_nome}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.visualizacao ? (
+                                                <div>
+                                                    <label>Visualização:</label>
+                                                    <span>{pro.visualizacao}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.pro_assunto ? (
+                                                <div>
+                                                    <label>Assunto:</label>
+                                                    <span>{pro.pro_assunto}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.pro_autuacao ? (
+                                                <div>
+                                                    <label>Autuação:</label>
+                                                    <span>{pro.pro_autuacao}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.usu_autuador ? (
+                                                <div>
+                                                    <label>Usuário autuador:</label>
+                                                    <span>
+                                                        {pro.usu_autuador} -{' '}
+                                                        {pro.setor_autuador_processo}
+                                                    </span>
+                                                </div>
+                                            ) : null}
+                                            {pro.flu_nome ? (
+                                                <div>
+                                                    <label>Fluxo:</label>
+                                                    <span>{pro.flu_nome}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.area_atual_processo ? (
+                                                <div>
+                                                    <label>Área atual do processo:</label>
+                                                    <span>{pro.area_atual_processo}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.area_iniciativa_processo ? (
+                                                <div>
+                                                    <label>Área de iniciativa do processo:</label>
+                                                    <span>{pro.area_iniciativa_processo}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.pro_ultimo_tramite ? (
+                                                <div>
+                                                    <label>Último trâmite:</label>
+                                                    <span>{pro.pro_ultimo_tramite}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.pro_encerramento ? (
+                                                <div>
+                                                    <label>Encerramento:</label>
+                                                    <span>{pro.pro_encerramento}</span>
+                                                </div>
+                                            ) : null}
+                                            {pro.usu_finalizador ? (
+                                                <div>
+                                                    <label>Usuário finalizador:</label>
+                                                    <span>
+                                                        {pro.usu_finalizador} -{' '}
+                                                        {pro.setor_finalizador_processo}
+                                                    </span>
+                                                </div>
+                                            ) : null}
+                                        </fieldset>
+                                    </ContainerDados>
+                                    <ModalFluxo
+                                        fechaModalFluxo={fechaModalFluxo}
+                                        modalFluxo={modalFluxo}
+                                        id={grafo}
+                                    />
+                                </div>
+                            ))}
                             <br />
 
                             <ContainerArquivos>
@@ -489,9 +493,9 @@ function DadosProcesso({ match }) {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {anexosManifestacao.map(anexo => (
+                                                    {anexosManifestacao.map((anexo, index) => (
                                                         <tr key={anexo.man_id}>
-                                                            <td>{anexo.contador}</td>
+                                                            <td>{index + 1}</td>
                                                             <td>{anexo.tpd_nome}</td>
                                                             <td>{anexo.tmn_nome}</td>
                                                             <td>
@@ -550,7 +554,6 @@ function DadosProcesso({ match }) {
                                                         <th>Envio</th>
                                                         <th>Área que enviou</th>
                                                         <th>Área que recebeu</th>
-                                                        <th>Observação</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -562,7 +565,6 @@ function DadosProcesso({ match }) {
                                                             </td>
                                                             <td>{tramite.setor_envia}</td>
                                                             <td>{tramite.setor_recebe}</td>
-                                                            <td>{tramite.tra_observacao}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

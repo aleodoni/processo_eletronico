@@ -27,40 +27,44 @@ export const ContainerProcessos = styled.div`
 
     p {
         color: #fff;
-    }
-
-    thead {
-        color: black;
-        background: #d3d3d3;
-
-        tr,
-        th {
-            padding: 3px;
-            border: solid 1px #000000;
-        }
-    }
-    tbody {
-        color: black;
-        background: #fff;
-        tr:nth-child(even) {
-            background-color: #def0ff;
-        }
-
-        td {
-            border: solid 1px #000000;
-            padding: 3px;
-        }
+        margin-bottom: 5px;
     }
 
     table {
-        border-collapse: collapse;
-        border: 1px solid #000000;
+        padding: 3px;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #fff;
         width: 100%;
+        border-radius: 7px;
+        -moz-border-radius: 7px;
+        background: #fff;
+
+        thead {
+            background: #d3d3d3;
+
+            tr,
+            th {
+                padding: 3px;
+                border: solid 1px #d3d3d3;
+            }
+        }
+        tbody {
+            background: #fff;
+            tr:nth-child(even) {
+                background-color: #def0ff;
+            }
+
+            td {
+                border: solid 1px #fff;
+                padding: 1px;
+            }
+        }
     }
 `;
 
 export const BotaoComoLink = styled.button`
-    background: #fff !important;
+    background: transparent !important;
     border: none;
     padding: 3px;
     font-size: 14px;
@@ -76,4 +80,45 @@ export const Erro = styled.div`
     font-size: 14px;
     color: red;
     padding-bottom: 10px;
+`;
+
+export const BotaoCriaManifestacao = styled.button`
+    background: ${({ theme }) => theme.primary};
+    border: 0;
+    border-radius: 4px;
+    height: 27px;
+    width: 162px;
+    color: ${({ theme }) => theme.text};
+    font-size: 14px;
+    transition: background 0.2s;
+
+    &:hover {
+        background: ${({ theme }) => theme.hover};
+    }
+
+    svg {
+        margin-right: 10px;
+        margin-left: 5px;
+    }
+`;
+
+export const BotaoFinalizaProcesso = styled.button`
+    background: #008000;
+    align-items: center;
+    border: 0;
+    border-radius: 4px;
+    height: 27px;
+    width: 162px;
+    color: ${({ theme }) => theme.text};
+    font-size: 14px;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #32cd32;
+    }
+
+    svg {
+        margin-right: 10px;
+        margin-left: 5px;
+    }
 `;

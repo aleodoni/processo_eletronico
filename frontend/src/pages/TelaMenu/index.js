@@ -283,6 +283,8 @@ function TelaMenu() {
             <Container>
                 <Autorizacao tela="Menus" />
                 <Main>
+                    <p>Menus</p>
+                    <hr />
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={telaMenu} onSubmit={grava}>
                         <Input name="menId" type="hidden" />

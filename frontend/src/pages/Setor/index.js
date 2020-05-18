@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro } from './styles';
+import { Container, Main, Erro, Titulo } from './styles';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
@@ -227,6 +227,10 @@ function Setor() {
             <Container>
                 <Autorizacao tela="Setores" />
                 <Main>
+                    <Titulo>
+                        <p>Setores</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={setor} onSubmit={grava}>
                         <Input name="setId" type="hidden" />
@@ -265,8 +269,8 @@ function Setor() {
 
                     <Table
                         columns={[
-                            { title: 'Nome', field: 'set_nome' },
-                            { title: 'Sigla', field: 'set_sigla' },
+                            { title: 'Nome', field: 'set_nome', width: '500px' },
+                            { title: 'Sigla', field: 'set_sigla', width: '100px' },
                         ]}
                         data={setores}
                         fillData={preencheCampos}

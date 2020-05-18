@@ -12,6 +12,7 @@ import {
     ContainerNomeFluxo,
     ContainerCamposNodos,
     ContainerCamposNodos1,
+    Titulo,
 } from './styles';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
@@ -301,6 +302,11 @@ function Nodo() {
             <Container>
                 <Autorizacao tela="Nodos" />
                 <Main>
+                    <Titulo>
+                        <p>Nodos</p>
+                        <hr />
+                    </Titulo>
+
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={nodo} onSubmit={grava}>
                         <Input name="nodId" type="hidden" />

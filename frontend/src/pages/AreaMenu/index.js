@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro } from './styles';
+import { Container, Main, Erro, Titulo } from './styles';
 import api from '../../service/api';
 import Select from '../../components/layout/Select';
 import Input from '../../components/layout/Input';
@@ -219,6 +219,10 @@ function AreaMenu() {
             <Container>
                 <Autorizacao tela="Áreas de menu" />
                 <Main>
+                    <Titulo>
+                        <p>Áreas de menu</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={areaMenu} onSubmit={grava}>
                         <Input name="amuId" type="hidden" />

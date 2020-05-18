@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { useHistory } from 'react-router';
 import { Form } from '@unform/web';
@@ -13,7 +13,7 @@ import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Limpar from '../../components/layout/button/Limpar';
 import Tramitar from '../../components/layout/button/Tramitar';
-import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
+import BotaoVistoExecutiva from '../../components/layout/button/VistoExecutiva';
 import VistoExecutiva from '../../components/system/select/VistoExecutiva';
 import FormLine from '../../components/layout/FormLine';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
@@ -138,23 +138,26 @@ function CriarManifestacaoExecutiva(props) {
             });
     }
 
-    function carregaDadosProcesso(id) {
+    const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${id}`,
+            url: `/ver-processo/${props.match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setManifestacao({ proId: res.data.pro_id });
-                setProCodigo(res.data.pro_codigo);
-                setTprNome(res.data.tpr_nome);
+                const processo = res.data;
+                for (let i = 0; i < processo.length; i++) {
+                    setManifestacao({ proId: processo[i].pro_id });
+                    setProCodigo(processo[i].pro_codigo);
+                    setTprNome(processo[i].tpr_nome);
+                }
             })
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }
+    }, [manifestacao.proId]);
 
     function downloadAnexo(e, arqId, id, arqNome) {
         e.preventDefault();
@@ -193,7 +196,7 @@ function CriarManifestacaoExecutiva(props) {
 
     useEffect(() => {
         async function carrega() {
-            await carregaDadosProcesso(props.match.params.proId);
+            await carregaDadosProcesso();
             await carregaAnexos(props.match.params.proId);
             await setManifestacao({ proId: props.match.params.proId });
         }
@@ -304,7 +307,7 @@ function CriarManifestacaoExecutiva(props) {
                             </FormLine>
                         </Container2>
                         <ContainerBotoes>
-                            <CriaManifestacao name="btnCriaManifestacao" type="submit" />
+                            <BotaoVistoExecutiva name="btnVistoExecutiva" type="submit" />
                             <Limpar name="btnLimpa" clickHandler={limpaCampos} />
                             <Tramitar name="btnTramita" clickHandler={tramita} />
                             <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
@@ -348,9 +351,9 @@ function CriarManifestacaoExecutiva(props) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {anexos.map(anexo => (
+                                        {anexos.map((anexo, index) => (
                                             <tr key={anexo.man_id}>
-                                                <td>{anexo.contador}</td>
+                                                <td>{index + 1}</td>
                                                 <td>{anexo.tpd_nome}</td>
                                                 <td>{anexo.tmn_nome}</td>
                                                 <td>

@@ -1,5 +1,11 @@
 import React from 'react';
-import { FaAngleDoubleRight, FaAngleLeft, FaAngleDoubleLeft, FaAngleRight, FaSort } from 'react-icons/fa';
+import {
+    FaAngleDoubleRight,
+    FaAngleLeft,
+    FaAngleDoubleLeft,
+    FaAngleRight,
+    FaSort,
+} from 'react-icons/fa';
 
 export const tabelas = {
     localizacao: {

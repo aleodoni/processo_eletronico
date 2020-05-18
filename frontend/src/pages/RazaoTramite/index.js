@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro } from './styles';
+import { Container, Main, Erro, Titulo } from './styles';
 import Input from '../../components/layout/Input';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
@@ -172,6 +172,10 @@ function RazaoTramite() {
             <Container>
                 <Autorizacao tela="Razões de trâmite" />
                 <Main>
+                    <Titulo>
+                        <p>Razões de trâmite</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={razaoTramite} onSubmit={grava}>
                         <Input name="razId" type="hidden" />

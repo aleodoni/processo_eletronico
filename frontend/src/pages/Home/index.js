@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
-import { FaFileAlt, FaSistrix } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
+import { FaFileAlt, FaSistrix, FaHourglassEnd } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
 
 import {
@@ -11,45 +12,52 @@ import {
     ContainerBotoes,
     BotaoComoLink,
     Erro,
+    BotaoCriaManifestacao,
+    BotaoFinalizaProcesso,
 } from './styles';
 import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapido';
 import DefaultLayout from '../_layouts/default';
 import axios from '../../configs/axiosConfig';
-import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
+import ModalProcesso from '../../components/ModalProcesso';
+import ModalFinalizar from '../../components/ModalFinalizar';
 
 function Home() {
     const colunaCodigoProcesso = {
         width: '50px',
     };
     const colunaManifestacao = {
-        width: '190px',
+        width: '186px',
     };
+    const colunaPessoal = {
+        textAlign: 'center',
+    };
+
     const history = useHistory();
-    const [gridProcessosPessoal, setGridProcessosPessoal] = useState([]);
     const [gridProcessosArea, setGridProcessosArea] = useState([]);
     const [erro, setErro] = useState('');
+    const [modalProcesso, setModalProcesso] = useState(false);
+    const [modalFinaliza, setModalFinaliza] = useState(false);
+    const [proId, setProId] = useState(-1);
+    const [proCodigo, setProCodigo] = useState('');
 
-    function abreProcesso(id) {
-        alert(id);
+    function abreModalProcesso(id) {
+        setProId(id);
+        setModalProcesso(true);
     }
 
-    const carregaGridPessoal = useCallback(() => {
-        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        const usuario = sessionStorage.getItem('usuario');
-        axios({
-            method: 'GET',
-            url: `/processos-pessoa/${areaId}/${usuario}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setGridProcessosPessoal(res.data);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar registros.');
-            });
-    }, []);
+    function fechaModalProcesso() {
+        setModalProcesso(false);
+    }
+
+    function abreModalFinaliza(id, codigo) {
+        setProId(id);
+        setProCodigo(codigo);
+        setModalFinaliza(true);
+    }
+
+    function fechaModalFinaliza() {
+        setModalFinaliza(false);
+    }
 
     const carregaGridArea = useCallback(() => {
         const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
@@ -69,9 +77,8 @@ function Home() {
     }, []);
 
     useEffect(() => {
-        carregaGridPessoal();
         carregaGridArea();
-    }, [carregaGridPessoal, carregaGridArea]);
+    }, [carregaGridArea]);
 
     function criaManifestacao(id, aval) {
         // se tiver o aval da executiva a manifestação é diferenciada
@@ -80,6 +87,30 @@ function Home() {
         } else {
             history.push(`/manifestacao-cria/${id}`);
         }
+    }
+
+    function finaliza(id) {
+        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        const usuario = sessionStorage.getItem('usuario');
+
+        axios({
+            method: 'PUT',
+            url: `/encerra/${id}`,
+            data: {
+                usuario,
+                areaId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Processo encerrado com sucesso.');
+                carregaGridArea();
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
     }
 
     return (
@@ -105,46 +136,6 @@ function Home() {
                     </ContainerBotoes>
                     <br />
                     <ContainerProcessos>
-                        {gridProcessosPessoal.length > 0 ? (
-                            <div>
-                                <p>Processos de {sessionStorage.getItem('nomeUsuario')}</p>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Código</th>
-                                            <th>Tipo</th>
-                                            <th />
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {gridProcessosPessoal.map(proc => (
-                                            <tr key={proc.pro_id}>
-                                                <td style={colunaCodigoProcesso}>
-                                                    <BotaoComoLink
-                                                        type="button"
-                                                        onClick={() => abreProcesso(proc.pro_id)}>
-                                                        {proc.pro_codigo}
-                                                    </BotaoComoLink>
-                                                </td>
-                                                <td>{proc.tpr_nome}</td>
-                                                <td style={colunaManifestacao}>
-                                                    <CriaManifestacao
-                                                        name="btnCriaManifestacao"
-                                                        clickHandler={() => {
-                                                            criaManifestacao(
-                                                                proc.pro_id,
-                                                                proc.nod_aval_executiva
-                                                            );
-                                                        }}
-                                                    />
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : null}
-                        <br />
                         {gridProcessosArea.length > 0 ? (
                             <div>
                                 <p>
@@ -155,6 +146,7 @@ function Home() {
                                         <tr>
                                             <th>Código</th>
                                             <th>Tipo</th>
+                                            <th>Pessoal</th>
                                             <th />
                                         </tr>
                                     </thead>
@@ -164,21 +156,40 @@ function Home() {
                                                 <td style={colunaCodigoProcesso}>
                                                     <BotaoComoLink
                                                         type="button"
-                                                        onClick={() => abreProcesso(proc.pro_id)}>
+                                                        onClick={() =>
+                                                            abreModalProcesso(proc.pro_id)
+                                                        }>
                                                         {proc.pro_codigo}
                                                     </BotaoComoLink>
                                                 </td>
                                                 <td>{proc.tpr_nome}</td>
+                                                <td style={colunaPessoal}>{proc.pessoal}</td>
                                                 <td style={colunaManifestacao}>
-                                                    <CriaManifestacao
-                                                        name="btnCriaManifestacao"
-                                                        clickHandler={() => {
-                                                            criaManifestacao(
-                                                                proc.pro_id,
-                                                                proc.nod_aval_executiva
-                                                            );
-                                                        }}
-                                                    />
+                                                    {proc.nod_fim === true ? (
+                                                        <BotaoFinalizaProcesso
+                                                            name="btnCriaManifestacao"
+                                                            onClick={() =>
+                                                                abreModalFinaliza(
+                                                                    proc.pro_id,
+                                                                    proc.pro_codigo
+                                                                )
+                                                            }>
+                                                            <FaHourglassEnd />
+                                                            Finalizar processo
+                                                        </BotaoFinalizaProcesso>
+                                                    ) : (
+                                                        <BotaoCriaManifestacao
+                                                            name="btnCriaManifestacao"
+                                                            onClick={() => {
+                                                                criaManifestacao(
+                                                                    proc.pro_id,
+                                                                    proc.nod_aval_executiva
+                                                                );
+                                                            }}>
+                                                            <FaFileAlt />
+                                                            Criar manifestação
+                                                        </BotaoCriaManifestacao>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}
@@ -187,6 +198,18 @@ function Home() {
                             </div>
                         ) : null}
                     </ContainerProcessos>
+                    <ModalProcesso
+                        fechaModalProcesso={fechaModalProcesso}
+                        modalProcesso={modalProcesso}
+                        proId={proId}
+                    />
+                    <ModalFinalizar
+                        fechaModalFinaliza={fechaModalFinaliza}
+                        modalFinaliza={modalFinaliza}
+                        finaliza={finaliza}
+                        id={proId}
+                        proCodigo={proCodigo}
+                    />
                 </Main>
             </Container>
         </DefaultLayout>

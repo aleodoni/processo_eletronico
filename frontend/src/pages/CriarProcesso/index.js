@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
+import { FaSearch } from 'react-icons/fa';
 import Input from '../../components/layout/Input';
 import TextArea from '../../components/layout/TextArea';
 import Select from '../../components/layout/Select';
+import Limpar from '../../components/layout/button/Limpar';
 import {
     Container,
     Main,
@@ -14,39 +16,41 @@ import {
     ContainerIniciativa,
     ContainerDadosServidorPublico,
     ContainerNome,
+    ContainerBotoes,
     Erro,
+    BotaoProcura,
+    Titulo,
 } from './styles';
 import api from '../../service/api';
 import Autorizacao from '../../components/Autorizacao';
 import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import CriaProcesso from '../../components/layout/button/CriaProcesso';
-import Localizar from '../../components/layout/button/Localizar';
 import Iniciativa from '../../components/system/select/Iniciativa';
 import { cpf, cnpj } from '../../utils/validaCpfCnpj';
 
 function CriarProcesso() {
     const history = useHistory();
     const [erro, setErro] = useState('');
-    const [proId, setProId] = useState(undefined);
-    const [genId, setGenId] = useState('');
-    const [areaId, setAreaId] = useState('');
-    const [tprId, setTprId] = useState('');
-    const [tiposProcesso, setTiposProcesso] = useState([]);
-    const [tiposIniciativa, setTiposIniciativa] = useState([]);
-    const [proIniciativa, setProIniciativa] = useState('');
-    const [proTipoIniciativa, setProTipoIniciativa] = useState('');
-    const [proNome, setProNome] = useState('');
-    const [proMatricula, setProMatricula] = useState('');
-    const [proCpf, setProCpf] = useState('');
-    const [proCnpj, setProCnpj] = useState('');
-    const [proFone, setProFone] = useState('');
-    const [proCelular, setProCelular] = useState('');
-    const [proEmail, setProEmail] = useState('');
-    const [proAssunto, setProAssunto] = useState('');
-    const [proContatoPj, setProContatoPj] = useState('');
-    const [generos, setGeneros] = useState([]);
-    const [areas, setAreas] = useState([]);
+
+    const [processo, setProcesso] = useState({
+        proId: undefined,
+        genId: '-1',
+        areaId: '-1',
+        tprId: '-1',
+        proIniciativa: '',
+        proTipoIniciativa: '',
+        proNome: '',
+        proMatricula: '',
+        proCpf: '',
+        proCnpj: '',
+        proFone: '',
+        proCelular: '',
+        proEmail: '',
+        proAssunto: '',
+        proContatoPj: '',
+    });
+
     const [tipoIniciativaVisivel, setTipoIniciativaVisivel] = useState(false);
     const [matriculaVisivel, setMatriculaVisivel] = useState(false);
     const [nomeVisivel, setNomeVisivel] = useState(false);
@@ -56,8 +60,14 @@ function CriarProcesso() {
     const [areaVisivel, setAreaVisivel] = useState(false);
     const [assuntoVisivel, setAssuntoVisivel] = useState(false);
 
+    const [tiposProcesso, setTiposProcesso] = useState([]);
+    const [tiposIniciativa, setTiposIniciativa] = useState([]);
+    const [generos, setGeneros] = useState([]);
+    const [areas, setAreas] = useState([]);
+
+    const DEMAIS_PROCESSOS = '26';
+
     const formRef = useRef(null);
-    const somenteNumeros = /^[0-9\b]+$/;
 
     async function carregaGenero() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
@@ -78,9 +88,11 @@ function CriarProcesso() {
     }
 
     function iniciaTipoProcesso() {
+        setProcesso({
+            genId: '-1',
+            tprId: '-1',
+        });
         setTiposProcesso([]);
-        setGenId('');
-        setTprId('');
     }
 
     useEffect(() => {
@@ -104,12 +116,14 @@ function CriarProcesso() {
                     value: tipoProcesso.tpr_id,
                 };
             });
-            if (codGenId === '') {
+            if (codGenId === '-1') {
                 iniciaTipoProcesso();
             } else {
                 setTiposProcesso(data);
-                setGenId(codGenId);
-                setTprId('');
+                // setProcesso({
+                //    genId: codGenId,
+                //    tprId: '-1',
+                // });
             }
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
@@ -134,77 +148,31 @@ function CriarProcesso() {
         }
     }
 
-    function handleProId(e) {
-        setProId(e.target.value);
-    }
-
-    function handleAreaId(e) {
-        setAreaId(parseInt(e.target.value, 10));
-    }
-
     function handleTprId(e) {
         // demais processos
-        if (e.target.value === 26) {
+        if (e.target.value === DEMAIS_PROCESSOS) {
             setAssuntoVisivel(true);
         } else {
             setAssuntoVisivel(false);
         }
-        setTprId(e.target.value);
-    }
-
-    function handleProNome(e) {
-        setProNome(e.target.value);
-    }
-
-    function handleProContatoPj(e) {
-        setProContatoPj(e.target.value);
-    }
-
-    function handleProAssunto(e) {
-        setProAssunto(e.target.value);
-    }
-
-    function handleProMatricula(e) {
-        if (e.target.value === '' || somenteNumeros.test(e.target.value)) {
-            setProMatricula(e.target.value);
-        }
-    }
-
-    function handleProCpf(e) {
-        if (e.target.value === '' || somenteNumeros.test(e.target.value)) {
-            setProCpf(e.target.value);
-        }
-    }
-
-    function handleProCnpj(e) {
-        if (e.target.value === '' || somenteNumeros.test(e.target.value)) {
-            setProCnpj(e.target.value);
-        }
-    }
-
-    function handleProFone(e) {
-        setProFone(e.target.value);
-    }
-
-    function handleProCelular(e) {
-        setProCelular(e.target.value);
-    }
-
-    function handleProEmail(e) {
-        setProEmail(e.target.value);
+        // setProcesso({
+        //    tprId: e.target.value,
+        // });
     }
 
     function limpaCamposIniciativa() {
-        setProNome('');
-        setProMatricula('');
-        setProCpf('');
-        setProCnpj('');
-        setProFone('');
-        setProCelular('');
-        setProEmail('');
-        setProAssunto('');
-        setProContatoPj('');
-        setProTipoIniciativa('');
+        setProcesso({
+            proNome: '',
+            proMatricula: '',
+            proCpf: '',
+            proCnpj: '',
+            proFone: '',
+            proCelular: '',
+            proEmail: '',
+            proAssunto: '',
+            proContatoPj: '',
+            proTipoIniciativa: '',
+        });
     }
 
     function carregaTipoIniciativa(e) {
@@ -214,16 +182,18 @@ function CriarProcesso() {
         const iniciativa = e.target.value;
         if (iniciativa !== '') {
             const comboTipoIniciativa = [];
+            setProcesso({
+                proIniciativa: iniciativa,
+            });
             setTipoIniciativaVisivel(true);
-            setProIniciativa(iniciativa);
             if (iniciativa === 'Interna') {
                 comboTipoIniciativa.push({
                     label: 'Servidor Público',
                     value: 'Servidor Público',
                 });
                 comboTipoIniciativa.push({
-                    label: 'Áreas',
-                    value: 'Áreas',
+                    label: 'Diretorias',
+                    value: 'Diretorias',
                 });
                 setCnpjVisivel(false);
                 setAreaVisivel(false);
@@ -260,7 +230,9 @@ function CriarProcesso() {
             setCnpjVisivel(false);
             setAreaVisivel(false);
             setAssuntoVisivel(false);
-            setProIniciativa(iniciativa);
+            setProcesso({
+                proIniciativa: iniciativa,
+            });
         }
     }
 
@@ -270,7 +242,9 @@ function CriarProcesso() {
         setErro('');
         const tipoIniciativa = e.target.value;
         if (tipoIniciativa !== '') {
-            setProTipoIniciativa(tipoIniciativa);
+            setProcesso({
+                proTipoIniciativa: tipoIniciativa,
+            });
             if (tipoIniciativa === 'Servidor Público') {
                 setMatriculaVisivel(true);
                 setNomeVisivel(true);
@@ -280,7 +254,7 @@ function CriarProcesso() {
                 setAreaVisivel(false);
                 setAssuntoVisivel(false);
             }
-            if (tipoIniciativa === 'Áreas') {
+            if (tipoIniciativa === 'Diretorias') {
                 carregaArea();
                 setMatriculaVisivel(false);
                 setNomeVisivel(false);
@@ -316,31 +290,34 @@ function CriarProcesso() {
             setCnpjVisivel(false);
             setAreaVisivel(false);
             setAssuntoVisivel(false);
-            setProTipoIniciativa(tipoIniciativa);
+            setProcesso({
+                proTipoIniciativa: tipoIniciativa,
+            });
         }
     }
 
     function criaProcesso() {
+        const p = formRef.current.getData();
         setErro('');
-        if (proIniciativa === undefined || proIniciativa === '') {
+        if (p.proIniciativa === '-1') {
             setErro('Selecione a iniciativa.');
             return;
         }
-        if (proTipoIniciativa === undefined || proTipoIniciativa === '') {
+        if (p.proTipoIniciativa === '-1') {
             setErro('Selecione o tipo de iniciativa.');
             return;
         }
-        if (proIniciativa === 'Interna') {
-            if (proTipoIniciativa === 'Servidor Público') {
+        if (p.proIniciativa === 'Interna') {
+            if (p.proTipoIniciativa === 'Servidor Público') {
                 let erros = '';
-                if (proNome.trim() === '') {
+                if (p.proNome.trim() === '') {
                     erros = `${erros}Nome obrigatório.<br />`;
                 }
                 if (
-                    proCpf.trim() === '' &&
-                    proFone.trim() === '' &&
-                    proCelular.trim() === '' &&
-                    proEmail.trim() === ''
+                    p.proCpf.trim() === '' &&
+                    p.proFone.trim() === '' &&
+                    p.proCelular.trim() === '' &&
+                    p.proEmail.trim() === ''
                 ) {
                     erros = `${erros}Pelo menos um campo (Cpf, Fone, Celular, E-mail) deve ser preenchido.`;
                 }
@@ -348,47 +325,47 @@ function CriarProcesso() {
                     setErro(erros);
                     return;
                 }
-                if (proCpf.trim() !== '') {
-                    if (!cpf(proCpf.trim())) {
+                if (p.proCpf.trim() !== '') {
+                    if (!cpf(p.proCpf.trim())) {
                         setErro('Cpf inválido.');
                         return;
                     }
                 }
-                if (genId === '') {
+                if (p.genId === '-1') {
                     setErro('Selecione o gênero.');
                     return;
                 }
-                if (tprId === '') {
+                if (p.tprId === '-1') {
                     setErro('Selecione o tipo do processo.');
                     return;
                 }
             }
-            if (proTipoIniciativa === 'Áreas') {
-                if (areaId === '') {
+            if (p.proTipoIniciativa === 'Diretorias') {
+                if (p.areaId === '-1') {
                     setErro('Selecione a área.');
                     return;
                 }
-                if (genId === '') {
+                if (p.genId === '-1') {
                     setErro('Selecione o gênero.');
                     return;
                 }
-                if (tprId === '') {
+                if (p.tprId === '-1') {
                     setErro('Selecione o tipo do processo.');
                     return;
                 }
             }
         }
-        if (proIniciativa === 'Externa') {
-            if (proTipoIniciativa === 'Pessoa Física') {
+        if (p.proIniciativa === 'Externa') {
+            if (p.proTipoIniciativa === 'Pessoa Física') {
                 let erros = '';
-                if (proNome.trim() === '') {
+                if (p.proNome.trim() === '') {
                     erros += 'Nome obrigatório.<br />';
                 }
                 if (
-                    proCpf.trim() === '' &&
-                    proFone.trim() === '' &&
-                    proCelular.trim() === '' &&
-                    proEmail.trim() === ''
+                    p.proCpf.trim() === '' &&
+                    p.proFone.trim() === '' &&
+                    p.proCelular.trim() === '' &&
+                    p.proEmail.trim() === ''
                 ) {
                     erros = `${erros}Pelo menos um campo (Cpf, Fone, Celular, E-mail) deve ser preenchido.`;
                 }
@@ -396,50 +373,54 @@ function CriarProcesso() {
                     setErro(erros);
                     return;
                 }
-                if (proCpf.trim() !== '') {
-                    if (!cpf(proCpf.trim())) {
+                if (p.proCpf.trim() !== '') {
+                    if (!cpf(p.proCpf.trim())) {
                         setErro('Cpf inválido.');
                         return;
                     }
                 }
-                if (genId === '') {
+                if (p.genId === '-1') {
                     setErro('Selecione o gênero.');
                     return;
                 }
-                if (tprId === '') {
+                if (p.tprId === '-1') {
                     setErro('Selecione o tipo do processo.');
                     return;
                 }
             }
-            if (proTipoIniciativa === 'Pessoa Jurídica') {
+            if (p.proTipoIniciativa === 'Pessoa Jurídica') {
                 let erros = '';
-                if (proNome.trim() === '') {
+                if (p.proNome.trim() === '') {
                     erros += 'Nome obrigatório.<br />';
                 }
-                if (proContatoPj.trim() === '') {
+                if (p.proContatoPj.trim() === '') {
                     erros = `${erros}Nome do responsável obrigatório.<br />`;
                 }
-                if (proCnpj.trim() === '') {
+                if (p.proCnpj.trim() === '') {
                     erros = `${erros}Cnpj obrigatório.<br />`;
                 }
-                if (proFone.trim() === '' && proCelular.trim() === '' && proEmail.trim() === '') {
+                if (
+                    p.proFone.trim() === '' &&
+                    p.proCelular.trim() === '' &&
+                    p.proEmail.trim() === ''
+                ) {
                     erros = `${erros}Pelo menos um campo (Fone, Celular, E-mail) deve ser preenchido.`;
                 }
                 if (erros !== '') {
                     setErro(erros);
                     return;
                 }
-                if (proCnpj.trim() !== '') {
-                    if (!cnpj(proCnpj.trim())) {
+                if (p.proCnpj.trim() !== '') {
+                    if (!cnpj(p.proCnpj.trim())) {
                         setErro('Cnpj inválido.');
                         return;
                     }
                 }
-                if (genId === '') {
+                if (p.genId === '-1') {
                     setErro('Selecione o gênero.');
                     return;
                 }
-                if (tprId === '') {
+                if (p.tprId === '-1') {
                     setErro('Selecione o tipo do processo.');
                     return;
                 }
@@ -451,28 +432,28 @@ function CriarProcesso() {
             url: '/processo',
             data: {
                 pro_id: null,
-                pro_nome: proNome,
-                pro_matricula: proMatricula,
-                pro_cpf: proCpf,
-                pro_cnpj: proCnpj,
-                pro_fone: proFone,
-                pro_celular: proCelular,
-                pro_email: proEmail,
+                pro_nome: p.proNome,
+                pro_matricula: p.proMatricula,
+                pro_cpf: p.proCpf,
+                pro_cnpj: p.proCnpj,
+                pro_fone: p.proFone,
+                pro_celular: p.proCelular,
+                pro_email: p.proEmail,
                 pro_encerramento: null,
-                pro_assunto: proAssunto,
+                pro_assunto: p.proAssunto,
                 usu_autuador: sessionStorage.getItem('usuario'),
                 pro_ultimo_tramite: null,
                 usu_finalizador: null,
-                usu_alteracao: sessionStorage.getItem('usuario'),
-                nod_id: sessionStorage.getItem('areaUsuario'),
+                nod_id: null,
                 set_id_autuador: sessionStorage.getItem('setorUsuario'),
                 area_id: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 set_id_finalizador: null,
-                pro_iniciativa: proIniciativa,
-                pro_tipo_iniciativa: proTipoIniciativa,
-                area_id_iniciativa: areaId,
-                tpr_id: tprId,
-                pro_contato_pj: proContatoPj,
+                pro_iniciativa: p.proIniciativa,
+                pro_tipo_iniciativa: p.proTipoIniciativa,
+                area_id_iniciativa: p.areaId,
+                tpr_id: p.tprId,
+                pro_contato_pj: p.proContatoPj,
+                pro_autuacao: null,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -482,35 +463,48 @@ function CriarProcesso() {
                 history.push(`/dados-processo/${res.data.pro_id}`);
                 mensagem.success('Processo criado com sucesso.');
             })
-            .catch(() => {
-                setErro('Erro ao inserir processo.');
+            .catch(erroCria => {
+                if (
+                    erroCria.response.data.error ===
+                    'Processo sem fluxo. Cadastre um fluxo primeiro.'
+                ) {
+                    setErro(erroCria.response.data.error);
+                } else {
+                    setErro('Erro ao inserir processo.');
+                }
             });
     }
 
     function localiza() {
-        if (proMatricula.trim() === '') {
+        const matricula = formRef.current.getFieldValue('proMatricula');
+        if (matricula.trim() === '') {
             setErro('Digite a matrícula.');
             return;
         }
-        setProNome('');
-        setProCpf('');
-        setProCnpj('');
-        setProFone('');
-        setProCelular('');
-        setProEmail('');
-        setProAssunto('');
-        setProContatoPj('');
+        setProcesso({
+            proNome: '',
+            proCpf: '',
+            proCnpj: '',
+            proFone: '',
+            proCelular: '',
+            proEmail: '',
+            proAssunto: '',
+            proContatoPj: '',
+        });
         setErro('');
         axios({
             method: 'GET',
-            url: `/dados-pessoa/${proMatricula}`,
+            url: `/dados-pessoa/${matricula}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
                 if (res.data === null) {
-                    setProMatricula('');
+                    setErro('Matrícula inválida ou inexistente.');
+                    setProcesso({
+                        proMatricula: '',
+                    });
                 } else {
                     if (res.data.pes_email !== null) {
                         res.data.pes_email = res.data.pes_email.toLowerCase();
@@ -532,11 +526,13 @@ function CriarProcesso() {
                     if (res.data.pes_cpf.toString().length === 9) {
                         res.data.pes_cpf = `00${res.data.pes_cpf.toString()}`;
                     }
-                    setProNome(res.data.pes_nome);
-                    setProCpf(res.data.pes_cpf);
-                    setProFone(res.data.fone);
-                    setProCelular(res.data.pes_celular);
-                    setProEmail(res.data.pes_email);
+                    setProcesso({
+                        proNome: res.data.pes_nome,
+                        proCpf: res.data.pes_cpf,
+                        proFone: res.data.fone,
+                        proCelular: res.data.pes_celular,
+                        proEmail: res.data.pes_email,
+                    });
                 }
             })
             .catch(() => {
@@ -544,24 +540,43 @@ function CriarProcesso() {
             });
     }
 
+    function limpaCampos() {
+        formRef.current.reset();
+        setAssuntoVisivel(false);
+        setTipoIniciativaVisivel(false);
+        setMatriculaVisivel(false);
+        setNomeVisivel(false);
+        setDadosServidorPublico(false);
+        setEmailVisivel(false);
+        setCnpjVisivel(false);
+        setAreaVisivel(false);
+        iniciaTipoProcesso();
+        formRef.current.setFieldValue('genId', '-1');
+        formRef.current.setFieldValue('proIniciativa', '-1');
+        formRef.current.setFieldValue('tprId', '-1');
+        setErro('');
+    }
+
     return (
         <DefaultLayout>
             <Container>
                 <Autorizacao tela="Criar processo" />
                 <Main>
+                    <Titulo>
+                        <p>Criar novo processo</p>
+                        <hr />
+                    </Titulo>
                     <Erro dangerouslySetInnerHTML={{ __html: erro }} />
-                    <Form ref={formRef}>
-                        <input id="proId" value={proId} onChange={handleProId} type="hidden" />
+                    <Form ref={formRef} initialData={processo} onSubmit={criaProcesso}>
+                        <Input name="proId" type="hidden" />
                         <ContainerIniciativa>
                             <Iniciativa
-                                name="selectIniciativa"
-                                val={proIniciativa}
+                                name="proIniciativa"
                                 changeHandler={carregaTipoIniciativa}
                             />
                             {tipoIniciativaVisivel ? (
                                 <Select
-                                    id="selectTipoIniciativa"
-                                    name="selectTipoIniciativa"
+                                    name="proTipoIniciativa"
                                     label="Tipo da iniciativa"
                                     options={tiposIniciativa}
                                     onChange={carregaDadosIniciativa}
@@ -573,26 +588,21 @@ function CriarProcesso() {
                                         name="proMatricula"
                                         label="Matrícula"
                                         type="text"
-                                        value={proMatricula}
-                                        onChange={handleProMatricula}
                                         size="5"
                                         maxLength="5"
                                     />
-                                    <Localizar
+                                    <BotaoProcura
+                                        id="btnLocaliza"
                                         name="btnLocaliza"
-                                        clickHandler={() => {
-                                            localiza();
-                                        }}
-                                    />
+                                        type="button"
+                                        onClick={localiza}>
+                                        <FaSearch />
+                                        Localizar
+                                    </BotaoProcura>
                                 </ContainerMatricula>
                             ) : null}
                             {areaVisivel ? (
-                                <Select
-                                    name="selectArea"
-                                    label="Área"
-                                    options={areas}
-                                    onChange={handleAreaId}
-                                />
+                                <Select name="areaId" label="Área" options={areas} />
                             ) : null}
                         </ContainerIniciativa>
                         {nomeVisivel ? (
@@ -601,8 +611,6 @@ function CriarProcesso() {
                                     name="proNome"
                                     label="Nome"
                                     type="text"
-                                    value={proNome}
-                                    onChange={handleProNome}
                                     size="100"
                                     maxLength="100"
                                 />
@@ -614,8 +622,6 @@ function CriarProcesso() {
                                     name="proCpf"
                                     label="Cpf"
                                     type="text"
-                                    value={proCpf}
-                                    onChange={handleProCpf}
                                     size="10"
                                     maxLength="11"
                                 />
@@ -623,8 +629,6 @@ function CriarProcesso() {
                                     name="proFone"
                                     label="Fone"
                                     type="text"
-                                    value={proFone}
-                                    onChange={handleProFone}
                                     size="30"
                                     maxLength="31"
                                 />
@@ -632,8 +636,6 @@ function CriarProcesso() {
                                     name="proCelular"
                                     label="Celular"
                                     type="text"
-                                    value={proCelular}
-                                    onChange={handleProCelular}
                                     size="30"
                                     maxLength="30"
                                 />
@@ -646,8 +648,6 @@ function CriarProcesso() {
                                         name="proContatoPj"
                                         label="Responsável"
                                         type="text"
-                                        value={proContatoPj}
-                                        onChange={handleProContatoPj}
                                         size="100"
                                         maxLength="100"
                                     />
@@ -657,8 +657,6 @@ function CriarProcesso() {
                                         name="proCnpj"
                                         label="Cnpj"
                                         type="text"
-                                        value={proCnpj}
-                                        onChange={handleProCnpj}
                                         size="12"
                                         maxLength="14"
                                     />
@@ -666,8 +664,6 @@ function CriarProcesso() {
                                         name="proFone"
                                         label="Fone"
                                         type="text"
-                                        value={proFone}
-                                        onChange={handleProFone}
                                         size="30"
                                         maxLength="30"
                                     />
@@ -675,8 +671,6 @@ function CriarProcesso() {
                                         name="proCelular"
                                         label="Celular"
                                         type="text"
-                                        value={proCelular}
-                                        onChange={handleProCelular}
                                         size="30"
                                         maxLength="30"
                                     />
@@ -689,8 +683,6 @@ function CriarProcesso() {
                                     name="proEmail"
                                     label="E-mail"
                                     type="text"
-                                    value={proEmail}
-                                    onChange={handleProEmail}
                                     size="101"
                                     maxLength="100"
                                 />
@@ -698,13 +690,13 @@ function CriarProcesso() {
                         ) : null}
                         <ContainerCriaProcesso>
                             <Select
-                                name="selectGenero"
+                                name="genId"
                                 label="Gênero"
                                 options={generos}
                                 onChange={selecionaTipoProcesso}
                             />
                             <Select
-                                name="selectTiposProcesso"
+                                name="tprId"
                                 label="Tipo do processo"
                                 options={tiposProcesso}
                                 onChange={handleTprId}
@@ -712,18 +704,14 @@ function CriarProcesso() {
                         </ContainerCriaProcesso>
                         {assuntoVisivel ? (
                             <ContainerAssunto>
-                                <TextArea
-                                    name="proAssunto"
-                                    label="Assunto"
-                                    rows={30}
-                                    cols={100}
-                                    value={proAssunto}
-                                    onChange={handleProAssunto}
-                                />
+                                <TextArea name="proAssunto" label="Assunto" rows={30} cols={100} />
                             </ContainerAssunto>
                         ) : null}
                     </Form>
-                    <CriaProcesso name="btnCriaProcesso" clickHandler={criaProcesso} />
+                    <ContainerBotoes>
+                        <CriaProcesso name="btnCriaProcesso" clickHandler={criaProcesso} />
+                        <Limpar name="btnLimpa" clickHandler={limpaCampos} />
+                    </ContainerBotoes>
                 </Main>
             </Container>
         </DefaultLayout>

@@ -22,6 +22,15 @@ class VProcessosArea extends Model {
                 },
                 nod_aval_executiva: {
                     type: Sequelize.BOOLEAN
+                },
+                tpr_pessoal: {
+                    type: Sequelize.BOOLEAN
+                },
+                pessoal: {
+                    type: Sequelize.STRING
+                },
+                nod_fim: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

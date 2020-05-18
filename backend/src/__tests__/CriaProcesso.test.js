@@ -59,8 +59,6 @@ describe('Criação de processo', () => {
             pro_ultimo_tramite: null,
             usu_finalizador: 'usuario.teste',
             set_id_finalizador: '171',
-            usu_alteracao: 'usuario.teste',
-            usu_data_hora_alteracao: '2019-11-29 12:00:00',
             nod_id: 1
         };
         request(app)

@@ -164,6 +164,9 @@ routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
 routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 
+// rota de pesquisa de processo
+routes.post(`${process.env.API_URL}/pesquisa-processo`, DadosProcessoController.pesquisaProcesso);
+
 // rotas de dados do processo
 routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.dadosProcesso);
 routes.get(`${process.env.API_URL}/processos-pessoa/:areaId/:usuario`, DadosProcessoController.processosPessoais);
@@ -246,6 +249,9 @@ routes.get(`${process.env.API_URL}/processo-recebe/:id`, TramiteController.proce
 routes.post(`${process.env.API_URL}/tramite-recebe-ou-nega`, TramiteController.recebeOuNega);
 // rota de retorno de próximo trâmite
 routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proximoTramite);
+
+// rota de encerramento de processo
+routes.put(`${process.env.API_URL}/encerra/:id`, CriaProcessoController.encerra);
 
 // rotas do cadastro de tipos de documento
 routes.get(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.index);

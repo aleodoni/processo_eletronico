@@ -82,15 +82,12 @@ class Processo extends Model {
                 set_id_finalizador: {
                     type: Sequelize.STRING
                 },
-                usu_alteracao: {
-                    type: Sequelize.STRING,
-                    allowNull: false
-                },
-                usu_data_hora_alteracao: {
-                    type: Sequelize.NOW
-                },
                 nod_id: {
                     type: Sequelize.INTEGER,
+                    allowNull: false
+                },
+                pro_autuacao: {
+                    type: Sequelize.NOW,
                     allowNull: false
                 }
             },

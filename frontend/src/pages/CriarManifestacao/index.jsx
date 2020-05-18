@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { useHistory } from 'react-router';
 import { Form } from '@unform/web';
@@ -263,23 +263,26 @@ function CriarManifestacao(props) {
         }
     }
 
-    function carregaDadosProcesso(id) {
+    const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${id}`,
+            url: `/ver-processo/${props.match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setManifestacao({ proId: res.data.pro_id });
-                setProCodigo(res.data.pro_codigo);
-                setTprNome(res.data.tpr_nome);
+                const processo = res.data;
+                for (let i = 0; i < processo.length; i++) {
+                    setManifestacao({ proId: processo[i].pro_id });
+                    setProCodigo(processo[i].pro_codigo);
+                    setTprNome(processo[i].tpr_nome);
+                }
             })
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }
+    }, [manifestacao.proId]);
 
     function cancela(manId1) {
         axios({
@@ -340,7 +343,7 @@ function CriarManifestacao(props) {
 
     useEffect(() => {
         async function carrega() {
-            await carregaDadosProcesso(manifestacao.proId);
+            await carregaDadosProcesso();
             await carregaTipoManifestacao();
             await carregaTipoDocumento();
             await carregaAnexos(manifestacao.proId);
@@ -428,6 +431,8 @@ function CriarManifestacao(props) {
             <Container>
                 <Autorizacao tela="Criar manifestação" />
                 <Main>
+                    <p>Criar manifestação</p>
+                    <hr />
                     <Erro>{erro}</Erro>
                     <fieldset>
                         <label>Processo: </label>
@@ -456,7 +461,7 @@ function CriarManifestacao(props) {
                         <ContainerBotoes>
                             <label htmlFor="anexo">
                                 <FaPaperclip />
-                                &nbsp;Inserir Anexo
+                                &nbsp;Inserir Manifestação
                             </label>
                             <input
                                 type="file"
@@ -516,9 +521,9 @@ function CriarManifestacao(props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {anexos.map(anexo => (
+                                    {anexos.map((anexo, index) => (
                                         <tr key={anexo.arq_id}>
-                                            <td>{anexo.contador}</td>
+                                            <td>{index + 1}</td>
                                             <td>{anexo.tpd_nome}</td>
                                             <td>{anexo.tmn_nome}</td>
                                             <td>
