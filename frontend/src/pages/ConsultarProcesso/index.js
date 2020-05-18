@@ -30,6 +30,7 @@ import {
     ContainerPesquisa3,
     Main,
     Erro,
+    Titulo,
 } from './styles';
 
 require('dotenv').config();
@@ -272,6 +273,10 @@ function ConsultarProcesso() {
             <Container>
                 <Autorizacao tela="Consultar processo" />
                 <Main>
+                    <Titulo>
+                        <p>Consultar processos</p>
+                        <hr />
+                    </Titulo>
                     {mostraForm ? (
                         <div>
                             <Form ref={formRef} initialData={processo} onSubmit={localiza}>

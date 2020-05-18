@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro } from './styles';
+import { Container, Main, Erro, Titulo } from './styles';
 import Input from '../../components/layout/Input';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
@@ -171,6 +171,10 @@ function Genero() {
             <Container>
                 <Autorizacao tela="Gêneros" />
                 <Main>
+                    <Titulo>
+                        <p>Gêneros</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={genero} onSubmit={grava}>
                         <Input name="genId" type="hidden" />

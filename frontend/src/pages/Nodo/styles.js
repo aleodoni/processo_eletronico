@@ -57,6 +57,21 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
+export const Titulo = styled.div`
+    display: grid;
+    grid-template-columns: 1000px;
+
+    p {
+        color: #fff;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 3px;
+    }
+    hr {
+        width: 100%;
+    }
+`;
+
 export const ContainerNomeFluxo = styled.div`
     display: grid;
     grid-template-columns: 820px 210px;

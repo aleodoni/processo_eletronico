@@ -23,6 +23,18 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
+export const Titulo = styled.div`
+    p {
+        color: #fff;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 3px;
+    }
+    hr {
+        width: 100%;
+    }
+`;
+
 export const ContainerIniciativa = styled.div`
     display: grid;
     grid-template-columns: 200px 180px 565px;

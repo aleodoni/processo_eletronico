@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Container1, Container2, Main, Erro } from './styles';
+import { Container, Container1, Container2, Main, Erro, Titulo } from './styles';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
@@ -244,7 +244,12 @@ function TipoProcesso() {
         <DefaultLayout>
             <Container>
                 <Autorizacao tela="Tipos de processo" />
+
                 <Main>
+                    <Titulo>
+                        <p>Tipos de processo</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={tipoProcesso} onSubmit={grava}>
                         <Input name="tprId" type="hidden" />

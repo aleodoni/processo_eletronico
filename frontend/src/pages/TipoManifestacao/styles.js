@@ -26,6 +26,18 @@ export const Main = styled.main`
     }
 `;
 
+export const Titulo = styled.div`
+    p {
+        color: #fff;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 3px;
+    }
+    hr {
+        width: 100%;
+    }
+`;
+
 export const Erro = styled.div`
     font-size: 14px;
     color: red;

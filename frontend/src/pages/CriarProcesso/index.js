@@ -19,6 +19,7 @@ import {
     ContainerBotoes,
     Erro,
     BotaoProcura,
+    Titulo,
 } from './styles';
 import api from '../../service/api';
 import Autorizacao from '../../components/Autorizacao';
@@ -561,6 +562,10 @@ function CriarProcesso() {
             <Container>
                 <Autorizacao tela="Criar processo" />
                 <Main>
+                    <Titulo>
+                        <p>Criar novo processo</p>
+                        <hr />
+                    </Titulo>
                     <Erro dangerouslySetInnerHTML={{ __html: erro }} />
                     <Form ref={formRef} initialData={processo} onSubmit={criaProcesso}>
                         <Input name="proId" type="hidden" />

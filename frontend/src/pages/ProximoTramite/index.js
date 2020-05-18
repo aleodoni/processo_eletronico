@@ -13,6 +13,7 @@ import {
     ContainerNomeFluxo,
     ContainerCamposNodos,
     ContainerCamposNodos1,
+    Titulo,
 } from './styles';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
@@ -351,6 +352,10 @@ function ProximoTramite() {
             <Container>
                 <Autorizacao tela="Próximos trâmites" />
                 <Main>
+                    <Titulo>
+                        <p>Próximos trâmites</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={proximoTramite} onSubmit={grava}>
                         <Input name="prxId" type="hidden" />

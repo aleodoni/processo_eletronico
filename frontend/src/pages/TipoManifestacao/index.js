@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, ContainerDados, Main, Erro } from './styles';
+import { Container, ContainerDados, Main, Erro, Titulo } from './styles';
 import Input from '../../components/layout/Input';
 import ManifestacaoPublica from '../../components/system/select/ManifestacaoPublica';
 import Salvar from '../../components/layout/button/Salvar';
@@ -181,6 +181,10 @@ function TipoManifestacao() {
             <Container>
                 <Autorizacao tela="Tipos de manifestação" />
                 <Main>
+                    <Titulo>
+                        <p>Tipos de manifestação</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={tipoManifestacao} onSubmit={grava}>
                         <Input name="tmnId" type="hidden" />
