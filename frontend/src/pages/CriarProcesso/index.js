@@ -111,6 +111,10 @@ function CriarProcesso() {
             const response = await api.get(`/tipos-de-processo/${codGenId}`);
 
             const data = response.data.map(tipoProcesso => {
+                const tprNome = tipoProcesso.tpr_nome;
+                if (tprNome.length > 59) {
+                    tipoProcesso.tpr_nome = `${tprNome.substring(0, 56)}...`;
+                }
                 return {
                     label: tipoProcesso.tpr_nome,
                     value: tipoProcesso.tpr_id,

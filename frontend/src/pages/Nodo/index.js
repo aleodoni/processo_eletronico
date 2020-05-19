@@ -102,6 +102,10 @@ function Nodo() {
         formRef.current.setErrors({});
     }
 
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
+
     function carregaGrid(fluxo) {
         axios({
             method: 'GET',
@@ -169,6 +173,7 @@ function Nodo() {
             nodOrdem: linha.nod_ordem,
             nodAvalExecutiva: linha.nod_aval_executiva,
         });
+        posiciona();
     }
 
     function selecionaOutroFluxo() {
@@ -230,10 +235,11 @@ function Nodo() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Inserido com sucesso.');
                         limpaCampos();
                         carregaGrid(fluId);
                         setNodo({ fluId });
-                        mensagem.success('Inserido com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao inserir registro.');
@@ -256,10 +262,11 @@ function Nodo() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Editado com sucesso.');
                         limpaCampos();
                         carregaGrid(fluId);
                         setNodo({ fluId });
-                        mensagem.success('Editado com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao editar registro.');
@@ -287,10 +294,11 @@ function Nodo() {
             },
         })
             .then(() => {
+                mensagem.success('Excluído com sucesso.');
                 limpaCampos();
                 carregaGrid(nodo.fluId);
                 setNodo({ fluId: nodo.fluId });
-                mensagem.success('Excluído com sucesso.');
+                posiciona();
             })
             .catch(err => {
                 setErro(err.response.data.error);

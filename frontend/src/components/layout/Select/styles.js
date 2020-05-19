@@ -38,7 +38,7 @@ export const BasicSelect = styled.select`
 
     background-color: ${({ theme }) => theme.inputBackground};
     /* width: 100%; */
-    height: 36px;
+    height: 28px;
     border: 0;
     border-radius: 4px;
     padding: 0 5px;

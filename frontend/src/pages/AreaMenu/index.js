@@ -58,6 +58,10 @@ function AreaMenu() {
         formRef.current.setErrors({});
     }
 
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
+
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
@@ -67,6 +71,7 @@ function AreaMenu() {
             setId: linha.set_id,
             mmuId: linha.mmu_id,
         });
+        posiciona();
     }
 
     async function carregaArea() {
@@ -128,6 +133,7 @@ function AreaMenu() {
             await carregaArea();
             await carregaModelosMenu();
             carregaGrid();
+            posiciona();
         }
         carrega();
     }, []);
@@ -155,9 +161,10 @@ function AreaMenu() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Inserido com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Inserido com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao inserir registro.');
@@ -175,9 +182,10 @@ function AreaMenu() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Editado com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Editado com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao editar registro');
@@ -205,9 +213,10 @@ function AreaMenu() {
             },
         })
             .then(() => {
+                mensagem.success('Excluído com sucesso.');
                 limpaCampos();
                 carregaGrid();
-                mensagem.success('Excluído com sucesso.');
+                posiciona();
             })
             .catch(err => {
                 setErro(err.response.data.error);
