@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import img from '../../../assets/seta-combo.jpg';
 // import Select from 'react-select';
 
 export const Container = styled.div`
@@ -29,16 +30,18 @@ export const Container = styled.div`
 export const BasicSelect = styled.select`
     display: flex;
 
-    /* -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none; */
-    /* background: url(http://www.webcis.com.br/images/imagens-noticias/select/ico-seta-appearance.gif) no-repeat #eeeeee right; */
+    /*-webkit-appearance: none;*/
+
+    appearance: none;
+    /*-moz-appearance: none;*/
+    background: url(${img}) no-repeat #7885d6 right;
+
     background-color: ${({ theme }) => theme.inputBackground};
     /* width: 100%; */
     height: 36px;
     border: 0;
     border-radius: 4px;
-    /* padding: 0 10px; */
+    padding: 0 5px;
     color: ${({ theme }) => theme.text};
     /* margin: 1px 0 10px; */
     margin: 1px 0 10px;
