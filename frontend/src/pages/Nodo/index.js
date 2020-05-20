@@ -324,7 +324,6 @@ function Nodo() {
                                 <Select
                                     name="selectFluxo"
                                     label="Selecione o fluxo"
-                                    size={3}
                                     options={fluxos}
                                     onChange={handleFluId}
                                 />

@@ -7,12 +7,19 @@ export const Container = styled.div`
     button {
         margin-right: 10px;
     }
+`;
 
+export const Titulo = styled.div`
+    margin-left: 5px;
     p {
         color: #fff;
         font-weight: bold;
         margin-top: 10px;
         margin-bottom: 3px;
+    }
+    hr {
+        width: 100%;
+        color: #fff;
     }
 `;
 

@@ -108,7 +108,7 @@ function Lotacao() {
             .then(res => {
                 setLotacoes(res.data);
             })
-            .catch(() => {
+            .catch((erro) => {
                 setErro('Erro ao carregar registros.');
             });
     }

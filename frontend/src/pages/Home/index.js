@@ -135,7 +135,7 @@ function Home() {
                             </Link>
                         </ButtonAcessoRapido>
                     </ContainerBotoes>
-                    <br />
+                    <hr />
                     <ContainerProcessos>
                         {gridProcessosArea.length > 0 ? (
                             <div>

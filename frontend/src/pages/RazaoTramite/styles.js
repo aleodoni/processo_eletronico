@@ -10,6 +10,7 @@ export const Container = styled.div`
 `;
 
 export const Titulo = styled.div`
+    margin-left: 5px;
     p {
         color: #fff;
         font-weight: bold;

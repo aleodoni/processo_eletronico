@@ -11,19 +11,24 @@ export const Main = styled.main`
     flex: 1;
     flex-direction: column;
     width: 100%;
-    p {
+    margin-left: 10px;
+    hr {
+        width: 100%;
         color: #fff;
+        margin-left: 10px;
     }
 `;
 
 export const ContainerBotoes = styled.div`
     display: grid;
     grid-template-columns: 190px 230px;
+    margin-bottom: 10px;
 `;
 
 export const ContainerProcessos = styled.div`
     display: grid;
-    grid-template-columns: 1080px;
+    grid-template-columns: 1200px;
+    margin-left: 10px;
 
     p {
         margin-top: 10px;
@@ -87,8 +92,8 @@ export const BotaoCriaManifestacao = styled.button`
     background: ${({ theme }) => theme.primary};
     border: 0;
     border-radius: 4px;
-    height: 27px;
-    width: 162px;
+    height: 30px;
+    width: 165px;
     color: ${({ theme }) => theme.text};
     font-size: 14px;
     transition: background 0.2s;

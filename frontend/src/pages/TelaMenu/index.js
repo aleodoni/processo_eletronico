@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro, Container1, Container2 } from './styles';
+import { Container, Main, Erro, Container1, Container2, Titulo } from './styles';
 import api from '../../service/api';
 import Select from '../../components/layout/Select';
 import TelaInterna from '../../components/system/select/TelaInterna';
@@ -292,8 +292,10 @@ function TelaMenu() {
             <Container>
                 <Autorizacao tela="Menus" />
                 <Main>
-                    <p>Menus</p>
-                    <hr />
+                <Titulo>
+                        <p>Menus</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={telaMenu} onSubmit={grava}>
                         <Input name="menId" type="hidden" />
