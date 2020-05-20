@@ -117,6 +117,7 @@ function Home() {
         <DefaultLayout>
             <Container>
                 <Autorizacao tela="Home" />
+
                 <Main>
                     <Erro dangerouslySetInnerHTML={{ __html: erro }} />
                     <ContainerBotoes>

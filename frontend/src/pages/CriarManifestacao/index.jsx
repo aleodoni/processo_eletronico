@@ -434,17 +434,14 @@ function CriarManifestacao(props) {
                     <p>Criar manifestação</p>
                     <hr />
                     <Erro>{erro}</Erro>
-                    <fieldset>
-                        <label>Processo: </label>
-                        <span>
-                            {proCodigo} - {tprNome}
-                        </span>
-                    </fieldset>
+                    <label>Processo: </label>
+                    <span>
+                        {proCodigo} - {tprNome}
+                    </span>
                     <Form ref={formRef} initialData={manifestacao} onSubmit={incluiAnexo}>
-                        <Input name="manId" type="hidden" />
-                        <Input name="proId" type="hidden" />
-
                         <Container2>
+                            <Input name="manId" type="hidden" />
+                            <Input name="proId" type="hidden" />
                             <Select
                                 name="tmnId"
                                 label="Tipo da manifestação"

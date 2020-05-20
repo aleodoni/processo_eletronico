@@ -7,10 +7,10 @@ export const Container = styled.div`
 `;
 
 export const Main = styled.main`
-    display: grid;
+    display: flex;
     flex: 1;
-    justify-content: center;
-
+    flex-direction: column;
+    width: 100%;
     p {
         color: #fff;
     }
@@ -26,6 +26,7 @@ export const ContainerProcessos = styled.div`
     grid-template-columns: 1080px;
 
     p {
+        margin-top: 10px;
         color: #fff;
         margin-bottom: 5px;
     }

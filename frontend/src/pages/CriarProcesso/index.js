@@ -124,10 +124,6 @@ function CriarProcesso() {
                 iniciaTipoProcesso();
             } else {
                 setTiposProcesso(data);
-                // setProcesso({
-                //    genId: codGenId,
-                //    tprId: '-1',
-                // });
             }
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
@@ -159,9 +155,6 @@ function CriarProcesso() {
         } else {
             setAssuntoVisivel(false);
         }
-        // setProcesso({
-        //    tprId: e.target.value,
-        // });
     }
 
     function limpaCamposIniciativa() {

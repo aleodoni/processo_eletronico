@@ -295,10 +295,9 @@ function CriarManifestacaoExecutiva(props) {
                         </span>
                     </fieldset>
                     <Form ref={formRef} initialData={manifestacao} onSubmit={criaManifestacao}>
-                        <Input name="manId" type="hidden" />
-                        <Input name="proId" type="hidden" />
-
                         <Container2>
+                            <Input name="manId" type="hidden" />
+                            <Input name="proId" type="hidden" />
                             <FormLine>
                                 <VistoExecutiva
                                     name="manVistoExecutiva"

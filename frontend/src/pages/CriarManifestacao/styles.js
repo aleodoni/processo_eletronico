@@ -4,19 +4,6 @@ export const Container = styled.div`
     display: grid;
     grid-template-columns: 1100px;
 
-    fieldset {
-        border: 1px solid #ffffff;
-        border-radius: 5px;
-        padding: 7px;
-        label {
-            color: #ffffff;
-            font-weight: bold;
-        }
-        span {
-            color: #ffffff;
-        }
-    }
-
     p {
         color: #fff;
         font-weight: bold;
@@ -62,6 +49,21 @@ export const Main = styled.main`
         display: flex;
         flex-direction: column;
     }
+
+    hr {
+        color: #fff;
+    }
+
+    label {
+        padding-left: 5px;
+        padding-top: 5px;
+        color: #ffffff;
+        font-weight: bold;
+    }
+    span {
+        padding-top: 5px;
+        color: #ffffff;
+    }
 `;
 
 export const Erro = styled.div`
@@ -81,6 +83,7 @@ export const ContainerBotoes = styled.div`
     grid-template-columns: 185px 155px 130px 155px;
     grid-gap: 5px;
     margin-bottom: 10px;
+    margin-left: 5px;
 
     input {
         opacity: 0;

@@ -32,6 +32,7 @@ export const Titulo = styled.div`
     }
     hr {
         width: 100%;
+        color: #fff;
     }
 `;
 
