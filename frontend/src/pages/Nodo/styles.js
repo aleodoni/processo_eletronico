@@ -99,6 +99,6 @@ export const ContainerCamposNodos = styled.div`
 
 export const ContainerCamposNodos1 = styled.div`
     display: grid;
-    grid-template-columns: 120px 80px 180px;
+    grid-template-columns: 120px 80px 180px 180px;
     margin-bottom: 10px;
 `;

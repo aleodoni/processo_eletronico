@@ -45,8 +45,9 @@ export const ContainerIniciativa = styled.div`
 
 export const ContainerMatricula = styled.div`
     display: grid;
-    grid-template-columns: 100px 110px;
+    grid-template-columns: 90px 110px;
     grid-template-rows: 70px;
+    grid-column-gap: 15px;
 
     button {
         margin-top: 22px;
@@ -62,20 +63,20 @@ export const ContainerBotoes = styled.div`
 
 export const ContainerNome = styled.div`
     display: grid;
-    grid-template-columns: 575px;
+    grid-template-columns: 600px;
     grid-template-rows: 70px;
 `;
 
 export const ContainerDadosServidorPublico = styled.div`
     display: grid;
-    grid-template-columns: 200px 350px 350px;
+    grid-template-columns: 200px 365px 350px;
     grid-template-rows: 70px;
     grid-gap: 37px;
 `;
 
 export const ContainerCriaProcesso = styled.div`
     display: grid;
-    grid-template-columns: 487px 487px;
+    grid-template-columns: 450px 1000px;
     grid-template-rows: 70px;
 `;
 
