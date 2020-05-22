@@ -21,8 +21,6 @@ import Nodo from './pages/Nodo';
 import ProximoTramite from './pages/ProximoTramite';
 import CriarManifestacao from './pages/CriarManifestacao';
 import CriarManifestacaoExecutiva from './pages/CriarManifestacaoExecutiva';
-import TramiteEnvio from './pages/TramiteEnvio';
-import TramiteRecebimento from './pages/TramiteRecebimento';
 import TipoDocumento from './pages/TipoDocumento';
 import Tramite from './pages/Tramite';
 
@@ -67,8 +65,6 @@ const Routes = () => (
             path="/manifestacao-cria-executiva/:proId"
             component={CriarManifestacaoExecutiva}
         />
-        <PrivateRoute exact path="/envia" component={TramiteEnvio} />
-        <PrivateRoute exact path="/recebe" component={TramiteRecebimento} />
         <PrivateRoute exact path="/tramita/:id" component={Tramite} />
         <PrivateRoute exact path="/tipos-documento" component={TipoDocumento} />
         <Route path="*" component={Login} />

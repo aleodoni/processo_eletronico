@@ -17,6 +17,7 @@ export const ContainerBotaoFecha = styled.button`
     height: 36px;
     width: 130px;
     padding: 0 15px;
+    padding-top: 10px;
     color: ${({ theme }) => theme.text};
     margin: 0 0 10px;
     font-size: 14px;

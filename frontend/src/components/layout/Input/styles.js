@@ -16,7 +16,7 @@ export const Container = styled.div`
         background: ${({ theme }) => theme.inputBackground};
         border: 0;
         border-radius: 4px;
-        height: 36px;
+        height: 28px;
         padding: 0 10px;
         color: ${({ theme }) => theme.text};
         margin: 1px 0 10px;

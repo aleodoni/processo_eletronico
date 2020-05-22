@@ -7,12 +7,19 @@ export const Container = styled.div`
     button {
         margin-right: 10px;
     }
+`;
 
+export const Titulo = styled.div`
+    margin-left: 5px;
     p {
         color: #fff;
         font-weight: bold;
         margin-top: 10px;
         margin-bottom: 3px;
+    }
+    hr {
+        width: 100%;
+        color: #fff;
     }
 `;
 
@@ -40,5 +47,5 @@ export const Container1 = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 500px 100px 120px;
+    grid-template-columns: 500px 100px 140px;
 `;

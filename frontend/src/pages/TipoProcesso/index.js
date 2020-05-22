@@ -66,6 +66,10 @@ function TipoProcesso() {
         formRef.current.setErrors({});
     }
 
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
+
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
@@ -78,6 +82,7 @@ function TipoProcesso() {
             fluId: linha.flu_id,
             tprPessoal: linha.tpr_pessoal,
         });
+        posiciona();
     }
 
     async function carregaGenero() {
@@ -139,6 +144,7 @@ function TipoProcesso() {
             await carregaGenero();
             await carregaFluxo();
             carregaGrid();
+            posiciona();
         }
         carrega();
     }, []);
@@ -178,9 +184,10 @@ function TipoProcesso() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Inserido com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Inserido com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao inserir registro.');
@@ -201,9 +208,10 @@ function TipoProcesso() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Editado com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Editado com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao editar registro');
@@ -231,9 +239,10 @@ function TipoProcesso() {
             },
         })
             .then(() => {
+                mensagem.success('Excluído com sucesso.');
                 limpaCampos();
                 carregaGrid();
-                mensagem.success('Excluído com sucesso.');
+                posiciona();
             })
             .catch(err => {
                 setErro(err.response.data.error);

@@ -220,6 +220,10 @@ function ProximoTramite() {
         formRef.current.setErrors({});
     }
 
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
+
     function preencheCampos(linha) {
         formRef.current.setErrors({});
         setProximoTramite({
@@ -231,6 +235,7 @@ function ProximoTramite() {
             fluId: linha.flu_id,
             prxPrioridade: linha.prx_prioridade,
         });
+        posiciona();
     }
 
     function selecionaOutroFluxo() {
@@ -279,11 +284,12 @@ function ProximoTramite() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Inserido com sucesso.');
                         limpaCampos();
                         carregaGrid(fluId);
                         setProximoTramite({ fluId });
                         carregaGrafo(fluId);
-                        mensagem.success('Inserido com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao inserir registro.');
@@ -304,11 +310,12 @@ function ProximoTramite() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Editado com sucesso.');
                         limpaCampos();
                         carregaGrid(fluId);
                         setProximoTramite({ fluId });
                         carregaGrafo(fluId);
-                        mensagem.success('Editado com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao editar registro.');
@@ -336,11 +343,12 @@ function ProximoTramite() {
             },
         })
             .then(() => {
+                mensagem.success('Excluído com sucesso.');
                 limpaCampos();
                 carregaGrid(proximoTramite.fluId);
                 setProximoTramite({ fluId: proximoTramite.fluId });
                 carregaGrafo(proximoTramite.fluId);
-                mensagem.success('Excluído com sucesso.');
+                posiciona();
             })
             .catch(err => {
                 setErro(err.response.data.error);

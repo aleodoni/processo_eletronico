@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro } from './styles';
+import { Container, Main, Erro, Titulo } from './styles';
 import Input from '../../components/layout/Input';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
@@ -51,6 +51,10 @@ function Fluxo() {
         formRef.current.setErrors({});
     }
 
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
+
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
@@ -59,6 +63,7 @@ function Fluxo() {
             fluId: linha.flu_id,
             fluNome: linha.flu_nome,
         });
+        posiciona();
     }
 
     function carregaGrid() {
@@ -80,6 +85,7 @@ function Fluxo() {
     useEffect(() => {
         async function carrega() {
             carregaGrid();
+            posiciona();
         }
         carrega();
     }, []);
@@ -107,9 +113,10 @@ function Fluxo() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Inserido com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Inserido com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao inserir registro.');
@@ -126,9 +133,10 @@ function Fluxo() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Editado com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Editado com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao editar registro.');
@@ -156,9 +164,10 @@ function Fluxo() {
             },
         })
             .then(() => {
+                mensagem.success('Excluído com sucesso.');
                 limpaCampos();
                 carregaGrid();
-                mensagem.success('Excluído com sucesso.');
+                posiciona();
             })
             .catch(err => {
                 setErro(err.response.data.error);
@@ -170,8 +179,10 @@ function Fluxo() {
             <Container>
                 <Autorizacao tela="Fluxos" />
                 <Main>
-                    <p>Fluxos</p>
-                    <hr />
+                <Titulo>
+                        <p>Fluxos</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={fluxo} onSubmit={grava}>
                         <Input name="fluId" type="hidden" />

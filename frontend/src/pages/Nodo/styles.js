@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     display: grid;
-    grid-template-columns: 1fr 6fr;
 
     fieldset {
         border: 1px solid;
@@ -59,8 +58,8 @@ export const Erro = styled.div`
 
 export const Titulo = styled.div`
     display: grid;
-    grid-template-columns: 1000px;
-
+    grid-template-columns: 1600px;
+    margin-left: 5px;
     p {
         color: #fff;
         font-weight: bold;
@@ -69,6 +68,7 @@ export const Titulo = styled.div`
     }
     hr {
         width: 100%;
+        color: #fff;
     }
 `;
 
@@ -99,6 +99,6 @@ export const ContainerCamposNodos = styled.div`
 
 export const ContainerCamposNodos1 = styled.div`
     display: grid;
-    grid-template-columns: 120px 80px 180px;
+    grid-template-columns: 120px 80px 180px 180px;
     margin-bottom: 10px;
 `;

@@ -4,6 +4,7 @@ import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import { FaSearch } from 'react-icons/fa';
 import Input from '../../components/layout/Input';
+import InputMask from '../../components/layout/InputMask';
 import TextArea from '../../components/layout/TextArea';
 import Select from '../../components/layout/Select';
 import Limpar from '../../components/layout/button/Limpar';
@@ -120,10 +121,6 @@ function CriarProcesso() {
                 iniciaTipoProcesso();
             } else {
                 setTiposProcesso(data);
-                // setProcesso({
-                //    genId: codGenId,
-                //    tprId: '-1',
-                // });
             }
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
@@ -155,9 +152,6 @@ function CriarProcesso() {
         } else {
             setAssuntoVisivel(false);
         }
-        // setProcesso({
-        //    tprId: e.target.value,
-        // });
     }
 
     function limpaCamposIniciativa() {
@@ -326,7 +320,7 @@ function CriarProcesso() {
                     return;
                 }
                 if (p.proCpf.trim() !== '') {
-                    if (!cpf(p.proCpf.trim())) {
+                    if (!cpf(p.proCpf.trim().replace(/[^\d]+/g, ''))) {
                         setErro('Cpf inválido.');
                         return;
                     }
@@ -584,12 +578,11 @@ function CriarProcesso() {
                             ) : null}
                             {matriculaVisivel ? (
                                 <ContainerMatricula>
-                                    <Input
+                                    <InputMask
                                         name="proMatricula"
                                         label="Matrícula"
-                                        type="text"
-                                        size="5"
-                                        maxLength="5"
+                                        mask="99999"
+                                        maskChar=" "
                                     />
                                     <BotaoProcura
                                         id="btnLocaliza"
@@ -622,7 +615,7 @@ function CriarProcesso() {
                                     name="proCpf"
                                     label="Cpf"
                                     type="text"
-                                    size="10"
+                                    size="11"
                                     maxLength="11"
                                 />
                                 <Input
