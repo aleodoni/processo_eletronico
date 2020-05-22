@@ -224,6 +224,7 @@ routes.put(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.update);
 routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 
 // rotas do cadastro de manifestacao
+routes.get(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.index);
 routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
 routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.delete);

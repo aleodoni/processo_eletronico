@@ -43,6 +43,12 @@ class VNodo extends Model {
                 },
                 aval_executiva: {
                     type: Sequelize.STRING
+                },
+                nod_decisao: {
+                    type: Sequelize.BOOLEAN
+                },
+                decisao: {
+                    type: Sequelize.STRING
                 }
             },
             {
