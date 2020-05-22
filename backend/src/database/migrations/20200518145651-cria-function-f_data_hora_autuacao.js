@@ -1,6 +1,7 @@
 'use strict';
 
 const functionName = 'spa2.f_data_hora_autuacao()';
+
 const sql = `
   'BEGIN
   NEW.pro_autuacao = NOW();
@@ -15,6 +16,6 @@ module.exports = {
     },
 
     down: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.query(`DROP FUNCTION ${functionName}`);
+        return queryInterface.sequelize.query('');
     }
 };

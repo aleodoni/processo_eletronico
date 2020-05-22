@@ -1,5 +1,10 @@
 'use strict';
 
+// const functionName = 'spa2.f_data_hora_autuacao()';
+// const triggerName = 'data_hora_autuacao';
+// const functionName2 = 'spa2.f_numeracao_autuacao()';
+// const triggerName2 = 'numeracao_autuacao';
+
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.createTable('processo', {
@@ -114,6 +119,13 @@ module.exports = {
     },
 
     down: (queryInterface, Sequelize) => {
+        // return Promise.all([
+        //     queryInterface.sequelize.query(`DROP TRIGGER ${triggerName}`),
+        //     queryInterface.sequelize.query(`DROP FUNCTION ${functionName}`),
+        //     queryInterface.sequelize.query(`DROP TRIGGER ${triggerName2}`),
+        //     queryInterface.sequelize.query(`DROP FUNCTION ${functionName2}`),
+        //     queryInterface.dropTable('processo')
+        // ]);
         return queryInterface.dropTable('processo');
     }
 };

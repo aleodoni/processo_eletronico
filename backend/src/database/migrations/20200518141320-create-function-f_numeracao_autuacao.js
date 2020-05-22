@@ -1,6 +1,8 @@
 'use strict';
 
 const functionName = 'spa2.f_numeracao_autuacao()';
+// const triggerName = 'numeracao_autuacao';
+
 const sql = `
   'DECLARE
     id bigint;
@@ -36,6 +38,6 @@ module.exports = {
     },
 
     down: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.query(`DROP FUNCTION ${functionName}`);
+        return queryInterface.sequelize.query('');
     }
 };
