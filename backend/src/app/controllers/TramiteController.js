@@ -108,19 +108,6 @@ class TramiteController {
             logging: true,
             plain: true
         });
-        /*
-        const nodo = await Nodo.findAll({
-            where: {
-                nod_id: idNodoAtual
-            },
-            attributes: [
-                'nod_id',
-                'nod_fim'
-            ],
-            logging: true,
-            plain: true
-        });
-        */
 
         const proximo = await VProximoTramiteNormal.findAll({
             attributes: [

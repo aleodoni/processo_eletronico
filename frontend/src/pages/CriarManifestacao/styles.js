@@ -2,20 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     display: grid;
-    grid-template-columns: 1100px;
-
-    fieldset {
-        border: 1px solid #ffffff;
-        border-radius: 5px;
-        padding: 7px;
-        label {
-            color: #ffffff;
-            font-weight: bold;
-        }
-        span {
-            color: #ffffff;
-        }
-    }
+    grid-template-columns: 1600px;
 
     p {
         color: #fff;
@@ -47,7 +34,7 @@ export const Container = styled.div`
     table {
         border-collapse: collapse;
         border: 1px solid #000000;
-        font-size: 12px;
+        font-size: 14px;
         width: 100%;
         background: #fff;
     }
@@ -62,6 +49,21 @@ export const Main = styled.main`
         display: flex;
         flex-direction: column;
     }
+
+    hr {
+        color: #fff;
+    }
+
+    label {
+        padding-left: 5px;
+        padding-top: 5px;
+        color: #ffffff;
+        font-weight: bold;
+    }
+    span {
+        padding-top: 5px;
+        color: #ffffff;
+    }
 `;
 
 export const Erro = styled.div`
@@ -72,15 +74,16 @@ export const Erro = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 400px 690px;
+    grid-template-columns: 450px 850px;
     margin-bottom: 10px;
 `;
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 185px 155px 130px 155px;
+    grid-template-columns: 185px 165px 130px 165px;
     grid-gap: 5px;
     margin-bottom: 10px;
+    margin-left: 5px;
 
     input {
         opacity: 0;
@@ -117,7 +120,7 @@ export const BotaoComoLink = styled.button`
     background: #fff;
     border: none;
     padding: 3px;
-    font-size: 12px;
+    font-size: 14px;
     text-decoration: underline;
     color: #303f9f;
     cursor: pointer;

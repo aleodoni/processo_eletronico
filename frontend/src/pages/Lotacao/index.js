@@ -60,6 +60,10 @@ function Lotacao() {
         formRef.current.setErrors({});
     }
 
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
+
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
@@ -71,6 +75,7 @@ function Lotacao() {
             pesNome: linha.pes_nome,
             pesLogin: linha.pes_login,
         });
+        posiciona();
     }
 
     async function carregaSetor() {
@@ -103,7 +108,7 @@ function Lotacao() {
             .then(res => {
                 setLotacoes(res.data);
             })
-            .catch(() => {
+            .catch((erro) => {
                 setErro('Erro ao carregar registros.');
             });
     }
@@ -112,6 +117,7 @@ function Lotacao() {
         async function carrega() {
             await carregaSetor();
             carregaGrid();
+            posiciona();
         }
         carrega();
     }, []);
@@ -149,9 +155,10 @@ function Lotacao() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Inserido com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Inserido com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao inserir registro.');
@@ -170,9 +177,10 @@ function Lotacao() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Editado com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Editado com sucesso.');
+                        posiciona();
                     })
                     .catch(erroEdita => {
                         if (erroEdita.response.data.error === 'Lotação não encontrada') {
@@ -204,9 +212,10 @@ function Lotacao() {
             },
         })
             .then(() => {
+                mensagem.success('Excluído com sucesso.');
                 limpaCampos();
                 carregaGrid();
-                mensagem.success('Excluído com sucesso.');
+                posiciona();
             })
             .catch(err => {
                 setErro(err.response.data.error);

@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro, Container1, Container2 } from './styles';
+import { Container, Main, Erro, Container1, Container2, Titulo } from './styles';
 import api from '../../service/api';
 import Select from '../../components/layout/Select';
 import TelaInterna from '../../components/system/select/TelaInterna';
@@ -70,6 +70,10 @@ function TelaMenu() {
         formRef.current.setErrors({});
     }
 
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
+
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
@@ -85,6 +89,7 @@ function TelaMenu() {
             menOrdemPai: linha.men_ordem_pai,
             telInterna: linha.tel_interna,
         });
+        posiciona();
     }
 
     async function carregaPai() {
@@ -166,6 +171,7 @@ function TelaMenu() {
             await carregaModelo();
             await carregaTela();
             carregaGrid();
+            posiciona();
         }
         carrega();
     }, []);
@@ -214,9 +220,10 @@ function TelaMenu() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Inserido com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Inserido com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao inserir registro.');
@@ -239,9 +246,10 @@ function TelaMenu() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Editado com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Editado com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao editar registro');
@@ -269,9 +277,10 @@ function TelaMenu() {
             },
         })
             .then(() => {
+                mensagem.success('Excluído com sucesso.');
                 limpaCampos();
                 carregaGrid();
-                mensagem.success('Excluído com sucesso.');
+                posiciona();
             })
             .catch(err => {
                 setErro(err.response.data.error);
@@ -283,8 +292,10 @@ function TelaMenu() {
             <Container>
                 <Autorizacao tela="Menus" />
                 <Main>
-                    <p>Menus</p>
-                    <hr />
+                <Titulo>
+                        <p>Menus</p>
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={telaMenu} onSubmit={grava}>
                         <Input name="menId" type="hidden" />

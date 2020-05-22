@@ -86,6 +86,10 @@ function Setor() {
         formRef.current.setErrors({});
     }
 
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
+
     function preencheCampos(linha) {
         formRef.current.setErrors({});
 
@@ -120,6 +124,7 @@ function Setor() {
         async function carrega() {
             await carregaArea();
             carregaGrid();
+            posiciona();
         }
         carrega();
     }, []);
@@ -160,9 +165,10 @@ function Setor() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Inserido com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Inserido com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao inserir registro.');
@@ -183,9 +189,10 @@ function Setor() {
                     },
                 })
                     .then(() => {
+                        mensagem.success('Editado com sucesso.');
                         limpaCampos();
                         carregaGrid();
-                        mensagem.success('Editado com sucesso.');
+                        posiciona();
                     })
                     .catch(() => {
                         setErro('Erro ao editar registro.');
@@ -213,9 +220,10 @@ function Setor() {
             },
         })
             .then(() => {
+                mensagem.success('Excluído com sucesso.');
                 limpaCampos();
                 carregaGrid();
-                mensagem.success('Excluído com sucesso.');
+                posiciona();
             })
             .catch(err => {
                 setErro(err.response.data.error);

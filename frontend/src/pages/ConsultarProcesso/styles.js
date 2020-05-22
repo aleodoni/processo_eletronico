@@ -14,6 +14,7 @@ export const Titulo = styled.div`
     }
     hr {
         width: 100%;
+        color: #fff;
     }
 `;
 
@@ -30,6 +31,7 @@ export const Main = styled.main`
     hr {
         margin-left: 5px;
         margin-bottom: 10px;
+        color: #fff;
     }
 
     p {

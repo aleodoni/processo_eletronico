@@ -22,6 +22,7 @@ export const Fundo = styled.div`
     hr {
         border-top: 1px solid #fff;
         width: 100%;
+        color: #fff;
     }
 
     /* &:hover {

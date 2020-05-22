@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Manifestacao from '../models/Manifestacao';
+import VNodoDecisao from '../models/VNodoDecisao';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
 import DataHoraAtual from '../models/DataHoraAtual';
 import moment from 'moment';
@@ -12,12 +13,26 @@ require('dotenv/config');
 // import AuditoriaController from './AuditoriaController';
 
 class ManifestacaoController {
+    async index(req, res) {
+        const nodoDecisao = await VNodoDecisao.findAll({
+            attributes: ['nod_id', 'pro_id', 'nod_decisao'],
+            logging: true,
+            plain: true,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+        console.log(nodoDecisao);
+        return res.send(nodoDecisao.dataValues.nod_decisao);
+    }
+
     async store(req, res) {
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
             logging: true,
             plain: true
         });
+
         const {
             man_id,
             pro_id,

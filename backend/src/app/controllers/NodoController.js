@@ -17,7 +17,8 @@ class NodoController {
                 'nod_fim',
                 'nod_dias_prazo',
                 'nod_ordem',
-                'nod_aval_executiva'
+                'nod_aval_executiva',
+                'nod_decisao'
             ],
             logging: false
         });
@@ -51,7 +52,9 @@ class NodoController {
                 'nod_dias_prazo',
                 'nod_ordem',
                 'nod_aval_executiva',
-                'aval_executiva'
+                'aval_executiva',
+                'nod_decisao',
+                'decisao'
             ],
             logging: false
         });
@@ -67,7 +70,8 @@ class NodoController {
             area_id,
             nod_dias_prazo,
             nod_ordem,
-            nod_aval_executiva
+            nod_aval_executiva,
+            nod_decisao
         } = await Nodo.create(req.body, {
             logging: true
         });
@@ -82,7 +86,8 @@ class NodoController {
             area_id,
             nod_dias_prazo,
             nod_ordem,
-            nod_aval_executiva
+            nod_aval_executiva,
+            nod_decisao
         });
     }
 

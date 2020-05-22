@@ -29,7 +29,7 @@ class App {
         this.server.set('json spaces', 4);
         // configura o log da aplicação
         if (process.env.NODE_ENV !== 'test') {
-            this.server.use(morgan('combined', { stream: winston.stream }));
+            this.server.use(morgan(':method | :url | :status | :response-time ms', { stream: winston.stream }));
         }
         // configura o helmet
         this.server.use(helmet());

@@ -117,6 +117,7 @@ function Home() {
         <DefaultLayout>
             <Container>
                 <Autorizacao tela="Home" />
+
                 <Main>
                     <Erro dangerouslySetInnerHTML={{ __html: erro }} />
                     <ContainerBotoes>
@@ -134,7 +135,7 @@ function Home() {
                             </Link>
                         </ButtonAcessoRapido>
                     </ContainerBotoes>
-                    <br />
+                    <hr />
                     <ContainerProcessos>
                         {gridProcessosArea.length > 0 ? (
                             <div>
