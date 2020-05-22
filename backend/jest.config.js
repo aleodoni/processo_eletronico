@@ -6,7 +6,7 @@ module.exports = {
     // automock: false,
 
     // Stop running tests after `n` failures
-    bail: true,
+    bail: false,
 
     // Respect "browser" field in package.json when resolving modules
     // browser: false,
@@ -18,13 +18,18 @@ module.exports = {
     clearMocks: true,
 
     // Indicates whether the coverage information should be collected while executing the test
-    // collectCoverage: false,
+    collectCoverage: true,
 
     // An array of glob patterns indicating a set of files for which coverage information should be collected
-    // collectCoverageFrom: null,
+    collectCoverageFrom: [
+        '<rootDir>/src/app/controllers/*.js',
+        '<rootDir>/src/app/middlewares/*.js',
+        '<rootDir>/src/app/models/*.js',
+        '<rootDir>/src/app/validators/*.js'
+    ],
 
     // The directory where Jest should output its coverage files
-    // coverageDirectory: null,
+    coverageDirectory: 'coverage',
 
     // An array of regexp pattern strings used to skip coverage collection
     // coveragePathIgnorePatterns: [
@@ -32,12 +37,10 @@ module.exports = {
     // ],
 
     // A list of reporter names that Jest uses when writing coverage reports
-    // coverageReporters: [
-    //   "json",
-    //   "text",
-    //   "lcov",
-    //   "clover"
-    // ],
+    coverageReporters: [
+        'text-summary',
+        'lcov'
+    ],
 
     // An object that configures minimum threshold enforcement for coverage results
     // coverageThreshold: null,
@@ -79,7 +82,7 @@ module.exports = {
     // ],
 
     // A map from regular expressions to module names that allow to stub out resources with a single module
-    // moduleNameMapper: {},
+    // moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
 
     // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
     // modulePathIgnorePatterns: [],
@@ -141,7 +144,7 @@ module.exports = {
     // testLocationInResults: false,
 
     // The glob patterns Jest uses to detect test files
-    testMatch: ['**/__tests__/**/*.test.js?(x)'],
+    testMatch: ['**/__tests__/**/*.test.js?(x)']
 
     // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
     // testPathIgnorePatterns: [
@@ -175,7 +178,7 @@ module.exports = {
     // unmockedModulePathPatterns: undefined,
 
     // Indicates whether each individual test should be reported during the run
-    verbose: true
+    // verbose: true
 
     // An array of regexp patterns that are matched against all source file paths before re-running tests in watch mode
     // watchPathIgnorePatterns: [],
