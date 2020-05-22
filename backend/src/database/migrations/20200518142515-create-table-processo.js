@@ -105,7 +105,7 @@ module.exports = {
                 type: Sequelize.DATE
             },
             pro_encerramento: {
-                type: Sequelize.STRING(50)
+                type: Sequelize.DATE
             }
         },
         {

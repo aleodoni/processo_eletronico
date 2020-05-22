@@ -11,6 +11,6 @@ module.exports = {
     },
 
     down: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.query(`DROP FUNCTION ${triggerName}`);
+        return queryInterface.sequelize.query(`DROP TRIGGER ${triggerName}`);
     }
 };
