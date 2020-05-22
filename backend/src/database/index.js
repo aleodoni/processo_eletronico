@@ -42,6 +42,7 @@ import TipoDocumento from '../app/models/TipoDocumento';
 import VAreaTramitacaoPessoal from '../app/models/VAreaTramitacaoPessoal';
 import VProcessosPessoais from '../app/models/VProcessosPessoais';
 import VProcessosArea from '../app/models/VProcessosArea';
+import VNodoDecisao from '../app/models/VNodoDecisao';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -87,7 +88,8 @@ const models = [
     TipoDocumento,
     VAreaTramitacaoPessoal,
     VProcessosPessoais,
-    VProcessosArea
+    VProcessosArea,
+    VNodoDecisao
 ];
 
 class Database {
