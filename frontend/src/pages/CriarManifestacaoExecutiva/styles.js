@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     display: grid;
-    grid-template-columns: 1600px;
+    grid-template-columns: 1100px;
 
     fieldset {
         border: 1px solid #ffffff;
@@ -91,12 +91,10 @@ export const Main = styled.main`
 
     label {
         padding-left: 5px;
-        padding-top: 5px;
         color: #ffffff;
         font-weight: bold;
     }
     span {
-        padding-top: 5px;
         color: #ffffff;
     }
 `;
@@ -122,33 +120,32 @@ export const ContainerBotoes = styled.div`
     margin-bottom: 10px;
     margin-left: 5px;
 
-    span {
-        input {
-            opacity: 0;
-            position: absolute;
-            z-index: -1;
+    input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    label {
+        cursor: pointer;
+        background: ${({ theme }) => theme.primary};
+        border: 0;
+        border-radius: 4px;
+        height: 36px;
+        padding: 5 9 15px;
+        padding-top: 10px;
+        color: ${({ theme }) => theme.text};
+        margin: 0 0 10px;
+        font-size: 14px;
+        transition: background 0.2s;
+
+        &:hover {
+            background: ${({ theme }) => theme.hover};
         }
 
-        label {
-            cursor: pointer;
-            background: ${({ theme }) => theme.primary};
-            border: 0;
-            border-radius: 4px;
-            height: 40px;
-            padding: 5 9 15px;
-            color: ${({ theme }) => theme.text};
-            margin: 0 0 10px;
-            font-size: 14px;
-            transition: background 0.2s;
-
-            &:hover {
-                background: ${({ theme }) => theme.hover};
-            }
-
-            svg {
-                margin-right: 10px;
-                margin-left: 5px;
-            }
+        svg {
+            margin-right: 10px;
+            margin-left: 5px;
         }
     }
 `;
@@ -161,6 +158,31 @@ export const BotaoComoLink = styled.button`
     text-decoration: underline;
     color: #303f9f;
     cursor: pointer;
+
+    &:hover {
+        background: ${({ theme }) => theme.hover};
+        color: #fff;
+        text-decoration: none;
+    }
+
+    span {
+        margin-left: 45px;
+    }
+`;
+
+export const LinkProcesso = styled.button`
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    text-decoration: underline;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+        background: ${({ theme }) => theme.hover};
+        color: #fff;
+        text-decoration: none;
+    }
 
     span {
         margin-left: 45px;

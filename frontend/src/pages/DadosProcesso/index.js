@@ -258,7 +258,7 @@ function DadosProcesso({ match }) {
                     <Main>
                         <Form ref={formRef}>
                             {processos.map(pro => (
-                                <div>
+                                <div key={pro.pro_id}>
                                     <h3>
                                         <FaFileAlt />
                                         {` Processo nº ${pro.pro_codigo}`}
@@ -332,16 +332,16 @@ function DadosProcesso({ match }) {
                                                     <label>Nome:</label>
                                                     <span>{pro.pro_nome}</span>
                                                 </div>
-                                                {pro.pro_cpf ? (
+                                                {pro.cpf !== null && pro.cpf !== undefined ? (
                                                     <div>
                                                         <label>Cpf:</label>
-                                                        <span>{pro.pro_cpf}</span>
+                                                        <span>{pro.cpf}</span>
                                                     </div>
                                                 ) : null}
-                                                {pro.pro_cnpj ? (
+                                                {pro.cnpj !== null && pro.cnpj !== undefined ? (
                                                     <div>
                                                         <label>Cnpj:</label>
-                                                        <span>{pro.pro_cnpj}</span>
+                                                        <span>{pro.cnpj}</span>
                                                     </div>
                                                 ) : null}
                                                 {pro.pro_fone ? (
@@ -470,7 +470,7 @@ function DadosProcesso({ match }) {
                                     <div>
                                         <p>Arquivo(s) em anexo</p>
                                         <fieldset>
-                                            <AnexoArquivo proId={proId} anexos={anexos} />
+                                            <AnexoArquivo proId={Number(proId)} anexos={anexos} />
                                         </fieldset>
                                         <br />
                                     </div>

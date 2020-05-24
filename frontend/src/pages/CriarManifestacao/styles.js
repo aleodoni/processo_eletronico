@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     display: grid;
-    grid-template-columns: 1600px;
+    grid-template-columns: 1100px;
 
     p {
         color: #fff;
@@ -74,7 +74,7 @@ export const Erro = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 450px 850px;
+    grid-template-columns: 250px 850px;
     margin-bottom: 10px;
 `;
 

@@ -22,7 +22,6 @@ class ManifestacaoController {
                 pro_id: req.params.id
             }
         });
-        console.log(nodoDecisao);
         return res.send(nodoDecisao.dataValues.nod_decisao);
     }
 
@@ -52,7 +51,7 @@ class ManifestacaoController {
             man_visto_executiva: req.body.man_visto_executiva,
             man_data: dataHoraAtual.dataValues.data_hora_atual
         }, {
-            logging: false
+            logging: true
         });
             // auditoria de inserção
             // AuditoriaController.audita(req.body, req, 'I', man_id);

@@ -27,7 +27,7 @@ export const ContainerBotoes = styled.div`
 
 export const ContainerProcessos = styled.div`
     display: grid;
-    grid-template-columns: 1200px;
+    grid-template-columns: 1100px;
     margin-left: 10px;
 
     p {

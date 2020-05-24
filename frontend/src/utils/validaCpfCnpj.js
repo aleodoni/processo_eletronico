@@ -1,3 +1,6 @@
+import isValid from 'date-fns/isValid';
+import isBefore from 'date-fns/isBefore';
+
 function validaCpfCnpj() {
     function testaCPF(cpf) {
         let soma;
@@ -61,11 +64,39 @@ function validaCpfCnpj() {
         return true;
     }
 
+    function testaData(data) {
+        const dataParte = data.split('/');
+        if (isValid(new Date(`${dataParte[2]}-${dataParte[1]}-${dataParte[0]}`))) {
+            return true;
+        }
+        return false;
+    }
+
+    function testaFinalMaior(dataIni, dataFim) {
+        const dataInicialParte = dataIni.split('/');
+        const dataFinalParte = dataFim.split('/');
+        const dataInicial = new Date(
+            `${dataInicialParte[2]}-${dataInicialParte[1]}-${dataInicialParte[0]}`
+        );
+        const dataFinal = new Date(
+            `${dataFinalParte[2]}-${dataFinalParte[1]}-${dataFinalParte[0]}`
+        );
+
+        if (!isBefore(dataInicial, dataFinal)) {
+            return true;
+        }
+        return false;
+    }
+
     return {
         testaCPF,
         testaCNPJ,
+        testaData,
+        testaFinalMaior,
     };
 }
 
 export const cpf = validaCpfCnpj().testaCPF;
 export const cnpj = validaCpfCnpj().testaCNPJ;
+export const dataValida = validaCpfCnpj().testaData;
+export const dataFinalMaior = validaCpfCnpj().testaFinalMaior;

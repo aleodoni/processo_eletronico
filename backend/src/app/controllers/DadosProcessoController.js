@@ -4,6 +4,7 @@
 import VDadosProcesso from '../models/VDadosProcesso';
 import VProcessosPessoais from '../models/VProcessosPessoais';
 import VProcessosArea from '../models/VProcessosArea';
+import pg from 'pg';
 
 class DadosProcessoController {
     async dadosProcesso(req, res) {
@@ -88,14 +89,14 @@ class DadosProcessoController {
         if (proCnpj !== '' && proCnpj !== undefined) {
             wherePesquisa.cnpj = proCnpj;
         }
-        if (proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined && proDataFimAutuacao === '') {
-            wherePesquisa.pro_autuacao = proDataIniAutuacao;
+        if (proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined && (proDataFimAutuacao === '' || proDataFimAutuacao === undefined)) {
+            wherePesquisa.pro_autuacao_data = { [Op.gte]: proDataIniAutuacao };
         }
-        if (proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined && proDataIniAutuacao === '') {
-            wherePesquisa.pro_autuacao = { [Op.lte]: proDataFimAutuacao };
+        if (proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined && (proDataIniAutuacao === '' || proDataIniAutuacao === undefined)) {
+            wherePesquisa.pro_autuacao_data = { [Op.lte]: proDataFimAutuacao };
         }
-        if (proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined && proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined) {
-            wherePesquisa.pro_autuacao = { [Op.between]: [proDataIniAutuacao, proDataFimAutuacao] };
+        if ((proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined) && (proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined)) {
+            wherePesquisa.pro_autuacao_data = { [Op.between]: [proDataIniAutuacao, proDataFimAutuacao] };
         }
         if (proNumero !== '') {
             wherePesquisa.pro_numero = parseInt(proNumero, 10);
@@ -117,7 +118,6 @@ class DadosProcessoController {
             return res.status(412).json({ error: 'Selecione pelo menos um campo para pesquisa.' });
         }
 
-        console.log(JSON.stringify(wherePesquisa, null, 4));
         const pesquisaProcesso = await VDadosProcesso.findAll({
             attributes: [
                 'pro_id',
@@ -128,6 +128,7 @@ class DadosProcessoController {
                 'cnpj',
                 'pro_numero',
                 'pro_autuacao',
+                'pro_autuacao_data',
                 'area_id',
                 'pro_iniciativa',
                 'pro_tipo_iniciativa',

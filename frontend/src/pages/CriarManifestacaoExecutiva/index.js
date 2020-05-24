@@ -20,6 +20,7 @@ import FormLine from '../../components/layout/FormLine';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
+import ModalProcesso from '../../components/ModalProcesso';
 
 import {
     Container,
@@ -27,6 +28,7 @@ import {
     Main,
     Erro,
     BotaoComoLink,
+    LinkProcesso,
     Vermelho,
     ContainerBotoes,
     Titulo,
@@ -41,12 +43,14 @@ function CriarManifestacaoExecutiva(props) {
         manVistoExecutiva: -1,
     });
     const [manId, setManId] = useState(undefined);
+    const [proIdModal, setProId] = useState(-1);
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
     const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
+    const [modalProcesso, setModalProcesso] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
     const [decisivo, setDecisivo] = useState(false);
 
@@ -55,6 +59,15 @@ function CriarManifestacaoExecutiva(props) {
     useEffect(() => {
         formRef.current.setData(manifestacao);
     }, [manifestacao]);
+
+    function abreModalProcesso(id) {
+        setProId(id);
+        setModalProcesso(true);
+    }
+
+    function fechaModalProcesso() {
+        setModalProcesso(false);
+    }
 
     function abreModalExcluir(id) {
         setManId(id);
@@ -425,7 +438,12 @@ function CriarManifestacaoExecutiva(props) {
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
                     <span>
-                        {proCodigo} - {tprNome}
+                        <LinkProcesso
+                            type="button"
+                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                            {proCodigo}
+                        </LinkProcesso>
+                        - {tprNome}
                     </span>
                     <Form
                         ref={formRef}
@@ -443,10 +461,10 @@ function CriarManifestacaoExecutiva(props) {
                         </Container2>
                         <ContainerBotoes>
                             {decisivo ? (
-                                <span>
+                                <>
                                     <label htmlFor="anexo">
                                         <FaPaperclip />
-                                        &nbsp;Inserir Manifestação
+                                        &nbsp;Incluir manifestação
                                     </label>
                                     <input
                                         type="file"
@@ -457,7 +475,7 @@ function CriarManifestacaoExecutiva(props) {
                                             verificaVisto(e);
                                         }}
                                     />
-                                </span>
+                                </>
                             ) : (
                                 <BotaoVistoExecutiva name="btnVistoExecutiva" type="submit" />
                             )}
@@ -483,6 +501,11 @@ function CriarManifestacaoExecutiva(props) {
                         fechaModalTramitaVarios={fechaModalTramitaVarios}
                         tramita={insereTramite}
                         dados={dadosTramite}
+                    />
+                    <ModalProcesso
+                        fechaModalProcesso={fechaModalProcesso}
+                        modalProcesso={modalProcesso}
+                        proId={proIdModal}
                     />
 
                     {anexos.length > 0 ? (

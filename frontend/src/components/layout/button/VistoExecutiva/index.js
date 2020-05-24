@@ -8,7 +8,7 @@ export default function VistoExecutiva({ name, clickHandler }) {
     return (
         <Button id={name} name={name} onClick={clickHandler}>
             <FaCheck />
-            Visto da executiva
+            Vistar processo
         </Button>
     );
 }

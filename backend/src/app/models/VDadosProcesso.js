@@ -80,6 +80,9 @@ class VDadosProcesso extends Model {
                 pro_autuacao: {
                     type: Sequelize.STRING
                 },
+                pro_autuacao_data: {
+                    type: Sequelize.NOW
+                },
                 pro_ano: {
                     type: Sequelize.INTEGER
                 },

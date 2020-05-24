@@ -11,5 +11,9 @@ module.exports = {
         timestamps: false,
         underscored: true,
         underscoredAll: true
-    }
+    },
+    dialectOptions: {
+        useUTC: false // for reading from database
+    },
+    timezone: '-03:00'
 };
