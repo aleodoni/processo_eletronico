@@ -254,6 +254,12 @@ routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proxi
 // rota de encerramento de processo
 routes.put(`${process.env.API_URL}/encerra/:id`, CriaProcessoController.encerra);
 
+// rota de ciência de processo
+routes.put(`${process.env.API_URL}/ciencia/:id`, DadosProcessoController.decisaoPessoal);
+
+// rota de decisao de processo
+routes.get(`${process.env.API_URL}/decisao/:id`, DadosProcessoController.decisaoPessoal);
+
 // rotas do cadastro de tipos de documento
 routes.get(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.index);
 routes.post(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.store);

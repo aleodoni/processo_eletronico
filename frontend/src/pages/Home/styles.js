@@ -128,3 +128,24 @@ export const BotaoFinalizaProcesso = styled.button`
         margin-left: 5px;
     }
 `;
+
+export const BotaoCienciaProcesso = styled.button`
+    background: #008000;
+    align-items: center;
+    border: 0;
+    border-radius: 4px;
+    height: 27px;
+    width: 180px;
+    color: ${({ theme }) => theme.text};
+    font-size: 14px;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #32cd32;
+    }
+
+    svg {
+        margin-right: 10px;
+        margin-left: 5px;
+    }
+`;

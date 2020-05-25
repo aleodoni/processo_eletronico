@@ -4,7 +4,7 @@
 import VDadosProcesso from '../models/VDadosProcesso';
 import VProcessosPessoais from '../models/VProcessosPessoais';
 import VProcessosArea from '../models/VProcessosArea';
-import pg from 'pg';
+import VDecisaoPessoal from '../models/VDecisaoPessoal';
 
 class DadosProcessoController {
     async dadosProcesso(req, res) {
@@ -201,6 +201,26 @@ class DadosProcessoController {
             }
         });
         return res.json(dadosProcessoArea);
+    }
+
+    async decisaoPessoal(req, res) {
+        const decisao = await VDecisaoPessoal.findAll({
+            attributes: [
+                'pro_id',
+                'tpr_id',
+                'flu_id',
+                'nod_id',
+                'area_id',
+                'nod_decisao',
+                'man_visto_executiva'
+            ],
+            logging: true,
+            plain: true,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+        return res.send(decisao.dataValues.man_visto_executiva);
     }
 }
 export default new DadosProcessoController();

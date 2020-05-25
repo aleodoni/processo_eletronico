@@ -43,6 +43,7 @@ import VAreaTramitacaoPessoal from '../app/models/VAreaTramitacaoPessoal';
 import VProcessosPessoais from '../app/models/VProcessosPessoais';
 import VProcessosArea from '../app/models/VProcessosArea';
 import VNodoDecisao from '../app/models/VNodoDecisao';
+import VDecisaoPessoal from '../app/models/VDecisaoPessoal';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -89,7 +90,8 @@ const models = [
     VAreaTramitacaoPessoal,
     VProcessosPessoais,
     VProcessosArea,
-    VNodoDecisao
+    VNodoDecisao,
+    VDecisaoPessoal
 ];
 
 class Database {
