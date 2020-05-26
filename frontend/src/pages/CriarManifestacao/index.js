@@ -103,8 +103,8 @@ function CriarManifestacao(props) {
     }
 
     function limpaCampos() {
-        setTmnId(-1);
-        setTpdId(-1);
+        formRef.current.setFieldValue('tmnId', -1);
+        formRef.current.setFieldValue('tpdId', -1);
         setManId(null);
         setManifestacao({
             ...manifestacao,

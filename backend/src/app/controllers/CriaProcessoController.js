@@ -117,7 +117,8 @@ class CriaProcessoController {
             nod_id,
             pro_tipo_iniciativa,
             area_id_iniciativa,
-            pro_autuacao
+            pro_autuacao,
+            pro_recurso
         } = await Processo.create(req.body, {
             logging: false
         });
@@ -147,7 +148,8 @@ class CriaProcessoController {
             nod_id,
             pro_tipo_iniciativa,
             area_id_iniciativa,
-            pro_autuacao
+            pro_autuacao,
+            pro_recurso
         });
     }
 
@@ -166,6 +168,35 @@ class CriaProcessoController {
             usu_finalizador: req.body.usuario,
             set_id_finalizador: req.body.areaId
         }, { logging: false });
+        return res.json(processo);
+    }
+
+    async ciencia(req, res) {
+        const processo = await Processo.findByPk(req.params.id, { logging: false });
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: true,
+            plain: true
+        });
+        if (!processo) {
+            return res.status(400).json({ error: 'Processo não encontrado' });
+        }
+        if (req.body.decisao === 'Concedido') {
+            await processo.update({
+                pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,
+                usu_finalizador: req.body.usuario,
+                set_id_finalizador: req.body.areaId
+            }, { logging: false });
+        }
+        if (req.body.decisao === 'Negado') {
+            await processo.update({
+                pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,
+                usu_finalizador: req.body.usuario,
+                set_id_finalizador: req.body.areaId,
+                pro_recurso: true
+            }, { logging: false });
+        }
+
         return res.json(processo);
     }
 }

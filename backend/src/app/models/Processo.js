@@ -89,6 +89,10 @@ class Processo extends Model {
                 pro_autuacao: {
                     type: Sequelize.NOW,
                     allowNull: false
+                },
+                pro_recurso: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
                 }
             },
             {

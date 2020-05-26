@@ -255,7 +255,7 @@ routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proxi
 routes.put(`${process.env.API_URL}/encerra/:id`, CriaProcessoController.encerra);
 
 // rota de ciência de processo
-routes.put(`${process.env.API_URL}/ciencia/:id`, DadosProcessoController.decisaoPessoal);
+routes.put(`${process.env.API_URL}/ciencia/:id`, CriaProcessoController.ciencia);
 
 // rota de decisao de processo
 routes.get(`${process.env.API_URL}/decisao/:id`, DadosProcessoController.decisaoPessoal);

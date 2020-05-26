@@ -9,7 +9,7 @@ class TipoProcessoController {
     async index(req, res) {
         const tiposProcesso = await TipoProcesso.findAll({
             order: ['tpr_nome'],
-            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'flu_id', 'tpr_pessoal'],
+            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'flu_id', 'tpr_pessoal', 'tpr_prazo_recurso'],
             logging: false
         });
         return res.json(tiposProcesso);
@@ -30,14 +30,14 @@ class TipoProcessoController {
     async listaTiposProcesso(req, res) {
         const vTiposProcesso = await VTipoProcesso.findAll({
             order: ['tpr_nome'],
-            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'visualizacao', 'gen_nome', 'flu_id', 'flu_nome', 'tpr_pessoal', 'pessoal'],
+            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'visualizacao', 'gen_nome', 'flu_id', 'flu_nome', 'tpr_pessoal', 'pessoal', 'tpr_prazo_recurso'],
             logging: false
         });
         return res.json(vTiposProcesso);
     }
 
     async store(req, res) {
-        const { tpr_id, tpr_nome, tpr_visualizacao, gen_id, flu_id, tpr_pessoal } = await TipoProcesso.create(req.body, {
+        const { tpr_id, tpr_nome, tpr_visualizacao, gen_id, flu_id, tpr_pessoal, tpr_prazo_recurso } = await TipoProcesso.create(req.body, {
             logging: false
         });
         // auditoria de inserção
@@ -49,7 +49,8 @@ class TipoProcessoController {
             tpr_visualizacao,
             gen_id,
             flu_id,
-            tpr_pessoal
+            tpr_pessoal,
+            tpr_prazo_recurso
         });
     }
 

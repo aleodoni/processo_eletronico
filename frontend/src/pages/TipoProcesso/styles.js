@@ -53,5 +53,5 @@ export const Container1 = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 280px 570px 180px;
+    grid-template-columns: 280px 570px 180px 150px;
 `;

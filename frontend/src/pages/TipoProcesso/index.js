@@ -28,6 +28,7 @@ function TipoProcesso() {
         genId: -1,
         fluId: -1,
         tprPessoal: -1,
+        tprPrazoRecurso: 0,
     });
 
     const [tiposProcesso, setTiposProcesso] = useState([]);
@@ -60,6 +61,7 @@ function TipoProcesso() {
             genId: -1,
             fluId: -1,
             tprPessoal: -1,
+            tprPrazoRecurso: 0,
         });
         setErro('');
 
@@ -81,6 +83,7 @@ function TipoProcesso() {
             genId: linha.gen_id,
             fluId: linha.flu_id,
             tprPessoal: linha.tpr_pessoal,
+            tprPrazoRecurso: linha.tpr_prazo_recurso,
         });
         posiciona();
     }
@@ -149,7 +152,15 @@ function TipoProcesso() {
         carrega();
     }, []);
 
-    async function grava({ tprId, tprNome, tprVisualizacao, genId, fluId, tprPessoal }) {
+    async function grava({
+        tprId,
+        tprNome,
+        tprVisualizacao,
+        genId,
+        fluId,
+        tprPessoal,
+        tprPrazoRecurso,
+    }) {
         try {
             const schema = Yup.object().shape({
                 tprNome: Yup.string()
@@ -160,10 +171,11 @@ function TipoProcesso() {
                 genId: Yup.number().positive('Gênero é obrigatório'),
                 fluId: Yup.number().positive('Fluxo é obrigatório'),
                 tprPessoal: Yup.boolean().oneOf([true, false], 'Selecione se é pessoal'),
+                tprPrazoRecurso: Yup.number().positive('Prazo de recurso é obrigatório'),
             });
 
             await schema.validate(
-                { tprId, tprNome, tprVisualizacao, genId, fluId, tprPessoal },
+                { tprId, tprNome, tprVisualizacao, genId, fluId, tprPessoal, tprPrazoRecurso },
                 { abortEarly: false }
             );
 
@@ -178,6 +190,7 @@ function TipoProcesso() {
                         gen_id: genId,
                         flu_id: fluId,
                         tpr_pessoal: tprPessoal,
+                        tpr_prazo_recurso: tprPrazoRecurso,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -202,6 +215,7 @@ function TipoProcesso() {
                         gen_id: genId,
                         flu_id: fluId,
                         tpr_pessoal: tprPessoal,
+                        tpr_prazo_recurso: tprPrazoRecurso,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -276,6 +290,12 @@ function TipoProcesso() {
                             <Select name="genId" label="Gênero" size={3} options={generos} />
                             <Select name="fluId" label="Fluxo" size={3} options={fluxos} />
                             <Pessoal name="tprPessoal" />
+                            <Input
+                                name="tprPrazoRecurso"
+                                label="Prazo de recurso"
+                                type="text"
+                                maxLength="2"
+                            />
                         </Container2>
                         <ButtonContainer>
                             <Salvar name="btnSalva" clickHandler={grava} />
@@ -290,10 +310,15 @@ function TipoProcesso() {
                     <Table
                         columns={[
                             { title: 'Tipo', field: 'tpr_nome' },
-                            { title: 'Visualização', field: 'visualizacao' },
+                            { title: 'Visualização', field: 'visualizacao', width: '150px' },
                             { title: 'Gênero', field: 'gen_nome' },
                             { title: 'Fluxo', field: 'flu_nome' },
-                            { title: 'Pessoal', field: 'pessoal' },
+                            { title: 'Pessoal', field: 'pessoal', width: '70px' },
+                            {
+                                title: 'Prazo de recurso',
+                                field: 'tpr_prazo_recurso',
+                                width: '170px',
+                            },
                         ]}
                         data={tiposProcesso}
                         fillData={preencheCampos}

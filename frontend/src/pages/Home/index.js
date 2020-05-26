@@ -142,21 +142,22 @@ function Home() {
 
         axios({
             method: 'PUT',
-            url: `/encerra/${id}`,
+            url: `/ciencia/${id}`,
             data: {
                 usuario,
                 areaId,
+                decisao,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(() => {
-                mensagem.success('Processo encerrado com sucesso.');
+                mensagem.success('Ciência dada com sucesso.');
                 carregaGridArea();
             })
             .catch(() => {
-                setErro('Erro ao carregar registros.');
+                setErro('Erro ao executar ciência.');
             });
     }
 

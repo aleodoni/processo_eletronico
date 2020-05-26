@@ -456,6 +456,7 @@ function CriarProcesso() {
                 tpr_id: p.tprId,
                 pro_contato_pj: p.proContatoPj,
                 pro_autuacao: null,
+                pro_recurso: false,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
