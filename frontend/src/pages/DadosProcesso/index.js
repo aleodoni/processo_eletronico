@@ -3,10 +3,9 @@ import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router';
 import { toast as mensagem } from 'react-toastify';
-import { FaPaperclip, FaFileAlt } from 'react-icons/fa';
+import { FaFileAlt } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
 import axios from '../../configs/axiosConfig';
-import AnexoArquivo from './AnexoArquivo';
 import DefaultLayout from '../_layouts/default';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import GeraFluxo from '../../components/layout/button/GeraFluxo';
@@ -32,7 +31,6 @@ function DadosProcesso({ match }) {
     const history = useHistory();
     const [erro, setErro] = useState('');
     const [processos, setProcessos] = useState([]);
-    const [anexos, setAnexos] = useState([]);
     const [grafo, setGrafo] = useState('');
     const [anexosManifestacao, setAnexosManifestacao] = useState([]);
     const [tramites, setTramites] = useState([]);
@@ -61,22 +59,6 @@ function DadosProcesso({ match }) {
     function fechaModalFluxo() {
         setModalFluxo(false);
     }
-
-    const carregaAnexos = useCallback(() => {
-        axios({
-            method: 'GET',
-            url: `/arquivos-processo/${proId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setAnexos(res.data);
-            })
-            .catch(() => {
-                console.log('Erro ao carregar anexos.');
-            });
-    }, [proId]);
 
     const carregaAnexosManifestacao = useCallback(() => {
         axios({
@@ -165,77 +147,9 @@ function DadosProcesso({ match }) {
     useEffect(() => {
         mensagem.success('Carregando processo...');
         carregaDadosProcesso();
-        carregaAnexos();
         carregaAnexosManifestacao();
         carregaTramites();
-    }, [carregaDadosProcesso, carregaAnexos, carregaAnexosManifestacao, carregaTramites]);
-
-    function incluiAnexo(e) {
-        setErro('');
-        const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
-        const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
-        if (e.target.files[0].size <= tamanhoAnexo) {
-            if (e.target.files[0].type === 'application/pdf') {
-                const data = new FormData();
-                data.append('file', e.target.files[0]);
-                axios({
-                    method: 'POST',
-                    url: '/arquivos',
-                    headers: {
-                        authorization: sessionStorage.getItem('token'),
-                    },
-                    data: {
-                        arq_id: null,
-                        arq_nome: e.target.files[0].name,
-                        pro_id: proId,
-                        man_id: null,
-                        arq_tipo: e.target.files[0].type,
-                        arq_doc_id: proId,
-                        arq_doc_tipo: 'processo',
-                    },
-                })
-                    .then(res => {
-                        axios({
-                            method: 'POST',
-                            url: `/anexo-processo/${res.data.arq_id}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                                'Content-Type': 'multipart/form-data',
-                            },
-                            data,
-                        })
-                            .then(resAnexos => {
-                                if (resAnexos.status === 204) {
-                                    mensagem.success('Arquivo anexado ao processo');
-                                    carregaAnexos(proId);
-                                }
-                            })
-                            .catch(() => {
-                                const arqId = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${arqId}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch(erroDeleteArquivo => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
-                            });
-                    })
-                    .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
-                    });
-            } else {
-                setErro('São válidos somente arquivos PDF.');
-            }
-        } else {
-            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
-        }
-    }
+    }, [carregaDadosProcesso, carregaAnexosManifestacao, carregaTramites]);
 
     function consulta() {
         history.push('/processo-consulta');
@@ -270,16 +184,6 @@ function DadosProcesso({ match }) {
                                         parseInt(sessionStorage.getItem('areaUsuario'), 10) &&
                                     !pro.nod_fim ? (
                                         <ContainerBotoes>
-                                            <label htmlFor="anexo">
-                                                <FaPaperclip />
-                                                &nbsp;Inserir Anexo
-                                            </label>
-                                            <input
-                                                type="file"
-                                                name="file"
-                                                onChange={incluiAnexo}
-                                                id="anexo"
-                                            />
                                             <CriaManifestacao
                                                 name="btnCriaManifestacao"
                                                 clickHandler={() => {
@@ -466,15 +370,6 @@ function DadosProcesso({ match }) {
                             <br />
 
                             <ContainerArquivos>
-                                {anexos.length > 0 ? (
-                                    <div>
-                                        <p>Arquivo(s) em anexo</p>
-                                        <fieldset>
-                                            <AnexoArquivo proId={Number(proId)} anexos={anexos} />
-                                        </fieldset>
-                                        <br />
-                                    </div>
-                                ) : null}
                                 {anexosManifestacao.length > 0 ? (
                                     <div>
                                         <p>Manifestações</p>

@@ -18,6 +18,10 @@ class TipoDocumento extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     defaultValue: 0
+                },
+                tpd_visivel: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
                 }
             },
             {

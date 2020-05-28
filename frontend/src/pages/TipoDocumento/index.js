@@ -21,6 +21,7 @@ function TipoDocumento() {
     const [tipoDocumento, setTipoDocumento] = useState({
         tpdId: undefined,
         tpdNome: '',
+        tpdVisivel: -1,
     });
 
     const [tiposDocumento, setTiposDocumento] = useState([]);
@@ -47,6 +48,7 @@ function TipoDocumento() {
             ...tipoDocumento,
             tpdId: null,
             tpdNome: '',
+            tpdVisivel: -1,
         });
         setErro('');
 
@@ -64,6 +66,7 @@ function TipoDocumento() {
             ...tipoDocumento,
             tpdId: linha.tpd_id,
             tpdNome: linha.tpd_nome,
+            tpdVisivel: linha.tpd_visivel,
         });
     }
 
@@ -92,15 +95,16 @@ function TipoDocumento() {
         carrega();
     }, []);
 
-    async function grava({ tpdId, tpdNome }) {
+    async function grava({ tpdId, tpdNome, tpdVisivel }) {
         try {
             const schema = Yup.object().shape({
                 tpdNome: Yup.string()
                     .max(100, 'Tamanho máximo 100 caracteres')
                     .required('Nome do tipo de documento é obrigatório'),
+                tpdVisivel: Yup.boolean().oneOf([true, false], 'Selecione se é visível'),
             });
 
-            await schema.validate({ tpdId, tpdNome }, { abortEarly: false });
+            await schema.validate({ tpdId, tpdNome, tpdVisivel }, { abortEarly: false });
 
             if (!tpdId) {
                 axios({
@@ -109,6 +113,7 @@ function TipoDocumento() {
                     data: {
                         tpd_id: null,
                         tpd_nome: tpdNome,
+                        tpd_visivel: tpdVisivel,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -129,6 +134,7 @@ function TipoDocumento() {
                     url: `tipos-documento/${tpdId}`,
                     data: {
                         tpd_nome: tpdNome,
+                        tpd_visivel: tpdVisivel,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
