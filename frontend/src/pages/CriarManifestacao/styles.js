@@ -69,18 +69,26 @@ export const Main = styled.main`
 export const Erro = styled.div`
     font-size: 14px;
     color: red;
+    padding-top: 10px;
+    padding-left: 5px;
     padding-bottom: 10px;
 `;
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 250px 850px;
+    grid-template-columns: 370px;
+    margin-bottom: 10px;
+`;
+
+export const Container3 = styled.div`
+    display: grid;
+    grid-template-columns: 900px;
     margin-bottom: 10px;
 `;
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 185px 165px 130px 165px;
+    grid-template-columns: 195px 165px 185px;
     grid-gap: 5px;
     margin-bottom: 10px;
     margin-left: 5px;

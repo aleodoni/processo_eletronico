@@ -18,10 +18,6 @@ class Manifestacao extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false
                 },
-                tpd_id: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false
-                },
                 man_data: {
                     type: Sequelize.NOW
                 },

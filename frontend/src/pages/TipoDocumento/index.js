@@ -14,7 +14,6 @@ import Limpar from '../../components/layout/button/Limpar';
 import TipoDocVisivel from '../../components/system/select/TipoDocVisivel';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
-import FormLine from '../../components/layout/FormLine';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
 function TipoDocumento() {

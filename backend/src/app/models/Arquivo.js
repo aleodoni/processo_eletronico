@@ -36,6 +36,17 @@ class Arquivo extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     defaultValue: 0
+                },
+                tpd_id: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false
+                },
+                arq_data: {
+                    type: Sequelize.NOW
+                },
+                arq_login: {
+                    type: Sequelize.STRING,
+                    allowNull: false
                 }
             },
             {

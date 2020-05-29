@@ -13,7 +13,6 @@ import api from '../../service/api';
 import Select from '../../components/layout/Select';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
-import Limpar from '../../components/layout/button/Limpar';
 import Tramitar from '../../components/layout/button/Tramitar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
@@ -21,10 +20,10 @@ import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import {
     Container,
     Container2,
+    Container3,
     Main,
     Erro,
     BotaoComoLink,
-    Cancelado,
     ContainerBotoes,
 } from './styles';
 
@@ -123,23 +122,31 @@ function CriarManifestacao(props) {
         try {
             const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
             setManifestacaoProcesso(response.data);
-            // alert(JSON.stringify(response.data[0]));
+            if (response.data.length > 0) {
+                carregaAnexos(response.data[0].man_id);
+                setManId(response.data[0].man_id);
+                setManifestacao({ manId: response.data[0].man_id });
+            }
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
         }
     }
 
-    const verificaTipos = e => {
+    const verificaManifestacao = e => {
         if (tmnId === -1) {
             setErro('Selecione o tipo da manifestação.');
             e.preventDefault();
-        } else if (tpdId === -1) {
+        }
+    };
+
+    const verificaArquivo = e => {
+        if (tpdId === -1) {
             setErro('Selecione o tipo de documento.');
             e.preventDefault();
         }
     };
 
-    function incluiAnexo(e) {
+    function incluiManifestacao(e) {
         const TIPO_DOCUMENTO = 29;
         setErro('');
         const arq = e.target.files[0];
@@ -155,7 +162,6 @@ function CriarManifestacao(props) {
                         man_id: null,
                         pro_id: manifestacao.proId,
                         tmn_id: tmnId,
-                        tpd_id: TIPO_DOCUMENTO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: 'Não necessário',
@@ -166,6 +172,7 @@ function CriarManifestacao(props) {
                     },
                 })
                     .then(resultado => {
+                        setManifestacao({ manId: resultado.data.man_id });
                         const data = new FormData();
                         data.append('file', arq);
                         axios({
@@ -182,6 +189,8 @@ function CriarManifestacao(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
+                                tpd_id: TIPO_DOCUMENTO,
+                                arq_login: sessionStorage.getItem('usuario'),
                             },
                         })
                             .then(res => {
@@ -198,7 +207,6 @@ function CriarManifestacao(props) {
                                         if (resAnexos.status === 204) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
-                                            carregaAnexos(manifestacao.proId);
                                             carregaManifestacaoProcesso();
                                         }
                                     })
@@ -235,7 +243,75 @@ function CriarManifestacao(props) {
     }
 
     function incluiAnexoManifestacao(e) {
-        // jkdffdjkfhk
+        setErro('');
+        const arq = e.target.files[0];
+        const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
+        const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
+        if (e.target.files[0].size <= tamanhoAnexo) {
+            if (e.target.files[0].type === 'application/pdf') {
+                const data = new FormData();
+                data.append('file', arq);
+                axios({
+                    method: 'POST',
+                    url: '/arquivos',
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
+                    data: {
+                        arq_id: null,
+                        arq_nome: arq.name,
+                        pro_id: null,
+                        man_id: manId,
+                        arq_tipo: arq.type,
+                        arq_doc_id: manId,
+                        arq_doc_tipo: 'manifestação',
+                        tpd_id: tpdId,
+                        arq_login: sessionStorage.getItem('usuario'),
+                    },
+                })
+                    .then(res => {
+                        axios({
+                            method: 'POST',
+                            url: `/anexo-manifestacao/${res.data.arq_id}`,
+                            headers: {
+                                authorization: sessionStorage.getItem('token'),
+                                'Content-Type': 'multipart/form-data',
+                            },
+                            data,
+                        })
+                            .then(resAnexos => {
+                                if (resAnexos.status === 204) {
+                                    limpaCampos();
+                                    mensagem.success('Manifestação inserida com sucesso.');
+                                    carregaAnexos(manId);
+                                    carregaManifestacaoProcesso();
+                                }
+                            })
+                            .catch(() => {
+                                const arqId = res.data.arq_id;
+                                axios({
+                                    method: 'DELETE',
+                                    url: `arquivos/${arqId}`,
+                                    headers: {
+                                        authorization: sessionStorage.getItem('token'),
+                                    },
+                                })
+                                    .then(() => {})
+                                    .catch(erroDeleteArquivo => {
+                                        setErro(erroDeleteArquivo.response.data.error);
+                                    });
+                                setErro('Erro ao criar arquivo anexo.');
+                            });
+                    })
+                    .catch(() => {
+                        setErro('Erro ao inserir na tabela arquivo.');
+                    });
+            } else {
+                setErro('São válidos somente arquivos PDF.');
+            }
+        } else {
+            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+        }
     }
 
     async function carregaTipoManifestacao() {
@@ -334,10 +410,9 @@ function CriarManifestacao(props) {
     useEffect(() => {
         async function carrega() {
             await carregaDadosProcesso();
+            await carregaManifestacaoProcesso();
             await carregaTipoManifestacao();
             await carregaTipoDocumento();
-            await carregaAnexos(manifestacao.proId);
-            await carregaManifestacaoProcesso();
         }
         carrega();
     }, []);
@@ -352,7 +427,7 @@ function CriarManifestacao(props) {
         })
             .then(() => {
                 limpaCampos();
-                carregaAnexos(manifestacao.proId);
+                carregaAnexos(id);
                 mensagem.success('Excluído com sucesso.');
             })
             .catch(err => {
@@ -433,23 +508,32 @@ function CriarManifestacao(props) {
                     <span>
                         {proCodigo} - {tprNome}
                     </span>
-                    <Form ref={formRef} initialData={manifestacao} onSubmit={incluiAnexo}>
-                        <Container2>
-                            <Input name="manId" type="hidden" />
-                            <Input name="proId" type="hidden" />
-                            <Select
-                                name="tmnId"
-                                label="Tipo da manifestação"
-                                options={tiposManifestacao}
-                                onChange={handleTmnId}
-                            />
-                            <Select
-                                name="tpdId"
-                                label="Tipo do documento"
-                                options={tiposDocumento}
-                                onChange={handleTpdId}
-                            />
-                        </Container2>
+                    <Form ref={formRef} initialData={manifestacao} onSubmit={incluiManifestacao}>
+                        <Input name="manId" type="hidden" />
+                        <Input name="proId" type="hidden" />
+
+                        {manifestacaoProcesso.length === 0 ? (
+                            <Container2>
+                                <Select
+                                    name="tmnId"
+                                    label="Tipo da manifestação"
+                                    options={tiposManifestacao}
+                                    onChange={handleTmnId}
+                                />
+                            </Container2>
+                        ) : null}
+
+                        {manifestacaoProcesso.length > 0 ? (
+                            <Container3>
+                                <Select
+                                    name="tpdId"
+                                    label="Tipo do documento"
+                                    options={tiposDocumento}
+                                    onChange={handleTpdId}
+                                />
+                            </Container3>
+                        ) : null}
+
                         <ContainerBotoes>
                             {manifestacaoProcesso.length > 0 ? (
                                 <>
@@ -464,7 +548,7 @@ function CriarManifestacao(props) {
                                         onChange={incluiAnexoManifestacao}
                                         id="anexo"
                                         onClick={e => {
-                                            verificaTipos(e);
+                                            verificaArquivo(e);
                                         }}
                                     />
                                 </>
@@ -478,16 +562,17 @@ function CriarManifestacao(props) {
                                     <input
                                         type="file"
                                         name="file"
-                                        onChange={incluiAnexo}
+                                        onChange={incluiManifestacao}
                                         id="anexo"
                                         onClick={e => {
-                                            verificaTipos(e);
+                                            verificaManifestacao(e);
                                         }}
                                     />
                                 </>
                             )}
-                            <Limpar name="btnLimpa" clickHandler={limpaCampos} />
-                            <Tramitar name="btnTramita" clickHandler={tramita} />
+                            {manifestacaoProcesso.length > 0 ? (
+                                <Tramitar name="btnTramita" clickHandler={tramita} />
+                            ) : null}
                             <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>
                     </Form>
@@ -512,17 +597,14 @@ function CriarManifestacao(props) {
 
                     {anexos.length > 0 ? (
                         <div>
-                            <p>Manifestações</p>
+                            <p>Arquivos da manifestação</p>
                             <table>
                                 <thead>
                                     <tr>
                                         <th>Seq</th>
                                         <th>Documento</th>
-                                        <th>Tipo</th>
                                         <th>Arquivo</th>
                                         <th>Data</th>
-                                        <th>Área</th>
-                                        <th>Situação</th>
                                         <th>Excluir</th>
                                     </tr>
                                 </thead>
@@ -531,7 +613,6 @@ function CriarManifestacao(props) {
                                         <tr key={anexo.arq_id}>
                                             <td>{index + 1}</td>
                                             <td>{anexo.tpd_nome}</td>
-                                            <td>{anexo.tmn_nome}</td>
                                             <td>
                                                 <BotaoComoLink
                                                     type="button"
@@ -547,22 +628,13 @@ function CriarManifestacao(props) {
                                                 </BotaoComoLink>
                                             </td>
                                             <td>{anexo.data}</td>
-                                            <td>{anexo.set_nome}</td>
-                                            <td>
-                                                {anexo.situacao === 'Cancelada' ? (
-                                                    <Cancelado>{anexo.situacao}</Cancelado>
-                                                ) : (
-                                                    anexo.situacao
-                                                )}
-                                            </td>
 
                                             <td>
-                                                {anexo.man_login ===
-                                                    sessionStorage.getItem('usuario') &&
-                                                anexo.situacao === 'Ativa' ? (
+                                                {anexo.arq_login ===
+                                                sessionStorage.getItem('usuario') ? (
                                                     <BotaoComoLink
                                                         onClick={() =>
-                                                            abreModalExcluir(anexo.man_id)
+                                                            abreModalExcluir(anexo.arq_id)
                                                         }>
                                                         Excluir
                                                     </BotaoComoLink>

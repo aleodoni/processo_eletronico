@@ -191,7 +191,7 @@ routes.put(`${process.env.API_URL}/arquivos/:id`, ArquivoController.update);
 routes.delete(`${process.env.API_URL}/arquivos/:id`, ArquivoController.delete);
 routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.index);
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
-routes.get(`${process.env.API_URL}/arquivos-manifestacao/:proId`, ArquivoController.indexManifestacao);
+routes.get(`${process.env.API_URL}/arquivos-manifestacao/:manId`, ArquivoController.indexManifestacao);
 routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
 
 // rota de inserção de anexo em processo

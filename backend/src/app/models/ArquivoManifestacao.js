@@ -4,6 +4,9 @@ class ArquivoManifestacao extends Model {
     static init(sequelize) {
         super.init(
             {
+                contador: {
+                    type: Sequelize.STRING
+                },
                 arq_id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true
@@ -18,37 +21,13 @@ class ArquivoManifestacao extends Model {
                 arq_tipo: {
                     type: Sequelize.STRING
                 },
-                pro_id: {
-                    type: Sequelize.INTEGER
-                },
                 data: {
                     type: Sequelize.STRING
                 },
-                man_login: {
-                    type: Sequelize.STRING
-                },
-                situacao: {
-                    type: Sequelize.STRING
-                },
-                man_login_cancelamento: {
-                    type: Sequelize.STRING
-                },
-                data_cancelamento: {
-                    type: Sequelize.STRING
-                },
-                tmn_nome: {
-                    type: Sequelize.STRING
-                },
-                set_nome: {
+                arq_login: {
                     type: Sequelize.STRING
                 },
                 tpd_nome: {
-                    type: Sequelize.STRING
-                },
-                contador: {
-                    type: Sequelize.STRING
-                },
-                man_visto_executiva: {
                     type: Sequelize.STRING
                 }
             },

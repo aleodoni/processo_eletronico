@@ -62,7 +62,6 @@ class ManifestacaoController {
             tmn_id,
             man_login,
             man_id_area,
-            tpd_id,
             man_visto_executiva,
             man_data,
             nod_id
@@ -72,7 +71,6 @@ class ManifestacaoController {
             tmn_id: req.body.tmn_id,
             man_login: req.body.man_login,
             man_id_area: req.body.man_id_area,
-            tpd_id: req.body.tpd_id,
             man_visto_executiva: req.body.man_visto_executiva,
             man_data: dataHoraAtual.dataValues.data_hora_atual,
             nod_id: req.body.nod_id
@@ -88,7 +86,6 @@ class ManifestacaoController {
             tmn_id,
             man_login,
             man_id_area,
-            tpd_id,
             man_visto_executiva,
             man_data,
             nod_id
