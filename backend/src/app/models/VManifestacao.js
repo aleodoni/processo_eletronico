@@ -1,35 +1,23 @@
 import Sequelize, { Model } from 'sequelize';
 
-class Manifestacao extends Model {
+class VManifestacao extends Model {
     static init(sequelize) {
         super.init(
             {
                 man_id: {
                     type: Sequelize.INTEGER,
-                    defaultValue: "nextval('spa2.manifestacao_man_id_seq')",
-                    primaryKey: true,
-                    autoIncrement: true
+                    primaryKey: true
                 },
                 pro_id: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false
+                    type: Sequelize.INTEGER
                 },
                 tmn_id: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false
+                    type: Sequelize.INTEGER
                 },
-                tpd_id: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false
-                },
-                man_data: {
-                    type: Sequelize.NOW
+                tmn_nome: {
+                    type: Sequelize.STRING
                 },
                 man_login: {
-                    type: Sequelize.STRING,
-                    allowNull: false
-                },
-                man_visto_executiva: {
                     type: Sequelize.STRING,
                     allowNull: false
                 },
@@ -37,21 +25,23 @@ class Manifestacao extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false
                 },
+                set_nome: {
+                    type: Sequelize.STRING
+                },
                 man_cancelada: {
-                    type: Sequelize.BOOLEAN,
-                    allowNull: false,
-                    defaultValue: false
+                    type: Sequelize.BOOLEAN
                 },
                 man_login_cancelamento: {
+                    type: Sequelize.STRING
+                },
+                man_visto_executiva: {
                     type: Sequelize.STRING
                 },
                 man_data_cancelamento: {
                     type: Sequelize.NOW
                 },
-                versao: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false,
-                    defaultValue: 0
+                man_data: {
+                    type: Sequelize.NOW
                 },
                 nod_id: {
                     type: Sequelize.INTEGER
@@ -59,7 +49,7 @@ class Manifestacao extends Model {
 
             },
             {
-                tableName: 'manifestacao',
+                tableName: 'v_manifestacao',
                 schema: 'spa2',
                 sequelize,
                 operatorsAliases: false
@@ -70,4 +60,4 @@ class Manifestacao extends Model {
     }
 }
 
-export default Manifestacao;
+export default VManifestacao;

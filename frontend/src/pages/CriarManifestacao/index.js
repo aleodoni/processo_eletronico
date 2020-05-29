@@ -16,8 +16,6 @@ import DefaultLayout from '../_layouts/default';
 import Limpar from '../../components/layout/button/Limpar';
 import Tramitar from '../../components/layout/button/Tramitar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
-
-import ModalCancela from '../../components/ModalCancelar';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import {
@@ -41,16 +39,18 @@ function CriarManifestacao(props) {
     const [manId, setManId] = useState(undefined);
     const [tmnId, setTmnId] = useState(-1);
     const [tpdId, setTpdId] = useState(-1);
+    const [nodId, setNodId] = useState('');
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [tiposManifestacao, setTiposManifestacao] = useState([]);
     const [tiposDocumento, setTiposDocumento] = useState([]);
     const [anexos, setAnexos] = useState([]);
-    const [modalCancelar, setModalCancelar] = useState(false);
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
     const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
+
+    const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
 
     const formRef = useRef(null);
 
@@ -64,15 +64,6 @@ function CriarManifestacao(props) {
 
     function handleTpdId(e) {
         setTpdId(e.target.value);
-    }
-
-    function abreModalCancelar(id) {
-        setManId(id);
-        setModalCancelar(true);
-    }
-
-    function fechaModalCancelar() {
-        setModalCancelar(false);
     }
 
     function abreModalExcluir(id) {
@@ -106,6 +97,7 @@ function CriarManifestacao(props) {
         formRef.current.setFieldValue('tmnId', -1);
         formRef.current.setFieldValue('tpdId', -1);
         setManId(null);
+        setNodId('');
         setManifestacao({
             ...manifestacao,
             manVistoExecutiva: '',
@@ -125,6 +117,18 @@ function CriarManifestacao(props) {
         }
     }
 
+    async function carregaManifestacaoProcesso() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            setManifestacaoProcesso(response.data);
+            // alert(JSON.stringify(response.data[0]));
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
     const verificaTipos = e => {
         if (tmnId === -1) {
             setErro('Selecione o tipo da manifestação.');
@@ -136,6 +140,7 @@ function CriarManifestacao(props) {
     };
 
     function incluiAnexo(e) {
+        const TIPO_DOCUMENTO = 29;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -150,10 +155,11 @@ function CriarManifestacao(props) {
                         man_id: null,
                         pro_id: manifestacao.proId,
                         tmn_id: tmnId,
-                        tpd_id: tpdId,
+                        tpd_id: TIPO_DOCUMENTO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: 'Não necessário',
+                        nod_id: nodId,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -193,6 +199,7 @@ function CriarManifestacao(props) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
                                             carregaAnexos(manifestacao.proId);
+                                            carregaManifestacaoProcesso();
                                         }
                                     })
                                     .catch(() => {
@@ -227,6 +234,10 @@ function CriarManifestacao(props) {
         }
     }
 
+    function incluiAnexoManifestacao(e) {
+        // jkdffdjkfhk
+    }
+
     async function carregaTipoManifestacao() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
@@ -249,7 +260,7 @@ function CriarManifestacao(props) {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get('/tipos-documento');
+            const response = await api.get('/tipos-documento-combo');
 
             const data = response.data.map(tipoDocumento => {
                 return {
@@ -277,34 +288,13 @@ function CriarManifestacao(props) {
                     setManifestacao({ proId: processo[i].pro_id });
                     setProCodigo(processo[i].pro_codigo);
                     setTprNome(processo[i].tpr_nome);
+                    setNodId(processo[i].nod_id);
                 }
             })
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
     }, [manifestacao.proId]);
-
-    function cancela(manId1) {
-        axios({
-            method: 'PUT',
-            url: `manifestacoes/${manId1}`,
-            data: {
-                man_cancelada: true,
-                man_login_cancelamento: sessionStorage.getItem('usuario'),
-                man_data_cancelamento: null,
-            },
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                carregaAnexos(manifestacao.proId);
-                mensagem.success('Cancelada com sucesso.');
-            })
-            .catch(() => {
-                setErro('Erro ao cancelar manifestação.');
-            });
-    }
 
     function downloadAnexo(e, arqId, id, arqNome) {
         e.preventDefault();
@@ -347,6 +337,7 @@ function CriarManifestacao(props) {
             await carregaTipoManifestacao();
             await carregaTipoDocumento();
             await carregaAnexos(manifestacao.proId);
+            await carregaManifestacaoProcesso();
         }
         carrega();
     }, []);
@@ -431,7 +422,11 @@ function CriarManifestacao(props) {
             <Container>
                 <Autorizacao tela="Criar manifestação" />
                 <Main>
-                    <p>Criar manifestação</p>
+                    {manifestacaoProcesso.length > 0 ? (
+                        <p>Manifestação - {manifestacaoProcesso[0].tmn_nome}</p>
+                    ) : (
+                        <p>Criar manifestação</p>
+                    )}
                     <hr />
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
@@ -456,30 +451,46 @@ function CriarManifestacao(props) {
                             />
                         </Container2>
                         <ContainerBotoes>
-                            <label htmlFor="anexo">
-                                <FaPaperclip />
-                                &nbsp;Inserir Manifestação
-                            </label>
-                            <input
-                                type="file"
-                                name="file"
-                                onChange={incluiAnexo}
-                                id="anexo"
-                                onClick={e => {
-                                    verificaTipos(e);
-                                }}
-                            />
+                            {manifestacaoProcesso.length > 0 ? (
+                                <>
+                                    <label htmlFor="anexo">
+                                        <FaPaperclip />
+                                        &nbsp;Inserir documento
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        onChange={incluiAnexoManifestacao}
+                                        id="anexo"
+                                        onClick={e => {
+                                            verificaTipos(e);
+                                        }}
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <label htmlFor="anexo">
+                                        <FaPaperclip />
+                                        &nbsp;Inserir manifestação
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        onChange={incluiAnexo}
+                                        id="anexo"
+                                        onClick={e => {
+                                            verificaTipos(e);
+                                        }}
+                                    />
+                                </>
+                            )}
                             <Limpar name="btnLimpa" clickHandler={limpaCampos} />
                             <Tramitar name="btnTramita" clickHandler={tramita} />
                             <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>
                     </Form>
-                    <ModalCancela
-                        modalCancelar={modalCancelar}
-                        fechaModalCancelar={fechaModalCancelar}
-                        cancela={cancela}
-                        id={manId}
-                    />
                     <ModalApaga
                         modalExcluir={modalExcluir}
                         fechaModalExcluir={fechaModalExcluir}
@@ -512,8 +523,6 @@ function CriarManifestacao(props) {
                                         <th>Data</th>
                                         <th>Área</th>
                                         <th>Situação</th>
-                                        <th>Visto</th>
-                                        <th>Cancelar</th>
                                         <th>Excluir</th>
                                     </tr>
                                 </thead>
@@ -546,19 +555,7 @@ function CriarManifestacao(props) {
                                                     anexo.situacao
                                                 )}
                                             </td>
-                                            <td>{anexo.man_visto_executiva}</td>
-                                            <td>
-                                                {anexo.man_login ===
-                                                    sessionStorage.getItem('usuario') &&
-                                                anexo.situacao === 'Ativa' ? (
-                                                    <BotaoComoLink
-                                                        onClick={() =>
-                                                            abreModalCancelar(anexo.man_id)
-                                                        }>
-                                                        Cancelar
-                                                    </BotaoComoLink>
-                                                ) : null}
-                                            </td>
+
                                             <td>
                                                 {anexo.man_login ===
                                                     sessionStorage.getItem('usuario') &&

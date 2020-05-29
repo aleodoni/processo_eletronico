@@ -39,11 +39,13 @@ import VProximoTramiteNormal from '../app/models/VProximoTramiteNormal';
 import Tramite from '../app/models/Tramite';
 import VTramite from '../app/models/VTramite';
 import TipoDocumento from '../app/models/TipoDocumento';
+import VTipoDocumento from '../app/models/VTipoDocumento';
 import VAreaTramitacaoPessoal from '../app/models/VAreaTramitacaoPessoal';
 import VProcessosPessoais from '../app/models/VProcessosPessoais';
 import VProcessosArea from '../app/models/VProcessosArea';
 import VNodoDecisao from '../app/models/VNodoDecisao';
 import VDecisaoPessoal from '../app/models/VDecisaoPessoal';
+import VManifestacao from '../app/models/VManifestacao';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -91,7 +93,9 @@ const models = [
     VProcessosPessoais,
     VProcessosArea,
     VNodoDecisao,
-    VDecisaoPessoal
+    VDecisaoPessoal,
+    VTipoDocumento,
+    VManifestacao
 ];
 
 class Database {

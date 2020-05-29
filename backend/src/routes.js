@@ -225,6 +225,7 @@ routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 
 // rotas do cadastro de manifestacao
 routes.get(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.index);
+routes.get(`${process.env.API_URL}/manifestacao-processo/:id`, ManifestacaoController.manifestacaoProcesso);
 routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
 routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.delete);
@@ -262,6 +263,7 @@ routes.get(`${process.env.API_URL}/decisao/:id`, DadosProcessoController.decisao
 
 // rotas do cadastro de tipos de documento
 routes.get(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.index);
+routes.get(`${process.env.API_URL}/tipos-documento-combo`, TipoDocumentoController.combo);
 routes.post(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.store);
 routes.put(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.update);
 routes.delete(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.delete);

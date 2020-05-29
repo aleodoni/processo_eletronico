@@ -43,3 +43,8 @@ export const Erro = styled.div`
     color: red;
     padding-bottom: 10px;
 `;
+
+export const Container1 = styled.div`
+    display: grid;
+    grid-template-columns: 525px 160px;
+`;

@@ -6,11 +6,12 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro, Titulo } from './styles';
+import { Container, Main, Erro, Titulo, Container1 } from './styles';
 import Input from '../../components/layout/Input';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
 import Limpar from '../../components/layout/button/Limpar';
+import TipoDocVisivel from '../../components/system/select/TipoDocVisivel';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
 import FormLine from '../../components/layout/FormLine';
@@ -194,7 +195,7 @@ function TipoDocumento() {
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={tipoDocumento} onSubmit={grava}>
                         <Input name="tpdId" type="hidden" />
-                        <FormLine>
+                        <Container1>
                             <Input
                                 name="tpdNome"
                                 label="Nome"
@@ -202,7 +203,8 @@ function TipoDocumento() {
                                 autoFocus
                                 maxLength="100"
                             />
-                        </FormLine>
+                            <TipoDocVisivel name="tpdVisivel" />
+                        </Container1>
                         <ButtonContainer>
                             <Salvar name="btnSalva" type="submit" />
 
@@ -212,7 +214,10 @@ function TipoDocumento() {
                         </ButtonContainer>
                     </Form>
                     <Table
-                        columns={[{ title: 'Tipo de documento', field: 'tpd_nome' }]}
+                        columns={[
+                            { title: 'Tipo de documento', field: 'tpd_nome' },
+                            { title: 'Visível', field: 'visivel', width: '70px' },
+                        ]}
                         data={tiposDocumento}
                         fillData={preencheCampos}
                     />

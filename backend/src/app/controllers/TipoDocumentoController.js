@@ -2,13 +2,26 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import TipoDocumento from '../models/TipoDocumento';
+import VTipoDocumento from '../models/VTipoDocumento';
 // import AuditoriaController from './AuditoriaController';
 
 class TipoDocumentoController {
     async index(req, res) {
-        const tiposDocumento = await TipoDocumento.findAll({
+        const tiposDocumento = await VTipoDocumento.findAll({
             order: ['tpd_nome'],
-            attributes: ['tpd_id', 'tpd_nome', 'tpd_visivel'],
+            attributes: ['tpd_id', 'tpd_nome', 'tpd_visivel', 'visivel'],
+            logging: false
+        });
+        return res.json(tiposDocumento);
+    }
+
+    async combo(req, res) {
+        const tiposDocumento = await VTipoDocumento.findAll({
+            order: ['tpd_nome'],
+            attributes: ['tpd_id', 'tpd_nome', 'tpd_visivel', 'visivel'],
+            where: [
+                { tpd_visivel: true }
+            ],
             logging: false
         });
         return res.json(tiposDocumento);
