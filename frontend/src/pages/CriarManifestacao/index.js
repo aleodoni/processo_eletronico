@@ -36,8 +36,9 @@ function CriarManifestacao(props) {
         manVistoExecutiva: '',
     });
     const [manId, setManId] = useState(undefined);
-    const [tmnId, setTmnId] = useState(-1);
-    const [tpdId, setTpdId] = useState(-1);
+    const [arqId, setArqId] = useState(undefined);
+    const [tmnId, setTmnId] = useState('-1');
+    const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
@@ -66,7 +67,7 @@ function CriarManifestacao(props) {
     }
 
     function abreModalExcluir(id) {
-        setManId(id);
+        setArqId(id);
         setModalExcluir(true);
     }
 
@@ -93,8 +94,8 @@ function CriarManifestacao(props) {
     }
 
     function limpaCampos() {
-        formRef.current.setFieldValue('tmnId', -1);
-        formRef.current.setFieldValue('tpdId', -1);
+        formRef.current.setFieldValue('tmnId', '-1');
+        formRef.current.setFieldValue('tpdId', '-1');
         setManId(null);
         setNodId('');
         setManifestacao({
@@ -133,14 +134,14 @@ function CriarManifestacao(props) {
     }
 
     const verificaManifestacao = e => {
-        if (tmnId === -1) {
+        if (tmnId === '-1') {
             setErro('Selecione o tipo da manifestação.');
             e.preventDefault();
         }
     };
 
     const verificaArquivo = e => {
-        if (tpdId === -1) {
+        if (tpdId === '-1') {
             setErro('Selecione o tipo de documento.');
             e.preventDefault();
         }
@@ -211,10 +212,10 @@ function CriarManifestacao(props) {
                                         }
                                     })
                                     .catch(() => {
-                                        const arqId = res.data.arq_id;
+                                        const idArquivo = res.data.arq_id;
                                         axios({
                                             method: 'DELETE',
-                                            url: `arquivos/${arqId}`,
+                                            url: `arquivos/${idArquivo}`,
                                             headers: {
                                                 authorization: sessionStorage.getItem('token'),
                                             },
@@ -282,16 +283,16 @@ function CriarManifestacao(props) {
                             .then(resAnexos => {
                                 if (resAnexos.status === 204) {
                                     limpaCampos();
-                                    mensagem.success('Manifestação inserida com sucesso.');
+                                    mensagem.success('Documento inserido com sucesso.');
                                     carregaAnexos(manId);
                                     carregaManifestacaoProcesso();
                                 }
                             })
                             .catch(() => {
-                                const arqId = res.data.arq_id;
+                                const idArquivo = res.data.arq_id;
                                 axios({
                                     method: 'DELETE',
-                                    url: `arquivos/${arqId}`,
+                                    url: `arquivos/${idArquivo}`,
                                     headers: {
                                         authorization: sessionStorage.getItem('token'),
                                     },
@@ -372,11 +373,11 @@ function CriarManifestacao(props) {
             });
     }, [manifestacao.proId]);
 
-    function downloadAnexo(e, arqId, id, arqNome) {
+    function downloadAnexo(e, idArquivo, id, arqNome) {
         e.preventDefault();
         axios({
             method: 'GET',
-            url: `/download-manifestacao/${id}/${arqId}`,
+            url: `/download-manifestacao/${id}/${idArquivo}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
                 Accept: 'application/pdf',
@@ -418,21 +419,51 @@ function CriarManifestacao(props) {
     }, []);
 
     function apaga(id) {
-        axios({
-            method: 'DELETE',
-            url: `manifestacoes/${id}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                limpaCampos();
-                carregaAnexos(id);
-                mensagem.success('Excluído com sucesso.');
+        if (anexos.length === 1) {
+            axios({
+                method: 'DELETE',
+                url: `arquivos/${id}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
             })
-            .catch(err => {
-                setErro(err.response.data.error);
-            });
+                .then(() => {
+                    axios({
+                        method: 'DELETE',
+                        url: `manifestacoes/${manId}`,
+                        headers: {
+                            authorization: sessionStorage.getItem('token'),
+                        },
+                    })
+                        .then(() => {
+                            mensagem.success('Documento e manifestação apagados com sucesso.');
+                            carregaAnexos(manId);
+                            carregaManifestacaoProcesso();
+                        })
+                        .catch(err => {
+                            setErro(err.response.data.error);
+                        });
+                })
+                .catch(erroDeleteArquivo => {
+                    setErro(erroDeleteArquivo.response.data.error);
+                });
+        } else {
+            axios({
+                method: 'DELETE',
+                url: `arquivos/${id}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(() => {
+                    mensagem.success('Documento apagado com sucesso.');
+                    carregaAnexos(manId);
+                    carregaManifestacaoProcesso();
+                })
+                .catch(erroDeleteArquivo => {
+                    setErro(erroDeleteArquivo.response.data.error);
+                });
+        }
     }
 
     function tramita() {
@@ -580,7 +611,7 @@ function CriarManifestacao(props) {
                         modalExcluir={modalExcluir}
                         fechaModalExcluir={fechaModalExcluir}
                         apaga={apaga}
-                        id={manId}
+                        id={arqId}
                     />
                     <ModalTramitaUm
                         modalTramitaUm={modalTramitaUm}
