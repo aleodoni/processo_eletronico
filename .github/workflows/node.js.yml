@@ -3,14 +3,11 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
 jobs:
   lint:
-
     runs-on: ubuntu-latest
   
     container: node:10.18-jessie
