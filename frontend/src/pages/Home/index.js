@@ -103,10 +103,14 @@ function Home() {
         carregaGridArea();
     }, [carregaGridArea]);
 
-    function criaManifestacao(id, aval) {
+    function criaManifestacao(id, aval, noDecisao) {
         // se tiver o aval da executiva a manifestação é diferenciada
         if (aval) {
-            history.push(`/manifestacao-cria-executiva/${id}`);
+            if (noDecisao) {
+                history.push(`/manifestacao-cria-executiva/${id}`);
+            } else {
+                history.push(`/manifestacao-cria-visto/${id}`);
+            }
         } else {
             history.push(`/manifestacao-cria/${id}`);
         }
@@ -234,7 +238,8 @@ function Home() {
                                                                     onClick={() => {
                                                                         criaManifestacao(
                                                                             proc.pro_id,
-                                                                            proc.nod_aval_executiva
+                                                                            proc.nod_aval_executiva,
+                                                                            proc.nod_decisao
                                                                         );
                                                                     }}>
                                                                     <FaFileAlt />

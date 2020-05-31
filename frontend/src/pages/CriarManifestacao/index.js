@@ -161,7 +161,7 @@ function CriarManifestacao(props) {
                     url: '/manifestacoes',
                     data: {
                         man_id: null,
-                        pro_id: manifestacao.proId,
+                        pro_id: Number(props.match.params.proId),
                         tmn_id: tmnId,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
@@ -470,7 +470,7 @@ function CriarManifestacao(props) {
         // aqui vai verificar se vai tramitar para um ou para vários
         axios({
             method: 'GET',
-            url: `/proximo-tramite/${manifestacao.proId}`,
+            url: `/proximo-tramite/${props.match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -505,7 +505,7 @@ function CriarManifestacao(props) {
             data: {
                 tra_id: null,
                 prx_id: prxId,
-                pro_id: manifestacao.proId,
+                pro_id: Number(props.match.params.proId),
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,

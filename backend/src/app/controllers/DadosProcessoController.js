@@ -193,7 +193,8 @@ class DadosProcessoController {
                 'nod_aval_executiva',
                 'tpr_pessoal',
                 'pessoal',
-                'nod_fim'
+                'nod_fim',
+                'nod_decisao'
             ],
             logging: true,
             where: {
