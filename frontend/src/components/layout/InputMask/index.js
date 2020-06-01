@@ -14,6 +14,12 @@ export default function InputMask({ name, label, size, ...rest }) {
             name: fieldName,
             ref: inputRef.current,
             path: 'value',
+            setValue(ref, value) {
+                ref.setInputValue(value);
+            },
+            clearValue(ref) {
+                ref.setInputValue('');
+            },
         });
     }, [fieldName, registerField]);
 

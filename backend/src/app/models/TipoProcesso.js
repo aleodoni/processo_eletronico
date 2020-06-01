@@ -32,6 +32,11 @@ class TipoProcesso extends Model {
                     type: Sequelize.BOOLEAN,
                     allowNull: false,
                     defaultValue: false
+                },
+                tpr_prazo_recurso: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0
                 }
             },
             {

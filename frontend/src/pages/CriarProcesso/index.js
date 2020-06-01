@@ -420,6 +420,14 @@ function CriarProcesso() {
                 }
             }
         }
+        let cpfNumeros;
+        let cnpjNumeros;
+        if (p.proCpf !== '' && p.proCpf !== undefined) {
+            cpfNumeros = p.proCpf.replace(/[^\d]+/g, '');
+        }
+        if (p.proCnpj !== '' && p.proCnpj !== undefined) {
+            cnpjNumeros = p.proCnpj.replace(/[^\d]+/g, '');
+        }
 
         axios({
             method: 'POST',
@@ -428,8 +436,8 @@ function CriarProcesso() {
                 pro_id: null,
                 pro_nome: p.proNome,
                 pro_matricula: p.proMatricula,
-                pro_cpf: p.proCpf,
-                pro_cnpj: p.proCnpj,
+                pro_cpf: cpfNumeros,
+                pro_cnpj: cnpjNumeros,
                 pro_fone: p.proFone,
                 pro_celular: p.proCelular,
                 pro_email: p.proEmail,
@@ -448,6 +456,7 @@ function CriarProcesso() {
                 tpr_id: p.tprId,
                 pro_contato_pj: p.proContatoPj,
                 pro_autuacao: null,
+                pro_recurso: false,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -611,12 +620,11 @@ function CriarProcesso() {
                         ) : null}
                         {dadosServidorPublico ? (
                             <ContainerDadosServidorPublico>
-                                <Input
+                                <InputMask
                                     name="proCpf"
                                     label="Cpf"
-                                    type="text"
-                                    size="11"
-                                    maxLength="11"
+                                    mask="999.999.999-99"
+                                    maskChar=" "
                                 />
                                 <Input
                                     name="proFone"

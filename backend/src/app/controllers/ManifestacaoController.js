@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Manifestacao from '../models/Manifestacao';
+import VManifestacao from '../models/VManifestacao';
 import VNodoDecisao from '../models/VNodoDecisao';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
 import DataHoraAtual from '../models/DataHoraAtual';
@@ -22,8 +23,30 @@ class ManifestacaoController {
                 pro_id: req.params.id
             }
         });
-        console.log(nodoDecisao);
         return res.send(nodoDecisao.dataValues.nod_decisao);
+    }
+
+    async manifestacaoProcesso(req, res) {
+        const manifestacao = await VManifestacao.findAll({
+            attributes: ['man_id',
+                'pro_id',
+                'tmn_id',
+                'tmn_nome',
+                'man_login',
+                'man_id_area',
+                'set_nome',
+                'man_cancelada',
+                'man_login_cancelamento',
+                'man_visto_executiva',
+                'man_data_cancelamento',
+                'man_data',
+                'nod_id'],
+            logging: true,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+        return res.json(manifestacao);
     }
 
     async store(req, res) {
@@ -33,26 +56,28 @@ class ManifestacaoController {
             plain: true
         });
 
+        console.log(req.body);
+
         const {
             man_id,
             pro_id,
             tmn_id,
             man_login,
             man_id_area,
-            tpd_id,
             man_visto_executiva,
-            man_data
+            man_data,
+            nod_id
         } = await Manifestacao.create({
             man_id: req.body.man_id,
             pro_id: req.body.pro_id,
             tmn_id: req.body.tmn_id,
             man_login: req.body.man_login,
             man_id_area: req.body.man_id_area,
-            tpd_id: req.body.tpd_id,
             man_visto_executiva: req.body.man_visto_executiva,
-            man_data: dataHoraAtual.dataValues.data_hora_atual
+            man_data: dataHoraAtual.dataValues.data_hora_atual,
+            nod_id: req.body.nod_id
         }, {
-            logging: false
+            logging: true
         });
             // auditoria de inserção
             // AuditoriaController.audita(req.body, req, 'I', man_id);
@@ -63,9 +88,9 @@ class ManifestacaoController {
             tmn_id,
             man_login,
             man_id_area,
-            tpd_id,
             man_visto_executiva,
-            man_data
+            man_data,
+            nod_id
         });
     }
 
@@ -113,7 +138,8 @@ class ManifestacaoController {
         const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const pages = pdfDoc.getPages();
         const firstPage = pages[0];
-        const { width, height } = firstPage.getSize();
+        // const { width, height } = firstPage.getSize();
+        const { height } = firstPage.getSize();
 
         firstPage.drawRectangle({
             borderColor: rgb(0.95, 0.1, 0.1),

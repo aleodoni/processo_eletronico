@@ -76,7 +76,7 @@ export const ContainerDadosServidorPublico = styled.div`
 
 export const ContainerCriaProcesso = styled.div`
     display: grid;
-    grid-template-columns: 450px 1000px;
+    grid-template-columns: 250px 750px;
     grid-template-rows: 70px;
 `;
 

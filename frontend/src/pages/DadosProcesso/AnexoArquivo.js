@@ -44,8 +44,12 @@ function AnexoArquivo({ proId, anexos }) {
             {anexos.length > 0 ? (
                 <ListaArquivo>
                     {anexos.map(anexo => (
-                        <li key={anexo}>
-                            <BotaoComoLink type="button" onClick={e => downloadAnexo(e, anexo.arq_id, proId, anexo.arq_nome)}>
+                        <li key={anexo.arq_id}>
+                            <BotaoComoLink
+                                type="button"
+                                onClick={e =>
+                                    downloadAnexo(e, anexo.arq_id, proId, anexo.arq_nome)
+                                }>
                                 {anexo.arq_nome}
                             </BotaoComoLink>
                         </li>

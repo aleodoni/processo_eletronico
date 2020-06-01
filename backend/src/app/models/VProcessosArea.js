@@ -31,6 +31,9 @@ class VProcessosArea extends Model {
                 },
                 nod_fim: {
                     type: Sequelize.BOOLEAN
+                },
+                nod_decisao: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

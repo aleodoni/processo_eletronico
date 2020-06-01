@@ -1,38 +1,37 @@
 import Sequelize, { Model } from 'sequelize';
 
-class ArquivoManifestacao extends Model {
+class VDecisaoPessoal extends Model {
     static init(sequelize) {
         super.init(
             {
-                contador: {
-                    type: Sequelize.STRING
-                },
-                arq_id: {
+                pro_id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true
                 },
-                arq_nome: {
-                    type: Sequelize.STRING,
-                    allowNull: false
-                },
-                man_id: {
+                tpr_id: {
                     type: Sequelize.INTEGER
                 },
-                arq_tipo: {
+                flu_id: {
+                    type: Sequelize.INTEGER
+                },
+                nod_id: {
+                    type: Sequelize.INTEGER
+                },
+                area_id: {
                     type: Sequelize.STRING
                 },
-                data: {
+                nod_decisao: {
+                    type: Sequelize.BOOLEAN
+                },
+                man_visto_executiva: {
                     type: Sequelize.STRING
                 },
-                arq_login: {
-                    type: Sequelize.STRING
-                },
-                tpd_nome: {
-                    type: Sequelize.STRING
+                tpr_prazo_recurso: {
+                    type: Sequelize.INTEGER
                 }
             },
             {
-                tableName: 'v_arquivos_manifestacao',
+                tableName: 'v_decisao_pessoal',
                 schema: 'spa2',
                 sequelize,
                 operatorsAliases: false
@@ -43,4 +42,4 @@ class ArquivoManifestacao extends Model {
     }
 }
 
-export default ArquivoManifestacao;
+export default VDecisaoPessoal;

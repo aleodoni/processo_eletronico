@@ -191,7 +191,7 @@ routes.put(`${process.env.API_URL}/arquivos/:id`, ArquivoController.update);
 routes.delete(`${process.env.API_URL}/arquivos/:id`, ArquivoController.delete);
 routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.index);
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
-routes.get(`${process.env.API_URL}/arquivos-manifestacao/:proId`, ArquivoController.indexManifestacao);
+routes.get(`${process.env.API_URL}/arquivos-manifestacao/:manId`, ArquivoController.indexManifestacao);
 routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
 
 // rota de inserção de anexo em processo
@@ -225,6 +225,7 @@ routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 
 // rotas do cadastro de manifestacao
 routes.get(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.index);
+routes.get(`${process.env.API_URL}/manifestacao-processo/:id`, ManifestacaoController.manifestacaoProcesso);
 routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
 routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.delete);
@@ -254,8 +255,15 @@ routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proxi
 // rota de encerramento de processo
 routes.put(`${process.env.API_URL}/encerra/:id`, CriaProcessoController.encerra);
 
+// rota de ciência de processo
+routes.put(`${process.env.API_URL}/ciencia/:id`, CriaProcessoController.ciencia);
+
+// rota de decisao de processo
+routes.get(`${process.env.API_URL}/decisao/:id`, DadosProcessoController.decisaoPessoal);
+
 // rotas do cadastro de tipos de documento
 routes.get(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.index);
+routes.get(`${process.env.API_URL}/tipos-documento-combo`, TipoDocumentoController.combo);
 routes.post(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.store);
 routes.put(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.update);
 routes.delete(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.delete);

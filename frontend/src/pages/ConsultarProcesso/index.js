@@ -13,14 +13,13 @@ import ProcessoInputMask from '../../components/layout/InputMask/ProcessoInputMa
 import InputMask from '../../components/layout/InputMask';
 import CpfInputMask from '../../components/layout/InputMask/CpfInputMask';
 import CnpjInputMask from '../../components/layout/InputMask/CnpjInputMask';
-import DateInputMask from '../../components/layout/InputMask/DateInputMask';
 import Select from '../../components/layout/Select';
 import Localizar from '../../components/layout/button/Localizar';
 import Pesquisar from '../../components/layout/button/Pesquisa';
 import Limpar from '../../components/layout/button/Limpar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
-import { cpf, cnpj } from '../../utils/validaCpfCnpj';
+import { cpf, cnpj, dataValida, dataFinalMaior } from '../../utils/validaCpfCnpj';
 import {
     Container,
     ContainerConsultaProcesso,
@@ -207,11 +206,57 @@ function ConsultarProcesso() {
         areaIdIniciativa,
     }) {
         setErro('');
+
+        if (proAno !== '' && proAno !== undefined) {
+            const ano = Number(proAno);
+            if (ano < 2015 || ano > 2050) {
+                setErro('Ano inválido.');
+                return;
+            }
+        }
+
+        let proDataIniAutuacaoPesquisa;
+        let proDataFimAutuacaoPesquisa;
+
+        if (proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined) {
+            if (dataValida(proDataIniAutuacao)) {
+                proDataIniAutuacaoPesquisa = `${proDataIniAutuacao} 00:00:00`;
+            } else {
+                setErro('Data inicial de autuação inválida.');
+                return;
+            }
+        }
+        if (proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined) {
+            if (dataValida(proDataFimAutuacao)) {
+                proDataFimAutuacaoPesquisa = `${proDataFimAutuacao} 23:59:59`;
+            } else {
+                setErro('Data final de autuação inválida.');
+                return;
+            }
+        }
+
+        if (
+            proDataIniAutuacao !== '' &&
+            proDataIniAutuacao !== undefined &&
+            proDataFimAutuacao !== '' &&
+            proDataFimAutuacao !== undefined
+        ) {
+            if (dataValida(proDataIniAutuacao) && dataValida(proDataFimAutuacao)) {
+                if (dataFinalMaior(proDataIniAutuacao, proDataFimAutuacao)) {
+                    setErro('Data inicial maior que data final.');
+                    return;
+                }
+            } else {
+                setErro('Data inicial ou final de autuação inválida.');
+                return;
+            }
+        }
+
         if (proCpf !== '' && proCpf !== undefined && !cpf(proCpf.replace(/[^\d]+/g, ''))) {
             setErro('Cpf inválido.');
             return;
         }
-        if (proCnpj !== undefined && !cnpj(proCnpj.replace(/[^\d]+/g, ''))) {
+        if (proCpf !== '' && proCnpj !== undefined && !cnpj(proCnpj.replace(/[^\d]+/g, ''))) {
             setErro('Cnpj inválido.');
             return;
         }
@@ -224,8 +269,8 @@ function ConsultarProcesso() {
                 pro_contato_pj: proContatoPj,
                 pro_cpf: proCpf,
                 pro_cnpj: proCnpj,
-                pro_data_ini_autuacao: proDataIniAutuacao,
-                pro_data_fim_autuacao: proDataFimAutuacao,
+                pro_data_ini_autuacao: proDataIniAutuacaoPesquisa,
+                pro_data_fim_autuacao: proDataFimAutuacaoPesquisa,
                 pro_numero: proNumero,
                 pro_ano: proAno,
                 tpr_id: tprId,
@@ -320,13 +365,17 @@ function ConsultarProcesso() {
                                     />
                                 </ContainerPesquisa1>
                                 <ContainerPesquisa2>
-                                    <DateInputMask
+                                    <InputMask
                                         name="proDataIniAutuacao"
                                         label="Data inicial de autuação"
+                                        mask="99/99/9999"
+                                        maskChar=" "
                                     />
-                                    <DateInputMask
+                                    <InputMask
                                         name="proDataFimAutuacao"
                                         label="Data final de autuação"
+                                        mask="99/99/9999"
+                                        maskChar=" "
                                     />
                                     <InputMask
                                         name="proMatricula"
@@ -364,7 +413,6 @@ function ConsultarProcesso() {
                     {mostraPesquisa ? (
                         <div>
                             <p>Total de processo(s): {totalProcessos}</p>
-                            <hr />
                             <ButtonContainer>
                                 <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                             </ButtonContainer>

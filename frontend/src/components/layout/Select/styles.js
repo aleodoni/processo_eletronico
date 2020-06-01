@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import img from '../../../assets/seta-combo.jpg';
-// import Select from 'react-select';
 
 export const Container = styled.div`
     display: flex;
@@ -21,7 +20,6 @@ export const Container = styled.div`
     label {
         font-size: 16px;
         font-weight: bold;
-        margin-left: 5px;
         margin-bottom: 3px;
         color: ${({ theme }) => theme.label};
     }
@@ -53,18 +51,3 @@ export const BasicSelect = styled.select`
         color: ${({ theme }) => theme.primary};
     }
 `;
-
-// export const BasicSelect = styled(Select)`
-//     .react-select__single-value {
-//         color: ${({ theme }) => theme.text};
-//     }
-
-//     .react-select__placeholder {
-//         color: ${({ theme }) => theme.text};
-//     }
-
-//     .react-select__control {
-//         margin-left: 4px;
-//         margin-right: 4px;
-//     }
-// `;
