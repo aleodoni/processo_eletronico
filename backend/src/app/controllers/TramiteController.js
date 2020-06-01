@@ -95,7 +95,7 @@ class TramiteController {
         });
         const usuAutuador = processo.dataValues.usu_autuador;
         const tprId = processo.dataValues.tpr_id;
-        const idNodoAtual = processo.dataValues.nod_id;
+        // const idNodoAtual = processo.dataValues.nod_id;
         // 05/05/2020 - tenho que pegar o próximo
         const tipoProcesso = await TipoProcesso.findAll({
             where: {

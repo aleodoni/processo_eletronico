@@ -35,7 +35,7 @@ describe('Criação de processo', () => {
                 return done();
             });
     });
-    let processoId = '';
+    // let processoId = '';
     it('Processo - Insere', function(done) {
         const insereProcesso = {
             pro_codigo: '00001/2019',
