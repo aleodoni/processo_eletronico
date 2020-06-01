@@ -27,6 +27,5 @@ export const ContainerModal = styled.div`
 
     label {
         font-size: 18px;
-        text-decoration: underline;
     }
 `;

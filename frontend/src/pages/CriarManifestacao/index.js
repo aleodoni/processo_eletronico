@@ -17,6 +17,7 @@ import Tramitar from '../../components/layout/button/Tramitar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
+import ModalProcesso from '../../components/ModalProcesso';
 import {
     Container,
     Container2,
@@ -24,6 +25,7 @@ import {
     Main,
     Erro,
     BotaoComoLink,
+    LinkProcesso,
     ContainerBotoes,
 } from './styles';
 
@@ -37,6 +39,7 @@ function CriarManifestacao(props) {
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
+    const [proIdModal, setProId] = useState(-1);
     const [tmnId, setTmnId] = useState('-1');
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
@@ -48,6 +51,8 @@ function CriarManifestacao(props) {
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
     const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
+    const [modalProcesso, setModalProcesso] = useState(false);
+
     const [dadosTramite, setDadosTramite] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
@@ -64,6 +69,15 @@ function CriarManifestacao(props) {
 
     function handleTpdId(e) {
         setTpdId(e.target.value);
+    }
+
+    function abreModalProcesso(id) {
+        setProId(id);
+        setModalProcesso(true);
+    }
+
+    function fechaModalProcesso() {
+        setModalProcesso(false);
     }
 
     function abreModalExcluir(id) {
@@ -439,6 +453,7 @@ function CriarManifestacao(props) {
                             mensagem.success('Documento e manifestação apagados com sucesso.');
                             carregaAnexos(manId);
                             carregaManifestacaoProcesso();
+                            carregaDadosProcesso();
                         })
                         .catch(err => {
                             setErro(err.response.data.error);
@@ -537,7 +552,12 @@ function CriarManifestacao(props) {
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
                     <span>
-                        {proCodigo} - {tprNome}
+                        <LinkProcesso
+                            type="button"
+                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                            {proCodigo}
+                        </LinkProcesso>
+                        - {tprNome}
                     </span>
                     <Form ref={formRef} initialData={manifestacao} onSubmit={incluiManifestacao}>
                         <Input name="manId" type="hidden" />
@@ -624,6 +644,11 @@ function CriarManifestacao(props) {
                         fechaModalTramitaVarios={fechaModalTramitaVarios}
                         tramita={insereTramite}
                         dados={dadosTramite}
+                    />
+                    <ModalProcesso
+                        fechaModalProcesso={fechaModalProcesso}
+                        modalProcesso={modalProcesso}
+                        proId={proIdModal}
                     />
 
                     {anexos.length > 0 ? (

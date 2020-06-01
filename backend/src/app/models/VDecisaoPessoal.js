@@ -25,6 +25,9 @@ class VDecisaoPessoal extends Model {
                 },
                 man_visto_executiva: {
                     type: Sequelize.STRING
+                },
+                tpr_prazo_recurso: {
+                    type: Sequelize.INTEGER
                 }
             },
             {

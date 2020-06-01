@@ -44,6 +44,7 @@ function Home() {
     const [proId, setProId] = useState(-1);
     const [proCodigo, setProCodigo] = useState('');
     const [decisao, setDecisao] = useState('');
+    const [prazoRecurso, setPrazoRecurso] = useState('');
 
     function abreModalProcesso(id) {
         setProId(id);
@@ -69,7 +70,8 @@ function Home() {
 
         try {
             const response = await api.get(`/decisao/${id}`);
-            setDecisao(response.data);
+            setDecisao(response.data.visto);
+            setPrazoRecurso(response.data.prazo);
             setProId(id);
             setProCodigo(codigo);
             setModalCiencia(true);
@@ -222,7 +224,7 @@ function Home() {
                                                         <>
                                                             {proc.nod_fim === true ? (
                                                                 <BotaoCienciaProcesso
-                                                                    name="btnCriaManifestacao"
+                                                                    name="btnCiencia"
                                                                     onClick={() =>
                                                                         abreModalCiencia(
                                                                             proc.pro_id,
@@ -303,6 +305,7 @@ function Home() {
                         id={proId}
                         proCodigo={proCodigo}
                         decisao={decisao}
+                        prazo={prazoRecurso}
                     />
                 </Main>
             </Container>

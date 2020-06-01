@@ -213,7 +213,8 @@ class DadosProcessoController {
                 'nod_id',
                 'area_id',
                 'nod_decisao',
-                'man_visto_executiva'
+                'man_visto_executiva',
+                'tpr_prazo_recurso'
             ],
             logging: true,
             plain: true,
@@ -221,7 +222,7 @@ class DadosProcessoController {
                 pro_id: req.params.id
             }
         });
-        return res.send(decisao.dataValues.man_visto_executiva);
+        return res.send({ visto: decisao.dataValues.man_visto_executiva, prazo: decisao.dataValues.tpr_prazo_recurso });
     }
 }
 export default new DadosProcessoController();

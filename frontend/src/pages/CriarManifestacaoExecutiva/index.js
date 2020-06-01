@@ -13,8 +13,6 @@ import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
-import BotaoVistoExecutiva from '../../components/layout/button/VistoExecutiva';
-import VistoExecutiva from '../../components/system/select/VistoExecutiva';
 import DecisaoExecutiva from '../../components/system/select/DecisaoExecutiva';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
@@ -462,19 +460,10 @@ function CriarManifestacaoExecutiva(props) {
                 <Autorizacao tela="Criar manifestação executiva" />
                 <Main>
                     <Titulo>
-                        {decisivo ? (
-                            <div>
-                                {manifestacaoProcesso.length > 0 ? (
-                                    <p>
-                                        Decisão executiva:{' '}
-                                        {manifestacaoProcesso[0].man_visto_executiva}
-                                    </p>
-                                ) : (
-                                    <p>Decisão executiva</p>
-                                )}
-                            </div>
+                        {manifestacaoProcesso.length > 0 ? (
+                            <p>Decisão executiva: {manifestacaoProcesso[0].man_visto_executiva}</p>
                         ) : (
-                            <p>Vistar processo</p>
+                            <p>Decisão executiva</p>
                         )}
                         <hr />
                     </Titulo>
@@ -496,43 +485,30 @@ function CriarManifestacaoExecutiva(props) {
                             <Container2>
                                 <Input name="manId" type="hidden" />
                                 <Input name="proId" type="hidden" />
-                                {decisivo ? (
-                                    <DecisaoExecutiva
-                                        name="manVistoExecutiva"
-                                        changeHandler={() => limpaErros()}
-                                    />
-                                ) : (
-                                    <VistoExecutiva
-                                        name="manVistoExecutiva"
-                                        changeHandler={() => limpaErros()}
-                                    />
-                                )}
+                                <DecisaoExecutiva
+                                    name="manVistoExecutiva"
+                                    changeHandler={() => limpaErros()}
+                                />
                             </Container2>
                         ) : null}
                         <ContainerBotoes>
-                            {decisivo ? (
+                            {manifestacaoProcesso.length === 0 ? (
                                 <>
-                                    {manifestacaoProcesso.length === 0 ? (
-                                        <>
-                                            <label htmlFor="anexo">
-                                                <FaPaperclip />
-                                                &nbsp;Incluir manifestação
-                                            </label>
-                                            <input
-                                                type="file"
-                                                name="file"
-                                                onChange={incluiAnexo}
-                                                id="anexo"
-                                                onClick={e => {
-                                                    verificaVisto(e);
-                                                }}
-                                            />
-                                        </>
-                                    ) : null}
+                                    <label htmlFor="anexo">
+                                        <FaPaperclip />
+                                        &nbsp;Incluir manifestação
+                                    </label>
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        onChange={incluiAnexo}
+                                        id="anexo"
+                                        onClick={e => {
+                                            verificaVisto(e);
+                                        }}
+                                    />
                                 </>
-                            ) : (
-                                <BotaoVistoExecutiva name="btnVistoExecutiva" type="submit" />
-                            )}
+                            ) : null}
                             {manifestacaoProcesso.length > 0 ? (
                                 <Tramitar name="btnTramita" clickHandler={tramita} />
                             ) : null}

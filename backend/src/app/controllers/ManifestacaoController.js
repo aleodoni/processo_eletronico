@@ -56,6 +56,8 @@ class ManifestacaoController {
             plain: true
         });
 
+        console.log(req.body);
+
         const {
             man_id,
             pro_id,

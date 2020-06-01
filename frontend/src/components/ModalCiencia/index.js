@@ -27,7 +27,7 @@ const ModalCiencia = props => {
             backgroundColor: '#292E61',
         },
     };
-    const { fechaModalCiencia, modalCiencia, ciencia, id, proCodigo, decisao } = props;
+    const { fechaModalCiencia, modalCiencia, ciencia, id, proCodigo, decisao, prazo } = props;
 
     function cienciaHandler(e) {
         ciencia(id);
@@ -54,6 +54,9 @@ const ModalCiencia = props => {
                     <h1>
                         A decisão foi: <label>{decisao}</label>
                     </h1>
+                    <h1>
+                        Você tem <label>{prazo}</label> dias para efetuar recurso.
+                    </h1>
                     <h1>Ciente do processo {proCodigo}?</h1>
                     <hr />
                     <div>
@@ -73,12 +76,14 @@ ModalCiencia.propTypes = {
     id: PropTypes.number,
     proCodigo: PropTypes.string,
     decisao: PropTypes.string,
+    prazo: PropTypes.string,
 };
 
 ModalCiencia.defaultProps = {
     id: null,
     proCodigo: null,
     decisao: null,
+    prazo: null,
 };
 
 export default ModalCiencia;
