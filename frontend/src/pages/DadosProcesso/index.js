@@ -11,6 +11,11 @@ import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import GeraFluxo from '../../components/layout/button/GeraFluxo';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
 import ModalFluxo from '../../components/ModalFluxo';
+
+//
+import TabelaManifestacoes from '../../components/TabelaManifestacoes';
+//
+
 import {
     Container,
     Main,
@@ -368,7 +373,10 @@ function DadosProcesso({ match }) {
                                 </div>
                             ))}
                             <br />
-
+                            <br />
+                            <TabelaManifestacoes proId={proId} />
+                            <br />
+                            <br />
                             <ContainerArquivos>
                                 {anexosManifestacao.length > 0 ? (
                                     <div>

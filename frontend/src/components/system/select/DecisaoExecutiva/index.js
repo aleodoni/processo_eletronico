@@ -19,7 +19,7 @@ export default function DecisaoExecutiva({ name, changeHandler, ...rest }) {
     <Select
       id={name}
       name={name}
-      label="Decisão"
+      label="Decisão e visto"
       options={options}
       onChange={changeHandler}
       {...rest}

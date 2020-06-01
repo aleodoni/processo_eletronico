@@ -3,6 +3,7 @@
 /* eslint-disable camelcase */
 import Manifestacao from '../models/Manifestacao';
 import VManifestacao from '../models/VManifestacao';
+import VManifestacaoProcesso from '../models/VManifestacaoProcesso';
 import VNodoDecisao from '../models/VNodoDecisao';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
 import DataHoraAtual from '../models/DataHoraAtual';
@@ -41,6 +42,22 @@ class ManifestacaoController {
                 'man_data_cancelamento',
                 'man_data',
                 'nod_id'],
+            logging: true,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+        return res.json(manifestacao);
+    }
+
+    async manifestacaoProcessoDados(req, res) {
+        const manifestacao = await VManifestacaoProcesso.findAll({
+            attributes: ['man_id',
+                'pro_id',
+                'tmn_nome',
+                'man_login',
+                'set_nome',
+                'man_data'],
             logging: true,
             where: {
                 pro_id: req.params.id

@@ -46,6 +46,7 @@ import VProcessosArea from '../app/models/VProcessosArea';
 import VNodoDecisao from '../app/models/VNodoDecisao';
 import VDecisaoPessoal from '../app/models/VDecisaoPessoal';
 import VManifestacao from '../app/models/VManifestacao';
+import VManifestacaoProcesso from '../app/models/VManifestacaoProcesso';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -95,7 +96,8 @@ const models = [
     VNodoDecisao,
     VDecisaoPessoal,
     VTipoDocumento,
-    VManifestacao
+    VManifestacao,
+    VManifestacaoProcesso
 ];
 
 class Database {

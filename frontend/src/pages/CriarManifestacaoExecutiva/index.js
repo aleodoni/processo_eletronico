@@ -461,9 +461,12 @@ function CriarManifestacaoExecutiva(props) {
                 <Main>
                     <Titulo>
                         {manifestacaoProcesso.length > 0 ? (
-                            <p>Decisão executiva: {manifestacaoProcesso[0].man_visto_executiva}</p>
+                            <p>
+                                Decisão e visto da executiva:{' '}
+                                {manifestacaoProcesso[0].man_visto_executiva}
+                            </p>
                         ) : (
-                            <p>Decisão executiva</p>
+                            <p>Decisão e visto da executiva</p>
                         )}
                         <hr />
                     </Titulo>
