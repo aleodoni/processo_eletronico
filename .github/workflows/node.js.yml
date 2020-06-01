@@ -7,11 +7,14 @@ on:
     branches: [ master ]
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
-  
-    container: node:10.18-jessie
 
+    env:
+      BACKEND_DIR: ./backend
+
+    name: Testando no node 12.x
+  
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -23,7 +26,8 @@ jobs:
     
     - name: Install dependencies
       run: yarn
+      working-directory: ${{env.BACKEND_DIR}}
       
     - name: Check linting
       run: yarn lint
-    
+      working-directory: ${{env.BACKEND_DIR}}
