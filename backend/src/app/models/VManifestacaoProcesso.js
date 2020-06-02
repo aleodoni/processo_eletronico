@@ -4,6 +4,10 @@ class VManifestacaoProcesso extends Model {
     static init(sequelize) {
         super.init(
             {
+                seq: {
+                    type: Sequelize.INTEGER,
+                    primaryKey: true
+                },
                 man_id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true

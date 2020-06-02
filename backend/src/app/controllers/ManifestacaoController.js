@@ -52,7 +52,8 @@ class ManifestacaoController {
 
     async manifestacaoProcessoDados(req, res) {
         const manifestacao = await VManifestacaoProcesso.findAll({
-            attributes: ['man_id',
+            attributes: ['seq',
+                'man_id',
                 'pro_id',
                 'tmn_nome',
                 'man_login',
@@ -97,14 +98,13 @@ class ManifestacaoController {
 
             dados.push(
                 {
+                    seq: manifestacao[m].seq,
                     tmn_nome: manifestacao[m].tmn_nome,
                     set_nome: manifestacao[m].set_nome,
                     man_login: manifestacao[m].man_login,
                     arquivos: arquivosManifestacao
                 });
         }
-        console.log(dados);
-        // return res.json(manifestacao);
         return res.json(dados);
     }
 
@@ -114,8 +114,6 @@ class ManifestacaoController {
             logging: true,
             plain: true
         });
-
-        console.log(req.body);
 
         const {
             man_id,

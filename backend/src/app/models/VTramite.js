@@ -4,6 +4,9 @@ class VTramite extends Model {
     static init(sequelize) {
         super.init(
             {
+                seq: {
+                    type: Sequelize.INTEGER
+                },
                 tra_id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true

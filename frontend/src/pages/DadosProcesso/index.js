@@ -11,22 +11,17 @@ import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import GeraFluxo from '../../components/layout/button/GeraFluxo';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
 import ModalFluxo from '../../components/ModalFluxo';
-
-//
 import TabelaManifestacoes from '../../components/TabelaManifestacoes';
-//
-
+import TabelaTramitacao from '../../components/TabelaTramitacao';
 import {
     Container,
     Main,
     Erro,
     ContainerIniciativa,
-    Vermelho,
-    Centralizado,
     ContainerDados,
     ContainerBotoes,
-    ContainerArquivos,
-    BotaoComoLink,
+    ContainerManifestacoes,
+    ContainerTramitacao,
 } from './styles';
 
 require('dotenv').config();
@@ -37,8 +32,6 @@ function DadosProcesso({ match }) {
     const [erro, setErro] = useState('');
     const [processos, setProcessos] = useState([]);
     const [grafo, setGrafo] = useState('');
-    const [anexosManifestacao, setAnexosManifestacao] = useState([]);
-    const [tramites, setTramites] = useState([]);
     const [mostraProcesso, setMostraProcesso] = useState(false);
     const [modalFluxo, setModalFluxo] = useState(false);
 
@@ -65,73 +58,6 @@ function DadosProcesso({ match }) {
         setModalFluxo(false);
     }
 
-    const carregaAnexosManifestacao = useCallback(() => {
-        axios({
-            method: 'GET',
-            url: `/arquivos-manifestacao/${proId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setAnexosManifestacao(res.data);
-            })
-            .catch(() => {
-                console.log('Erro ao carregar manifestações.');
-            });
-    }, [proId]);
-
-    const carregaTramites = useCallback(() => {
-        axios({
-            method: 'GET',
-            url: `/grid-tramites/${proId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setTramites(res.data);
-            })
-            .catch(() => {
-                console.log('Erro ao carregar trâmites.');
-            });
-    }, [proId]);
-
-    function downloadAnexoManifestacao(e, arqId, id, arqNome) {
-        e.preventDefault();
-        axios({
-            method: 'GET',
-            url: `/download-manifestacao/${id}/${arqId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-                Accept: 'application/pdf',
-            },
-            responseType: 'blob',
-        })
-            .then(res => {
-                const blob = new Blob([res.data], { type: res.data.type });
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                const contentDisposition = res.headers['content-disposition'];
-                let fileName = arqNome;
-                if (contentDisposition) {
-                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                    if (fileNameMatch.length === 2) {
-                        fileName = fileNameMatch[1];
-                    }
-                }
-                link.setAttribute('download', fileName);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(() => {
-                console.log('Erro ao efetuar o download do anexo.');
-            });
-    }
-
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
@@ -152,9 +78,7 @@ function DadosProcesso({ match }) {
     useEffect(() => {
         mensagem.success('Carregando processo...');
         carregaDadosProcesso();
-        carregaAnexosManifestacao();
-        carregaTramites();
-    }, [carregaDadosProcesso, carregaAnexosManifestacao, carregaTramites]);
+    }, [carregaDadosProcesso]);
 
     function consulta() {
         history.push('/processo-consulta');
@@ -372,110 +296,14 @@ function DadosProcesso({ match }) {
                                     />
                                 </div>
                             ))}
-                            <br />
-                            <br />
-                            <TabelaManifestacoes proId={proId} />
-                            <br />
-                            <br />
-                            <ContainerArquivos>
-                                {anexosManifestacao.length > 0 ? (
-                                    <div>
-                                        <p>Manifestações</p>
-                                        <fieldset>
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Seq</th>
-                                                        <th>Documento</th>
-                                                        <th>Tipo</th>
-                                                        <th>Arquivo</th>
-                                                        <th>Data</th>
-                                                        <th>Área</th>
-                                                        <th>Situação</th>
-                                                        <th>Visto</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {anexosManifestacao.map((anexo, index) => (
-                                                        <tr key={anexo.man_id}>
-                                                            <td>{index + 1}</td>
-                                                            <td>{anexo.tpd_nome}</td>
-                                                            <td>{anexo.tmn_nome}</td>
-                                                            <td>
-                                                                <BotaoComoLink
-                                                                    type="button"
-                                                                    onClick={e =>
-                                                                        downloadAnexoManifestacao(
-                                                                            e,
-                                                                            anexo.arq_id,
-                                                                            anexo.manId,
-                                                                            anexo.arq_nome
-                                                                        )
-                                                                    }>
-                                                                    {anexo.arq_nome}
-                                                                </BotaoComoLink>
-                                                            </td>
-                                                            <td>{anexo.data}</td>
-                                                            <td>{anexo.set_nome}</td>
-                                                            <td>
-                                                                <Centralizado>
-                                                                    {anexo.situacao ===
-                                                                    'Cancelada' ? (
-                                                                        <Vermelho>
-                                                                            {anexo.situacao}
-                                                                        </Vermelho>
-                                                                    ) : (
-                                                                        anexo.situacao
-                                                                    )}
-                                                                </Centralizado>
-                                                            </td>
-                                                            <td>
-                                                                {anexo.man_visto_executiva ===
-                                                                'Negado' ? (
-                                                                    <Vermelho>
-                                                                        {anexo.man_visto_executiva}
-                                                                    </Vermelho>
-                                                                ) : (
-                                                                    anexo.man_visto_executiva
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </fieldset>
-                                        <br />
-                                    </div>
-                                ) : null}
-                                {tramites.length > 0 ? (
-                                    <div>
-                                        <p>Tramitação</p>
-                                        <fieldset>
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Envio</th>
-                                                        <th>Área que enviou</th>
-                                                        <th>Área que recebeu</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {tramites.map(tramite => (
-                                                        <tr key={tramite.tra_id}>
-                                                            <td>
-                                                                {tramite.envio} -{' '}
-                                                                {tramite.login_envia}
-                                                            </td>
-                                                            <td>{tramite.setor_envia}</td>
-                                                            <td>{tramite.setor_recebe}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </fieldset>
-                                    </div>
-                                ) : null}
-                            </ContainerArquivos>
+                            <ContainerManifestacoes>
+                                <p>Manifestações</p>
+                                <TabelaManifestacoes proId={proId} />
+                            </ContainerManifestacoes>
+                            <ContainerTramitacao>
+                                <p>Tramitação</p>
+                                <TabelaTramitacao proId={proId} />
+                            </ContainerTramitacao>
                         </Form>
                     </Main>
                 </Container>

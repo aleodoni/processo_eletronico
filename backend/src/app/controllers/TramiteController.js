@@ -37,7 +37,9 @@ class TramiteController {
 
     async gridTramite(req, res) {
         const tramites = await VTramite.findAll({
-            attributes: ['tra_id',
+            attributes: [
+                'seq',
+                'tra_id',
                 'envio',
                 'login_envia',
                 'setor_envia',
