@@ -61,7 +61,19 @@ function TabelaTramitacao({ proId }) {
             },
         })
             .then(res => {
-                setRows(res.data);
+                const tramites = [];
+                for (let i = 0; i < res.data.length; i++) {
+                    tramites.push({
+                        seq: i + 1,
+                        envio: res.data[i].envio,
+                        login_envia: res.data[i].login_envia,
+                        setor_envia: res.data[i].setor_envia,
+                        setor_recebe: res.data[i].setor_recebe,
+                        tra_id: res.data[i].tra_id,
+                    });
+                    res.data.seq = i + 1;
+                }
+                setRows(tramites);
             })
             .catch(() => {
                 console.log('Erro ao carregar trâmites.');

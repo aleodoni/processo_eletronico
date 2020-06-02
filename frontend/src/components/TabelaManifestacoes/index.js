@@ -138,9 +138,9 @@ Row.propTypes = {
         set_nome: PropTypes.string.isRequired,
         arquivos: PropTypes.arrayOf(
             PropTypes.shape({
-                tmn_nome: PropTypes.string.isRequired,
+                tpd_nome: PropTypes.string.isRequired,
                 arq_nome: PropTypes.string.isRequired,
-                arq_id: PropTypes.string.isRequired,
+                arq_id: PropTypes.number.isRequired,
                 data: PropTypes.string.isRequired,
             })
         ).isRequired,
@@ -160,7 +160,17 @@ function TabelaManifestacao({ proId }) {
             },
         })
             .then(res => {
-                setRows(res.data);
+                const manifestacoes = [];
+                for (let i = 0; i < res.data.length; i++) {
+                    manifestacoes.push({
+                        seq: i + 1,
+                        set_nome: res.data[i].set_nome,
+                        man_login: res.data[i].man_login,
+                        tmn_nome: res.data[i].tmn_nome,
+                        arquivos: res.data[i].arquivos,
+                    });
+                }
+                setRows(manifestacoes);
             })
             .catch(() => {
                 console.log('Erro ao retornar manifestações.');
