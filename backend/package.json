@@ -18,7 +18,8 @@
     "start": "sucrase-node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest --watchAll",
-    "lint": "yarn eslint src"
+    "lint": "yarn eslint src",
+    "testci": "jest"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
