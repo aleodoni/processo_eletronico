@@ -4,8 +4,8 @@
 import Manifestacao from '../models/Manifestacao';
 import VManifestacao from '../models/VManifestacao';
 import VManifestacaoProcesso from '../models/VManifestacaoProcesso';
-import VNodoDecisao from '../models/VNodoDecisao';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
+import VNodoDecisao from '../models/VNodoDecisao';
 import DataHoraAtual from '../models/DataHoraAtual';
 import moment from 'moment';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
@@ -58,12 +58,54 @@ class ManifestacaoController {
                 'man_login',
                 'set_nome',
                 'man_data'],
-            logging: true,
+            logging: false,
             where: {
                 pro_id: req.params.id
             }
         });
-        return res.json(manifestacao);
+        const dados = [];
+        for (const m in manifestacao) {
+            const arquivosManifestacao = [];
+            const arquivos = await ArquivoManifestacao.findAll({
+                order: ['man_id'],
+                attributes: [
+                    'arq_id',
+                    'arq_nome',
+                    'man_id',
+                    'arq_tipo',
+                    'data',
+                    'arq_login',
+                    'tpd_nome'
+                ],
+                logging: false,
+                where: {
+                    man_id: manifestacao[m].man_id
+                }
+            });
+
+            for (const a in arquivos) {
+                arquivosManifestacao.push(
+                    {
+                        arq_id: arquivos[a].arq_id,
+                        arq_nome: arquivos[a].arq_nome,
+                        arq_tipo: arquivos[a].arq_tipo,
+                        data: arquivos[a].data,
+                        arq_login: arquivos[a].arq_login,
+                        tpd_nome: arquivos[a].tpd_nome
+                    });
+            }
+
+            dados.push(
+                {
+                    tmn_nome: manifestacao[m].tmn_nome,
+                    set_nome: manifestacao[m].set_nome,
+                    man_login: manifestacao[m].man_login,
+                    arquivos: arquivosManifestacao
+                });
+        }
+        console.log(dados);
+        // return res.json(manifestacao);
+        return res.json(dados);
     }
 
     async store(req, res) {
