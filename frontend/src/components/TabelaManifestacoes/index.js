@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
@@ -15,6 +15,39 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import axios from '../../configs/axiosConfig';
 import { BotaoComoLink } from './styles';
+
+const StyledTableCell = withStyles(theme => ({
+    head: {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.common.black,
+        fontSize: 16,
+        fontFamily: 'Arial',
+    },
+    body: {
+        fontSize: 16,
+        fontFamily: 'Arial',
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.common.black,
+    },
+}))(TableCell);
+
+const StyledTableCellDetail = withStyles(theme => ({
+    head: {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.common.black,
+        fontSize: 16,
+        fontFamily: 'Arial',
+        width: '5px',
+    },
+}))(TableCell);
+
+const StyledTableRow = withStyles(theme => ({
+    root: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.action.hover,
+        },
+    },
+}))(TableRow);
 
 const useRowStyles = makeStyles({
     root: {
@@ -66,26 +99,26 @@ function Row(props) {
 
     return (
         <>
-            <TableRow className={classes.root} hover>
-                <TableCell>
+            <StyledTableRow className={classes.root} hover>
+                <StyledTableCellDetail>
                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
                         {open ? <RemoveIcon /> : <AddIcon />}
                     </IconButton>
-                </TableCell>
-                <TableCell>{linha.seq}</TableCell>
-                <TableCell>{linha.set_nome}</TableCell>
-                <TableCell component="th" scope="row">
+                </StyledTableCellDetail>
+                <StyledTableCell>{linha.seq}</StyledTableCell>
+                <StyledTableCell>{linha.set_nome}</StyledTableCell>
+                <StyledTableCell component="th" scope="row">
                     {linha.tmn_nome}
-                </TableCell>
-            </TableRow>
-            <TableRow>
+                </StyledTableCell>
+            </StyledTableRow>
+            <StyledTableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box margin={1}>
                             {linha.arquivos.length > 0 ? (
                                 <Table size="small">
                                     <TableHead>
-                                        <TableRow>
+                                        <StyledTableRow>
                                             <TableCell>
                                                 <label>Data</label>
                                             </TableCell>
@@ -95,12 +128,12 @@ function Row(props) {
                                             <TableCell>
                                                 <label>Arquivo</label>
                                             </TableCell>
-                                        </TableRow>
+                                        </StyledTableRow>
                                     </TableHead>
 
                                     <TableBody>
                                         {linha.arquivos.map(linhaArquivo => (
-                                            <TableRow key={linhaArquivo.arq_id} hover>
+                                            <StyledTableRow key={linhaArquivo.arq_id} hover>
                                                 <TableCell>{linhaArquivo.data}</TableCell>
                                                 <TableCell>{linhaArquivo.tpd_nome}</TableCell>
                                                 <TableCell>
@@ -117,7 +150,7 @@ function Row(props) {
                                                         {linhaArquivo.arq_nome}
                                                     </BotaoComoLink>
                                                 </TableCell>
-                                            </TableRow>
+                                            </StyledTableRow>
                                         ))}
                                     </TableBody>
                                 </Table>
@@ -127,7 +160,7 @@ function Row(props) {
                         </Box>
                     </Collapse>
                 </TableCell>
-            </TableRow>
+            </StyledTableRow>
         </>
     );
 }
@@ -183,20 +216,20 @@ function TabelaManifestacao({ proId }) {
 
     return (
         <TableContainer component={Paper}>
-            <Table aria-label="collapsible table dense">
+            <Table aria-label="collapsible table dense" size="small">
                 <TableHead>
-                    <TableRow>
-                        <TableCell />
-                        <TableCell>
+                    <StyledTableRow hover>
+                        <StyledTableCellDetail />
+                        <StyledTableCell width="10px">
                             <label>Seq</label>
-                        </TableCell>
-                        <TableCell>
+                        </StyledTableCell>
+                        <StyledTableCell>
                             <label>Área</label>
-                        </TableCell>
-                        <TableCell>
+                        </StyledTableCell>
+                        <StyledTableCell>
                             <label>Tipo da manifestação</label>
-                        </TableCell>
-                    </TableRow>
+                        </StyledTableCell>
+                    </StyledTableRow>
                 </TableHead>
                 <TableBody>
                     {rows.map(linha => (
