@@ -1,15 +1,7 @@
 import styled from 'styled-components';
 
-export const BotaoComoLink = styled.button`
+export const SemTramites = styled.span`
     background: transparent !important;
-    border: none;
-    padding: 3px;
-    color: #000 !important;
+    color: #fff;
     font-size: 14px;
-    text-decoration: underline;
-    cursor: pointer;
-
-    span {
-        margin-left: 45px;
-    }
 `;

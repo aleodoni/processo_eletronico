@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,15 +9,38 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import axios from '../../configs/axiosConfig';
+import { SemTramites } from './styles';
+
+const StyledTableCell = withStyles(theme => ({
+    head: {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.common.black,
+        fontSize: 16,
+        fontFamily: 'Arial',
+    },
+    body: {
+        fontSize: 16,
+        fontFamily: 'Arial',
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.common.black,
+    },
+}))(TableCell);
+
+const StyledTableRow = withStyles(theme => ({
+    root: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.action.hover,
+        },
+        borderWidth: 1,
+        borderColor: '#F5F5F5',
+        borderStyle: 'solid',
+        borderCollapse: 'collapse',
+    },
+}))(TableRow);
 
 const useRowStyles = makeStyles({
-    root: {
-        '& > *': {
-            borderBottom: 'unset',
-        },
-    },
     table: {
-        minWidth: 650,
+        maxWidth: 650,
     },
 });
 
@@ -27,14 +50,14 @@ function Row(props) {
 
     return (
         <>
-            <TableRow className={classes.root} hover>
-                <TableCell>{linha.seq}</TableCell>
-                <TableCell>
+            <StyledTableRow className={classes.root} hover>
+                <StyledTableCell>{linha.seq}</StyledTableCell>
+                <StyledTableCell>
                     {linha.envio} - {linha.login_envia}
-                </TableCell>
-                <TableCell>{linha.setor_envia}</TableCell>
-                <TableCell>{linha.setor_recebe}</TableCell>
-            </TableRow>
+                </StyledTableCell>
+                <StyledTableCell>{linha.setor_envia}</StyledTableCell>
+                <StyledTableCell>{linha.setor_recebe}</StyledTableCell>
+            </StyledTableRow>
         </>
     );
 }
@@ -84,24 +107,24 @@ function TabelaTramitacao({ proId }) {
         carregaTramites();
     }, [carregaTramites]);
 
-    return (
+    return rows.length > 0 ? (
         <TableContainer component={Paper}>
-            <Table aria-label="table">
+            <Table aria-label="table" size="small">
                 <TableHead>
-                    <TableRow>
-                        <TableCell>
+                    <StyledTableRow>
+                        <StyledTableCell>
                             <label>Seq</label>
-                        </TableCell>
-                        <TableCell>
+                        </StyledTableCell>
+                        <StyledTableCell>
                             <label>Envio</label>
-                        </TableCell>
-                        <TableCell>
+                        </StyledTableCell>
+                        <StyledTableCell>
                             <label>Área que enviou</label>
-                        </TableCell>
-                        <TableCell>
+                        </StyledTableCell>
+                        <StyledTableCell>
                             <label>Área que recebeu</label>
-                        </TableCell>
-                    </TableRow>
+                        </StyledTableCell>
+                    </StyledTableRow>
                 </TableHead>
                 <TableBody>
                     {rows.map(linha => (
@@ -110,6 +133,8 @@ function TabelaTramitacao({ proId }) {
                 </TableBody>
             </Table>
         </TableContainer>
+    ) : (
+        <SemTramites> - Sem trâmites no momento.</SemTramites>
     );
 }
 

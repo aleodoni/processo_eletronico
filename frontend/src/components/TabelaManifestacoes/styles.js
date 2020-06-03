@@ -13,3 +13,9 @@ export const BotaoComoLink = styled.button`
         margin-left: 45px;
     }
 `;
+
+export const SemManifestacoes = styled.span`
+    background: transparent !important;
+    color: #fff;
+    font-size: 14px;
+`;

@@ -14,7 +14,7 @@ import Paper from '@material-ui/core/Paper';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import axios from '../../configs/axiosConfig';
-import { BotaoComoLink } from './styles';
+import { BotaoComoLink, SemManifestacoes } from './styles';
 
 const StyledTableCell = withStyles(theme => ({
     head: {
@@ -214,7 +214,7 @@ function TabelaManifestacao({ proId }) {
         carregaManifestacoes();
     }, [carregaManifestacoes]);
 
-    return (
+    return rows.length > 0 ? (
         <TableContainer component={Paper}>
             <Table aria-label="collapsible table dense" size="small">
                 <TableHead>
@@ -238,6 +238,8 @@ function TabelaManifestacao({ proId }) {
                 </TableBody>
             </Table>
         </TableContainer>
+    ) : (
+        <SemManifestacoes> - Sem manifestações no momento.</SemManifestacoes>
     );
 }
 
