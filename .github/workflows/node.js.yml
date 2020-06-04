@@ -44,3 +44,25 @@ jobs:
       run: |
         yarn lint
       working-directory: ${{env.BACKEND_DIR}}
+
+    - name: Run migrations
+      run: |
+        yarn sequelize db:migrate
+      env:
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB_PASS: spa2
+          DB_NAME: spa2_local
+          DB_PORT: 5432
+      working-directory: ${{env.BACKEND_DIR}}
+
+    - name: Run seeds
+      run: |
+        yarn sequelize db:seed:all
+      env:
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB_PASS: spa2
+          DB_NAME: spa2_local
+          DB_PORT: 5432
+      working-directory: ${{env.BACKEND_DIR}}
