@@ -235,18 +235,84 @@ function Home() {
                                                                     Ciência do processo
                                                                 </BotaoCienciaProcesso>
                                                             ) : (
-                                                                <BotaoCriaManifestacao
-                                                                    name="btnCriaManifestacao"
-                                                                    onClick={() => {
-                                                                        criaManifestacao(
-                                                                            proc.pro_id,
-                                                                            proc.nod_aval_executiva,
-                                                                            proc.nod_decisao
-                                                                        );
-                                                                    }}>
-                                                                    <FaFileAlt />
-                                                                    Criar manifestação
-                                                                </BotaoCriaManifestacao>
+                                                                <>
+                                                                    {(() => {
+                                                                        switch (proc.alerta) {
+                                                                            case 1:
+                                                                                return (
+                                                                                    <BotaoCriaManifestacao
+                                                                                        name="btnCriaManifestacao"
+                                                                                        cor="vermelho"
+                                                                                        corHover="vermelho-claro"
+                                                                                        onClick={() => {
+                                                                                            criaManifestacao(
+                                                                                                proc.pro_id,
+                                                                                                proc.nod_aval_executiva,
+                                                                                                proc.nod_decisao
+                                                                                            );
+                                                                                        }}>
+                                                                                        <FaFileAlt />
+                                                                                        Criar
+                                                                                        manifestação
+                                                                                    </BotaoCriaManifestacao>
+                                                                                );
+                                                                            case 2:
+                                                                                return (
+                                                                                    <BotaoCriaManifestacao
+                                                                                        name="btnCriaManifestacao"
+                                                                                        cor="laranja"
+                                                                                        corHover="laranja-claro"
+                                                                                        onClick={() => {
+                                                                                            criaManifestacao(
+                                                                                                proc.pro_id,
+                                                                                                proc.nod_aval_executiva,
+                                                                                                proc.nod_decisao
+                                                                                            );
+                                                                                        }}>
+                                                                                        <FaFileAlt />
+                                                                                        Criar
+                                                                                        manifestação
+                                                                                    </BotaoCriaManifestacao>
+                                                                                );
+                                                                            case 3:
+                                                                                return (
+                                                                                    <BotaoCriaManifestacao
+                                                                                        name="btnCriaManifestacao"
+                                                                                        cor="azul"
+                                                                                        corHover="azul-claro"
+                                                                                        onClick={() => {
+                                                                                            criaManifestacao(
+                                                                                                proc.pro_id,
+                                                                                                proc.nod_aval_executiva,
+                                                                                                proc.nod_decisao
+                                                                                            );
+                                                                                        }}>
+                                                                                        <FaFileAlt />
+                                                                                        Criar
+                                                                                        manifestação
+                                                                                    </BotaoCriaManifestacao>
+                                                                                );
+                                                                            default:
+                                                                                return (
+                                                                                    <BotaoCriaManifestacao
+                                                                                        name="btnCriaManifestacao"
+                                                                                        cor="azul"
+                                                                                        corHover="azul-claro"
+                                                                                        onClick={() => {
+                                                                                            criaManifestacao(
+                                                                                                proc.pro_id,
+                                                                                                proc.nod_aval_executiva,
+                                                                                                proc.nod_decisao
+                                                                                            );
+                                                                                        }}>
+                                                                                        <FaFileAlt />
+                                                                                        Criar
+                                                                                        manifestação
+                                                                                    </BotaoCriaManifestacao>
+                                                                                );
+                                                                        }
+                                                                    })()}
+                                                                </>
                                                             )}
                                                         </>
                                                     ) : (
@@ -264,17 +330,84 @@ function Home() {
                                                                     Finalizar processo
                                                                 </BotaoFinalizaProcesso>
                                                             ) : (
-                                                                <BotaoCriaManifestacao
-                                                                    name="btnCriaManifestacao"
-                                                                    onClick={() => {
-                                                                        criaManifestacao(
-                                                                            proc.pro_id,
-                                                                            proc.nod_aval_executiva
-                                                                        );
-                                                                    }}>
-                                                                    <FaFileAlt />
-                                                                    Criar manifestação
-                                                                </BotaoCriaManifestacao>
+                                                                <>
+                                                                    {(() => {
+                                                                        switch (proc.alerta) {
+                                                                            case 1:
+                                                                                return (
+                                                                                    <BotaoCriaManifestacao
+                                                                                        name="btnCriaManifestacao"
+                                                                                        cor="vermelho"
+                                                                                        corHover="vermelho-claro"
+                                                                                        onClick={() => {
+                                                                                            criaManifestacao(
+                                                                                                proc.pro_id,
+                                                                                                proc.nod_aval_executiva,
+                                                                                                proc.nod_decisao
+                                                                                            );
+                                                                                        }}>
+                                                                                        <FaFileAlt />
+                                                                                        Criar
+                                                                                        manifestação
+                                                                                    </BotaoCriaManifestacao>
+                                                                                );
+                                                                            case 2:
+                                                                                return (
+                                                                                    <BotaoCriaManifestacao
+                                                                                        name="btnCriaManifestacao"
+                                                                                        cor="laranja"
+                                                                                        corHover="laranja-claro"
+                                                                                        onClick={() => {
+                                                                                            criaManifestacao(
+                                                                                                proc.pro_id,
+                                                                                                proc.nod_aval_executiva,
+                                                                                                proc.nod_decisao
+                                                                                            );
+                                                                                        }}>
+                                                                                        <FaFileAlt />
+                                                                                        Criar
+                                                                                        manifestação
+                                                                                    </BotaoCriaManifestacao>
+                                                                                );
+                                                                            case 3:
+                                                                                return (
+                                                                                    <BotaoCriaManifestacao
+                                                                                        name="btnCriaManifestacao"
+                                                                                        cor="azul"
+                                                                                        corHover="azul-claro"
+                                                                                        onClick={() => {
+                                                                                            criaManifestacao(
+                                                                                                proc.pro_id,
+                                                                                                proc.nod_aval_executiva,
+                                                                                                proc.nod_decisao
+                                                                                            );
+                                                                                        }}>
+                                                                                        <FaFileAlt />
+                                                                                        Criar
+                                                                                        manifestação
+                                                                                    </BotaoCriaManifestacao>
+                                                                                );
+                                                                            default:
+                                                                                return (
+                                                                                    <BotaoCriaManifestacao
+                                                                                        name="btnCriaManifestacao"
+                                                                                        cor="azul"
+                                                                                        corHover="azul-claro"
+                                                                                        onClick={() => {
+                                                                                            criaManifestacao(
+                                                                                                proc.pro_id,
+                                                                                                proc.nod_aval_executiva,
+                                                                                                proc.nod_decisao
+                                                                                            );
+                                                                                        }}>
+                                                                                        <FaFileAlt />
+                                                                                        Criar
+                                                                                        manifestação
+                                                                                    </BotaoCriaManifestacao>
+                                                                                );
+                                                                        }
+                                                                    })()}
+                                                                </>
                                                             )}
                                                         </>
                                                     )}

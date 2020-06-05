@@ -34,6 +34,12 @@ class VProcessosArea extends Model {
                 },
                 nod_decisao: {
                     type: Sequelize.BOOLEAN
+                },
+                nod_dias_prazo: {
+                    type: Sequelize.INTEGER
+                },
+                alerta: {
+                    type: Sequelize.INTEGER
                 }
             },
             {

@@ -194,7 +194,9 @@ class DadosProcessoController {
                 'tpr_pessoal',
                 'pessoal',
                 'nod_fim',
-                'nod_decisao'
+                'nod_decisao',
+                'nod_dias_prazo',
+                'alerta'
             ],
             logging: true,
             where: {
