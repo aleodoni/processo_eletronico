@@ -26,67 +26,62 @@ beforeAll(done => {
 });
 
 describe('Gênero', () => {
-    it('dummy', () => {
-        token = 1;
-        expect(true).toBe(true);
+    it('Deve retornar lista de gêneros', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/generos`)
+            .set('authorization', `${token}`);
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toEqual(
+            expect.arrayContaining([{
+                gen_id: 6,
+                gen_nome: 'Baixa de bens'
+            }])
+        );
     });
 
-    // it('Deve retornar lista de gêneros', async() => {
-    //     const response = await request(app)
-    //         .get(`${process.env.API_URL}/generos`)
-    //         .set('authorization', `${token}`);
+    it('Deve inserir um novo gênero', async() => {
+        const novoGenero = {
+            gen_id: null,
+            gen_nome: `Inserção nome - ${Math.random()}`
+        };
 
-    //     expect(response.status).toBe(200);
+        const response = await request(app)
+            .post(`${process.env.API_URL}/generos`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(novoGenero);
 
-    //     expect(response.body).toEqual(
-    //         expect.arrayContaining([{
-    //             gen_id: 6,
-    //             gen_nome: 'Baixa de bens'
-    //         }])
-    //     );
-    // });
+        genero = response.body;
 
-    // it('Deve inserir um novo gênero', async() => {
-    //     const novoGenero = {
-    //         gen_id: null,
-    //         gen_nome: `Inserção nome - ${Math.random()}`
-    //     };
+        expect(response.status).toBe(200);
 
-    //     const response = await request(app)
-    //         .post(`${process.env.API_URL}/generos`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`)
-    //         .send(novoGenero);
+        expect(response.body).toHaveProperty('gen_nome', novoGenero.gen_nome);
+    });
 
-    //     genero = response.body;
+    it('Deve atualizar um gênero', async() => {
+        const generoEditado = {
+            gen_nome: 'Genero Editado'
+        };
 
-    //     expect(response.status).toBe(200);
+        const response = await request(app)
+            .put(`${process.env.API_URL}/generos/${genero.gen_id}`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(generoEditado);
 
-    //     expect(response.body).toHaveProperty('gen_nome', novoGenero.gen_nome);
-    // });
+        expect(response.status).toBe(200);
 
-    // it('Deve atualizar um gênero', async() => {
-    //     const generoEditado = {
-    //         gen_nome: 'Genero Editado'
-    //     };
+        expect(response.body).toHaveProperty('gen_nome', generoEditado.gen_nome);
+    });
 
-    //     const response = await request(app)
-    //         .put(`${process.env.API_URL}/generos/${genero.gen_id}`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`)
-    //         .send(generoEditado);
+    it('Deve deletar um gênero', async() => {
+        const response = await request(app)
+            .delete(`${process.env.API_URL}/generos/${genero.gen_id}`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`);
 
-    //     expect(response.status).toBe(200);
-
-    //     expect(response.body).toHaveProperty('gen_nome', generoEditado.gen_nome);
-    // });
-
-    // it('Deve deletar um gênero', async() => {
-    //     const response = await request(app)
-    //         .delete(`${process.env.API_URL}/generos/${genero.gen_id}`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`);
-
-    //     expect(response.status).toBe(200);
-    // });
+        expect(response.status).toBe(200);
+    });
 });
