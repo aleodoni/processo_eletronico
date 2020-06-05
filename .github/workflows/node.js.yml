@@ -66,3 +66,25 @@ jobs:
           DB_NAME: spa2_local
           DB_PORT: 5432
       working-directory: ${{env.BACKEND_DIR}}
+      
+    - name: Run integration tests
+      run: |
+        yarn testci
+      env:
+          API_URL: /spa2-api
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB_PASS: spa2
+          DB_NAME: spa2_local
+          DB_PORT: 5432
+          CHAVE: fjkfhsklfjhffhihuueqwiouqhoifufybmsdncbamchefgewfgyu4237843784%$%$%!$%vnkavdkadhjkhjahjj
+          LDAP_URL: ldap://localhost:389
+          LDAP_USERS_OU: ou=usuarios,dc=cmc,dc=pr,dc=gov,dc=br
+          LDAP_GROUPS_OU: ou=grupos,dc=cmc,dc=pr,dc=gov,dc=br
+          LDAP_BIND_USER: cn=authproxy,dc=cmc,dc=pr,dc=gov,dc=br
+          LDAP_BIND_PASS: authproxy
+          LDAP_USER_FILTER:
+          LDAP_GROUP_FILTER:
+          USUARIO_TESTE: alexandre.odoni
+          SENHA_TESTE: 123456
+      working-directory: ${{env.BACKEND_DIR}}
