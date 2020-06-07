@@ -118,7 +118,7 @@ export const BotaoCriaManifestacao = styled.button`
     border: 0;
     border-radius: 4px;
     height: 30px;
-    width: 165px;
+    width: 180px;
 
     ${({ cor }) => handleColorType(cor)};
     font-size: 14px;
@@ -140,7 +140,7 @@ export const BotaoFinalizaProcesso = styled.button`
     border: 0;
     border-radius: 4px;
     height: 27px;
-    width: 162px;
+    width: 180px;
     color: ${({ theme }) => theme.text};
     font-size: 14px;
     transition: background 0.2s;
