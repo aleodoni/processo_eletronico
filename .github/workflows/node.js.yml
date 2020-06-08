@@ -24,11 +24,6 @@ jobs:
         docker-compose up -d
       working-directory: ${{env.BACKEND_DIR}}
       
-    - name: Build Postgres & LDAP
-      run: |
-        docker-compose up -d
-      working-directory: ${{env.BACKEND_DIR}}
-      
     - name: Setup Node
       uses: actions/setup-node@v1
       with:
