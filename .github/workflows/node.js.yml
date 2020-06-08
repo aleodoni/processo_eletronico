@@ -18,6 +18,11 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+    
+    - name: Build Postgres & LDAP
+      run: |
+        docker-compose up -d
+      working-directory: ${{env.BACKEND_DIR}}
       
     - name: Setup Node
       uses: actions/setup-node@v1
