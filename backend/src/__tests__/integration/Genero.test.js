@@ -1,12 +1,15 @@
-/* eslint-disable func-names */
-/* eslint-disable no-undef */
 const request = require('supertest');
-const app = require('../app').default;
+const app = require('../../app').default;
 require('dotenv/config');
 process.env.NODE_ENV = 'test';
 
+// eslint-disable-next-line no-unused-vars
 let token = '';
+// eslint-disable-next-line no-unused-vars
 let usuario = '';
+// eslint-disable-next-line no-unused-vars
+let genero;
+
 beforeAll(done => {
     request(app)
         .post(`${process.env.API_URL}/autorizacao`)
@@ -23,71 +26,62 @@ beforeAll(done => {
 });
 
 describe('Gênero', () => {
-    it('Gêneros - Lista', function(done) {
-        request(app)
+    it('Deve retornar lista de gêneros', async() => {
+        const response = await request(app)
             .get(`${process.env.API_URL}/generos`)
-            .set('authorization', `${token}`)
-            .expect(200)
-            .end(function(err) {
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
+            .set('authorization', `${token}`);
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toEqual(
+            expect.arrayContaining([{
+                gen_id: 6,
+                gen_nome: 'Baixa de bens'
+            }])
+        );
     });
-    let generoId = '';
-    it('Gêneros - Insere', function(done) {
-        const insereGeneros = {
+
+    it('Deve inserir um novo gênero', async() => {
+        const novoGenero = {
             gen_id: null,
             gen_nome: `Inserção nome - ${Math.random()}`
         };
-        request(app)
+
+        const response = await request(app)
             .post(`${process.env.API_URL}/generos`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`)
-            .send(insereGeneros)
-            .set('Content-Type', 'application/json')
-            .expect(200)
-            .end(function(err, res) {
-                generoId = res.body.gen_id;
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
+            .send(novoGenero);
+
+        genero = response.body;
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toHaveProperty('gen_nome', novoGenero.gen_nome);
     });
-    it('Gêneros - Edita', function(done) {
-        const editaGeneros = {
-            gen_nome: `Edição nome - ${Math.random()}`
+
+    it('Deve atualizar um gênero', async() => {
+        const generoEditado = {
+            gen_nome: 'Genero Editado'
         };
-        request(app)
-            .put(`${process.env.API_URL}/generos/${generoId}`)
+
+        const response = await request(app)
+            .put(`${process.env.API_URL}/generos/${genero.gen_id}`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`)
-            .send(editaGeneros)
-            .set('Content-Type', 'application/json')
-            .expect(200)
-            .end(function(err, res) {
-                generoId = res.body.gen_id;
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
+            .send(generoEditado);
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toHaveProperty('gen_nome', generoEditado.gen_nome);
     });
-    it('Gêneros - Apaga', function(done) {
-        request(app)
-            .delete(`${process.env.API_URL}/generos/${generoId}`)
+
+    it('Deve deletar um gênero', async() => {
+        const response = await request(app)
+            .delete(`${process.env.API_URL}/generos/${genero.gen_id}`)
             .set('authorization', `${token}`)
-            .set('usuario', `${usuario}`)
-            .set('Content-Type', 'application/json')
-            .expect(200)
-            .end(function(err, res) {
-                generoId = res.body.gen_id;
-                if (err) {
-                    return done(err);
-                }
-                return done();
-            });
+            .set('usuario', `${usuario}`);
+
+        expect(response.status).toBe(200);
     });
 });
