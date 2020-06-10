@@ -40,6 +40,9 @@ class VProcessosArea extends Model {
                 },
                 alerta: {
                     type: Sequelize.INTEGER
+                },
+                nod_ciencia: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

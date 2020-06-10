@@ -50,6 +50,16 @@ class Nodo extends Model {
                     type: Sequelize.BOOLEAN,
                     allowNull: false,
                     defaultValue: false
+                },
+                nod_interessado: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
+                },
+                nod_ciencia: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                 }
             },
             {

@@ -196,7 +196,8 @@ class DadosProcessoController {
                 'nod_fim',
                 'nod_decisao',
                 'nod_dias_prazo',
-                'alerta'
+                'alerta',
+                'nod_ciencia'
             ],
             logging: true,
             where: {
@@ -224,7 +225,7 @@ class DadosProcessoController {
                 pro_id: req.params.id
             }
         });
-        return res.send({ visto: decisao.dataValues.man_visto_executiva, prazo: decisao.dataValues.tpr_prazo_recurso });
+        return res.send({ visto: decisao.dataValues.man_visto_executiva, prazo: decisao.dataValues.tpr_prazo_recurso, tpr_id: decisao.dataValues.tpr_id });
     }
 }
 export default new DadosProcessoController();

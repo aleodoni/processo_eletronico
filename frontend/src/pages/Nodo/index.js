@@ -28,6 +28,8 @@ import ButtonContainer from '../../components/layout/button/ButtonContainer';
 import NoInicio from '../../components/system/select/NoInicio';
 import NoFim from '../../components/system/select/NoFim';
 import NoAvalExecutiva from '../../components/system/select/NoAvalExecutiva';
+import NoInteressado from '../../components/system/select/NoInteressado';
+import NoCiencia from '../../components/system/select/NoCiencia';
 import NoDecisao from '../../components/system/select/NoDecisao';
 
 function Nodo() {
@@ -40,6 +42,8 @@ function Nodo() {
         nodFim: -1,
         nodAvalExecutiva: -1,
         nodDecisao: -1,
+        nodInteressado: -1,
+        nodCiencia: -1,
         nodDiasPrazo: 0,
         nodOrdem: 0,
     });
@@ -97,6 +101,8 @@ function Nodo() {
             nodInicio: -1,
             nodFim: -1,
             nodAvalExecutiva: -1,
+            nodInteressado: -1,
+            nodCiencia: -1,
             nodDecisao: -1,
             nodDiasPrazo: 0,
             nodOrdem: 0,
@@ -175,6 +181,8 @@ function Nodo() {
             nodDiasPrazo: linha.nod_dias_prazo,
             nodOrdem: linha.nod_ordem,
             nodAvalExecutiva: linha.nod_aval_executiva,
+            nodInteressado: linha.nod_interessado,
+            nodCiencia: linha.nod_ciencia,
             nodDecisao: linha.nod_decisao,
         });
         posiciona();
@@ -204,6 +212,8 @@ function Nodo() {
         nodDiasPrazo,
         nodOrdem,
         nodAvalExecutiva,
+        nodInteressado,
+        nodCiencia,
         nodDecisao,
     }) {
         try {
@@ -214,11 +224,23 @@ function Nodo() {
                 nodDiasPrazo: Yup.string().required('Prazo é obrigatório'),
                 nodOrdem: Yup.string().required('Ordem é obrigatória'),
                 nodAvalExecutiva: Yup.boolean().oneOf([true, false], 'Tem o aval da executiva?'),
+                nodInteressado: Yup.boolean().oneOf([true, false], 'É um nó de interessado?'),
+                nodCiencia: Yup.boolean().oneOf([true, false], 'É um nó de ciência?'),
                 nodDecisao: Yup.boolean().oneOf([true, false], 'É um nó de decisão?'),
             });
 
             await schema.validate(
-                { areaId, nodInicio, nodFim, nodDiasPrazo, nodOrdem, nodAvalExecutiva, nodDecisao },
+                {
+                    areaId,
+                    nodInicio,
+                    nodFim,
+                    nodDiasPrazo,
+                    nodOrdem,
+                    nodAvalExecutiva,
+                    nodInteressado,
+                    nodDecisao,
+                    nodCiencia,
+                },
                 { abortEarly: false }
             );
 
@@ -235,6 +257,8 @@ function Nodo() {
                         nod_dias_prazo: nodDiasPrazo,
                         nod_ordem: nodOrdem,
                         nod_aval_executiva: nodAvalExecutiva,
+                        nod_interessado: nodInteressado,
+                        nod_ciencia: nodCiencia,
                         nod_decisao: nodDecisao,
                     },
                     headers: {
@@ -263,6 +287,8 @@ function Nodo() {
                         nod_dias_prazo: nodDiasPrazo,
                         nod_ordem: nodOrdem,
                         nod_aval_executiva: nodAvalExecutiva,
+                        nod_interessado: nodInteressado,
+                        nod_ciencia: nodCiencia,
                         nod_decisao: nodDecisao,
                     },
                     headers: {
@@ -372,6 +398,8 @@ function Nodo() {
                                     />
                                     <NoAvalExecutiva name="nodAvalExecutiva" />
                                     <NoDecisao name="nodDecisao" />
+                                    <NoInteressado name="nodInteressado" />
+                                    <NoCiencia name="nodCiencia" />
                                 </ContainerCamposNodos1>
                                 <ButtonContainer>
                                     <Salvar name="btnSalva" type="submit" />
@@ -393,6 +421,8 @@ function Nodo() {
                                         { title: 'Ordem', field: 'nod_ordem', width: 100 },
                                         { title: 'Aval', field: 'aval_executiva', width: 100 },
                                         { title: 'Decisivo', field: 'decisao', width: 100 },
+                                        { title: 'Interessado', field: 'interessado', width: 100 },
+                                        { title: 'Ciência', field: 'ciencia', width: 100 },
                                     ]}
                                     data={nodos}
                                     fillData={preencheCampos}
