@@ -40,3 +40,8 @@ jobs:
         yarn install --frozen-lockfile
       working-directory: ${{env.FRONTEND_DIR}}
       
+#     - name: Check linting
+#       run: |
+#         yarn lint
+#       working-directory: ${{env.BACKEND_DIR}}
+
