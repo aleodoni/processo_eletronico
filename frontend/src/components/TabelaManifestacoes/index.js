@@ -120,7 +120,7 @@ function Row(props) {
                                     <TableHead>
                                         <StyledTableRow>
                                             <TableCell>
-                                                <label>Data</label>
+                                                <label>Data / Usuário</label>
                                             </TableCell>
                                             <TableCell>
                                                 <label>Documento</label>
@@ -134,7 +134,9 @@ function Row(props) {
                                     <TableBody>
                                         {linha.arquivos.map(linhaArquivo => (
                                             <StyledTableRow key={linhaArquivo.arq_id} hover>
-                                                <TableCell>{linhaArquivo.data}</TableCell>
+                                                <TableCell>
+                                                    {linhaArquivo.data} - {linhaArquivo.arq_login}
+                                                </TableCell>
                                                 <TableCell>{linhaArquivo.tpd_nome}</TableCell>
                                                 <TableCell>
                                                     <BotaoComoLink

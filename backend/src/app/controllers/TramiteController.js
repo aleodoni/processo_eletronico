@@ -97,7 +97,6 @@ class TramiteController {
         });
         const usuAutuador = processo.dataValues.usu_autuador;
         const tprId = processo.dataValues.tpr_id;
-        // const idNodoAtual = processo.dataValues.nod_id;
         // 05/05/2020 - tenho que pegar o próximo
         const tipoProcesso = await TipoProcesso.findAll({
             where: {
@@ -159,12 +158,38 @@ class TramiteController {
                     },
                     attributes: [
                         'nod_id',
-                        'nod_fim'
+                        'nod_fim',
+                        'nod_interessado'
                     ],
                     logging: true,
                     plain: true
                 });
-                // if (nodo.dataValues.nod_fim && tipoProcesso.dataValues.tpr_pessoal) {
+
+                // aqui verifica se o nó próximo é um nó interessado, se for vai tramitar somente para esse nó
+                if (tipoProcesso.dataValues.tpr_pessoal && nodoProximo.dataValues.nod_interessado) {
+                    // carrega a área do usuário
+                    const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({
+                        attributes: [
+                            'area_id',
+                            'set_nome',
+                            'pes_login'
+                        ],
+                        where: {
+                            pes_login: usuAutuador
+                        },
+                        logging: true,
+                        plain: true
+                    });
+                    combo.push({
+                        id: contador,
+                        prx_id: proximo[p].prx_id,
+                        set_id: areaTramitacaoPessoal.dataValues.area_id,
+                        set_nome: areaTramitacaoPessoal.dataValues.set_nome,
+                        raz_nome: proximo[p].raz_nome
+                    });
+                    return res.json(combo);
+                }
+
                 if (nodoProximo.dataValues.nod_fim && tipoProcesso.dataValues.tpr_pessoal) {
                     // carrega a área do usuário
                     const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({

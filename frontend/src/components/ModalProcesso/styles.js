@@ -36,10 +36,8 @@ export const ContainerBotaoFecha = styled.button`
 `;
 
 export const ContainerModal = styled.div`
-    display: grid;
-    grid-template-columns: 1350px;
-    width: 1370px;
-    height: 820px;
+    width: 1200px;
+    height: 620px;
     background-color: #303f9f;
 
     p {
@@ -52,8 +50,6 @@ export const ContainerModal = styled.div`
 `;
 
 export const ContainerIniciativa = styled.div`
-    display: grid;
-    grid-template-columns: 1040px;
     background: #fff;
     border-radius: 3px;
     margin-bottom: 5px;
@@ -70,7 +66,7 @@ export const ContainerDados = styled.div`
     border-radius: 3px;
     font-size: 16px;
 
-    grid-template-columns: 240px 590px;
+    grid-template-columns: 280px 690px;
     margin-bottom: 5px;
     margin-left: 5px;
 
@@ -84,8 +80,6 @@ export const ContainerDados = styled.div`
 `;
 
 export const ContainerComponente = styled.div`
-    display: grid;
-    grid-template-columns: 1340px;
     margin-left: 5px;
 
     p {

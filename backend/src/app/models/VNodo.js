@@ -49,6 +49,18 @@ class VNodo extends Model {
                 },
                 decisao: {
                     type: Sequelize.STRING
+                },
+                nod_interessado: {
+                    type: Sequelize.BOOLEAN
+                },
+                interessado: {
+                    type: Sequelize.STRING
+                },
+                nod_ciencia: {
+                    type: Sequelize.BOOLEAN
+                },
+                ciencia: {
+                    type: Sequelize.STRING
                 }
             },
             {

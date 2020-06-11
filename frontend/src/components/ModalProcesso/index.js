@@ -35,6 +35,7 @@ const ModalProcesso = props => {
             border: '1px solid #303f9f',
             backgroundColor: '#303f9f',
             padding: '5px',
+            overflow: 'scroll',
         },
     };
     const { fechaModalProcesso, modalProcesso, proId } = props;

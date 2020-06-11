@@ -14,6 +14,7 @@ import Select from '../../components/layout/Select';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
+import Arquivar from '../../components/layout/button/Arquivar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
@@ -43,6 +44,7 @@ function CriarManifestacao(props) {
     const [tmnId, setTmnId] = useState('-1');
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
+    const [nodFim, setNodFim] = useState(false);
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [tiposManifestacao, setTiposManifestacao] = useState([]);
@@ -380,6 +382,7 @@ function CriarManifestacao(props) {
                     setProCodigo(processo[i].pro_codigo);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
+                    setNodFim(processo[i].nod_fim);
                 }
             })
             .catch(() => {
@@ -622,7 +625,13 @@ function CriarManifestacao(props) {
                                 </>
                             )}
                             {manifestacaoProcesso.length > 0 ? (
-                                <Tramitar name="btnTramita" clickHandler={tramita} />
+                                <>
+                                    {nodFim ? (
+                                        <Arquivar name="btnArquiva" clickHandler={tramita} />
+                                    ) : (
+                                        <Tramitar name="btnTramita" clickHandler={tramita} />
+                                    )}
+                                </>
                             ) : null}
                             <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>

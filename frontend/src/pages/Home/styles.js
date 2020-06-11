@@ -1,5 +1,31 @@
 import styled from 'styled-components';
 
+const handleColorType = cor => {
+    switch (cor) {
+        case 'vermelho':
+            return 'color: #fff; background: #e0001e;';
+        case 'laranja':
+            return 'color: #fff; background: #fc5f00;';
+        case 'azul':
+            return 'color: #fff; background: #293689;';
+        default:
+            return 'color: #fff; background: #293689;';
+    }
+};
+
+const handleColorHover = corHover => {
+    switch (corHover) {
+        case 'vermelho-claro':
+            return 'background: #ff4040;';
+        case 'laranja-claro':
+            return 'background: #ffbc40;';
+        case 'azul-claro':
+            return 'background: #3e50c5;';
+        default:
+            return 'background: #3e50c5;';
+    }
+};
+
 export const Container = styled.div`
     display: flex;
     flex: 1;
@@ -89,17 +115,17 @@ export const Erro = styled.div`
 `;
 
 export const BotaoCriaManifestacao = styled.button`
-    background: ${({ theme }) => theme.primary};
     border: 0;
     border-radius: 4px;
     height: 30px;
-    width: 165px;
-    color: ${({ theme }) => theme.text};
+    width: 180px;
+
+    ${({ cor }) => handleColorType(cor)};
     font-size: 14px;
     transition: background 0.2s;
 
     &:hover {
-        background: ${({ theme }) => theme.hover};
+        ${({ corHover }) => handleColorHover(corHover)};
     }
 
     svg {
@@ -114,7 +140,7 @@ export const BotaoFinalizaProcesso = styled.button`
     border: 0;
     border-radius: 4px;
     height: 27px;
-    width: 162px;
+    width: 180px;
     color: ${({ theme }) => theme.text};
     font-size: 14px;
     transition: background 0.2s;
