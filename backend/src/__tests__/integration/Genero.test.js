@@ -10,22 +10,22 @@ let usuario = '';
 // eslint-disable-next-line no-unused-vars
 let genero;
 
-beforeAll(done => {
-    request(app)
-        .post(`${process.env.API_URL}/autorizacao`)
-        .send({
-            senha: process.env.SENHA_TESTE,
-            timeout: 1440,
-            usuario: process.env.USUARIO_TESTE
-        })
-        .end((_err, response) => {
-            token = response.body.token;
-            usuario = response.body.usuario;
-            done();
-        });
-});
-
 describe('Gênero', () => {
+    beforeAll(done => {
+        request(app)
+            .post(`${process.env.API_URL}/autorizacao`)
+            .send({
+                senha: process.env.SENHA_TESTE,
+                timeout: 1440,
+                usuario: process.env.USUARIO_TESTE
+            })
+            .end((_err, response) => {
+                token = response.body.token;
+                usuario = response.body.usuario;
+                done();
+            });
+    });
+
     it('Deve retornar lista de gêneros', async() => {
         const response = await request(app)
             .get(`${process.env.API_URL}/generos`)

@@ -1,8 +1,10 @@
-/* eslint-disable consistent-return */
-/* eslint-disable func-names */
-/* eslint-disable camelcase */
 import Genero from '../models/Genero';
-import AuditoriaController from './AuditoriaController';
+import Auditoria from '../models/Auditoria';
+import DataHoraAtual from '../models/DataHoraAtual';
+import CreateGeneroService from '../services/genero/CreateGeneroService';
+import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
+import DeleteGeneroService from '../services/genero/DeleteGeneroService';
+import UpdateGeneroService from '../services/genero/UpdateGeneroService';
 
 class GeneroController {
     async index(req, res) {
@@ -15,12 +17,16 @@ class GeneroController {
     }
 
     async store(req, res) {
-        const { gen_id, gen_nome } = await Genero.create(req.body, {
-            logging: false
-        });
+        const createGenero = new CreateGeneroService(Genero);
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const { gen_id, gen_nome } = await createGenero.execute(req.body);
+
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', gen_id);
+        const { url, headers } = req;
+        await createAuditoria.execute(req.body, url, headers.usuario, headers.host, 'I', gen_id);
         //
+
         return res.json({
             gen_id,
             gen_nome
@@ -28,46 +34,40 @@ class GeneroController {
     }
 
     async update(req, res) {
-        const genero = await Genero.findByPk(req.params.id, { logging: false });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const updateGenero = new UpdateGeneroService(Genero);
+
+        const { id } = req.params;
+        const { gen_nome } = req.body;
+
+        const updatedGenero = await updateGenero.execute({ id, gen_nome });
+
         // auditoria de edição
-        AuditoriaController.audita(
-            genero._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        const { url, headers } = req;
+        await createAuditoria.execute(updatedGenero._previousDataValues, url, headers.usuario, headers.host, 'U', req.params.id);
         //
-        if (!genero) {
-            return res.status(400).json({ error: 'Gênero não encontrado' });
-        }
-        await genero.update(req.body, { logging: false });
-        return res.json(genero);
+
+        return res.json(updatedGenero);
     }
 
     async delete(req, res) {
-        const genero = await Genero.findByPk(req.params.id, { logging: false });
-        if (!genero) {
-            return res.status(400).json({ error: 'Gênero não encontrado' });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteGenero = new DeleteGeneroService(Genero);
+
+        const { id } = req.params;
+
+        try {
+            const genero = await deleteGenero.execute({ id });
+
+            // auditoria de deleção
+            const { url, headers } = req;
+            await createAuditoria.execute(genero._previousDataValues, url, headers.usuario, headers.host, 'D', req.params.id);
+            //
+        } catch (err) {
+            throw new Error('Erro ao excluir gênero. O gênero possui uma ou mais ligações.');
         }
-        await genero
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                AuditoriaController.audita(
-                    genero._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error: 'Erro ao excluir gênero. O gênero possui uma ou mais ligações.'
-                    });
-                }
-            });
+
         return res.send();
     }
 }
