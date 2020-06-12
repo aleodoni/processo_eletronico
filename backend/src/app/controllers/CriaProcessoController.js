@@ -163,12 +163,17 @@ class CriaProcessoController {
         if (!processo) {
             return res.status(400).json({ error: 'Processo não encontrado' });
         }
+        const tipoProcesso = await TipoProcesso.findByPk(processo.tpr_id, { logging: false });
+        if (!tipoProcesso) {
+            return res.status(400).json({ error: 'Tipo de processo não encontrado' });
+        }
+        const prazo = tipoProcesso.tpr_prazo_recurso;
         await processo.update({
             pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,
             usu_finalizador: req.body.usuario,
             set_id_finalizador: req.body.areaId
         }, { logging: false });
-        return res.json(processo);
+        return res.json(prazo);
     }
 
     async ciencia(req, res) {

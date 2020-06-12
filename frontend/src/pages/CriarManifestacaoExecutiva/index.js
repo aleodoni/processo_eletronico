@@ -157,6 +157,8 @@ function CriarManifestacaoExecutiva(props) {
                 man_login: manLogin,
                 man_id_area: manIdArea,
                 man_visto_executiva: manVistoExecutiva,
+                nod_id: nodId,
+                man_ciencia: null,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -368,6 +370,7 @@ function CriarManifestacaoExecutiva(props) {
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: document.getElementById('manVistoExecutiva').value,
                         nod_id: nodId,
+                        man_ciencia: null,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),

@@ -41,6 +41,7 @@ class ManifestacaoController {
                 'man_visto_executiva',
                 'man_data_cancelamento',
                 'man_data',
+                'man_ciencia',
                 'nod_id'],
             logging: true,
             where: {
@@ -108,6 +109,30 @@ class ManifestacaoController {
         return res.json(dados);
     }
 
+    async criaPdfVistoExecutiva(req, res) {
+        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.body.arq_id) + caminhos.nomeFisico(req.body.arq_id) + 'M' + '.pdf';
+
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage();
+        page.drawText('Visto da executiva! Usuário: ' + req.body.usuario);
+        const pdfBytes = await pdfDoc.save();
+        console.log(caminho);
+        fs.writeFileSync(caminho, Buffer.from(pdfBytes));
+        return res.status(204).end();
+    }
+
+    async criaPdfCiencia(req, res) {
+        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.body.arq_id) + caminhos.nomeFisico(req.body.arq_id) + 'M' + '.pdf';
+
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage();
+        page.drawText('Ciência do usuário: ' + req.body.usuario);
+        const pdfBytes = await pdfDoc.save();
+        console.log(caminho);
+        fs.writeFileSync(caminho, Buffer.from(pdfBytes));
+        return res.status(204).end();
+    }
+
     async store(req, res) {
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
@@ -123,7 +148,8 @@ class ManifestacaoController {
             man_id_area,
             man_visto_executiva,
             man_data,
-            nod_id
+            nod_id,
+            man_ciencia
         } = await Manifestacao.create({
             man_id: req.body.man_id,
             pro_id: req.body.pro_id,
@@ -132,7 +158,8 @@ class ManifestacaoController {
             man_id_area: req.body.man_id_area,
             man_visto_executiva: req.body.man_visto_executiva,
             man_data: dataHoraAtual.dataValues.data_hora_atual,
-            nod_id: req.body.nod_id
+            nod_id: req.body.nod_id,
+            man_ciencia: req.body.man_ciencia
         }, {
             logging: true
         });
@@ -147,7 +174,8 @@ class ManifestacaoController {
             man_id_area,
             man_visto_executiva,
             man_data,
-            nod_id
+            nod_id,
+            man_ciencia
         });
     }
 

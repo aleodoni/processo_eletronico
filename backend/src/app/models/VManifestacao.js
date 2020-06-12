@@ -45,6 +45,9 @@ class VManifestacao extends Model {
                 },
                 nod_id: {
                     type: Sequelize.INTEGER
+                },
+                man_ciencia: {
+                    type: Sequelize.STRING
                 }
 
             },

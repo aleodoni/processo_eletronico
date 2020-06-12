@@ -183,6 +183,7 @@ function CriarManifestacao(props) {
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
+                        man_ciencia: null,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),

@@ -5,15 +5,15 @@ import { toast as mensagem } from 'react-toastify';
 import { useHistory } from 'react-router';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
-import ModalApaga from '../../components/ModalExcluirVisto';
+import ModalApaga from '../../components/ModalExcluirCiencia';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
-import BotaoVistoExecutiva from '../../components/layout/button/VistoExecutiva';
-import VistoExecutiva from '../../components/system/select/VistoExecutiva';
+import Finalizar from '../../components/layout/button/Finalizar';
+import Ciencia from '../../components/layout/button/Ciencia';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
@@ -30,13 +30,12 @@ import {
     BotaoComoLink,
 } from './styles';
 
-function CriarManifestacaoVisto(props) {
+function CriarManifestacaoCiencia(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
-        manVistoExecutiva: '-1',
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
@@ -49,6 +48,7 @@ function CriarManifestacaoVisto(props) {
     const [modalProcesso, setModalProcesso] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
     const [nodId, setNodId] = useState('');
+    const [nodFim, setNodFim] = useState(false);
     const [anexos, setAnexos] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
@@ -99,7 +99,6 @@ function CriarManifestacaoVisto(props) {
         setManId(null);
         setManifestacao({
             ...manifestacao,
-            manVistoExecutiva: '-1',
         });
         setErro('');
 
@@ -133,40 +132,32 @@ function CriarManifestacaoVisto(props) {
         }
     }
 
-    function criaManifestacao({ manVistoExecutiva }) {
-        // Manifestação da executiva
-        const TIPO_MANIFESTACAO_EXECUTIVA = 5;
-
-        // Aval da Comissão Executiva
-        const TIPO_DOCUMENTO_EXECUTIVA = 27;
+    function criaManifestacao() {
+        // ciência do processo
+        const TIPO_MANIFESTACAO_CIENCIA = 10;
+        const TIPO_DOCUMENTO_CIENCIA = 31;
 
         const manLogin = sessionStorage.getItem('usuario');
         const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        if (manVistoExecutiva === '-1') {
-            setErro('Selecione o visto da executiva.');
-            return;
-        }
         axios({
             method: 'POST',
             url: '/manifestacoes',
             data: {
                 man_id: null,
                 pro_id: props.match.params.proId,
-                tmn_id: TIPO_MANIFESTACAO_EXECUTIVA,
-                tpd_id: TIPO_DOCUMENTO_EXECUTIVA,
+                tmn_id: TIPO_MANIFESTACAO_CIENCIA,
                 man_login: manLogin,
                 man_id_area: manIdArea,
-                man_visto_executiva: manVistoExecutiva,
+                man_visto_executiva: 'Não necessário',
+                man_ciencia: 'Ciente do processo',
                 nod_id: nodId,
-                nod_ciencia: null,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(resultado => {
-                const ARQ_VISTO_EXECUTIVA = `visto-executiva-${resultado.data.man_id}.pdf`;
-                const TIPO_DOCUMENTO_VISTO_EXECUTIVA = 30;
+                const ARQ_CIENCIA = `ciencia-${resultado.data.man_id}.pdf`;
                 axios({
                     method: 'POST',
                     url: '/arquivos',
@@ -175,20 +166,20 @@ function CriarManifestacaoVisto(props) {
                     },
                     data: {
                         arq_id: null,
-                        arq_nome: ARQ_VISTO_EXECUTIVA,
+                        arq_nome: ARQ_CIENCIA,
                         pro_id: null,
                         man_id: resultado.data.man_id,
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
                         arq_doc_tipo: 'manifestação',
-                        tpd_id: TIPO_DOCUMENTO_VISTO_EXECUTIVA,
+                        tpd_id: TIPO_DOCUMENTO_CIENCIA,
                         arq_login: sessionStorage.getItem('usuario'),
                     },
                 })
                     .then(res => {
                         axios({
                             method: 'POST',
-                            url: `/arquivo-visto-executiva`,
+                            url: `/arquivo-ciencia`,
                             headers: {
                                 authorization: sessionStorage.getItem('token'),
                             },
@@ -200,7 +191,7 @@ function CriarManifestacaoVisto(props) {
                             .then(resAnexos => {
                                 if (resAnexos.status === 204) {
                                     limpaCampos();
-                                    mensagem.success('Arquivo de visto inserido com sucesso.');
+                                    mensagem.success('Arquivo de ciência inserido com sucesso.');
                                     carregaManifestacaoProcesso();
                                 }
                             })
@@ -224,7 +215,6 @@ function CriarManifestacaoVisto(props) {
                         setErro('Erro ao inserir na tabela arquivo.');
                     });
                 limpaCampos();
-                // arquivo-visto-executiva
                 carregaManifestacaoProcesso();
                 mensagem.success('Manifestação inserida com sucesso.');
             })
@@ -283,6 +273,7 @@ function CriarManifestacaoVisto(props) {
                     setProCodigo(processo[i].pro_codigo);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
+                    setNodFim(processo[i].nod_fim);
                 }
             })
             .catch(() => {
@@ -328,6 +319,39 @@ function CriarManifestacaoVisto(props) {
             });
     }
 
+    function finaliza() {
+        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        const usuario = sessionStorage.getItem('usuario');
+
+        axios({
+            method: 'PUT',
+            url: `/encerra/${props.match.params.proId}`,
+            data: {
+                usuario,
+                areaId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(response => {
+                const msg = `Processo encerrado com sucesso. O prazo para recurso é de ${response.data} dias.`;
+                mensagem.success(msg, {
+                    position: 'top-center',
+                    autoClose: 7000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                history.push('/home');
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }
+
     function tramita() {
         // aqui vai verificar se vai tramitar para um ou para vários
         axios({
@@ -354,10 +378,6 @@ function CriarManifestacaoVisto(props) {
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
             });
-    }
-
-    function limpaErros() {
-        setErro('');
     }
 
     function consulta() {
@@ -392,13 +412,13 @@ function CriarManifestacaoVisto(props) {
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Criar visto" />
+                <Autorizacao tela="Criar ciência" />
                 <Main>
                     <Titulo>
                         {manifestacaoProcesso.length > 0 ? (
-                            <p>Visto: {manifestacaoProcesso[0].man_visto_executiva}</p>
+                            <p>{manifestacaoProcesso[0].man_ciencia}</p>
                         ) : (
-                            <p>Vistar</p>
+                            <p>Ciência</p>
                         )}
                         <hr />
                     </Titulo>
@@ -417,18 +437,20 @@ function CriarManifestacaoVisto(props) {
                             <Container2>
                                 <Input name="manId" type="hidden" />
                                 <Input name="proId" type="hidden" />
-                                <VistoExecutiva
-                                    name="manVistoExecutiva"
-                                    changeHandler={() => limpaErros()}
-                                />
                             </Container2>
                         ) : null}
                         <ContainerBotoes>
                             {manifestacaoProcesso.length === 0 ? (
-                                <BotaoVistoExecutiva name="btnVistoExecutiva" type="submit" />
+                                <Ciencia name="btnCiencia" type="submit" />
                             ) : null}
                             {manifestacaoProcesso.length > 0 ? (
-                                <Tramitar name="btnTramita" clickHandler={tramita} />
+                                <>
+                                    {nodFim ? (
+                                        <Finalizar name="btnFinaliza" clickHandler={finaliza} />
+                                    ) : (
+                                        <Tramitar name="btnTramita" clickHandler={tramita} />
+                                    )}
+                                </>
                             ) : null}
                             <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>
@@ -513,7 +535,7 @@ function CriarManifestacaoVisto(props) {
     );
 }
 
-CriarManifestacaoVisto.propTypes = {
+CriarManifestacaoCiencia.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
             proId: PropTypes.string,
@@ -521,4 +543,4 @@ CriarManifestacaoVisto.propTypes = {
     }).isRequired,
 };
 
-export default CriarManifestacaoVisto;
+export default CriarManifestacaoCiencia;

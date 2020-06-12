@@ -193,6 +193,8 @@ routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
 routes.get(`${process.env.API_URL}/arquivos-manifestacao/:manId`, ArquivoController.indexManifestacao);
 routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
+routes.post(`${process.env.API_URL}/arquivo-visto-executiva`, ManifestacaoController.criaPdfVistoExecutiva);
+routes.post(`${process.env.API_URL}/arquivo-ciencia`, ManifestacaoController.criaPdfCiencia);
 
 // rota de inserção de anexo em processo
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {

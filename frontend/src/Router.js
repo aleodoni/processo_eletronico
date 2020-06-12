@@ -22,6 +22,7 @@ import ProximoTramite from './pages/ProximoTramite';
 import CriarManifestacao from './pages/CriarManifestacao';
 import CriarManifestacaoExecutiva from './pages/CriarManifestacaoExecutiva';
 import CriarManifestacaoVisto from './pages/CriarManifestacaoVisto';
+import CriarManifestacaoCiencia from './pages/CriarManifestacaoCiencia';
 import TipoDocumento from './pages/TipoDocumento';
 import Tramite from './pages/Tramite';
 
@@ -70,6 +71,11 @@ const Routes = () => (
             exact
             path="/manifestacao-cria-visto/:proId"
             component={CriarManifestacaoVisto}
+        />
+        <PrivateRoute
+            exact
+            path="/manifestacao-cria-ciencia/:proId"
+            component={CriarManifestacaoCiencia}
         />
         <PrivateRoute exact path="/tramita/:id" component={Tramite} />
         <PrivateRoute exact path="/tipos-documento" component={TipoDocumento} />
