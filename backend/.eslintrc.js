@@ -19,6 +19,7 @@ module.exports = {
     "indent": ["error", 4],
     //"comma-dangle": ["error", "always"],
     "space-before-function-paren": ["error", "never"],
+    "camelcase": "off",
     "semi": [2, "always"],
   }
 }
