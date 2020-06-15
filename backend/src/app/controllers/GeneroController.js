@@ -25,7 +25,9 @@ class GeneroController {
 
         // auditoria de inserção
         const { url, headers } = req;
-        await createAuditoria.execute(req.body, url, headers.usuario, headers.host, 'I', gen_id);
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', gen_id);
         //
 
         return res.json({
@@ -46,7 +48,10 @@ class GeneroController {
 
         // auditoria de edição
         const { url, headers } = req;
-        await createAuditoria.execute(updatedGenero._previousDataValues, url, headers.usuario, headers.host, 'U', req.params.id);
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        await createAuditoria.execute(updatedGenero._previousDataValues, url, usuario, clientIP, 'U', req.params.id);
         //
 
         return res.json(updatedGenero);
@@ -63,7 +68,9 @@ class GeneroController {
 
             // auditoria de deleção
             const { url, headers } = req;
-            await createAuditoria.execute(genero._previousDataValues, url, headers.usuario, headers.host, 'D', req.params.id);
+            const { usuario } = headers;
+            const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await createAuditoria.execute(genero._previousDataValues, url, usuario, clientIP, 'D', req.params.id);
             //
         } catch (err) {
             throw new AppError('Erro ao excluir gênero. O gênero possui uma ou mais ligações.');
