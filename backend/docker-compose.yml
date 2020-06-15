@@ -36,3 +36,8 @@ services:
             - "8080:80"
         depends_on:
             - openldap
+
+    redis-spa2:
+        image: redis:alpine
+        ports:
+            - '6379:6379'
