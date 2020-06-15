@@ -43,6 +43,12 @@ class VProcessosArea extends Model {
                 },
                 nod_ciencia: {
                     type: Sequelize.BOOLEAN
+                },
+                nod_averbacao: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_ciencia_averbacao: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

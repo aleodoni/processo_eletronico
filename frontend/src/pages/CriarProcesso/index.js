@@ -368,7 +368,7 @@ function CriarProcesso() {
                     return;
                 }
                 if (p.proCpf.trim() !== '') {
-                    if (!cpf(p.proCpf.trim())) {
+                    if (!cpf(p.proCpf.trim().replace(/[^\d]+/g, ''))) {
                         setErro('Cpf inválido.');
                         return;
                     }

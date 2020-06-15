@@ -54,6 +54,12 @@ class Manifestacao extends Model {
                 },
                 man_ciencia: {
                     type: Sequelize.STRING
+                },
+                man_averbacao: {
+                    type: Sequelize.STRING
+                },
+                man_ciencia_averbacao: {
+                    type: Sequelize.STRING
                 }
 
             },

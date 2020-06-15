@@ -197,7 +197,9 @@ class DadosProcessoController {
                 'nod_decisao',
                 'nod_dias_prazo',
                 'alerta',
-                'nod_ciencia'
+                'nod_ciencia',
+                'nod_averbacao',
+                'nod_ciencia_averbacao'
             ],
             logging: true,
             where: {

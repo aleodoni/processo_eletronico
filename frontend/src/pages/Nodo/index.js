@@ -12,6 +12,7 @@ import {
     ContainerNomeFluxo,
     ContainerCamposNodos,
     ContainerCamposNodos1,
+    ContainerCamposNodos2,
     Titulo,
 } from './styles';
 import api from '../../service/api';
@@ -30,6 +31,8 @@ import NoFim from '../../components/system/select/NoFim';
 import NoAvalExecutiva from '../../components/system/select/NoAvalExecutiva';
 import NoInteressado from '../../components/system/select/NoInteressado';
 import NoCiencia from '../../components/system/select/NoCiencia';
+import NoCienciaAverbacao from '../../components/system/select/NoCienciaAverbacao';
+import NoAverbacao from '../../components/system/select/NoAverbacao';
 import NoDecisao from '../../components/system/select/NoDecisao';
 
 function Nodo() {
@@ -44,6 +47,8 @@ function Nodo() {
         nodDecisao: -1,
         nodInteressado: -1,
         nodCiencia: -1,
+        nodAverbacao: -1,
+        nodCienciaAverbacao: -1,
         nodDiasPrazo: 0,
         nodOrdem: 0,
     });
@@ -103,6 +108,8 @@ function Nodo() {
             nodAvalExecutiva: -1,
             nodInteressado: -1,
             nodCiencia: -1,
+            nodAverbacao: -1,
+            nodCienciaAverbacao: -1,
             nodDecisao: -1,
             nodDiasPrazo: 0,
             nodOrdem: 0,
@@ -183,6 +190,8 @@ function Nodo() {
             nodAvalExecutiva: linha.nod_aval_executiva,
             nodInteressado: linha.nod_interessado,
             nodCiencia: linha.nod_ciencia,
+            nodAverbacao: linha.nod_averbacao,
+            nodCienciaAverbacao: linha.nod_ciencia_averbacao,
             nodDecisao: linha.nod_decisao,
         });
         posiciona();
@@ -214,6 +223,8 @@ function Nodo() {
         nodAvalExecutiva,
         nodInteressado,
         nodCiencia,
+        nodAverbacao,
+        nodCienciaAverbacao,
         nodDecisao,
     }) {
         try {
@@ -226,6 +237,11 @@ function Nodo() {
                 nodAvalExecutiva: Yup.boolean().oneOf([true, false], 'Tem o aval da executiva?'),
                 nodInteressado: Yup.boolean().oneOf([true, false], 'É um nó de interessado?'),
                 nodCiencia: Yup.boolean().oneOf([true, false], 'É um nó de ciência?'),
+                nodAverbacao: Yup.boolean().oneOf([true, false], 'É um nó de averbação?'),
+                nodCienciaAverbacao: Yup.boolean().oneOf(
+                    [true, false],
+                    'É um nó de ciência de averbação?'
+                ),
                 nodDecisao: Yup.boolean().oneOf([true, false], 'É um nó de decisão?'),
             });
 
@@ -239,7 +255,9 @@ function Nodo() {
                     nodAvalExecutiva,
                     nodInteressado,
                     nodDecisao,
+                    nodAverbacao,
                     nodCiencia,
+                    nodCienciaAverbacao,
                 },
                 { abortEarly: false }
             );
@@ -259,6 +277,8 @@ function Nodo() {
                         nod_aval_executiva: nodAvalExecutiva,
                         nod_interessado: nodInteressado,
                         nod_ciencia: nodCiencia,
+                        nod_averbacao: nodAverbacao,
+                        nod_ciencia_averbacao: nodCienciaAverbacao,
                         nod_decisao: nodDecisao,
                     },
                     headers: {
@@ -289,6 +309,8 @@ function Nodo() {
                         nod_aval_executiva: nodAvalExecutiva,
                         nod_interessado: nodInteressado,
                         nod_ciencia: nodCiencia,
+                        nod_averbacao: nodAverbacao,
+                        nod_ciencia_averbacao: nodCienciaAverbacao,
                         nod_decisao: nodDecisao,
                     },
                     headers: {
@@ -400,7 +422,11 @@ function Nodo() {
                                     <NoDecisao name="nodDecisao" />
                                     <NoInteressado name="nodInteressado" />
                                     <NoCiencia name="nodCiencia" />
+                                    <NoAverbacao name="nodAverbacao" />
                                 </ContainerCamposNodos1>
+                                <ContainerCamposNodos2>
+                                    <NoCienciaAverbacao name="nodCienciaAverbacao" />
+                                </ContainerCamposNodos2>
                                 <ButtonContainer>
                                     <Salvar name="btnSalva" type="submit" />
 
@@ -423,6 +449,12 @@ function Nodo() {
                                         { title: 'Decisivo', field: 'decisao', width: 100 },
                                         { title: 'Interessado', field: 'interessado', width: 100 },
                                         { title: 'Ciência', field: 'ciencia', width: 100 },
+                                        { title: 'Averbação', field: 'averbacao', width: 100 },
+                                        {
+                                            title: 'Ciência da averbação',
+                                            field: 'ciencia_averbacao',
+                                            width: 100,
+                                        },
                                     ]}
                                     data={nodos}
                                     fillData={preencheCampos}

@@ -150,6 +150,7 @@ function CriarManifestacaoCiencia(props) {
                 man_id_area: manIdArea,
                 man_visto_executiva: 'Não necessário',
                 man_ciencia: 'Ciente do processo',
+                man_averbacao: 'Não necessário',
                 nod_id: nodId,
             },
             headers: {
@@ -306,7 +307,7 @@ function CriarManifestacaoCiencia(props) {
                     },
                 })
                     .then(() => {
-                        mensagem.success('Decisão apagada com sucesso.');
+                        mensagem.success('Decisão ciência com sucesso.');
                         carregaAnexos(manId);
                         carregaManifestacaoProcesso();
                     })

@@ -158,7 +158,8 @@ function CriarManifestacaoVisto(props) {
                 man_id_area: manIdArea,
                 man_visto_executiva: manVistoExecutiva,
                 nod_id: nodId,
-                nod_ciencia: null,
+                man_ciencia: 'Não necessário',
+                man_averbacao: 'Não necessário',
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),

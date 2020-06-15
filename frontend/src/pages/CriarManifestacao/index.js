@@ -14,7 +14,7 @@ import Select from '../../components/layout/Select';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
-import Arquivar from '../../components/layout/button/Arquivar';
+import Finalizar from '../../components/layout/button/Finalizar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
@@ -40,11 +40,11 @@ function CriarManifestacao(props) {
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
+    const [nodFim, setNodFim] = useState(false);
     const [proIdModal, setProId] = useState(-1);
     const [tmnId, setTmnId] = useState('-1');
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
-    const [nodFim, setNodFim] = useState(false);
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [tiposManifestacao, setTiposManifestacao] = useState([]);
@@ -183,7 +183,8 @@ function CriarManifestacao(props) {
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
-                        man_ciencia: null,
+                        man_ciencia: 'Não necessário',
+                        man_averbacao: 'Não necessário',
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -513,6 +514,39 @@ function CriarManifestacao(props) {
             });
     }
 
+    function finaliza() {
+        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        const usuario = sessionStorage.getItem('usuario');
+
+        axios({
+            method: 'PUT',
+            url: `/encerra/${props.match.params.proId}`,
+            data: {
+                usuario,
+                areaId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                const msg = `Processo encerrado com sucesso.`;
+                mensagem.success(msg, {
+                    position: 'top-center',
+                    autoClose: 7000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                history.push('/home');
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }
+
     function consulta() {
         history.push('/processo-consulta');
     }
@@ -628,7 +662,7 @@ function CriarManifestacao(props) {
                             {manifestacaoProcesso.length > 0 ? (
                                 <>
                                     {nodFim ? (
-                                        <Arquivar name="btnArquiva" clickHandler={tramita} />
+                                        <Finalizar name="btnFinaliza" clickHandler={finaliza} />
                                     ) : (
                                         <Tramitar name="btnTramita" clickHandler={tramita} />
                                     )}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
-import { toast as mensagem } from 'react-toastify';
 import { FaFileAlt, FaSistrix } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
 
@@ -66,7 +65,7 @@ function Home() {
         carregaGridArea();
     }, [carregaGridArea]);
 
-    function criaManifestacao(id, aval, noDecisao, noCiencia) {
+    function criaManifestacao(id, aval, noDecisao, noCiencia, noAverbacao, noCienciaAverbacao) {
         // se tiver o aval da executiva a manifestação é diferenciada
         if (aval) {
             if (noDecisao) {
@@ -77,6 +76,12 @@ function Home() {
             // se for uma ciência a manifestação é diferenciada
         } else if (noCiencia) {
             history.push(`/manifestacao-cria-ciencia/${id}`);
+            // se se for uma averbação a manifestação é diferenciada
+        } else if (noAverbacao) {
+            history.push(`/manifestacao-cria-averbacao/${id}`);
+            // se se for uma ciência de averbação a manifestação é diferenciada
+        } else if (noCienciaAverbacao) {
+            history.push(`/manifestacao-cria-ciencia-averbacao/${id}`);
         } else {
             history.push(`/manifestacao-cria/${id}`);
         }
@@ -149,7 +154,9 @@ function Home() {
                                                                                     proc.pro_id,
                                                                                     proc.nod_aval_executiva,
                                                                                     proc.nod_decisao,
-                                                                                    proc.nod_ciencia
+                                                                                    proc.nod_ciencia,
+                                                                                    proc.nod_averbacao,
+                                                                                    proc.nod_ciencia_averbacao
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -167,7 +174,9 @@ function Home() {
                                                                                     proc.pro_id,
                                                                                     proc.nod_aval_executiva,
                                                                                     proc.nod_decisao,
-                                                                                    proc.nod_ciencia
+                                                                                    proc.nod_ciencia,
+                                                                                    proc.nod_averbacao,
+                                                                                    proc.nod_ciencia_averbacao
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -185,7 +194,9 @@ function Home() {
                                                                                     proc.pro_id,
                                                                                     proc.nod_aval_executiva,
                                                                                     proc.nod_decisao,
-                                                                                    proc.nod_ciencia
+                                                                                    proc.nod_ciencia,
+                                                                                    proc.nod_averbacao,
+                                                                                    proc.nod_ciencia_averbacao
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -203,7 +214,9 @@ function Home() {
                                                                                     proc.pro_id,
                                                                                     proc.nod_aval_executiva,
                                                                                     proc.nod_decisao,
-                                                                                    proc.nod_ciencia
+                                                                                    proc.nod_ciencia,
+                                                                                    proc.nod_averbacao,
+                                                                                    proc.nod_ciencia_averbacao
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
