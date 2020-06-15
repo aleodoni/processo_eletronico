@@ -111,7 +111,7 @@ function Tramite(props) {
     }
 
     function mostraDetalhesProcesso() {
-        alert('aqui vai mostrar dialog de dados do processo.');
+        // alert('aqui vai mostrar dialog de dados do processo.');
     }
 
     function tramita() {

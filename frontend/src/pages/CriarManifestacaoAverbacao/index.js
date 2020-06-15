@@ -13,10 +13,9 @@ import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
-import DecisaoExecutiva from '../../components/system/select/DecisaoExecutiva';
+import Averbacao from '../../components/system/select/Averbacao';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
-import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
 
 import {
@@ -30,13 +29,13 @@ import {
     Titulo,
 } from './styles';
 
-function CriarManifestacaoExecutiva(props) {
+function CriarManifestacaoAverbacao(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
-        manVistoExecutiva: -1,
+        manAverbacao: '-1',
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
@@ -46,10 +45,8 @@ function CriarManifestacaoExecutiva(props) {
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
-    const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
-    const [decisivo, setDecisivo] = useState(false);
     const [nodId, setNodId] = useState('');
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
@@ -87,35 +84,11 @@ function CriarManifestacaoExecutiva(props) {
         setModalTramitaUm(false);
     }
 
-    function abreModalTramitaVarios(dados) {
-        setDadosTramite(dados);
-        setModalTramitaVarios(true);
-    }
-
-    function fechaModalTramitaVarios() {
-        setModalTramitaVarios(false);
-    }
-
-    async function consultaDecisao() {
-        api.defaults.headers.Authorization = sessionStorage.getItem('token');
-
-        try {
-            const response = await api.get(`/manifestacoes/${props.match.params.proId}`);
-            if (response.data) {
-                setDecisivo(true);
-            } else {
-                setDecisivo(false);
-            }
-        } catch (err) {
-            mensagem.error(`Falha na autenticação - ${err}`);
-        }
-    }
-
     function limpaCampos() {
         setManId(null);
         setManifestacao({
             ...manifestacao,
-            manVistoExecutiva: -1,
+            manAverbacao: '-1',
         });
         setErro('');
 
@@ -133,17 +106,17 @@ function CriarManifestacaoExecutiva(props) {
         }
     }
 
-    function criaManifestacaoExecutiva({ proId, manVistoExecutiva }) {
-        // Manifestação da executiva
-        const TIPO_MANIFESTACAO_EXECUTIVA = 5;
+    function criaManifestacaoAverbacao({ proId, manAverbacao }) {
+        // Manifestação de averbação
+        const TIPO_MANIFESTACAO_AVERBACAO = 11;
 
-        // Aval da Comissão Executiva
-        const TIPO_DOCUMENTO_EXECUTIVA = 27;
+        // Tipo de documento de averbação
+        const TIPO_DOCUMENTO_AVERBACAO = 32;
 
         const manLogin = sessionStorage.getItem('usuario');
         const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        if (manVistoExecutiva === '-1') {
-            setErro('Selecione o visto da executiva.');
+        if (manAverbacao === '-1') {
+            setErro('Selecione a averbação.');
             return;
         }
         axios({
@@ -152,14 +125,14 @@ function CriarManifestacaoExecutiva(props) {
             data: {
                 man_id: null,
                 pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_EXECUTIVA,
-                tpd_id: TIPO_DOCUMENTO_EXECUTIVA,
+                tmn_id: TIPO_MANIFESTACAO_AVERBACAO,
+                tpd_id: TIPO_DOCUMENTO_AVERBACAO,
                 man_login: manLogin,
                 man_id_area: manIdArea,
-                man_visto_executiva: manVistoExecutiva,
+                man_visto_executiva: 'Não necessário',
                 nod_id: nodId,
                 man_ciencia: 'Não necessário',
-                man_averbacao: 'Não necessário',
+                man_averbacao: manAverbacao,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -252,7 +225,6 @@ function CriarManifestacaoExecutiva(props) {
         async function carrega() {
             await carregaDadosProcesso();
             await carregaManifestacaoProcesso();
-            await consultaDecisao();
         }
         carrega();
     }, []);
@@ -288,7 +260,9 @@ function CriarManifestacaoExecutiva(props) {
     }
 
     function tramita() {
-        // aqui vai verificar se vai tramitar para um ou para vários
+        // Verifica qual foi a averbação selecionada
+        const averbacao = manifestacaoProcesso[0].man_averbacao;
+
         axios({
             method: 'GET',
             url: `/proximo-tramite/${props.match.params.proId}`,
@@ -302,13 +276,19 @@ function CriarManifestacaoExecutiva(props) {
                     mensagem.info('Sem próximos trâmites.');
                     return;
                 }
-                // se for um abre modal para um
-                if (res.data.length === 1) {
+                // alert(averbacao);
+
+                if (averbacao === 'Favorável') {
                     abreModalTramitaUm(res.data[0]);
+                } else if (averbacao === 'Parcialmente favorável') {
+                    // alert(JSON.stringify(res.data[1], null, 4));
+                    abreModalTramitaUm(res.data[1]);
+                } else if (averbacao === 'Desfavorável') {
+                    abreModalTramitaUm(res.data[1]);
+                } else {
+                    mensagem.info('Erro ao tramitar.');
                 }
-                if (res.data.length > 1) {
-                    abreModalTramitaVarios(res.data);
-                }
+                // alert(JSON.stringify(res.data, null, 4));
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
@@ -326,7 +306,7 @@ function CriarManifestacaoExecutiva(props) {
     function insereTramite(prxId, setId) {
         axios({
             method: 'POST',
-            url: '/tramites',
+            url: '/tramites-averbacao',
             data: {
                 tra_id: null,
                 prx_id: prxId,
@@ -349,10 +329,11 @@ function CriarManifestacaoExecutiva(props) {
     }
 
     function incluiAnexo(e) {
-        // Manifestação da presidência
-        const TIPO_MANIFESTACAO_PRESIDENCIA = 8;
-        // Aval da presidência
-        const TIPO_DOCUMENTO_PRESIDENCIA = 28;
+        // Manifestação de averbação
+        const TIPO_MANIFESTACAO_AVERBACAO = 11;
+
+        // Tipo de documento de averbação
+        const TIPO_DOCUMENTO_AVERBACAO = 32;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -366,13 +347,13 @@ function CriarManifestacaoExecutiva(props) {
                     data: {
                         man_id: null,
                         pro_id: Number(props.match.params.proId),
-                        tmn_id: TIPO_MANIFESTACAO_PRESIDENCIA,
+                        tmn_id: TIPO_MANIFESTACAO_AVERBACAO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
-                        man_visto_executiva: document.getElementById('manVistoExecutiva').value,
+                        man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
                         man_ciencia: 'Não necessário',
-                        man_averbacao: 'Não necessário',
+                        man_averbacao: document.getElementById('manAverbacao').value,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -395,7 +376,7 @@ function CriarManifestacaoExecutiva(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO_PRESIDENCIA,
+                                tpd_id: TIPO_DOCUMENTO_AVERBACAO,
                                 arq_login: sessionStorage.getItem('usuario'),
                             },
                         })
@@ -448,13 +429,9 @@ function CriarManifestacaoExecutiva(props) {
         }
     }
 
-    const verificaVisto = e => {
-        if (document.getElementById('manVistoExecutiva').value === '-1') {
-            if (decisivo) {
-                setErro('Selecione a decisão.');
-            } else {
-                setErro('Selecione o visto.');
-            }
+    const verificaAverbacao = e => {
+        if (document.getElementById('manAverbacao').value === '-1') {
+            setErro('Selecione a averbação.');
             e.preventDefault();
         }
     };
@@ -462,16 +439,13 @@ function CriarManifestacaoExecutiva(props) {
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Criar manifestação executiva" />
+                <Autorizacao tela="Criar averbação" />
                 <Main>
                     <Titulo>
                         {manifestacaoProcesso.length > 0 ? (
-                            <p>
-                                Decisão e visto da executiva:{' '}
-                                {manifestacaoProcesso[0].man_visto_executiva}
-                            </p>
+                            <p>Averbação: {manifestacaoProcesso[0].man_averbacao}</p>
                         ) : (
-                            <p>Decisão e visto da executiva</p>
+                            <p>Averbação de tempo de serviço</p>
                         )}
                         <hr />
                     </Titulo>
@@ -488,15 +462,12 @@ function CriarManifestacaoExecutiva(props) {
                     <Form
                         ref={formRef}
                         initialData={manifestacao}
-                        onSubmit={criaManifestacaoExecutiva}>
+                        onSubmit={criaManifestacaoAverbacao}>
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
                                 <Input name="manId" type="hidden" />
                                 <Input name="proId" type="hidden" />
-                                <DecisaoExecutiva
-                                    name="manVistoExecutiva"
-                                    changeHandler={() => limpaErros()}
-                                />
+                                <Averbacao name="manAverbacao" changeHandler={() => limpaErros()} />
                             </Container2>
                         ) : null}
                         <ContainerBotoes>
@@ -512,7 +483,7 @@ function CriarManifestacaoExecutiva(props) {
                                         onChange={incluiAnexo}
                                         id="anexo"
                                         onClick={e => {
-                                            verificaVisto(e);
+                                            verificaAverbacao(e);
                                         }}
                                     />
                                 </>
@@ -532,12 +503,6 @@ function CriarManifestacaoExecutiva(props) {
                     <ModalTramitaUm
                         modalTramitaUm={modalTramitaUm}
                         fechaModalTramitaUm={fechaModalTramitaUm}
-                        tramita={insereTramite}
-                        dados={dadosTramite}
-                    />
-                    <ModalTramitaVarios
-                        modalTramitaVarios={modalTramitaVarios}
-                        fechaModalTramitaVarios={fechaModalTramitaVarios}
                         tramita={insereTramite}
                         dados={dadosTramite}
                     />
@@ -604,7 +569,7 @@ function CriarManifestacaoExecutiva(props) {
     );
 }
 
-CriarManifestacaoExecutiva.propTypes = {
+CriarManifestacaoAverbacao.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
             proId: PropTypes.string,
@@ -612,4 +577,4 @@ CriarManifestacaoExecutiva.propTypes = {
     }).isRequired,
 };
 
-export default CriarManifestacaoExecutiva;
+export default CriarManifestacaoAverbacao;

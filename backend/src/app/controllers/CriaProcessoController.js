@@ -167,6 +167,7 @@ class CriaProcessoController {
         if (!tipoProcesso) {
             return res.status(400).json({ error: 'Tipo de processo não encontrado' });
         }
+
         const prazo = tipoProcesso.tpr_prazo_recurso;
         await processo.update({
             pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,

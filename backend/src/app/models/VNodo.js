@@ -61,6 +61,18 @@ class VNodo extends Model {
                 },
                 ciencia: {
                     type: Sequelize.STRING
+                },
+                nod_averbacao: {
+                    type: Sequelize.BOOLEAN
+                },
+                averbacao: {
+                    type: Sequelize.STRING
+                },
+                nod_ciencia_averbacao: {
+                    type: Sequelize.BOOLEAN
+                },
+                ciencia_averbacao: {
+                    type: Sequelize.STRING
                 }
             },
             {

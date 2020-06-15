@@ -195,6 +195,7 @@ routes.get(`${process.env.API_URL}/arquivos-manifestacao/:manId`, ArquivoControl
 routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
 routes.post(`${process.env.API_URL}/arquivo-visto-executiva`, ManifestacaoController.criaPdfVistoExecutiva);
 routes.post(`${process.env.API_URL}/arquivo-ciencia`, ManifestacaoController.criaPdfCiencia);
+routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao`, ManifestacaoController.criaPdfCienciaAverbacao);
 
 // rota de inserção de anexo em processo
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {
@@ -247,6 +248,7 @@ routes.delete(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteCont
 routes.get(`${process.env.API_URL}/tramites`, TramiteController.index);
 routes.get(`${process.env.API_URL}/grid-tramites/:id`, TramiteController.gridTramite);
 routes.post(`${process.env.API_URL}/tramites`, TramiteController.store);
+routes.post(`${process.env.API_URL}/tramites-averbacao`, TramiteController.criaTramiteAverbacao);
 // rota de envio de processo
 routes.get(`${process.env.API_URL}/processo-envia/:id`, TramiteController.processosEnvio);
 // rotas de recebimento de processo
