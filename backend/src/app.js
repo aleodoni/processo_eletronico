@@ -1,5 +1,4 @@
 import express from 'express';
-import Youch from 'youch';
 import 'express-async-errors';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -57,8 +56,12 @@ class App {
     exceptionHandler() {
         this.server.use(async(err, req, res, next) => {
             if (process.env.NODE_ENV === 'development') {
-                const errors = await new Youch(err, req).toJSON();
-                return res.status(500).json(errors);
+                if (err instanceof AppError) {
+                    return res.status(err.statusCode).json({
+                        status: 'error',
+                        message: err.message
+                    });
+                }
             }
 
             if (err instanceof AppError) {
