@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import winston from './config/log';
 import routes from './routes';
 import './database';
+import AppError from './app/error/AppError';
 
 class App {
     constructor() {
@@ -56,6 +57,13 @@ class App {
             if (process.env.NODE_ENV === 'development') {
                 const errors = await new Youch(err, req).toJSON();
                 return res.status(500).json(errors);
+            }
+
+            if (err instanceof AppError) {
+                return res.status(err.statusCode).json({
+                    status: 'error',
+                    message: err.message
+                });
             }
             return res.status(500).json({ error: 'Erro interno no servidor.' });
         });
