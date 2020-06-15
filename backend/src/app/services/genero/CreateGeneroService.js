@@ -1,4 +1,4 @@
-import AppError from '../error/AppError';
+import AppError from '../../error/AppError';
 
 class CreateGeneroService {
     constructor(generoModel) {
