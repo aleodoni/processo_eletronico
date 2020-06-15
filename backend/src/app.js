@@ -10,6 +10,7 @@ import winston from './config/log';
 import routes from './routes';
 import './database';
 import AppError from './app/error/AppError';
+import rateLimiter from './app/middlewares/rateLimiter';
 
 class App {
     constructor() {
@@ -24,7 +25,8 @@ class App {
     }
 
     middlewares() {
-    // configura o express
+        // configura o express
+        this.server.use(rateLimiter);
         this.server.use(express.json());
         // formata o JSON retornado
         this.server.set('json spaces', 4);
