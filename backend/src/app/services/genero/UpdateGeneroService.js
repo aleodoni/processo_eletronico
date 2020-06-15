@@ -1,3 +1,5 @@
+import AppError from '../error/AppError';
+
 class UpdateGeneroService {
     constructor(generoModel) {
         this.generoModel = generoModel;
@@ -7,7 +9,7 @@ class UpdateGeneroService {
         const genero = await this.generoModel.findByPk(id, { logging: true });
 
         if (!genero) {
-            throw new Error('Gênero não encontrado.');
+            throw new AppError('Gênero não encontrado.');
         }
 
         const updatedGenero = await genero.update({ gen_nome }, { logging: true });

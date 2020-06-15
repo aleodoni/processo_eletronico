@@ -5,6 +5,7 @@ import CreateGeneroService from '../services/genero/CreateGeneroService';
 import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
 import DeleteGeneroService from '../services/genero/DeleteGeneroService';
 import UpdateGeneroService from '../services/genero/UpdateGeneroService';
+import AppError from '../error/AppError';
 
 class GeneroController {
     async index(req, res) {
@@ -65,7 +66,7 @@ class GeneroController {
             await createAuditoria.execute(genero._previousDataValues, url, headers.usuario, headers.host, 'D', req.params.id);
             //
         } catch (err) {
-            throw new Error('Erro ao excluir gênero. O gênero possui uma ou mais ligações.');
+            throw new AppError('Erro ao excluir gênero. O gênero possui uma ou mais ligações.');
         }
 
         return res.send();

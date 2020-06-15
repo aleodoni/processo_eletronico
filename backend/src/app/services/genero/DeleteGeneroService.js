@@ -1,3 +1,5 @@
+import AppError from '../error/AppError';
+
 class DeleteGeneroService {
     constructor(generoModel) {
         this.generoModel = generoModel;
@@ -7,7 +9,7 @@ class DeleteGeneroService {
         const genero = await this.generoModel.findByPk(id, {});
 
         if (!genero) {
-            throw new Error('Gênero não encontrado');
+            throw new AppError('Gênero não encontrado');
         }
 
         await genero.destroy({ where: { gen_id: id } });
