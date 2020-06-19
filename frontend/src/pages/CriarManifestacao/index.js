@@ -496,6 +496,7 @@ function CriarManifestacao(props) {
             },
         })
             .then(res => {
+                // alert(res.data.length);
                 // se não tiver registros
                 if (res.data.length === 0) {
                     mensagem.info('Sem próximos trâmites.');

@@ -20,6 +20,7 @@ import VTelaMenu from '../app/models/VTelaMenu';
 import VDadosPessoa from '../app/models/VDadosPessoa';
 import Auditoria from '../app/models/Auditoria';
 import Processo from '../app/models/Processo';
+import ProcessoOrigem from '../app/models/ProcessoOrigem';
 import Nodo from '../app/models/Nodo';
 import VNodo from '../app/models/VNodo';
 import VDadosProcesso from '../app/models/VDadosProcesso';
@@ -35,6 +36,7 @@ import VNodoFluxo from '../app/models/VNodoFluxo';
 import VProximoTramite from '../app/models/VProximoTramite';
 import VProcessoEnvia from '../app/models/VProcessoEnvia';
 import VProcessoRecebe from '../app/models/VProcessoRecebe';
+import VProcessoOrigem from '../app/models/VProcessoOrigem';
 import VProximoTramiteNormal from '../app/models/VProximoTramiteNormal';
 import Tramite from '../app/models/Tramite';
 import VTramite from '../app/models/VTramite';
@@ -72,6 +74,7 @@ const models = [
     VDadosPessoa,
     Fluxo,
     Processo,
+    ProcessoOrigem,
     Nodo,
     VNodo,
     VDadosProcesso,
@@ -97,7 +100,8 @@ const models = [
     VDecisaoPessoal,
     VTipoDocumento,
     VManifestacao,
-    VManifestacaoProcesso
+    VManifestacaoProcesso,
+    VProcessoOrigem
 ];
 
 class Database {

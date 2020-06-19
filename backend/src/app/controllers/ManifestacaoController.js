@@ -116,7 +116,22 @@ class ManifestacaoController {
 
         const pdfDoc = await PDFDocument.create();
         const page = pdfDoc.addPage();
-        page.drawText('Visto da executiva! Usuário: ' + req.body.usuario);
+        const cabecalhoCMC = 'Câmara Municipal de Curitiba';
+        const cabecalhoDocumento = 'Visto da Comissão Executiva';
+        page.drawText(cabecalhoCMC, {
+            x: 40,
+            y: 450,
+            size: 20,
+            color: rgb(0, 0.53, 0.71)
+        });
+        page.drawText(cabecalhoDocumento, {
+            x: 60,
+            y: 450,
+            size: 16,
+            color: rgb(0, 0.53, 0.71)
+        });
+
+        // page.drawText('Visto da executiva! Usuário: ' + req.body.usuario);
         const pdfBytes = await pdfDoc.save();
         console.log(caminho);
         fs.writeFileSync(caminho, Buffer.from(pdfBytes));

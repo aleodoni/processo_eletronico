@@ -162,6 +162,8 @@ routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 
 // rotas de criação de processo
 routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
+routes.get(`${process.env.API_URL}/processo-origem/:id`, CriaProcessoController.processoOrigem);
+routes.get(`${process.env.API_URL}/combo-processos-pensao-alimenticia`, CriaProcessoController.processosDescontoFolhaDeterminacaoJudicial);
 routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 
 // rota de pesquisa de processo

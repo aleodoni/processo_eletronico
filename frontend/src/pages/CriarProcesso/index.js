@@ -17,6 +17,7 @@ import {
     ContainerIniciativa,
     ContainerDadosServidorPublico,
     ContainerNome,
+    ContainerRevisaoPensaoAlimenticia,
     ContainerBotoes,
     Erro,
     BotaoProcura,
@@ -60,13 +61,16 @@ function CriarProcesso() {
     const [cnpjVisivel, setCnpjVisivel] = useState(false);
     const [areaVisivel, setAreaVisivel] = useState(false);
     const [assuntoVisivel, setAssuntoVisivel] = useState(false);
+    const [revisaoPensaoAlimenticiaVisivel, setRevisaoPensaoAlimenticiaVisivel] = useState(false);
 
     const [tiposProcesso, setTiposProcesso] = useState([]);
     const [tiposIniciativa, setTiposIniciativa] = useState([]);
     const [generos, setGeneros] = useState([]);
     const [areas, setAreas] = useState([]);
+    const [pensoesAlimenticias, setPensoesAlimenticias] = useState([]);
 
     const DEMAIS_PROCESSOS = '26';
+    const REVISAO_DESCONTO_PENSAO_ALIMENTICIA = '246';
 
     const formRef = useRef(null);
 
@@ -145,11 +149,37 @@ function CriarProcesso() {
         }
     }
 
+    async function carregaPensaoAlimenticia() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/combo-processos-pensao-alimenticia');
+
+            const data = response.data.map(processoPensao => {
+                return {
+                    label: `${processoPensao.pro_codigo} - ${processoPensao.pro_nome}`,
+                    value: processoPensao.pro_id,
+                };
+            });
+            setPensoesAlimenticias(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    // combo-processos-pensao-alimenticia
+
     function handleTprId(e) {
         // demais processos
         if (e.target.value === DEMAIS_PROCESSOS) {
             setAssuntoVisivel(true);
         } else {
+            if (e.target.value === REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
+                carregaPensaoAlimenticia();
+                setRevisaoPensaoAlimenticiaVisivel(true);
+            } else {
+                setRevisaoPensaoAlimenticiaVisivel(false);
+            }
             setAssuntoVisivel(false);
         }
     }
@@ -420,6 +450,29 @@ function CriarProcesso() {
                 }
             }
         }
+        // aqui valida se for pensão alimentícia
+        if (p.tprId === '246') {
+            if (p.proCpf.trim() === '') {
+                setErro('Cpf obrigatório.');
+                return;
+            }
+            if (!cpf(p.proCpf.trim().replace(/[^\d]+/g, ''))) {
+                setErro('Cpf inválido.');
+                return;
+            }
+            if (p.proPensao === '-1') {
+                setErro('Selecione o processo.');
+                return;
+            }
+        }
+        let pensao;
+        if (p.proPensao !== '-1' && p.proPensao !== undefined) {
+            pensao = Number(p.proPensao);
+        } else {
+            pensao = null;
+        }
+
+        //
         let cpfNumeros;
         let cnpjNumeros;
         if (p.proCpf !== '' && p.proCpf !== undefined) {
@@ -457,6 +510,7 @@ function CriarProcesso() {
                 pro_contato_pj: p.proContatoPj,
                 pro_autuacao: null,
                 pro_recurso: false,
+                pro_pensao: pensao,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -553,6 +607,7 @@ function CriarProcesso() {
         setEmailVisivel(false);
         setCnpjVisivel(false);
         setAreaVisivel(false);
+        setRevisaoPensaoAlimenticiaVisivel(false);
         iniciaTipoProcesso();
         formRef.current.setFieldValue('genId', '-1');
         formRef.current.setFieldValue('proIniciativa', '-1');
@@ -703,6 +758,15 @@ function CriarProcesso() {
                                 onChange={handleTprId}
                             />
                         </ContainerCriaProcesso>
+                        {revisaoPensaoAlimenticiaVisivel ? (
+                            <ContainerRevisaoPensaoAlimenticia>
+                                <Select
+                                    name="proPensao"
+                                    label="Selecione o processo"
+                                    options={pensoesAlimenticias}
+                                />
+                            </ContainerRevisaoPensaoAlimenticia>
+                        ) : null}
                         {assuntoVisivel ? (
                             <ContainerAssunto>
                                 <TextArea name="proAssunto" label="Assunto" rows={30} cols={100} />
