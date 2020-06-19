@@ -21,11 +21,11 @@ class CreateSetorService {
             throw new AppError('Área inválida');
         }
 
-        const genero = await this.setorModel.create({ set_id, set_nome, set_sigla, set_id_area, set_ativo, set_tipo }, {
+        const setor = await this.setorModel.create({ set_id, set_nome, set_sigla, set_id_area, set_ativo, set_tipo }, {
             logging: false
         });
 
-        return genero.toJSON();
+        return setor.toJSON();
     }
 }
 
