@@ -84,6 +84,13 @@ export const ContainerTramitacao = styled.div`
     }
 `;
 
+export const ContainerProcessoOrigem = styled.div`
+    display: grid;
+    grid-template-columns: 1253px;
+    grid-column-gap: 10px;
+    margin-bottom: 20px;
+`;
+
 export const ContainerBotoes = styled.div`
     display: grid;
     grid-template-columns: 195px 180px 180px;

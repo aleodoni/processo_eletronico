@@ -3,6 +3,10 @@
 /* eslint-disable camelcase */
 import VDadosPessoa from '../models/VDadosPessoa';
 import Processo from '../models/Processo';
+import ProcessoOrigem from '../models/ProcessoOrigem';
+import VProcessoOrigem from '../models/VProcessoOrigem';
+import VDadosProcesso from '../models/VDadosProcesso';
+import VDadosLogin from '../models/VDadosLogin';
 import TipoProcesso from '../models/TipoProcesso';
 import Nodo from '../models/Nodo';
 import DataHoraAtual from '../models/DataHoraAtual';
@@ -19,6 +23,29 @@ class CriaProcessoController {
             }
         });
         return res.json(dadosPessoas);
+    }
+
+    async processosDescontoFolhaDeterminacaoJudicial(req, res) {
+        const TIPO_PENSAO_ALIMENTICIA = 25;
+        const processos = await VDadosProcesso.findAll({
+            attributes: ['pro_id', 'pro_codigo', 'pro_matricula', 'pro_nome', 'cpf', 'tpr_id'],
+            logging: true,
+            where: {
+                tpr_id: TIPO_PENSAO_ALIMENTICIA
+            }
+        });
+        return res.json(processos);
+    }
+
+    async processoOrigem(req, res) {
+        const processoOrigem = await VProcessoOrigem.findAll({
+            attributes: ['pro_id_origem', 'pro_id_atual', 'processo_origem'],
+            logging: true,
+            where: {
+                pro_id_atual: req.params.id
+            }
+        });
+        return res.json(processoOrigem);
     }
 
     async store(req, res) {
@@ -66,9 +93,10 @@ class CriaProcessoController {
         });
         req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
 
-        // com o tpr_id verifico qual é o nó de início do fluxo
+        // com o tpr_id verifico qual é o nó de início do fluxo e se
+        // o processo é pessoal ou não
         const tipoProcesso = await TipoProcesso.findAll({
-            attributes: ['tpr_id', 'flu_id'],
+            attributes: ['tpr_id', 'flu_id', 'tpr_pessoal'],
             logging: false,
             plain: true,
             where: {
@@ -76,6 +104,45 @@ class CriaProcessoController {
             }
         });
 
+        const tipoPessoal = tipoProcesso.dataValues.tpr_pessoal;
+        let areaPessoa;
+        // se for do tipo pessoal vou procurar pela matrícula ou pelo cpf
+        // na view da elotech e na tabela de lotação
+        if (tipoPessoal) {
+            if (req.body.pro_matricula !== null && req.body.pro_matricula !== undefined) {
+                // procura na tabela de lotação a área
+                const lotacao = await VDadosLogin.findAll({
+                    attributes: ['matricula', 'set_id_area'],
+                    logging: false,
+                    plain: true,
+                    where: {
+                        matricula: req.body.pro_matricula.trim()
+                    }
+                });
+                areaPessoa = lotacao.dataValues.set_id_area;
+            } else if (req.body.pro_cpf !== null && req.body.pro_cpf !== undefined) {
+                const dadosPessoa = await VDadosPessoa.findAll({
+                    attributes: ['pes_matricula', 'pes_cpf'],
+                    logging: false,
+                    plain: true,
+                    where: {
+                        pes_cpf: req.body.pro_cpf
+                    }
+                });
+                const lotacao = await VDadosLogin.findAll({
+                    attributes: ['matricula', 'set_id_area'],
+                    logging: false,
+                    plain: true,
+                    where: {
+                        matricula: dadosPessoa.dataValues.pes_matricula
+                    }
+                });
+                areaPessoa = lotacao.dataValues.set_id_area;
+            } else {
+                return res.status(400).json({ error: 'Erro ao retornar dados de área de pessoa.' });
+            }
+            req.body.area_id_iniciativa = areaPessoa;
+        }
         const fluId = tipoProcesso.dataValues.flu_id;
         const nodo = await Nodo.findAll({
             attributes: ['nod_id', 'flu_id', 'nod_inicio'],
@@ -125,6 +192,16 @@ class CriaProcessoController {
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', pro_id);
         //
+
+        // se tiver revisão de desconto de pensão alimentícia grava na tabela
+        // de processo_origem
+        if (req.body.pro_pensao !== null && req.body.pro_pensao !== undefined) {
+            const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: req.body.pro_pensao, pro_id_atual: pro_id }, {
+                logging: true
+            });
+            console.log(JSON.stringify(processoOrigem, null, 4));
+        }
+
         return res.json({
             pro_id,
             tpr_id,

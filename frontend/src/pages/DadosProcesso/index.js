@@ -13,6 +13,7 @@ import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
 import ModalFluxo from '../../components/ModalFluxo';
 import TabelaManifestacoes from '../../components/TabelaManifestacoes';
 import TabelaTramitacao from '../../components/TabelaTramitacao';
+import TabelaProcessoOrigem from '../../components/TabelaProcessoOrigem';
 import {
     Container,
     Main,
@@ -22,6 +23,7 @@ import {
     ContainerBotoes,
     ContainerManifestacoes,
     ContainerTramitacao,
+    ContainerProcessoOrigem,
 } from './styles';
 
 require('dotenv').config();
@@ -142,6 +144,9 @@ function DadosProcesso({ match }) {
                                             <br />
                                         </ContainerBotoes>
                                     )}
+                                    <ContainerProcessoOrigem>
+                                        <TabelaProcessoOrigem proId={proId} />
+                                    </ContainerProcessoOrigem>
                                     <ContainerIniciativa>
                                         <p>Iniciativa</p>
                                         <fieldset>

@@ -90,12 +90,13 @@ class TramiteController {
                 'pro_id',
                 'nod_id',
                 'tpr_id',
+                'area_id_iniciativa',
                 'usu_autuador'
             ],
             logging: true,
             plain: true
         });
-        const usuAutuador = processo.dataValues.usu_autuador;
+        const areaProcesso = processo.dataValues.area_id_iniciativa;
         const tprId = processo.dataValues.tpr_id;
         // 05/05/2020 - tenho que pegar o próximo
         const tipoProcesso = await TipoProcesso.findAll({
@@ -126,6 +127,7 @@ class TramiteController {
             },
             logging: true
         });
+        // console.log(JSON.stringify(proximo, null, 4));
         const Op = Sequelize.Op;
         const areas = await Area.findAll({
             order: ['set_nome'],
@@ -164,6 +166,7 @@ class TramiteController {
                     logging: true,
                     plain: true
                 });
+                console.log(JSON.stringify(nodoProximo, null, 4));
 
                 // aqui verifica se o nó próximo é um nó interessado, se for vai tramitar somente para esse nó
                 if (tipoProcesso.dataValues.tpr_pessoal && nodoProximo.dataValues.nod_interessado) {
@@ -175,7 +178,8 @@ class TramiteController {
                             'pes_login'
                         ],
                         where: {
-                            pes_login: usuAutuador
+                            // pes_login: usuAutuador
+                            area_id: areaProcesso
                         },
                         logging: true,
                         plain: true
@@ -199,7 +203,8 @@ class TramiteController {
                             'pes_login'
                         ],
                         where: {
-                            pes_login: usuAutuador
+                            // pes_login: usuAutuador
+                            area_id: areaProcesso
                         },
                         logging: true,
                         plain: true
