@@ -18,6 +18,7 @@ import {
     ContainerDadosServidorPublico,
     ContainerNome,
     ContainerRevisaoPensaoAlimenticia,
+    ContainerAbonoPermanencia,
     ContainerBotoes,
     Erro,
     BotaoProcura,
@@ -29,6 +30,7 @@ import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import CriaProcesso from '../../components/layout/button/CriaProcesso';
 import Iniciativa from '../../components/system/select/Iniciativa';
+import ComAbono from '../../components/system/select/ComAbono';
 import { cpf, cnpj } from '../../utils/validaCpfCnpj';
 
 function CriarProcesso() {
@@ -62,6 +64,10 @@ function CriarProcesso() {
     const [areaVisivel, setAreaVisivel] = useState(false);
     const [assuntoVisivel, setAssuntoVisivel] = useState(false);
     const [revisaoPensaoAlimenticiaVisivel, setRevisaoPensaoAlimenticiaVisivel] = useState(false);
+    const [abonoPermanenciaVisivel, setAbonoPermanenciaVisivel] = useState(false);
+    const [campoNumeroAbonoPermanenciaVisivel, setCampoNumeroAbonoPermanenciaVisivel] = useState(
+        false
+    );
 
     const [tiposProcesso, setTiposProcesso] = useState([]);
     const [tiposIniciativa, setTiposIniciativa] = useState([]);
@@ -71,6 +77,7 @@ function CriarProcesso() {
 
     const DEMAIS_PROCESSOS = '26';
     const REVISAO_DESCONTO_PENSAO_ALIMENTICIA = '246';
+    const ABONO_DE_PERMANENCIA = '17';
 
     const formRef = useRef(null);
 
@@ -167,8 +174,6 @@ function CriarProcesso() {
         }
     }
 
-    // combo-processos-pensao-alimenticia
-
     function handleTprId(e) {
         // demais processos
         if (e.target.value === DEMAIS_PROCESSOS) {
@@ -179,6 +184,11 @@ function CriarProcesso() {
                 setRevisaoPensaoAlimenticiaVisivel(true);
             } else {
                 setRevisaoPensaoAlimenticiaVisivel(false);
+            }
+            if (e.target.value === ABONO_DE_PERMANENCIA) {
+                setAbonoPermanenciaVisivel(true);
+            } else {
+                setAbonoPermanenciaVisivel(false);
             }
             setAssuntoVisivel(false);
         }
@@ -472,6 +482,22 @@ function CriarProcesso() {
             pensao = null;
         }
 
+        // aqui valida se é abono de permanência
+        if (p.tprId === '17') {
+            if (p.proComAbono === '-1') {
+                setErro('Selecione se há comunicado eletrônico prévio.');
+                return;
+            }
+            if (p.proComAbono === 'true') {
+                if (p.proNumComAbono === '') {
+                    setErro('Preencha o número do comunicado eletrônico prévio.');
+                    return;
+                }
+            }
+        } else {
+            p.proComAbono = null;
+            p.proNumComAbono = null;
+        }
         //
         let cpfNumeros;
         let cnpjNumeros;
@@ -511,6 +537,8 @@ function CriarProcesso() {
                 pro_autuacao: null,
                 pro_recurso: false,
                 pro_pensao: pensao,
+                pro_com_abono: p.proComAbono,
+                pro_num_com_abono: p.proNumComAbono,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -597,6 +625,16 @@ function CriarProcesso() {
             });
     }
 
+    function abreCampoNumeroAbono() {
+        const p = formRef.current.getData();
+        if (p.proComAbono === 'true') {
+            setCampoNumeroAbonoPermanenciaVisivel(true);
+        } else {
+            p.proNumComAbono = '';
+            setCampoNumeroAbonoPermanenciaVisivel(false);
+        }
+    }
+
     function limpaCampos() {
         formRef.current.reset();
         setAssuntoVisivel(false);
@@ -608,6 +646,7 @@ function CriarProcesso() {
         setCnpjVisivel(false);
         setAreaVisivel(false);
         setRevisaoPensaoAlimenticiaVisivel(false);
+        setAbonoPermanenciaVisivel(false);
         iniciaTipoProcesso();
         formRef.current.setFieldValue('genId', '-1');
         formRef.current.setFieldValue('proIniciativa', '-1');
@@ -766,6 +805,22 @@ function CriarProcesso() {
                                     options={pensoesAlimenticias}
                                 />
                             </ContainerRevisaoPensaoAlimenticia>
+                        ) : null}
+                        {abonoPermanenciaVisivel ? (
+                            <ContainerAbonoPermanencia>
+                                <ComAbono name="proComAbono" onChange={abreCampoNumeroAbono} />
+                                {campoNumeroAbonoPermanenciaVisivel ? (
+                                    <>
+                                        <Input
+                                            name="proNumComAbono"
+                                            label="Número da comunicação de abono"
+                                            type="text"
+                                            size="30"
+                                            maxLength="30"
+                                        />
+                                    </>
+                                ) : null}
+                            </ContainerAbonoPermanencia>
                         ) : null}
                         {assuntoVisivel ? (
                             <ContainerAssunto>

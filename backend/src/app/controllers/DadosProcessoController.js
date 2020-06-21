@@ -47,7 +47,9 @@ class DadosProcessoController {
                 'setor_finalizador_processo',
                 'visualizacao',
                 'nod_aval_executiva',
-                'nod_fim'
+                'nod_fim',
+                'com_abono',
+                'num_abono'
             ],
             logging: true,
             where: {

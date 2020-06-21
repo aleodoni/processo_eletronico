@@ -292,6 +292,20 @@ function DadosProcesso({ match }) {
                                                     </span>
                                                 </div>
                                             ) : null}
+                                            {pro.tpr_id === 17 ? (
+                                                <>
+                                                    <div>
+                                                        <label>Comunicado eletrônico prévio:</label>
+                                                        <span>{pro.com_abono}</span>
+                                                    </div>
+                                                    {pro.com_abono === 'Sim' ? (
+                                                        <div>
+                                                            <label>Núm. comunicado:</label>
+                                                            <span>{pro.num_abono}</span>
+                                                        </div>
+                                                    ) : null}
+                                                </>
+                                            ) : null}
                                         </fieldset>
                                     </ContainerDados>
                                     <ModalFluxo

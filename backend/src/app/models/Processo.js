@@ -93,6 +93,13 @@ class Processo extends Model {
                 pro_recurso: {
                     type: Sequelize.BOOLEAN,
                     allowNull: false
+                },
+                pro_com_abono: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
+                },
+                pro_num_com_abono: {
+                    type: Sequelize.STRING
                 }
             },
             {

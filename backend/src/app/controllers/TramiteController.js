@@ -91,13 +91,15 @@ class TramiteController {
                 'nod_id',
                 'tpr_id',
                 'area_id_iniciativa',
-                'usu_autuador'
+                'usu_autuador',
+                'pro_nome'
             ],
             logging: true,
             plain: true
         });
         const areaProcesso = processo.dataValues.area_id_iniciativa;
         const tprId = processo.dataValues.tpr_id;
+        const proNome = processo.dataValues.pro_nome;
         // 05/05/2020 - tenho que pegar o próximo
         const tipoProcesso = await TipoProcesso.findAll({
             where: {
@@ -184,12 +186,14 @@ class TramiteController {
                         logging: true,
                         plain: true
                     });
+
                     combo.push({
                         id: contador,
                         prx_id: proximo[p].prx_id,
                         set_id: areaTramitacaoPessoal.dataValues.area_id,
                         set_nome: areaTramitacaoPessoal.dataValues.set_nome,
-                        raz_nome: proximo[p].raz_nome
+                        raz_nome: proximo[p].raz_nome,
+                        pro_nome: proNome
                     });
                     return res.json(combo);
                 }
@@ -214,7 +218,8 @@ class TramiteController {
                         prx_id: proximo[p].prx_id,
                         set_id: areaTramitacaoPessoal.dataValues.area_id,
                         set_nome: areaTramitacaoPessoal.dataValues.set_nome,
-                        raz_nome: proximo[p].raz_nome
+                        raz_nome: proximo[p].raz_nome,
+                        pro_nome: proNome
                     });
                     return res.json(combo);
                 } else {

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
 import axios from '../../configs/axiosConfig';
 import { LinkProcesso } from './styles';
+// eslint-disable-next-line import/no-cycle
 import ModalProcesso from '../ModalProcesso';
 
 function TabelaProcessoOrigem({ proId }) {
@@ -66,7 +67,7 @@ function TabelaProcessoOrigem({ proId }) {
     ) : null;
 }
 
-export default TabelaProcessoOrigem;
+export default memo(TabelaProcessoOrigem);
 
 TabelaProcessoOrigem.propTypes = {
     proId: PropTypes.string.isRequired,

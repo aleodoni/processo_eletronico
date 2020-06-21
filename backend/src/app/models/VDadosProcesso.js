@@ -118,6 +118,12 @@ class VDadosProcesso extends Model {
                 },
                 nod_fim: {
                     type: Sequelize.BOOLEAN
+                },
+                com_abono: {
+                    type: Sequelize.STRING
+                },
+                num_abono: {
+                    type: Sequelize.STRING
                 }
             },
             {

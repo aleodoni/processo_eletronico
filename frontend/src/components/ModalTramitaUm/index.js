@@ -53,6 +53,12 @@ const ModalTramitaUm = props => {
                     </p>
                     <h1>Deseja tramitar?</h1>
                     <br />
+                    {dados.pro_nome !== undefined ? (
+                        <p>
+                            <label>Interessado: </label>
+                            {dados.pro_nome}
+                        </p>
+                    ) : null}
                     <p>
                         <label>Destino: </label>
                         {dados.set_nome}

@@ -35,6 +35,13 @@ export const ContainerBotaoFecha = styled.button`
     }
 `;
 
+export const ContainerProcessoOrigem = styled.div`
+    display: grid;
+    grid-template-columns: 1253px;
+    grid-column-gap: 10px;
+    margin-bottom: 20px;
+`;
+
 export const ContainerModal = styled.div`
     width: 1200px;
     height: 620px;

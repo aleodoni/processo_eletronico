@@ -85,6 +85,9 @@ class CriaProcessoController {
         if (req.body.area_id_iniciativa === '') {
             req.body.area_id_iniciativa = null;
         }
+        if (req.body.pro_com_abono === null) {
+            req.body.pro_com_abono = false;
+        }
 
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
@@ -185,7 +188,9 @@ class CriaProcessoController {
             pro_tipo_iniciativa,
             area_id_iniciativa,
             pro_autuacao,
-            pro_recurso
+            pro_recurso,
+            pro_com_abono,
+            pro_num_com_abono
         } = await Processo.create(req.body, {
             logging: false
         });
@@ -226,7 +231,9 @@ class CriaProcessoController {
             pro_tipo_iniciativa,
             area_id_iniciativa,
             pro_autuacao,
-            pro_recurso
+            pro_recurso,
+            pro_com_abono,
+            pro_num_com_abono
         });
     }
 

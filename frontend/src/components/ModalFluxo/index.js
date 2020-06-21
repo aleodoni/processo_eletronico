@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { FaRegTimesCircle } from 'react-icons/fa';
 import Modal from 'react-modal';
@@ -64,4 +64,4 @@ ModalFluxo.propTypes = {
     id: PropTypes.string.isRequired,
 };
 
-export default ModalFluxo;
+export default memo(ModalFluxo);

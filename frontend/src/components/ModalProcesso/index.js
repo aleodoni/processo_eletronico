@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
 import { FaRegTimesCircle } from 'react-icons/fa';
 import Modal from 'react-modal';
 import axios from '../../configs/axiosConfig';
 import TabelaManifestacoes from '../TabelaManifestacoes';
 import TabelaTramitacao from '../TabelaTramitacao';
+// eslint-disable-next-line import/no-cycle
+import TabelaProcessoOrigem from '../TabelaProcessoOrigem';
 
 import {
     ContainerCodigoProcesso,
@@ -13,6 +15,7 @@ import {
     ContainerIniciativa,
     ContainerDados,
     ContainerComponente,
+    ContainerProcessoOrigem,
 } from './styles';
 
 const ModalProcesso = props => {
@@ -82,6 +85,9 @@ const ModalProcesso = props => {
                         <ContainerCodigoProcesso>
                             <p>{`Processo: ${pro.pro_codigo}`}</p>
                         </ContainerCodigoProcesso>
+                        <ContainerProcessoOrigem>
+                            <TabelaProcessoOrigem proId={proId} />
+                        </ContainerProcessoOrigem>
 
                         <ContainerModal>
                             <p>Iniciativa</p>
@@ -219,6 +225,18 @@ const ModalProcesso = props => {
                                         </span>
                                     </>
                                 ) : null}
+                                {pro.tpr_id === 17 ? (
+                                    <>
+                                        <label>Comunicado eletrônico prévio:</label>
+                                        <span>{pro.com_abono}</span>
+                                        {pro.com_abono === 'Sim' ? (
+                                            <>
+                                                <label>Núm. comunicado:</label>
+                                                <span>{pro.num_abono}</span>
+                                            </>
+                                        ) : null}
+                                    </>
+                                ) : null}
                             </ContainerDados>
                             <ContainerComponente>
                                 <p>Manifestações</p>
@@ -246,4 +264,4 @@ ModalProcesso.propTypes = {
     proId: PropTypes.number.isRequired,
 };
 
-export default ModalProcesso;
+export default memo(ModalProcesso);

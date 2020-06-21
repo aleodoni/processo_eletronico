@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -138,7 +138,7 @@ function TabelaTramitacao({ proId }) {
     );
 }
 
-export default TabelaTramitacao;
+export default memo(TabelaTramitacao);
 
 TabelaTramitacao.propTypes = {
     proId: PropTypes.string.isRequired,
