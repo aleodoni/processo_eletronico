@@ -76,7 +76,7 @@ function CriarProcesso() {
     const [pensoesAlimenticias, setPensoesAlimenticias] = useState([]);
 
     const DEMAIS_PROCESSOS = '26';
-    const REVISAO_DESCONTO_PENSAO_ALIMENTICIA = '246';
+    const REVISAO_DESCONTO_PENSAO_ALIMENTICIA = '247';
     const ABONO_DE_PERMANENCIA = '17';
 
     const formRef = useRef(null);
@@ -461,7 +461,7 @@ function CriarProcesso() {
             }
         }
         // aqui valida se for pensão alimentícia
-        if (p.tprId === '246') {
+        if (p.tprId === REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
             if (p.proCpf.trim() === '') {
                 setErro('Cpf obrigatório.');
                 return;

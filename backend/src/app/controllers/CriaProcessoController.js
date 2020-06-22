@@ -132,12 +132,13 @@ class CriaProcessoController {
                         pes_cpf: req.body.pro_cpf
                     }
                 });
+                console.log(dadosPessoa.dataValues.pes_matricula);
                 const lotacao = await VDadosLogin.findAll({
                     attributes: ['matricula', 'set_id_area'],
                     logging: false,
                     plain: true,
                     where: {
-                        matricula: dadosPessoa.dataValues.pes_matricula
+                        matricula: dadosPessoa.dataValues.pes_matricula.toString()
                     }
                 });
                 areaPessoa = lotacao.dataValues.set_id_area;
