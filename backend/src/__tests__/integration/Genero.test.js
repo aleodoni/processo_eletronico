@@ -85,7 +85,7 @@ describe('Gênero', () => {
         expect(response.status).toBe(200);
     });
 
-    it('Não deve inserir um gênero com o nome vazio', async() => {
+    it('Não deve inserir um gênero com o nome nulo', async() => {
         const genero = {
             gen_id: null,
             gen_nome: null
@@ -97,6 +97,45 @@ describe('Gênero', () => {
             .set('usuario', `${usuario}`)
             .send(genero);
 
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Nome do gênero obrigatório');
+    });
+
+    it('Não deve inserir um novo gênero com o nome em branco', async() => {
+        const genero = {
+            gen_id: null,
+            gen_nome: '   '
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/generos`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(genero);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Nome do gênero obrigatório');
+    });
+
+    it('Não deve inserir um novo gênero com o nome maior que 100 caracteres', async() => {
+        const genero = {
+            gen_id: null,
+            gen_nome: '1'.repeat(101)
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/generos`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(genero);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Nome do gênero não pode ter mais que 100 caracteres');
     });
 });
