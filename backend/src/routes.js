@@ -32,6 +32,7 @@ import CriaPdfController from './app/controllers/CriaPdfController';
 
 import validatorSessionStore from './app/validators/SessionStore';
 import fluxoValidator from './app/validators/fluxoValidator';
+import generoValidator from './app/validators/generoValidator';
 
 require('dotenv/config');
 
@@ -119,8 +120,8 @@ routes.delete(`${process.env.API_URL}/nodos/:id`, NodoController.delete);
 
 // rotas do cadastro de gêneros
 routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
-routes.post(`${process.env.API_URL}/generos`, GeneroController.store);
-routes.put(`${process.env.API_URL}/generos/:id`, GeneroController.update);
+routes.post(`${process.env.API_URL}/generos`, generoValidator, GeneroController.store);
+routes.put(`${process.env.API_URL}/generos/:id`, generoValidator, GeneroController.update);
 routes.delete(`${process.env.API_URL}/generos/:id`, GeneroController.delete);
 
 // rotas do cadastro de tipos de processo
