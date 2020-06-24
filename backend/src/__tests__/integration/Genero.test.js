@@ -84,4 +84,19 @@ describe('Gênero', () => {
 
         expect(response.status).toBe(200);
     });
+
+    it('Não deve inserir um gênero com o nome vazio', async() => {
+        const genero = {
+            gen_id: null,
+            gen_nome: null
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/generos`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(genero);
+
+        expect(response.status).toBe(200);
+    });
 });
