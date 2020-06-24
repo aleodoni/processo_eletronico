@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import bodyParser from 'body-parser';
+import { isCelebrate } from 'celebrate';
 import winston from './config/log';
 import routes from './routes';
 import './database';
@@ -72,6 +73,15 @@ class App {
                     message: err.message
                 });
             }
+
+            if (isCelebrate(err)) {
+                const celError = err;
+                return res.status(422).json({
+                    status: 'error',
+                    message: celError.message
+                });
+            }
+
             return res.status(500).json({ error: 'Erro interno no servidor.' });
         });
     }
