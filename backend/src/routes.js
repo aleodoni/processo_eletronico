@@ -31,6 +31,7 @@ import * as funcoesArquivo from '../src/config/arquivos';
 import CriaPdfController from './app/controllers/CriaPdfController';
 
 import validatorSessionStore from './app/validators/SessionStore';
+import fluxoValidator from './app/validators/fluxoValidator';
 
 require('dotenv/config');
 
@@ -178,8 +179,8 @@ routes.post(`${process.env.API_URL}/processo-por-codigo`, DadosProcessoControlle
 
 // rotas do cadastro de fluxos
 routes.get(`${process.env.API_URL}/fluxos`, FluxoController.index);
-routes.post(`${process.env.API_URL}/fluxos`, FluxoController.store);
-routes.put(`${process.env.API_URL}/fluxos/:id`, FluxoController.update);
+routes.post(`${process.env.API_URL}/fluxos`, fluxoValidator, FluxoController.store);
+routes.put(`${process.env.API_URL}/fluxos/:id`, fluxoValidator, FluxoController.update);
 routes.delete(`${process.env.API_URL}/fluxos/:id`, FluxoController.delete);
 
 // rotas do cadastro de razoes de trâmite
