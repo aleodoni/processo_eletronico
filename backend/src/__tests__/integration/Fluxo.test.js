@@ -6,9 +6,11 @@ require('dotenv/config');
 process.env.NODE_ENV = 'test';
 
 // eslint-disable-next-line no-unused-vars
-let token;
+let token = '';
 // eslint-disable-next-line no-unused-vars
 let usuario = '';
+
+let fluxo;
 
 beforeAll(done => {
     request(app)
@@ -26,74 +28,116 @@ beforeAll(done => {
 });
 
 describe('Fluxos', () => {
-    it('dummy', () => {
-        expect(true).toBe(true);
+    it('Deve retornar lista de fluxos', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/fluxos`)
+            .set('authorization', `${token}`);
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toEqual(
+            expect.arrayContaining([{
+                flu_id: 5,
+                flu_nome: 'Abono de Permanência'
+            }])
+        );
     });
-    // it('Fluxos - Lista', function(done) {
-    //     request(app)
-    //         .get(`${process.env.API_URL}/fluxos`)
-    //         .set('authorization', `${token}`)
-    //         .expect(200)
-    //         .end(function(err) {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
-    // let fluxoId = '';
-    // it('Fluxos - Insere', function(done) {
-    //     const insereFluxos = {
-    //         flu_id: null,
-    //         flu_nome: `Inserção nome - ${Math.random()}`
-    //     };
-    //     request(app)
-    //         .post(`${process.env.API_URL}/fluxos`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`)
-    //         .send(insereFluxos)
-    //         .set('Content-Type', 'application/json')
-    //         .expect(200)
-    //         .end(function(err, res) {
-    //             fluxoId = res.body.flu_id;
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
-    // it('Fluxos - Edita', function(done) {
-    //     const editaFluxos = {
-    //         flu_nome: `Edição nome - ${Math.random()}`
-    //     };
-    //     request(app)
-    //         .put(`${process.env.API_URL}/fluxos/${fluxoId}`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`)
-    //         .send(editaFluxos)
-    //         .set('Content-Type', 'application/json')
-    //         .expect(200)
-    //         .end(function(err, res) {
-    //             fluxoId = res.body.flu_id;
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
-    // it('Fluxos - Apaga', function(done) {
-    //     request(app)
-    //         .delete(`${process.env.API_URL}/fluxos/${fluxoId}`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`)
-    //         .set('Content-Type', 'application/json')
-    //         .expect(200)
-    //         .end(function(err, res) {
-    //             fluxoId = res.body.flu_id;
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
+
+    it('Deve inserir um novo fluxo', async() => {
+        const insereFluxos = {
+            flu_id: null,
+            flu_nome: `Inserção nome - ${Math.random()}`
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/fluxos`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereFluxos);
+
+        fluxo = response.body;
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toHaveProperty('flu_nome', insereFluxos.flu_nome);
+    });
+
+    it('Deve alterar um fluxo', async() => {
+        const editaFluxos = {
+            flu_nome: `Edição nome - ${Math.random()}`
+        };
+
+        const response = await request(app)
+            .put(`${process.env.API_URL}/fluxos/${fluxo.flu_id}`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(editaFluxos);
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toHaveProperty('flu_nome', editaFluxos.flu_nome);
+    });
+
+    it('Deve deletar um fluxo', async() => {
+        const response = await request(app)
+            .delete(`${process.env.API_URL}/fluxos/${fluxo.flu_id}`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`);
+
+        expect(response.status).toBe(200);
+    });
+
+    it('Não deve inserir um novo fluxo com o nome nulo', async() => {
+        const insereFluxos = {
+            flu_id: null,
+            flu_nome: null
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/fluxos`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereFluxos);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Nome do fluxo obrigatório');
+    });
+
+    it('Não deve inserir um novo fluxo com o nome em branco', async() => {
+        const insereFluxos = {
+            flu_id: null,
+            flu_nome: '   '
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/fluxos`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereFluxos);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Nome do fluxo obrigatório');
+    });
+
+    it('Não deve inserir um novo fluxo com o nome maior que 100 caracteres', async() => {
+        const insereFluxos = {
+            flu_id: null,
+            flu_nome: '1'.repeat(101)
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/fluxos`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereFluxos);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Nome do fluxo não pode ter mais que 100 caracteres');
+    });
 });
