@@ -28,6 +28,7 @@ import TramiteController from './app/controllers/TramiteController';
 import TipoDocumentoController from './app/controllers/TipoDocumentoController';
 import AuthMiddleware from './app/middlewares/auth';
 import * as funcoesArquivo from '../src/config/arquivos';
+import CriaPdfController from './app/controllers/CriaPdfController';
 
 import validatorSessionStore from './app/validators/SessionStore';
 
@@ -195,9 +196,6 @@ routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
 routes.get(`${process.env.API_URL}/arquivos-manifestacao/:manId`, ArquivoController.indexManifestacao);
 routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
-routes.post(`${process.env.API_URL}/arquivo-visto-executiva`, ManifestacaoController.criaPdfVistoExecutiva);
-routes.post(`${process.env.API_URL}/arquivo-ciencia`, ManifestacaoController.criaPdfCiencia);
-routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao`, ManifestacaoController.criaPdfCienciaAverbacao);
 
 // rota de inserção de anexo em processo
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {
@@ -274,5 +272,10 @@ routes.get(`${process.env.API_URL}/tipos-documento-combo`, TipoDocumentoControll
 routes.post(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.store);
 routes.put(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.update);
 routes.delete(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.delete);
+
+// rotas de criação de pdf
+routes.post(`${process.env.API_URL}/arquivo-visto-executiva`, CriaPdfController.criaPdfVistoExecutiva);
+routes.post(`${process.env.API_URL}/arquivo-ciencia`, CriaPdfController.criaPdfCiencia);
+routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao`, CriaPdfController.criaPdfCienciaAverbacao);
 
 export default routes;

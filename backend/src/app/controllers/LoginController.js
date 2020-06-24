@@ -9,8 +9,6 @@ import LdapClient from 'ldapjs-client';
 
 class LoginController {
     async index(req, res) {
-        const client = new LdapClient({ url: process.env.LDAP_URL });
-
         const { usuario, senha, timeout } = req.body;
 
         let emailLdap;
@@ -33,34 +31,36 @@ class LoginController {
         const login = new LoginController();
         // procura o usuario no ldap, se existir ok, senão retorna erro
         try {
-            await client.bind(`uid=${usuario},${process.env.LDAP_USERS_OU}`, senha);
+            if (process.env.NODE_ENV !== 'development') {
+                const client = new LdapClient({ url: process.env.LDAP_URL });
+                await client.bind(`uid=${usuario},${process.env.LDAP_USERS_OU}`, senha);
 
-            const options = {
-                filter: (process.env.LDAP_USER_FILTER !== '')
-                    ? `(&(uid=${usuario})(${process.env.LDAP_USER_FILTER}))`
-                    : `(&(uid=${usuario}))`,
-                scope: 'sub',
-                attributes: ['uid', 'cn', 'mail']
-            };
+                const options = {
+                    filter: (process.env.LDAP_USER_FILTER !== '')
+                        ? `(&(uid=${usuario})(${process.env.LDAP_USER_FILTER}))`
+                        : `(&(uid=${usuario}))`,
+                    scope: 'sub',
+                    attributes: ['uid', 'cn', 'mail']
+                };
 
-            // O LDAP atual não deixa pesquisar com o usuário normal, só admin ou authproxy
-            // await client.bind('cn=admin,dc=cmc,dc=pr,dc=gov,dc=br', 'admin');
+                // O LDAP atual não deixa pesquisar com o usuário normal, só admin ou authproxy
+                // await client.bind('cn=admin,dc=cmc,dc=pr,dc=gov,dc=br', 'admin');
 
-            await client.bind(process.env.LDAP_BIND_USER, process.env.LDAP_BIND_PASS);
+                await client.bind(process.env.LDAP_BIND_USER, process.env.LDAP_BIND_PASS);
 
-            const entries = await client.search(
-                process.env.LDAP_USERS_OU,
-                options
-            );
+                const entries = await client.search(
+                    process.env.LDAP_USERS_OU,
+                    options
+                );
 
-            entries.map(b => {
-                emailLdap = b.mail;
-            });
+                entries.map(b => {
+                    emailLdap = b.mail;
+                });
 
-            // limpa a sessão no ldap
-            await client.unbind();
-            await client.destroy();
-
+                // limpa a sessão no ldap
+                await client.unbind();
+                await client.destroy();
+            }
             // procura o usuário na v_dados_login
             const dadosLogin = await VDadosLogin.findOne({
                 where: {

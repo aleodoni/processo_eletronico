@@ -125,6 +125,7 @@ function DadosProcesso({ match }) {
                                                 name="btnConsulta"
                                                 clickHandler={consulta}
                                             />
+
                                             <GeraFluxo
                                                 name="btnGrafico"
                                                 clickHandler={() => abreModalFluxo(pro.flu_id)}

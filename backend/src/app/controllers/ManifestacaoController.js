@@ -44,6 +44,7 @@ class ManifestacaoController {
                 'man_ciencia',
                 'man_averbacao',
                 'man_ciencia_averbacao',
+                'man_aval_horario',
                 'nod_id'],
             logging: true,
             where: {
@@ -111,57 +112,6 @@ class ManifestacaoController {
         return res.json(dados);
     }
 
-    async criaPdfVistoExecutiva(req, res) {
-        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.body.arq_id) + caminhos.nomeFisico(req.body.arq_id) + 'M' + '.pdf';
-
-        const pdfDoc = await PDFDocument.create();
-        const page = pdfDoc.addPage();
-        const cabecalhoCMC = 'Câmara Municipal de Curitiba';
-        const cabecalhoDocumento = 'Visto da Comissão Executiva';
-        page.drawText(cabecalhoCMC, {
-            x: 40,
-            y: 450,
-            size: 20,
-            color: rgb(0, 0.53, 0.71)
-        });
-        page.drawText(cabecalhoDocumento, {
-            x: 60,
-            y: 450,
-            size: 16,
-            color: rgb(0, 0.53, 0.71)
-        });
-
-        // page.drawText('Visto da executiva! Usuário: ' + req.body.usuario);
-        const pdfBytes = await pdfDoc.save();
-        console.log(caminho);
-        fs.writeFileSync(caminho, Buffer.from(pdfBytes));
-        return res.status(204).end();
-    }
-
-    async criaPdfCiencia(req, res) {
-        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.body.arq_id) + caminhos.nomeFisico(req.body.arq_id) + 'M' + '.pdf';
-
-        const pdfDoc = await PDFDocument.create();
-        const page = pdfDoc.addPage();
-        page.drawText('Ciência do usuário: ' + req.body.usuario);
-        const pdfBytes = await pdfDoc.save();
-        console.log(caminho);
-        fs.writeFileSync(caminho, Buffer.from(pdfBytes));
-        return res.status(204).end();
-    }
-
-    async criaPdfCienciaAverbacao(req, res) {
-        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.body.arq_id) + caminhos.nomeFisico(req.body.arq_id) + 'M' + '.pdf';
-
-        const pdfDoc = await PDFDocument.create();
-        const page = pdfDoc.addPage();
-        page.drawText('Ciência de averbação do usuário: ' + req.body.usuario);
-        const pdfBytes = await pdfDoc.save();
-        console.log(caminho);
-        fs.writeFileSync(caminho, Buffer.from(pdfBytes));
-        return res.status(204).end();
-    }
-
     async store(req, res) {
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
@@ -180,7 +130,8 @@ class ManifestacaoController {
             nod_id,
             man_ciencia,
             man_averbacao,
-            man_ciencia_averbacao
+            man_ciencia_averbacao,
+            man_aval_horario
         } = await Manifestacao.create({
             man_id: req.body.man_id,
             pro_id: req.body.pro_id,
@@ -192,7 +143,8 @@ class ManifestacaoController {
             nod_id: req.body.nod_id,
             man_ciencia: req.body.man_ciencia,
             man_averbacao: req.body.man_averbacao,
-            man_ciencia_averbacao: req.body.man_ciencia_averbacao
+            man_ciencia_averbacao: req.body.man_ciencia_averbacao,
+            man_aval_horario: req.body.man_aval_horario
         }, {
             logging: true
         });
@@ -210,7 +162,8 @@ class ManifestacaoController {
             nod_id,
             man_ciencia,
             man_averbacao,
-            man_ciencia_averbacao
+            man_ciencia_averbacao,
+            man_aval_horario
         });
     }
 

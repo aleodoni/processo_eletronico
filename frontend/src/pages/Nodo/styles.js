@@ -104,6 +104,6 @@ export const ContainerCamposNodos1 = styled.div`
 `;
 export const ContainerCamposNodos2 = styled.div`
     display: grid;
-    grid-template-columns: 180px;
+    grid-template-columns: 180px 180px;
     margin-bottom: 10px;
 `;

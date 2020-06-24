@@ -73,6 +73,12 @@ class VNodo extends Model {
                 },
                 ciencia_averbacao: {
                     type: Sequelize.STRING
+                },
+                nod_aval_horario: {
+                    type: Sequelize.BOOLEAN
+                },
+                aval_horario: {
+                    type: Sequelize.STRING
                 }
             },
             {

@@ -25,6 +25,7 @@ import CriarManifestacaoVisto from './pages/CriarManifestacaoVisto';
 import CriarManifestacaoCiencia from './pages/CriarManifestacaoCiencia';
 import CriarManifestacaoAverbacao from './pages/CriarManifestacaoAverbacao';
 import CriarManifestacaoCienciaAverbacao from './pages/CriarManifestacaoCienciaAverbacao';
+import CriarManifestacaoAvalHorario from './pages/CriarManifestacaoAvalHorario';
 import TipoDocumento from './pages/TipoDocumento';
 import Tramite from './pages/Tramite';
 
@@ -88,6 +89,11 @@ const Routes = () => (
             exact
             path="/manifestacao-cria-ciencia-averbacao/:proId"
             component={CriarManifestacaoCienciaAverbacao}
+        />
+        <PrivateRoute
+            exact
+            path="/manifestacao-cria-aval-horario/:proId"
+            component={CriarManifestacaoAvalHorario}
         />
         <PrivateRoute exact path="/tramita/:id" component={Tramite} />
         <PrivateRoute exact path="/tipos-documento" component={TipoDocumento} />

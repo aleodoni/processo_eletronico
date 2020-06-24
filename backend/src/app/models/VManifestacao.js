@@ -54,6 +54,9 @@ class VManifestacao extends Model {
                 },
                 man_ciencia_averbacao: {
                     type: Sequelize.STRING
+                },
+                man_aval_horario: {
+                    type: Sequelize.STRING
                 }
 
             },

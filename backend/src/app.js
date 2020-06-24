@@ -24,8 +24,10 @@ class App {
     }
 
     middlewares() {
+        if (process.env.NODE_ENV !== 'development') {
+            this.server.use(rateLimiter);
+        }
         // configura o express
-        this.server.use(rateLimiter);
         this.server.use(express.json());
         // formata o JSON retornado
         this.server.set('json spaces', 4);

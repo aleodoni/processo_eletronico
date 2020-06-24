@@ -223,16 +223,44 @@ class TramiteController {
                     });
                     return res.json(combo);
                 } else {
-                    for (const t in areas) {
+                    // aqui vai verificar se o tipo de processo é de HORARIO ESPECIAL
+                // e também se é pessoal, e NÃO é um nó fim
+                    if ((tipoProcesso.dataValues.tpr_pessoal) && (tipoProcesso.dataValues.tpr_id === 241) && (nodoProximo.dataValues.nod_fim === false)) {
+                    // carrega a área do usuário
+                        const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({
+                            attributes: [
+                                'area_id',
+                                'set_nome',
+                                'pes_login'
+                            ],
+                            where: {
+                            // pes_login: usuAutuador
+                                area_id: areaProcesso
+                            },
+                            logging: true,
+                            plain: true
+                        });
                         combo.push({
                             id: contador,
                             prx_id: proximo[p].prx_id,
-                            set_id: areas[t].set_id,
-                            set_nome: areas[t].set_nome,
-                            raz_nome: proximo[p].raz_nome
+                            set_id: areaTramitacaoPessoal.dataValues.area_id,
+                            set_nome: areaTramitacaoPessoal.dataValues.set_nome,
+                            raz_nome: proximo[p].raz_nome,
+                            pro_nome: proNome
                         });
-                        contador = contador + 1;
+                    } else {
+                        for (const t in areas) {
+                            combo.push({
+                                id: contador,
+                                prx_id: proximo[p].prx_id,
+                                set_id: areas[t].set_id,
+                                set_nome: areas[t].set_nome,
+                                raz_nome: proximo[p].raz_nome
+                            });
+                            contador = contador + 1;
+                        }
                     }
+                    //
                 }
             }
         }

@@ -34,6 +34,7 @@ import NoCiencia from '../../components/system/select/NoCiencia';
 import NoCienciaAverbacao from '../../components/system/select/NoCienciaAverbacao';
 import NoAverbacao from '../../components/system/select/NoAverbacao';
 import NoDecisao from '../../components/system/select/NoDecisao';
+import NoAvalHorario from '../../components/system/select/NoAvalHorario';
 
 function Nodo() {
     const [erro, setErro] = useState('');
@@ -49,6 +50,7 @@ function Nodo() {
         nodCiencia: -1,
         nodAverbacao: -1,
         nodCienciaAverbacao: -1,
+        nodAvalHorario: -1,
         nodDiasPrazo: 0,
         nodOrdem: 0,
     });
@@ -111,6 +113,7 @@ function Nodo() {
             nodAverbacao: -1,
             nodCienciaAverbacao: -1,
             nodDecisao: -1,
+            nodAvalHorario: -1,
             nodDiasPrazo: 0,
             nodOrdem: 0,
         });
@@ -193,6 +196,7 @@ function Nodo() {
             nodAverbacao: linha.nod_averbacao,
             nodCienciaAverbacao: linha.nod_ciencia_averbacao,
             nodDecisao: linha.nod_decisao,
+            nodAvalHorario: linha.nod_aval_horario,
         });
         posiciona();
     }
@@ -226,6 +230,7 @@ function Nodo() {
         nodAverbacao,
         nodCienciaAverbacao,
         nodDecisao,
+        nodAvalHorario,
     }) {
         try {
             const schema = Yup.object().shape({
@@ -243,6 +248,7 @@ function Nodo() {
                     'É um nó de ciência de averbação?'
                 ),
                 nodDecisao: Yup.boolean().oneOf([true, false], 'É um nó de decisão?'),
+                nodAvalHorario: Yup.boolean().oneOf([true, false], 'É um nó de aval de horário?'),
             });
 
             await schema.validate(
@@ -258,6 +264,7 @@ function Nodo() {
                     nodAverbacao,
                     nodCiencia,
                     nodCienciaAverbacao,
+                    nodAvalHorario,
                 },
                 { abortEarly: false }
             );
@@ -280,6 +287,7 @@ function Nodo() {
                         nod_averbacao: nodAverbacao,
                         nod_ciencia_averbacao: nodCienciaAverbacao,
                         nod_decisao: nodDecisao,
+                        nod_aval_horario: nodAvalHorario,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -312,6 +320,7 @@ function Nodo() {
                         nod_averbacao: nodAverbacao,
                         nod_ciencia_averbacao: nodCienciaAverbacao,
                         nod_decisao: nodDecisao,
+                        nod_aval_horario: nodAvalHorario,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -426,6 +435,7 @@ function Nodo() {
                                 </ContainerCamposNodos1>
                                 <ContainerCamposNodos2>
                                     <NoCienciaAverbacao name="nodCienciaAverbacao" />
+                                    <NoAvalHorario name="nodAvalHorario" />
                                 </ContainerCamposNodos2>
                                 <ButtonContainer>
                                     <Salvar name="btnSalva" type="submit" />
@@ -453,6 +463,11 @@ function Nodo() {
                                         {
                                             title: 'Ciência da averbação',
                                             field: 'ciencia_averbacao',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Aval de horário',
+                                            field: 'aval_horario',
                                             width: 100,
                                         },
                                     ]}

@@ -65,7 +65,15 @@ function Home() {
         carregaGridArea();
     }, [carregaGridArea]);
 
-    function criaManifestacao(id, aval, noDecisao, noCiencia, noAverbacao, noCienciaAverbacao) {
+    function criaManifestacao(
+        id,
+        aval,
+        noDecisao,
+        noCiencia,
+        noAverbacao,
+        noCienciaAverbacao,
+        noAvalHorario
+    ) {
         // se tiver o aval da executiva a manifestação é diferenciada
         if (aval) {
             if (noDecisao) {
@@ -82,6 +90,9 @@ function Home() {
             // se se for uma ciência de averbação a manifestação é diferenciada
         } else if (noCienciaAverbacao) {
             history.push(`/manifestacao-cria-ciencia-averbacao/${id}`);
+            // se se for um aval de horário especial
+        } else if (noAvalHorario) {
+            history.push(`/manifestacao-cria-aval-horario/${id}`);
         } else {
             history.push(`/manifestacao-cria/${id}`);
         }
@@ -156,7 +167,8 @@ function Home() {
                                                                                     proc.nod_decisao,
                                                                                     proc.nod_ciencia,
                                                                                     proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao
+                                                                                    proc.nod_ciencia_averbacao,
+                                                                                    proc.nod_aval_horario
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -176,7 +188,8 @@ function Home() {
                                                                                     proc.nod_decisao,
                                                                                     proc.nod_ciencia,
                                                                                     proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao
+                                                                                    proc.nod_ciencia_averbacao,
+                                                                                    proc.nod_aval_horario
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -196,7 +209,8 @@ function Home() {
                                                                                     proc.nod_decisao,
                                                                                     proc.nod_ciencia,
                                                                                     proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao
+                                                                                    proc.nod_ciencia_averbacao,
+                                                                                    proc.nod_aval_horario
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -216,7 +230,8 @@ function Home() {
                                                                                     proc.nod_decisao,
                                                                                     proc.nod_ciencia,
                                                                                     proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao
+                                                                                    proc.nod_ciencia_averbacao,
+                                                                                    proc.nod_aval_horario
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
