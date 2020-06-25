@@ -33,6 +33,7 @@ import CriaPdfController from './app/controllers/CriaPdfController';
 import validatorSessionStore from './app/validators/SessionStore';
 import fluxoValidator from './app/validators/fluxoValidator';
 import generoValidator from './app/validators/generoValidator';
+import lotacaoValidator from './app/validators/lotacaoValidator';
 
 require('dotenv/config');
 
@@ -224,8 +225,8 @@ routes.delete(`${process.env.API_URL}/setores/:id`, SetorController.delete);
 
 // rotas do cadastro de lotações
 routes.get(`${process.env.API_URL}/lotacoes`, LotacaoController.index);
-routes.post(`${process.env.API_URL}/lotacoes`, LotacaoController.store);
-routes.put(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.update);
+routes.post(`${process.env.API_URL}/lotacoes`, lotacaoValidator, LotacaoController.store);
+routes.put(`${process.env.API_URL}/lotacoes/:id`, lotacaoValidator, LotacaoController.update);
 routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 
 // rotas do cadastro de manifestacao
