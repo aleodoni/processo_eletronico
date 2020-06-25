@@ -5,7 +5,6 @@ class CreateAuditoriaService {
     }
 
     async execute(data, url, usuario, maquina, tipo, chave) {
-        console.log(usuario);
         this.dataHoraAtualModel.findAll({
             plain: true,
             logging: false
