@@ -63,6 +63,12 @@ class Manifestacao extends Model {
                 },
                 man_aval_horario: {
                     type: Sequelize.STRING
+                },
+                man_contagem_tempo: {
+                    type: Sequelize.STRING
+                },
+                man_ciencia_calculo: {
+                    type: Sequelize.STRING
                 }
 
             },

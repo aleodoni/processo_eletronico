@@ -202,7 +202,9 @@ class DadosProcessoController {
                 'nod_ciencia',
                 'nod_averbacao',
                 'nod_ciencia_averbacao',
-                'nod_aval_horario'
+                'nod_aval_horario',
+                'nod_contagem_tempo',
+                'nod_ciencia_calculo'
             ],
             logging: true,
             where: {

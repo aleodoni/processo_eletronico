@@ -72,8 +72,11 @@ function Home() {
         noCiencia,
         noAverbacao,
         noCienciaAverbacao,
-        noAvalHorario
+        noAvalHorario,
+        noContagemTempo,
+        noCienciaCalculo
     ) {
+        // alert(noCienciaCalculo);
         // se tiver o aval da executiva a manifestação é diferenciada
         if (aval) {
             if (noDecisao) {
@@ -93,6 +96,12 @@ function Home() {
             // se se for um aval de horário especial
         } else if (noAvalHorario) {
             history.push(`/manifestacao-cria-aval-horario/${id}`);
+            // se se for uma contagem de tempo
+        } else if (noContagemTempo) {
+            history.push(`/manifestacao-cria-contagem-tempo/${id}`);
+            // se se for uma ciência de cálculo de aposentadoria
+        } else if (noCienciaCalculo) {
+            history.push(`/manifestacao-cria-ciencia-calculo/${id}`);
         } else {
             history.push(`/manifestacao-cria/${id}`);
         }
@@ -168,7 +177,9 @@ function Home() {
                                                                                     proc.nod_ciencia,
                                                                                     proc.nod_averbacao,
                                                                                     proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario
+                                                                                    proc.nod_aval_horario,
+                                                                                    proc.nod_contagem_tempo,
+                                                                                    proc.nod_ciencia_calculo
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -189,7 +200,9 @@ function Home() {
                                                                                     proc.nod_ciencia,
                                                                                     proc.nod_averbacao,
                                                                                     proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario
+                                                                                    proc.nod_aval_horario,
+                                                                                    proc.nod_contagem_tempo,
+                                                                                    proc.nod_ciencia_calculo
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -210,7 +223,9 @@ function Home() {
                                                                                     proc.nod_ciencia,
                                                                                     proc.nod_averbacao,
                                                                                     proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario
+                                                                                    proc.nod_aval_horario,
+                                                                                    proc.nod_contagem_tempo,
+                                                                                    proc.nod_ciencia_calculo
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -231,7 +246,9 @@ function Home() {
                                                                                     proc.nod_ciencia,
                                                                                     proc.nod_averbacao,
                                                                                     proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario
+                                                                                    proc.nod_aval_horario,
+                                                                                    proc.nod_contagem_tempo,
+                                                                                    proc.nod_ciencia_calculo
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />

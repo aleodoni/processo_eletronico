@@ -52,6 +52,12 @@ class VProcessosArea extends Model {
                 },
                 nod_aval_horario: {
                     type: Sequelize.BOOLEAN
+                },
+                nod_contagem_tempo: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_ciencia_calculo: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

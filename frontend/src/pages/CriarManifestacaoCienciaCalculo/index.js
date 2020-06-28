@@ -3,18 +3,20 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { toast as mensagem } from 'react-toastify';
 import { useHistory } from 'react-router';
-import { FaPaperclip } from 'react-icons/fa';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
+import { FaPaperclip } from 'react-icons/fa';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
+import Select from '../../components/layout/Select';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
-import AvalHorario from '../../components/system/select/AvalHorario';
+import CienciaCalculo from '../../components/system/select/CienciaCalculo';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
+import Ciencia from '../../components/layout/button/Ciencia';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
 
@@ -29,17 +31,20 @@ import {
     Titulo,
 } from './styles';
 
-function CriarManifestacaoAvalHorario(props) {
+function CriarManifestacaoCienciaCalculo(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
-        manAvalHorario: '-1',
+        manCienciaCalculo: '-1',
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
     const [proIdModal, setProId] = useState(-1);
+    const [mostraRegra, setMostraRegra] = useState(false);
+    const [mostraCiencia, setMostraCiencia] = useState(false);
+    const [mostraBotaoDiscorda, setMostraBotaoDiscorda] = useState(false);
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [anexos, setAnexos] = useState([]);
@@ -48,6 +53,7 @@ function CriarManifestacaoAvalHorario(props) {
     const [modalProcesso, setModalProcesso] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
     const [nodId, setNodId] = useState('');
+    const [regras, setRegras] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
 
@@ -84,11 +90,45 @@ function CriarManifestacaoAvalHorario(props) {
         setModalTramitaUm(false);
     }
 
+    function selecionaCiencia() {
+        if (document.getElementById('manCienciaCalculo').value === 'Estou ciente do cálculo') {
+            setMostraRegra(true);
+            setMostraBotaoDiscorda(true);
+            setMostraCiencia(true);
+        } else if (document.getElementById('manCienciaCalculo').value === 'Discordo do cálculo') {
+            setMostraRegra(false);
+            setMostraBotaoDiscorda(true);
+            setMostraCiencia(false);
+        } else {
+            setMostraRegra(false);
+            setMostraBotaoDiscorda(false);
+            setMostraCiencia(false);
+        }
+    }
+
+    async function carregaRegraAposentacao() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/regras-aposentacao');
+
+            const data = response.data.map(regra => {
+                return {
+                    label: regra.reg_nome,
+                    value: regra.reg_id,
+                };
+            });
+            setRegras(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
     function limpaCampos() {
         setManId(null);
         setManifestacao({
             ...manifestacao,
-            manAvalHorario: '-1',
+            manCienciaCalculo: '-1',
         });
         setErro('');
 
@@ -106,17 +146,33 @@ function CriarManifestacaoAvalHorario(props) {
         }
     }
 
-    function criaManifestacaoAvalHorario({ proId, manAvalHorario }) {
-        // Manifestação de aval de horário
-        const TIPO_MANIFESTACAO_AVAL_HORARIO = 13;
+    async function carregaManifestacaoProcesso() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
-        // Tipo de documento de aval de horário
-        const TIPO_DOCUMENTO_AVAL_HORARIO = 34;
+        try {
+            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            setManifestacaoProcesso(response.data);
+            if (response.data.length > 0) {
+                carregaAnexos(response.data[0].man_id);
+                setManId(response.data[0].man_id);
+                setManifestacao({ manId: response.data[0].man_id });
+            }
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    function criaManifestacaoCienciaCalculo({ proId, manCienciaCalculo }) {
+        // Manifestação de ciência do cálculo
+        const TIPO_MANIFESTACAO_CIENCIA_CALCULO = 15;
+
+        // Tipo de documento de ciência do cálculo
+        const TIPO_DOCUMENTO_CIENCIA_CALCULO = 36;
 
         const manLogin = sessionStorage.getItem('usuario');
         const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        if (manAvalHorario === '-1') {
-            setErro('Selecione o aval de horário.');
+        if (manCienciaCalculo === '-1') {
+            setErro('Selecione a ciência do cálculo.');
             return;
         }
         axios({
@@ -125,24 +181,82 @@ function CriarManifestacaoAvalHorario(props) {
             data: {
                 man_id: null,
                 pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_AVAL_HORARIO,
-                tpd_id: TIPO_DOCUMENTO_AVAL_HORARIO,
+                tmn_id: TIPO_MANIFESTACAO_CIENCIA_CALCULO,
+                tpd_id: TIPO_DOCUMENTO_CIENCIA_CALCULO,
                 man_login: manLogin,
                 man_id_area: manIdArea,
                 man_visto_executiva: 'Não necessário',
                 nod_id: nodId,
                 man_ciencia: 'Não necessário',
                 man_averbacao: 'Não necessário',
-                man_aval_horario: manAvalHorario,
+                man_ciencia_averbacao: 'Não necessário',
+                man_ciencia_calculo: manCienciaCalculo,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(() => {
+            .then(resultado => {
+                const ARQ_CIENCIA_CALCULO = `ciencia-cálculo-${resultado.data.man_id}.pdf`;
+                axios({
+                    method: 'POST',
+                    url: '/arquivos',
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
+                    data: {
+                        arq_id: null,
+                        arq_nome: ARQ_CIENCIA_CALCULO,
+                        pro_id: null,
+                        man_id: resultado.data.man_id,
+                        arq_tipo: 'application/pdf',
+                        arq_doc_id: resultado.data.man_id,
+                        arq_doc_tipo: 'manifestação',
+                        tpd_id: TIPO_DOCUMENTO_CIENCIA_CALCULO,
+                        arq_login: sessionStorage.getItem('usuario'),
+                    },
+                })
+                    .then(res => {
+                        axios({
+                            method: 'POST',
+                            url: `/arquivo-ciencia-calculo`,
+                            headers: {
+                                authorization: sessionStorage.getItem('token'),
+                            },
+                            data: {
+                                arq_id: res.data.arq_id,
+                                usuario: sessionStorage.getItem('usuario'),
+                            },
+                        })
+                            .then(resAnexos => {
+                                if (resAnexos.status === 204) {
+                                    limpaCampos();
+                                    mensagem.success('Arquivo de ciência inserido com sucesso.');
+                                    carregaManifestacaoProcesso();
+                                }
+                            })
+                            .catch(() => {
+                                const idArquivo = res.data.arq_id;
+                                axios({
+                                    method: 'DELETE',
+                                    url: `arquivos/${idArquivo}`,
+                                    headers: {
+                                        authorization: sessionStorage.getItem('token'),
+                                    },
+                                })
+                                    .then(() => {})
+                                    .catch(erroDeleteArquivo => {
+                                        setErro(erroDeleteArquivo.response.data.error);
+                                    });
+                                setErro('Erro ao criar arquivo anexo.');
+                            });
+                    })
+                    .catch(() => {
+                        setErro('Erro ao inserir na tabela arquivo.');
+                    });
                 limpaCampos();
+                carregaManifestacaoProcesso();
                 mensagem.success('Manifestação inserida com sucesso.');
-                carregaAnexos(proId);
             })
             .catch(() => {
                 setErro('Erro ao inserir manifestação.');
@@ -170,22 +284,6 @@ function CriarManifestacaoAvalHorario(props) {
                 setErro('Erro ao retornar dados do processo.');
             });
     }, [props.match.params.proId]);
-
-    async function carregaManifestacaoProcesso() {
-        api.defaults.headers.Authorization = sessionStorage.getItem('token');
-
-        try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
-            setManifestacaoProcesso(response.data);
-            if (response.data.length > 0) {
-                carregaAnexos(response.data[0].man_id);
-                setManId(response.data[0].man_id);
-                setManifestacao({ manId: response.data[0].man_id });
-            }
-        } catch (err) {
-            mensagem.error(`Falha na autenticação - ${err}`);
-        }
-    }
 
     function downloadAnexo(e, idArquivo, id, arqNome) {
         e.preventDefault();
@@ -226,6 +324,7 @@ function CriarManifestacaoAvalHorario(props) {
         async function carrega() {
             await carregaDadosProcesso();
             await carregaManifestacaoProcesso();
+            await carregaRegraAposentacao();
         }
         carrega();
     }, []);
@@ -247,9 +346,12 @@ function CriarManifestacaoAvalHorario(props) {
                     },
                 })
                     .then(() => {
-                        mensagem.success('Aval apagado com sucesso.');
+                        mensagem.success('Ciência apagada com sucesso.');
+                        carregaDadosProcesso();
                         carregaAnexos(manId);
                         carregaManifestacaoProcesso();
+                        // setMostraRegra(false);
+                        // setMostraBotaoDiscorda(false);
                     })
                     .catch(err => {
                         setErro(err.response.data.error);
@@ -261,67 +363,41 @@ function CriarManifestacaoAvalHorario(props) {
     }
 
     function tramita() {
-        axios({
-            method: 'GET',
-            url: `/proximo-tramite/${props.match.params.proId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                // se não tiver registros
-                if (res.data.length === 0) {
-                    mensagem.info('Sem próximos trâmites.');
-                    return;
-                }
-                // alert(aval);
-                abreModalTramitaUm(res.data[0]);
-                // alert(JSON.stringify(res.data, null, 4));
+        // Verifica qual foi a ciência
+        const ciencia_calculo = manifestacaoProcesso[0].man_ciencia_calculo;
+        if (ciencia_calculo === 'Discordo do cálculo') {
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-discordancia-calculo/${props.match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
             })
-            .catch(() => {
-                setErro('Erro ao carregar próximos trâmites.');
-            });
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    // alert(JSON.stringify(res.data, null, 4));
+                    abreModalTramitaUm(res.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+        }
+        /*
+
+
+            */
     }
 
-    function limpaErros() {
-        setErro('');
-    }
+    function incluiAnexoDiscorda(e) {
+        // Manifestação de discordância de cálculo
+        const TIPO_MANIFESTACAO_DISCORDA_CALCULO = 16;
 
-    function consulta() {
-        history.push('/processo-consulta');
-    }
-
-    function insereTramite(prxId, setId) {
-        axios({
-            method: 'POST',
-            url: '/tramites',
-            data: {
-                tra_id: null,
-                prx_id: prxId,
-                pro_id: Number(props.match.params.proId),
-                login_envia: sessionStorage.getItem('usuario'),
-                area_id_envia: sessionStorage.getItem('areaUsuario'),
-                area_id_recebe: setId,
-            },
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                mensagem.success('Trâmite inserido com sucesso.');
-                history.push(`/home/`);
-            })
-            .catch(() => {
-                setErro('Erro ao inserir trâmite.');
-            });
-    }
-
-    function incluiAnexo(e) {
-        // Manifestação de averbação
-        const TIPO_MANIFESTACAO_AVAL_HORARIO = 13;
-
-        // Tipo de documento de averbação
-        const TIPO_DOCUMENTO_AVAL_HORARIO = 34;
+        // Tipo de documento de discordância de cálculo
+        const TIPO_DOCUMENTO_DISCORDA_CALCULO = 37;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -335,20 +411,24 @@ function CriarManifestacaoAvalHorario(props) {
                     data: {
                         man_id: null,
                         pro_id: Number(props.match.params.proId),
-                        tmn_id: TIPO_MANIFESTACAO_AVAL_HORARIO,
+                        tmn_id: TIPO_MANIFESTACAO_DISCORDA_CALCULO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
                         man_ciencia: 'Não necessário',
                         man_averbacao: 'Não necessário',
-                        man_aval_horario: document.getElementById('manAvalHorario').value,
+                        man_ciencia_averbacao: 'Não necessário',
+                        man_aval_horario: 'Não necessário',
+                        man_contagem_tempo: 'Não necessário',
+                        man_ciencia_calculo: document.getElementById('manCienciaCalculo').value,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
                 })
                     .then(resultado => {
+                        setManifestacao({ manId: resultado.data.man_id });
                         const data = new FormData();
                         data.append('file', arq);
                         axios({
@@ -365,7 +445,7 @@ function CriarManifestacaoAvalHorario(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO_AVAL_HORARIO,
+                                tpd_id: TIPO_DOCUMENTO_DISCORDA_CALCULO,
                                 arq_login: sessionStorage.getItem('usuario'),
                             },
                         })
@@ -384,6 +464,9 @@ function CriarManifestacaoAvalHorario(props) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
                                             carregaManifestacaoProcesso();
+                                            setMostraRegra(false);
+                                            setMostraBotaoDiscorda(false);
+                                            setMostraCiencia(false);
                                         }
                                     })
                                     .catch(() => {
@@ -418,23 +501,45 @@ function CriarManifestacaoAvalHorario(props) {
         }
     }
 
-    const verificaAvalHorario = e => {
-        if (document.getElementById('manAvalHorario').value === '-1') {
-            setErro('Selecione a averbação.');
-            e.preventDefault();
-        }
-    };
+    function consulta() {
+        history.push('/processo-consulta');
+    }
+
+    function insereTramite(prxId, setId) {
+        axios({
+            method: 'POST',
+            url: '/tramites-ciencia-calculo',
+            data: {
+                tra_id: null,
+                prx_id: prxId,
+                pro_id: Number(props.match.params.proId),
+                login_envia: sessionStorage.getItem('usuario'),
+                area_id_envia: sessionStorage.getItem('areaUsuario'),
+                area_id_recebe: setId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Trâmite inserido com sucesso.');
+                history.push(`/home/`);
+            })
+            .catch(() => {
+                setErro('Erro ao inserir trâmite.');
+            });
+    }
 
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Criar aval horário" />
+                <Autorizacao tela="Criar ciência do cálculo" />
                 <Main>
                     <Titulo>
                         {manifestacaoProcesso.length > 0 ? (
-                            <p>Aval de horário: {manifestacaoProcesso[0].man_aval_horario}</p>
+                            <p>Ciência do cálculo: {manifestacaoProcesso[0].man_ciencia_calculo}</p>
                         ) : (
-                            <p>Aval de horário especial</p>
+                            <p>Ciência do cálculo</p>
                         )}
                         <hr />
                     </Titulo>
@@ -451,39 +556,50 @@ function CriarManifestacaoAvalHorario(props) {
                     <Form
                         ref={formRef}
                         initialData={manifestacao}
-                        onSubmit={criaManifestacaoAvalHorario}>
+                        onSubmit={criaManifestacaoCienciaCalculo}>
+                        <Input name="manId" type="hidden" />
+                        <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
-                                <Input name="manId" type="hidden" />
-                                <Input name="proId" type="hidden" />
-                                <AvalHorario
-                                    name="manAvalHorario"
-                                    changeHandler={() => limpaErros()}
+                                <CienciaCalculo
+                                    name="manCienciaCalculo"
+                                    changeHandler={selecionaCiencia}
                                 />
+                                {mostraRegra ? (
+                                    <Select
+                                        name="regId"
+                                        label="Regra de aposentação"
+                                        options={regras}
+                                    />
+                                ) : null}
                             </Container2>
                         ) : null}
                         <ContainerBotoes>
-                            {manifestacaoProcesso.length === 0 ? (
-                                <>
-                                    <label htmlFor="anexo">
-                                        <FaPaperclip />
-                                        &nbsp;Incluir manifestação
-                                    </label>
-                                    <input
-                                        type="file"
-                                        name="file"
-                                        onChange={incluiAnexo}
-                                        id="anexo"
-                                        onClick={e => {
-                                            verificaAvalHorario(e);
-                                        }}
-                                    />
-                                </>
+                            {mostraCiencia ? (
+                                <Ciencia name="btnCienciaCalculo" type="submit" />
                             ) : null}
                             {manifestacaoProcesso.length > 0 ? (
                                 <Tramitar name="btnTramita" clickHandler={tramita} />
                             ) : null}
                             <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
+                            {mostraBotaoDiscorda && !mostraRegra ? (
+                                <>
+                                    <label htmlFor="anexo">
+                                        <FaPaperclip />
+                                        &nbsp;Inserir documento
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        onChange={incluiAnexoDiscorda}
+                                        id="anexo"
+                                        onClick={e => {
+                                            // verificaArquivo(e);
+                                        }}
+                                    />
+                                </>
+                            ) : null}
                         </ContainerBotoes>
                     </Form>
                     <ModalApaga
@@ -561,7 +677,7 @@ function CriarManifestacaoAvalHorario(props) {
     );
 }
 
-CriarManifestacaoAvalHorario.propTypes = {
+CriarManifestacaoCienciaCalculo.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
             proId: PropTypes.string,
@@ -569,4 +685,4 @@ CriarManifestacaoAvalHorario.propTypes = {
     }).isRequired,
 };
 
-export default CriarManifestacaoAvalHorario;
+export default CriarManifestacaoCienciaCalculo;

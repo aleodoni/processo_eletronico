@@ -35,6 +35,8 @@ import NoCienciaAverbacao from '../../components/system/select/NoCienciaAverbaca
 import NoAverbacao from '../../components/system/select/NoAverbacao';
 import NoDecisao from '../../components/system/select/NoDecisao';
 import NoAvalHorario from '../../components/system/select/NoAvalHorario';
+import NoContagemTempo from '../../components/system/select/NoContagemTempo';
+import NoCienciaCalculo from '../../components/system/select/NoCienciaCalculo';
 
 function Nodo() {
     const [erro, setErro] = useState('');
@@ -51,6 +53,8 @@ function Nodo() {
         nodAverbacao: -1,
         nodCienciaAverbacao: -1,
         nodAvalHorario: -1,
+        nodContagemTempo: -1,
+        nodCienciaCalculo: -1,
         nodDiasPrazo: 0,
         nodOrdem: 0,
     });
@@ -114,6 +118,8 @@ function Nodo() {
             nodCienciaAverbacao: -1,
             nodDecisao: -1,
             nodAvalHorario: -1,
+            nodContagemTempo: -1,
+            nodCienciaCalculo: -1,
             nodDiasPrazo: 0,
             nodOrdem: 0,
         });
@@ -197,6 +203,8 @@ function Nodo() {
             nodCienciaAverbacao: linha.nod_ciencia_averbacao,
             nodDecisao: linha.nod_decisao,
             nodAvalHorario: linha.nod_aval_horario,
+            nodContagemTempo: linha.nod_contagem_tempo,
+            nodCienciaCalculo: linha.nod_ciencia_calculo,
         });
         posiciona();
     }
@@ -231,6 +239,8 @@ function Nodo() {
         nodCienciaAverbacao,
         nodDecisao,
         nodAvalHorario,
+        nodContagemTempo,
+        nodCienciaCalculo,
     }) {
         try {
             const schema = Yup.object().shape({
@@ -249,6 +259,14 @@ function Nodo() {
                 ),
                 nodDecisao: Yup.boolean().oneOf([true, false], 'É um nó de decisão?'),
                 nodAvalHorario: Yup.boolean().oneOf([true, false], 'É um nó de aval de horário?'),
+                nodContagemTempo: Yup.boolean().oneOf(
+                    [true, false],
+                    'É um nó de contagem de tempo?'
+                ),
+                nodCienciaCalculo: Yup.boolean().oneOf(
+                    [true, false],
+                    'É um nó de ciência de cálculo?'
+                ),
             });
 
             await schema.validate(
@@ -265,6 +283,8 @@ function Nodo() {
                     nodCiencia,
                     nodCienciaAverbacao,
                     nodAvalHorario,
+                    nodContagemTempo,
+                    nodCienciaCalculo,
                 },
                 { abortEarly: false }
             );
@@ -288,6 +308,8 @@ function Nodo() {
                         nod_ciencia_averbacao: nodCienciaAverbacao,
                         nod_decisao: nodDecisao,
                         nod_aval_horario: nodAvalHorario,
+                        nod_contagem_tempo: nodContagemTempo,
+                        nod_ciencia_calculo: nodCienciaCalculo,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -321,6 +343,8 @@ function Nodo() {
                         nod_ciencia_averbacao: nodCienciaAverbacao,
                         nod_decisao: nodDecisao,
                         nod_aval_horario: nodAvalHorario,
+                        nod_contagem_tempo: nodContagemTempo,
+                        nod_ciencia_calculo: nodCienciaCalculo,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -436,6 +460,8 @@ function Nodo() {
                                 <ContainerCamposNodos2>
                                     <NoCienciaAverbacao name="nodCienciaAverbacao" />
                                     <NoAvalHorario name="nodAvalHorario" />
+                                    <NoContagemTempo name="nodContagemTempo" />
+                                    <NoCienciaCalculo name="nodCienciaCalculo" />
                                 </ContainerCamposNodos2>
                                 <ButtonContainer>
                                     <Salvar name="btnSalva" type="submit" />
@@ -468,6 +494,16 @@ function Nodo() {
                                         {
                                             title: 'Aval de horário',
                                             field: 'aval_horario',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Contagem de tempo',
+                                            field: 'contagem_tempo',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Ciência de cálculo',
+                                            field: 'ciencia_calculo',
                                             width: 100,
                                         },
                                     ]}

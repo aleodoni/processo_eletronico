@@ -29,6 +29,7 @@ import TipoDocumentoController from './app/controllers/TipoDocumentoController';
 import AuthMiddleware from './app/middlewares/auth';
 import * as funcoesArquivo from '../src/config/arquivos';
 import CriaPdfController from './app/controllers/CriaPdfController';
+import RegraAposentacaoController from './app/controllers/RegraAposentacaoController';
 
 import validatorSessionStore from './app/validators/SessionStore';
 import fluxoValidator from './app/validators/fluxoValidator';
@@ -280,5 +281,16 @@ routes.delete(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoControl
 routes.post(`${process.env.API_URL}/arquivo-visto-executiva`, CriaPdfController.criaPdfVistoExecutiva);
 routes.post(`${process.env.API_URL}/arquivo-ciencia`, CriaPdfController.criaPdfCiencia);
 routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao`, CriaPdfController.criaPdfCienciaAverbacao);
+
+// rotas do cadastro de regras de aposentação
+routes.get(`${process.env.API_URL}/regras-aposentacao`, RegraAposentacaoController.index);
+routes.post(`${process.env.API_URL}/regras-aposentacao`, RegraAposentacaoController.store);
+routes.put(`${process.env.API_URL}/regras-aposentacao/:id`, RegraAposentacaoController.update);
+routes.delete(`${process.env.API_URL}/regras-aposentacao/:id`, RegraAposentacaoController.delete);
+
+routes.post(`${process.env.API_URL}/tramites-calculo-aposentadoria`, TramiteController.criaTramiteCalculoAposentadoria);
+
+routes.get(`${process.env.API_URL}/proximo-tramite-aposentadoria-calculo/:id/:decisao`, TramiteController.proximoTramiteAposentadoriaCalculo);
+routes.get(`${process.env.API_URL}/proximo-tramite-discordancia-calculo/:id`, TramiteController.proximoTramiteDiscordanciaCalculo);
 
 export default routes;

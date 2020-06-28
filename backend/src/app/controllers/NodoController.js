@@ -23,7 +23,9 @@ class NodoController {
                 'nod_ciencia',
                 'nod_averbacao',
                 'nod_ciencia_averbacao',
-                'nod_aval_horario'
+                'nod_aval_horario',
+                'nod_contagem_tempo',
+                'nod_ciencia_calculo'
             ],
             logging: false
         });
@@ -69,7 +71,11 @@ class NodoController {
                 'nod_ciencia_averbacao',
                 'ciencia_averbacao',
                 'nod_aval_horario',
-                'aval_horario'
+                'aval_horario',
+                'nod_contagem_tempo',
+                'contagem_tempo',
+                'nod_ciencia_calculo',
+                'ciencia_calculo'
             ],
             logging: false
         });
@@ -91,7 +97,9 @@ class NodoController {
             nod_ciencia,
             nod_averbacao,
             nod_ciencia_averbacao,
-            nod_aval_horario
+            nod_aval_horario,
+            nod_contagem_tempo,
+            nod_ciencia_calculo
         } = await Nodo.create(req.body, {
             logging: true
         });
@@ -112,7 +120,9 @@ class NodoController {
             nod_ciencia,
             nod_averbacao,
             nod_ciencia_averbacao,
-            nod_aval_horario
+            nod_aval_horario,
+            nod_contagem_tempo,
+            nod_ciencia_calculo
         });
     }
 

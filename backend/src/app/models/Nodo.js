@@ -75,6 +75,16 @@ class Nodo extends Model {
                     type: Sequelize.BOOLEAN,
                     allowNull: false,
                     defaultValue: false
+                },
+                nod_contagem_tempo: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
+                },
+                nod_ciencia_calculo: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                 }
             },
             {

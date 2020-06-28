@@ -171,7 +171,7 @@ class TramiteController {
                 console.log(JSON.stringify(nodoProximo, null, 4));
 
                 // aqui verifica se o nó próximo é um nó interessado, se for vai tramitar somente para esse nó
-                if (tipoProcesso.dataValues.tpr_pessoal && nodoProximo.dataValues.nod_interessado) {
+                if (tipoProcesso.dataValues.tpr_pessoal && nodoProximo.dataValues.nod_interessado && !nodoProximo.dataValues.nod_fim) {
                     // carrega a área do usuário
                     const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({
                         attributes: [
@@ -221,7 +221,7 @@ class TramiteController {
                         raz_nome: proximo[p].raz_nome,
                         pro_nome: proNome
                     });
-                    return res.json(combo);
+                    // return res.json(combo);
                 } else {
                     // aqui vai verificar se o tipo de processo é de HORARIO ESPECIAL
                 // e também se é pessoal, e NÃO é um nó fim
@@ -262,6 +262,143 @@ class TramiteController {
                     }
                     //
                 }
+            }
+        }
+        return res.json(combo);
+    }
+
+    async proximoTramiteAposentadoriaCalculo(req, res) {
+        const processo = await Processo.findAll({
+            where: {
+                pro_id: req.params.id
+            },
+            attributes: [
+                'pro_id',
+                'nod_id',
+                'tpr_id',
+                'area_id_iniciativa',
+                'usu_autuador',
+                'pro_nome'
+            ],
+            logging: true,
+            plain: true
+        });
+        const areaProcesso = processo.dataValues.area_id_iniciativa;
+        const proNome = processo.dataValues.pro_nome;
+        const proximo = await VProximoTramiteNormal.findAll({
+            attributes: [
+                'pro_id',
+                'prx_id',
+                'nod_id',
+                'nod_id_proximo',
+                'raz_id',
+                'raz_nome',
+                'set_id',
+                'set_nome',
+                'set_sigla'],
+            where: {
+                pro_id: req.params.id
+            },
+            logging: true
+        });
+        const combo = [];
+        const contador = 1;
+        for (const p in proximo) {
+            const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({
+                attributes: [
+                    'area_id',
+                    'set_nome',
+                    'pes_login'
+                ],
+                where: {
+                    area_id: areaProcesso
+                },
+                logging: true,
+                plain: true
+            });
+            if (req.params.decisao === 'S' && proximo[p].prx_id === 90) {
+                combo.push({
+                    id: contador,
+                    prx_id: proximo[p].prx_id,
+                    set_id: areaTramitacaoPessoal.dataValues.area_id,
+                    set_nome: areaTramitacaoPessoal.dataValues.set_nome,
+                    raz_nome: proximo[p].raz_nome,
+                    pro_nome: proNome
+                });
+            }
+            if (req.params.decisao === 'I' && proximo[p].prx_id === 89) {
+                combo.push({
+                    id: contador,
+                    prx_id: proximo[p].prx_id,
+                    set_id: areaTramitacaoPessoal.dataValues.area_id,
+                    set_nome: areaTramitacaoPessoal.dataValues.set_nome,
+                    raz_nome: proximo[p].raz_nome,
+                    pro_nome: proNome
+                });
+            }
+        }
+        return res.json(combo);
+    }
+
+    async proximoTramiteDiscordanciaCalculo(req, res) {
+        const processo = await Processo.findAll({
+            where: {
+                pro_id: req.params.id
+            },
+            attributes: [
+                'pro_id',
+                'nod_id',
+                'tpr_id',
+                'area_id_iniciativa',
+                'usu_autuador',
+                'pro_nome'
+            ],
+            logging: true,
+            plain: true
+        });
+        const areaProcesso = processo.dataValues.area_id_iniciativa;
+        const proNome = processo.dataValues.pro_nome;
+        const proximo = await VProximoTramiteNormal.findAll({
+            attributes: [
+                'pro_id',
+                'prx_id',
+                'nod_id',
+                'nod_id_proximo',
+                'raz_id',
+                'raz_nome',
+                'set_id',
+                'set_nome',
+                'set_sigla'],
+            where: {
+                pro_id: req.params.id,
+                prx_id: 91
+            },
+            logging: true
+        });
+        const combo = [];
+        const contador = 1;
+        for (const p in proximo) {
+            const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({
+                attributes: [
+                    'area_id',
+                    'set_nome',
+                    'pes_login'
+                ],
+                where: {
+                    area_id: areaProcesso
+                },
+                logging: true,
+                plain: true
+            });
+            if (proximo[p].prx_id === 91) {
+                combo.push({
+                    id: contador,
+                    prx_id: proximo[p].prx_id,
+                    set_id: areaTramitacaoPessoal.dataValues.area_id,
+                    set_nome: areaTramitacaoPessoal.dataValues.set_nome,
+                    raz_nome: proximo[p].raz_nome,
+                    pro_nome: proNome
+                });
             }
         }
         return res.json(combo);
@@ -389,6 +526,129 @@ class TramiteController {
     }
 
     async criaTramiteAverbacao(req, res) {
+        let traInicial = false;
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: true,
+            plain: true
+        });
+        const proximoTramite = await VProximoTramiteNormal.findAll({
+            attributes: [
+                'pro_id',
+                'prx_id',
+                'nod_id',
+                'nod_id_proximo',
+                'raz_id',
+                'raz_nome',
+                'set_id',
+                'set_nome',
+                'set_sigla'],
+            where: {
+                prx_id: req.body.prx_id,
+                pro_id: req.body.pro_id
+
+            },
+            logging: true,
+            plain: true
+        });
+
+        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: true, plain: true });
+
+        const nodoInicio = nodo.dataValues.nod_inicio;
+
+        if (nodoInicio) {
+            traInicial = true;
+        }
+
+        const traId = null;
+        const traEnvio = dataHoraAtual.dataValues.data_hora_atual;
+        const nodIdEnvia = proximoTramite.dataValues.nod_id;
+        const nodIdRecebe = proximoTramite.dataValues.nod_id_proximo;
+        const proId = req.body.pro_id;
+        const razId = proximoTramite.dataValues.raz_id;
+        const loginEnvia = req.body.login_envia;
+        const areaIdEnvia = req.body.area_id_envia;
+        const areaIdRecebe = req.body.area_id_recebe;
+        const {
+            tra_id,
+            tra_envio,
+            pro_id,
+            raz_id,
+            login_envia,
+            area_id_envia,
+            area_id_recebe,
+            nod_id_envia,
+            nod_id_recebe,
+            tra_inicial
+        } = await Tramite.create({
+            tra_id: traId,
+            tra_envio: traEnvio,
+            pro_id: proId,
+            raz_id: razId,
+            login_envia: loginEnvia,
+            area_id_envia: areaIdEnvia,
+            area_id_recebe: areaIdRecebe,
+            nod_id_envia: nodIdEnvia,
+            nod_id_recebe: nodIdRecebe,
+            tra_inicial: traInicial
+        }, {
+            logging: true
+        });
+            // auditoria de inserção
+            // AuditoriaController.audita(req.body, req, 'I', tra_id);
+            //
+
+        // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
+        const processo = await Processo.findByPk(proId, { logging: true });
+        // auditoria de edição
+        // AuditoriaController.audita(
+        //    processo._previousDataValues,
+        //    req,
+        //    'U',
+        //    proId
+        // );
+        //
+        if (!processo) {
+            return res.status(400).json({ error: 'Processo não encontrado' });
+        }
+
+        // await processo.update({
+        //    area_id: areaIdRecebe
+        // }, { logging: true });
+
+        // verifica se é o último nó, se for já encerra o processo
+        if (nodo.dataValues.nod_fim) {
+            await processo.update({
+                area_id: areaIdRecebe,
+                nod_id: nodIdRecebe,
+                pro_ultimo_tramite: dataHoraAtual.dataValues.data_hora_atual,
+                pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,
+                usu_finalizador: req.body.login_recebe,
+                set_id_finalizador: req.body.set_id_recebe
+            }, { logging: false });
+        } else {
+            await processo.update({
+                area_id: areaIdRecebe,
+                nod_id: nodIdRecebe,
+                pro_ultimo_tramite: dataHoraAtual.dataValues.data_hora_atual
+            }, { logging: false });
+        }
+
+        return res.json({
+            tra_id,
+            tra_envio,
+            pro_id,
+            raz_id,
+            login_envia,
+            area_id_envia,
+            area_id_recebe,
+            nod_id_envia,
+            nod_id_recebe,
+            tra_inicial
+        });
+    }
+
+    async criaTramiteCalculoAposentadoria(req, res) {
         let traInicial = false;
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],

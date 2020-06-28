@@ -19,6 +19,7 @@ import Setor from './pages/Setor';
 import Lotacao from './pages/Lotacao';
 import Nodo from './pages/Nodo';
 import ProximoTramite from './pages/ProximoTramite';
+import RegraAposentacao from './pages/RegraAposentacao';
 import CriarManifestacao from './pages/CriarManifestacao';
 import CriarManifestacaoExecutiva from './pages/CriarManifestacaoExecutiva';
 import CriarManifestacaoVisto from './pages/CriarManifestacaoVisto';
@@ -26,6 +27,8 @@ import CriarManifestacaoCiencia from './pages/CriarManifestacaoCiencia';
 import CriarManifestacaoAverbacao from './pages/CriarManifestacaoAverbacao';
 import CriarManifestacaoCienciaAverbacao from './pages/CriarManifestacaoCienciaAverbacao';
 import CriarManifestacaoAvalHorario from './pages/CriarManifestacaoAvalHorario';
+import CriaManifestacaoContagemTempo from './pages/CriaManifestacaoContagemTempo';
+import CriarManifestacaoCienciaCalculo from './pages/CriarManifestacaoCienciaCalculo';
 import TipoDocumento from './pages/TipoDocumento';
 import Tramite from './pages/Tramite';
 
@@ -95,8 +98,19 @@ const Routes = () => (
             path="/manifestacao-cria-aval-horario/:proId"
             component={CriarManifestacaoAvalHorario}
         />
+        <PrivateRoute
+            exact
+            path="/manifestacao-cria-contagem-tempo/:proId"
+            component={CriaManifestacaoContagemTempo}
+        />
+        <PrivateRoute
+            exact
+            path="/manifestacao-cria-ciencia-calculo/:proId"
+            component={CriarManifestacaoCienciaCalculo}
+        />
         <PrivateRoute exact path="/tramita/:id" component={Tramite} />
         <PrivateRoute exact path="/tipos-documento" component={TipoDocumento} />
+        <PrivateRoute exact path="/regras-aposentacao" component={RegraAposentacao} />
         <Route path="*" component={Login} />
     </Switch>
 );

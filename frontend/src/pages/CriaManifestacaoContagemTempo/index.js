@@ -13,7 +13,7 @@ import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
-import AvalHorario from '../../components/system/select/AvalHorario';
+import ContagemTempo from '../../components/system/select/ContagemTempo';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
@@ -29,7 +29,7 @@ import {
     Titulo,
 } from './styles';
 
-function CriarManifestacaoAvalHorario(props) {
+function CriarManifestacaoContagemTempo(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
     const [manifestacao, setManifestacao] = useState({
@@ -106,17 +106,17 @@ function CriarManifestacaoAvalHorario(props) {
         }
     }
 
-    function criaManifestacaoAvalHorario({ proId, manAvalHorario }) {
-        // Manifestação de aval de horário
-        const TIPO_MANIFESTACAO_AVAL_HORARIO = 13;
+    function criaManifestacaoContagemTempo({ proId, manContagemTempo }) {
+        // Manifestação de contagem de tempo
+        const TIPO_MANIFESTACAO_CONTAGEM_TEMPO = 14;
 
-        // Tipo de documento de aval de horário
-        const TIPO_DOCUMENTO_AVAL_HORARIO = 34;
+        // Tipo de documento de contagem de tempo
+        const TIPO_DOCUMENTO_CONTAGEM_TEMPO = 35;
 
         const manLogin = sessionStorage.getItem('usuario');
         const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        if (manAvalHorario === '-1') {
-            setErro('Selecione o aval de horário.');
+        if (manContagemTempo === '-1') {
+            setErro('Selecione a contatem de tempo.');
             return;
         }
         axios({
@@ -125,15 +125,16 @@ function CriarManifestacaoAvalHorario(props) {
             data: {
                 man_id: null,
                 pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_AVAL_HORARIO,
-                tpd_id: TIPO_DOCUMENTO_AVAL_HORARIO,
+                tmn_id: TIPO_MANIFESTACAO_CONTAGEM_TEMPO,
+                tpd_id: TIPO_DOCUMENTO_CONTAGEM_TEMPO,
                 man_login: manLogin,
                 man_id_area: manIdArea,
                 man_visto_executiva: 'Não necessário',
                 nod_id: nodId,
                 man_ciencia: 'Não necessário',
                 man_averbacao: 'Não necessário',
-                man_aval_horario: manAvalHorario,
+                man_aval_horario: 'Não necessário',
+                man_contagem_tempo: manContagemTempo,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -261,22 +262,30 @@ function CriarManifestacaoAvalHorario(props) {
     }
 
     function tramita() {
+        const contagem = manifestacaoProcesso[0].man_contagem_tempo;
+        let tipoContagem = '';
+        if (contagem === 'Suficiência de tempo') {
+            tipoContagem = 'S';
+        } else if (contagem === 'Insuficiência de tempo') {
+            tipoContagem = 'I';
+        } else {
+            setErro('Erro ao tramitar');
+        }
         axios({
             method: 'GET',
-            url: `/proximo-tramite/${props.match.params.proId}`,
+            url: `/proximo-tramite-aposentadoria-calculo/${props.match.params.proId}/${tipoContagem}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
+                // alert(JSON.stringify(res.data, null, 4));
                 // se não tiver registros
                 if (res.data.length === 0) {
                     mensagem.info('Sem próximos trâmites.');
                     return;
                 }
-                // alert(aval);
                 abreModalTramitaUm(res.data[0]);
-                // alert(JSON.stringify(res.data, null, 4));
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
@@ -294,7 +303,7 @@ function CriarManifestacaoAvalHorario(props) {
     function insereTramite(prxId, setId) {
         axios({
             method: 'POST',
-            url: '/tramites',
+            url: '/tramites-calculo-aposentadoria',
             data: {
                 tra_id: null,
                 prx_id: prxId,
@@ -317,11 +326,11 @@ function CriarManifestacaoAvalHorario(props) {
     }
 
     function incluiAnexo(e) {
-        // Manifestação de averbação
-        const TIPO_MANIFESTACAO_AVAL_HORARIO = 13;
+        // Manifestação de contagem de tempo
+        const TIPO_MANIFESTACAO_CONTAGEM_TEMPO = 14;
 
-        // Tipo de documento de averbação
-        const TIPO_DOCUMENTO_AVAL_HORARIO = 34;
+        // Tipo de documento de contagem de tempo
+        const TIPO_DOCUMENTO_CONTAGEM_TEMPO = 35;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -335,14 +344,15 @@ function CriarManifestacaoAvalHorario(props) {
                     data: {
                         man_id: null,
                         pro_id: Number(props.match.params.proId),
-                        tmn_id: TIPO_MANIFESTACAO_AVAL_HORARIO,
+                        tmn_id: TIPO_MANIFESTACAO_CONTAGEM_TEMPO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
                         man_ciencia: 'Não necessário',
                         man_averbacao: 'Não necessário',
-                        man_aval_horario: document.getElementById('manAvalHorario').value,
+                        man_aval_horario: 'Não necessário',
+                        man_contagem_tempo: document.getElementById('manContagemTempo').value,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -365,7 +375,7 @@ function CriarManifestacaoAvalHorario(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO_AVAL_HORARIO,
+                                tpd_id: TIPO_DOCUMENTO_CONTAGEM_TEMPO,
                                 arq_login: sessionStorage.getItem('usuario'),
                             },
                         })
@@ -418,8 +428,8 @@ function CriarManifestacaoAvalHorario(props) {
         }
     }
 
-    const verificaAvalHorario = e => {
-        if (document.getElementById('manAvalHorario').value === '-1') {
+    const verificaContagemTempo = e => {
+        if (document.getElementById('manContagemTempo').value === '-1') {
             setErro('Selecione a averbação.');
             e.preventDefault();
         }
@@ -428,13 +438,13 @@ function CriarManifestacaoAvalHorario(props) {
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Criar aval horário" />
+                <Autorizacao tela="Criar contagem de tempo" />
                 <Main>
                     <Titulo>
                         {manifestacaoProcesso.length > 0 ? (
-                            <p>Aval de horário: {manifestacaoProcesso[0].man_aval_horario}</p>
+                            <p>Contagem de tempo: {manifestacaoProcesso[0].man_contagem_tempo}</p>
                         ) : (
-                            <p>Aval de horário especial</p>
+                            <p>Contagem de tempo</p>
                         )}
                         <hr />
                     </Titulo>
@@ -451,13 +461,13 @@ function CriarManifestacaoAvalHorario(props) {
                     <Form
                         ref={formRef}
                         initialData={manifestacao}
-                        onSubmit={criaManifestacaoAvalHorario}>
+                        onSubmit={criaManifestacaoContagemTempo}>
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
                                 <Input name="manId" type="hidden" />
                                 <Input name="proId" type="hidden" />
-                                <AvalHorario
-                                    name="manAvalHorario"
+                                <ContagemTempo
+                                    name="manContagemTempo"
                                     changeHandler={() => limpaErros()}
                                 />
                             </Container2>
@@ -475,7 +485,7 @@ function CriarManifestacaoAvalHorario(props) {
                                         onChange={incluiAnexo}
                                         id="anexo"
                                         onClick={e => {
-                                            verificaAvalHorario(e);
+                                            verificaContagemTempo(e);
                                         }}
                                     />
                                 </>
@@ -561,7 +571,7 @@ function CriarManifestacaoAvalHorario(props) {
     );
 }
 
-CriarManifestacaoAvalHorario.propTypes = {
+CriarManifestacaoContagemTempo.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
             proId: PropTypes.string,
@@ -569,4 +579,4 @@ CriarManifestacaoAvalHorario.propTypes = {
     }).isRequired,
 };
 
-export default CriarManifestacaoAvalHorario;
+export default CriarManifestacaoContagemTempo;
