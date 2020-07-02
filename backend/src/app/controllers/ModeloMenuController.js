@@ -2,7 +2,15 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import ModeloMenu from '../models/ModeloMenu';
-import AuditoriaController from './AuditoriaController';
+import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
+import Auditoria from '../models/Auditoria';
+import DataHoraAtual from '../models/DataHoraAtual';
+
+import CreateModeloMenuService from '../services/modelo_menu/CreateModeloMenuService';
+import DeleteModeloMenuService from '../services/modelo_menu/DeleteModeloMenuService';
+import UpdateModeloMenuService from '../services/modelo_menu/UpdateModeloMenuService';
+
+import AppError from '../error/AppError';
 
 class ModeloMenuController {
     async index(req, res) {
@@ -15,60 +23,61 @@ class ModeloMenuController {
     }
 
     async store(req, res) {
-        const { mmu_id, mmu_nome } = await ModeloMenu.create(req.body, {
-            logging: false
-        });
+        const createModeloMenu = new CreateModeloMenuService(ModeloMenu);
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const modeloMenu = await createModeloMenu.execute(req.body);
+
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', mmu_id);
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', modeloMenu.mmu_id);
         //
-        return res.json({
-            mmu_id,
-            mmu_nome
-        });
+
+        return res.json(modeloMenu);
     }
 
     async update(req, res) {
-        const menu = await ModeloMenu.findByPk(req.params.id, { logging: false });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const updateModeloMenu = new UpdateModeloMenuService(ModeloMenu);
+
+        const { id } = req.params;
+        const { mmu_nome } = req.body;
+
+        const updatedModeloMenu = await updateModeloMenu.execute({ id, mmu_nome });
+
         // auditoria de edição
-        AuditoriaController.audita(
-            menu._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        await createAuditoria.execute(updatedModeloMenu._previousDataValues, url, usuario, clientIP, 'U', id);
         //
-        if (!menu) {
-            return res.status(400).json({ error: 'Modelo de menu não encontrado' });
-        }
-        await menu.update(req.body, { logging: false });
-        return res.json(menu);
+
+        return res.json(updatedModeloMenu);
     }
 
     async delete(req, res) {
-        const menu = await ModeloMenu.findByPk(req.params.id, { logging: false });
-        if (!menu) {
-            return res.status(400).json({ error: 'Modelo de menu não encontrado' });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteModeloMenu = new DeleteModeloMenuService(ModeloMenu);
+
+        const { id } = req.params;
+
+        try {
+            const modeloMenu = await deleteModeloMenu.execute({ id });
+
+            // auditoria de deleção
+            const { url, headers } = req;
+            const { usuario } = headers;
+            const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await createAuditoria.execute(modeloMenu._previousDataValues, url, usuario, clientIP, 'D', id);
+            //
+        } catch (err) {
+            throw new AppError('Erro ao excluir modelo menu. O modelo menu possui uma ou mais ligações.');
         }
-        await menu
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                AuditoriaController.audita(
-                    menu._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error:
-              'Erro ao excluir modelo de menu. O modelo de menu possui uma ou mais ligações.'
-                    });
-                }
-            });
+
         return res.send();
     }
 }
