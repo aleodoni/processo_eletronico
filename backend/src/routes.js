@@ -35,6 +35,7 @@ import validatorSessionStore from './app/validators/SessionStore';
 import fluxoValidator from './app/validators/fluxoValidator';
 import generoValidator from './app/validators/generoValidator';
 import lotacaoValidator from './app/validators/lotacaoValidator';
+import modeloMenuValidator from './app/validators/modeloMenuValidator';
 
 require('dotenv/config');
 
@@ -136,9 +137,10 @@ routes.delete(`${process.env.API_URL}/tipos-processo/:id`, TipoProcessoControlle
 
 // rotas do cadastro de modelo de menu
 routes.get(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.index);
-routes.post(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.store);
+routes.post(`${process.env.API_URL}/modelo-menu`, modeloMenuValidator, ModeloMenuController.store);
 routes.put(
     `${process.env.API_URL}/modelo-menu/:id`,
+    modeloMenuValidator,
     ModeloMenuController.update
 );
 routes.delete(
