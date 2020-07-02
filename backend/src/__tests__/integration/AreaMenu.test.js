@@ -10,6 +10,8 @@ let token;
 // eslint-disable-next-line no-unused-vars
 let usuario = '';
 
+let areaMenu;
+
 beforeAll(done => {
     request(app)
         .post(`${process.env.API_URL}/autorizacao`)
@@ -25,88 +27,142 @@ beforeAll(done => {
         });
 });
 
-describe('Área de Menu', () => {
-    it('dummy', () => {
-        expect(true).toBe(true);
+describe('Área Menu', () => {
+    it('Deve retornar lista de áreas menu', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/area-menu`)
+            .set('authorization', `${token}`);
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toEqual(
+            expect.arrayContaining([{
+                amu_id: 1,
+                mmu_id: 1,
+                set_id: '027'
+            }])
+        );
     });
-    // it('Área de menu - Lista', function(done) {
-    //     request(app)
-    //         .get(`${process.env.API_URL}/area-menu`)
-    //         .set('authorization', `${token}`)
-    //         .expect(200)
-    //         .end(function(err) {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
-    // it('Áreas do menu', function(done) {
-    //     request(app)
-    //         .get(`${process.env.API_URL}/areas-do-menu`)
-    //         .set('authorization', `${token}`)
-    //         .expect(200)
-    //         .end(function(err) {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
-    // let areaMenuId = '';
-    // it('Área de menu - Insere', function(done) {
-    //     const insereAreaMenus = {
-    //         amu_id: null,
-    //         set_id: '027',
-    //         mmu_id: 1
-    //     };
-    //     request(app)
-    //         .post(`${process.env.API_URL}/area-menu`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`)
-    //         .send(insereAreaMenus)
-    //         .set('Content-Type', 'application/json')
-    //         .expect(200)
-    //         .end(function(err, res) {
-    //             areaMenuId = res.body.amu_id;
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
-    // it('Área de menu - Edita', function(done) {
-    //     const editaAreaMenus = {
-    //         set_id: '032',
-    //         mmu_id: 2
-    //     };
-    //     request(app)
-    //         .put(`${process.env.API_URL}/area-menu/${areaMenuId}`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`)
-    //         .send(editaAreaMenus)
-    //         .set('Content-Type', 'application/json')
-    //         .expect(200)
-    //         .end(function(err, res) {
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
-    // it('Área de menu - Apaga', function(done) {
-    //     request(app)
-    //         .delete(`${process.env.API_URL}/area-menu/${areaMenuId}`)
-    //         .set('authorization', `${token}`)
-    //         .set('usuario', `${usuario}`)
-    //         .set('Content-Type', 'application/json')
-    //         .expect(200)
-    //         .end(function(err, res) {
-    //             areaMenuId = res.body.amu_id;
-    //             if (err) {
-    //                 return done(err);
-    //             }
-    //             return done();
-    //         });
-    // });
+
+    it('Deve inserir uma nova área menu', async() => {
+        const insereAreaMenu = {
+            amu_id: null,
+            set_id: '171',
+            mmu_id: 1
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/area-menu`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereAreaMenu);
+
+        areaMenu = response.body;
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toHaveProperty('mmu_id', insereAreaMenu.mmu_id);
+    });
+
+    it('Deve alterar uma área menu', async() => {
+        const editaAreaMenu = {
+            set_id: '27',
+            mmu_id: 1
+        };
+
+        const response = await request(app)
+            .put(`${process.env.API_URL}/area-menu/${areaMenu.amu_id}`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(editaAreaMenu);
+
+        console.log(response.error);
+        expect(response.status).toBe(200);
+
+        expect(response.body).toHaveProperty('set_id', editaAreaMenu.set_id);
+    });
+
+    it('Deve deletar uma área menu', async() => {
+        const response = await request(app)
+            .delete(`${process.env.API_URL}/area-menu/${areaMenu.amu_id}`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`);
+
+        expect(response.status).toBe(200);
+    });
+
+    it('Não deve inserir uma nova área menu com o setor nulo', async() => {
+        const insereAreaMenu = {
+            amu_id: null,
+            set_id: null,
+            mmu_id: 1
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/area-menu`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereAreaMenu);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Código do setor obrigatório');
+    });
+
+    it('Não deve inserir uma nova área menu com o setor em branco', async() => {
+        const insereAreaMenu = {
+            amu_id: null,
+            set_id: ' ',
+            mmu_id: 1
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/area-menu`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereAreaMenu);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Código do setor obrigatório');
+    });
+
+    it('Não deve inserir uma nova área menu com o modelo menu nulo', async() => {
+        const insereAreaMenu = {
+            amu_id: null,
+            set_id: '027',
+            mmu_id: null
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/area-menu`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereAreaMenu);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Modelo Menu obrigatório');
+    });
+
+    it('Não deve inserir uma nova área menu com o modelo do menu em branco', async() => {
+        const insereAreaMenu = {
+            amu_id: null,
+            set_id: '027'
+        };
+
+        const response = await request(app)
+            .post(`${process.env.API_URL}/area-menu`)
+            .set('authorization', `${token}`)
+            .set('usuario', `${usuario}`)
+            .send(insereAreaMenu);
+
+        expect(response.status).toBe(422);
+
+        const errorParsed = JSON.parse(response.text);
+        expect(errorParsed.message).toBe('Modelo Menu obrigatório');
+    });
 });
