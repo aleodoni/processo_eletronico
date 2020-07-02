@@ -36,6 +36,7 @@ import fluxoValidator from './app/validators/fluxoValidator';
 import generoValidator from './app/validators/generoValidator';
 import lotacaoValidator from './app/validators/lotacaoValidator';
 import modeloMenuValidator from './app/validators/modeloMenuValidator';
+import areaMenuValidator from './app/validators/areaMenuValidator';
 
 require('dotenv/config');
 
@@ -151,8 +152,8 @@ routes.delete(
 // rotas do cadastro de área de menu
 routes.get(`${process.env.API_URL}/area-menu`, AreaMenuController.index);
 routes.get(`${process.env.API_URL}/areas-do-menu`, AreaMenuController.areaDoMenu);
-routes.post(`${process.env.API_URL}/area-menu`, AreaMenuController.store);
-routes.put(`${process.env.API_URL}/area-menu/:id`, AreaMenuController.update);
+routes.post(`${process.env.API_URL}/area-menu`, areaMenuValidator, AreaMenuController.store);
+routes.put(`${process.env.API_URL}/area-menu/:id`, areaMenuValidator, AreaMenuController.update);
 routes.delete(
     `${process.env.API_URL}/area-menu/:id`,
     AreaMenuController.delete
