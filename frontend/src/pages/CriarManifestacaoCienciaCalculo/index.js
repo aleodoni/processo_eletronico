@@ -48,6 +48,7 @@ function CriarManifestacaoCienciaCalculo(props) {
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [anexos, setAnexos] = useState([]);
+    const [anexosDiscordancia, setAnexosDiscordancia] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
@@ -207,7 +208,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                     data: {
                         arq_id: null,
                         arq_nome: ARQ_CIENCIA_CALCULO,
-                        pro_id: null,
+                        pro_id: resultado.data.pro_id,
                         man_id: resultado.data.man_id,
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
@@ -366,9 +367,10 @@ function CriarManifestacaoCienciaCalculo(props) {
         // Verifica qual foi a ciência
         const ciencia_calculo = manifestacaoProcesso[0].man_ciencia_calculo;
         if (ciencia_calculo === 'Discordo do cálculo') {
+            const NODO_CALCULO_RH = 91;
             axios({
                 method: 'GET',
-                url: `/proximo-tramite-discordancia-calculo/${props.match.params.proId}`,
+                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_CALCULO_RH}`,
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
@@ -379,17 +381,13 @@ function CriarManifestacaoCienciaCalculo(props) {
                         mensagem.info('Sem próximos trâmites.');
                         return;
                     }
-                    // alert(JSON.stringify(res.data, null, 4));
+                    alert(JSON.stringify(res.data, null, 4));
                     abreModalTramitaUm(res.data[0]);
                 })
                 .catch(() => {
                     setErro('Erro ao carregar próximos trâmites.');
                 });
         }
-        /*
-
-
-            */
     }
 
     function incluiAnexoDiscorda(e) {
@@ -440,7 +438,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                             data: {
                                 arq_id: null,
                                 arq_nome: arq.name,
-                                pro_id: null,
+                                pro_id: resultado.data.pro_id,
                                 man_id: resultado.data.man_id,
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
@@ -508,7 +506,7 @@ function CriarManifestacaoCienciaCalculo(props) {
     function insereTramite(prxId, setId) {
         axios({
             method: 'POST',
-            url: '/tramites-ciencia-calculo',
+            url: '/tramites',
             data: {
                 tra_id: null,
                 prx_id: prxId,
@@ -516,6 +514,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: document.getElementById('manId').value,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -622,7 +621,7 @@ function CriarManifestacaoCienciaCalculo(props) {
 
                     {anexos.length > 0 ? (
                         <div>
-                            <p>Arquivos da manifestação</p>
+                            <p>Manifestação</p>
                             <fieldset>
                                 <table>
                                     <thead>
@@ -664,6 +663,45 @@ function CriarManifestacaoCienciaCalculo(props) {
                                                         </BotaoComoLink>
                                                     ) : null}
                                                 </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                    ) : null}
+                    <br />
+                    {anexosDiscordancia.length > 0 ? (
+                        <div>
+                            <p>Discordância(s) de cálculo</p>
+                            <fieldset>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Documento</th>
+                                            <th>Arquivo</th>
+                                            <th>Data</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {anexosDiscordancia.map(anexoDiscordancia => (
+                                            <tr key={anexoDiscordancia.arq_id}>
+                                                <td>{anexoDiscordancia.tpd_nome}</td>
+                                                <td>
+                                                    <BotaoComoLink
+                                                        type="button"
+                                                        onClick={e =>
+                                                            downloadAnexo(
+                                                                e,
+                                                                anexoDiscordancia.arq_id,
+                                                                anexoDiscordancia.man_id,
+                                                                anexoDiscordancia.arq_nome
+                                                            )
+                                                        }>
+                                                        {anexoDiscordancia.arq_nome}
+                                                    </BotaoComoLink>
+                                                </td>
+                                                <td>{anexoDiscordancia.data}</td>
                                             </tr>
                                         ))}
                                     </tbody>

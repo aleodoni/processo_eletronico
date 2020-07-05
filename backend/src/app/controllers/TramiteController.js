@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Tramite from '../models/Tramite';
+import Manifestacao from '../models/Manifestacao';
 import VTramite from '../models/VTramite';
 import VProcessoEnvia from '../models/VProcessoEnvia';
 import VProcessoRecebe from '../models/VProcessoRecebe';
@@ -29,7 +30,8 @@ class TramiteController {
                 'area_id_recebe',
                 'nod_id_envia',
                 'nod_id_recebe',
-                'tra_inicial'],
+                'tra_inicial',
+                'tra_retorno_discordancia'],
             logging: false
         });
         return res.json(tramites);
@@ -340,10 +342,10 @@ class TramiteController {
         return res.json(combo);
     }
 
-    async proximoTramiteDiscordanciaCalculo(req, res) {
+    async proximoTramiteDirecionado(req, res) {
         const processo = await Processo.findAll({
             where: {
-                pro_id: req.params.id
+                pro_id: req.params.proId
             },
             attributes: [
                 'pro_id',
@@ -356,7 +358,6 @@ class TramiteController {
             logging: true,
             plain: true
         });
-        const areaProcesso = processo.dataValues.area_id_iniciativa;
         const proNome = processo.dataValues.pro_nome;
         const proximo = await VProximoTramiteNormal.findAll({
             attributes: [
@@ -370,37 +371,21 @@ class TramiteController {
                 'set_nome',
                 'set_sigla'],
             where: {
-                pro_id: req.params.id,
-                prx_id: 91
+                pro_id: req.params.proId,
+                prx_id: req.params.prxId
             },
             logging: true
         });
         const combo = [];
-        const contador = 1;
-        for (const p in proximo) {
-            const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({
-                attributes: [
-                    'area_id',
-                    'set_nome',
-                    'pes_login'
-                ],
-                where: {
-                    area_id: areaProcesso
-                },
-                logging: true,
-                plain: true
-            });
-            if (proximo[p].prx_id === 91) {
-                combo.push({
-                    id: contador,
-                    prx_id: proximo[p].prx_id,
-                    set_id: areaTramitacaoPessoal.dataValues.area_id,
-                    set_nome: areaTramitacaoPessoal.dataValues.set_nome,
-                    raz_nome: proximo[p].raz_nome,
-                    pro_nome: proNome
-                });
-            }
-        }
+        combo.push({
+            id: 0,
+            prx_id: proximo[0].prx_id,
+            set_id: proximo[0].dataValues.set_id,
+            set_nome: proximo[0].dataValues.set_nome,
+            raz_nome: proximo[0].raz_nome,
+            pro_nome: proNome
+        });
+        // console.log(combo);
         return res.json(combo);
     }
 
@@ -446,6 +431,12 @@ class TramiteController {
         const loginEnvia = req.body.login_envia;
         const areaIdEnvia = req.body.area_id_envia;
         const areaIdRecebe = req.body.area_id_recebe;
+        const RAZ_DISCORDANCIA_CALCULO = 120;
+        let traRetornoDiscordancia = false;
+        if (razId === RAZ_DISCORDANCIA_CALCULO) {
+            traRetornoDiscordancia = true;
+        }
+
         const {
             tra_id,
             tra_envio,
@@ -456,7 +447,8 @@ class TramiteController {
             area_id_recebe,
             nod_id_envia,
             nod_id_recebe,
-            tra_inicial
+            tra_inicial,
+            tra_retorno_discordancia
         } = await Tramite.create({
             tra_id: traId,
             tra_envio: traEnvio,
@@ -467,13 +459,24 @@ class TramiteController {
             area_id_recebe: areaIdRecebe,
             nod_id_envia: nodIdEnvia,
             nod_id_recebe: nodIdRecebe,
-            tra_inicial: traInicial
+            tra_inicial: traInicial,
+            tra_retorno_discordancia: traRetornoDiscordancia
         }, {
             logging: true
         });
-            // auditoria de inserção
-            // AuditoriaController.audita(req.body, req, 'I', tra_id);
-            //
+
+        // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: true });
+        if (!manifestacao) {
+            return res.status(400).json({ error: 'Manifestação não encontrada' });
+        }
+        await manifestacao.update({
+            man_tramitada: true
+        }, { logging: true });
+
+        // auditoria de inserção
+        // AuditoriaController.audita(req.body, req, 'I', tra_id);
+        //
 
         // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
         const processo = await Processo.findByPk(proId, { logging: true });
@@ -521,7 +524,8 @@ class TramiteController {
             area_id_recebe,
             nod_id_envia,
             nod_id_recebe,
-            tra_inicial
+            tra_inicial,
+            tra_retorno_discordancia
         });
     }
 
@@ -597,6 +601,15 @@ class TramiteController {
             // auditoria de inserção
             // AuditoriaController.audita(req.body, req, 'I', tra_id);
             //
+
+        // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: true });
+        if (!manifestacao) {
+            return res.status(400).json({ error: 'Manifestação não encontrada' });
+        }
+        await manifestacao.update({
+            man_tramitada: true
+        }, { logging: true });
 
         // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
         const processo = await Processo.findByPk(proId, { logging: true });
@@ -720,6 +733,15 @@ class TramiteController {
             // auditoria de inserção
             // AuditoriaController.audita(req.body, req, 'I', tra_id);
             //
+
+        // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: true });
+        if (!manifestacao) {
+            return res.status(400).json({ error: 'Manifestação não encontrada' });
+        }
+        await manifestacao.update({
+            man_tramitada: true
+        }, { logging: true });
 
         // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
         const processo = await Processo.findByPk(proId, { logging: true });

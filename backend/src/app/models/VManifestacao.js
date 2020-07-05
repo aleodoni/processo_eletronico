@@ -63,6 +63,9 @@ class VManifestacao extends Model {
                 },
                 man_ciencia_calculo: {
                     type: Sequelize.STRING
+                },
+                man_tramitada: {
+                    type: Sequelize.BOOLEAN
                 }
 
             },

@@ -294,6 +294,7 @@ routes.delete(`${process.env.API_URL}/regras-aposentacao/:id`, RegraAposentacaoC
 routes.post(`${process.env.API_URL}/tramites-calculo-aposentadoria`, TramiteController.criaTramiteCalculoAposentadoria);
 
 routes.get(`${process.env.API_URL}/proximo-tramite-aposentadoria-calculo/:id/:decisao`, TramiteController.proximoTramiteAposentadoriaCalculo);
-routes.get(`${process.env.API_URL}/proximo-tramite-discordancia-calculo/:id`, TramiteController.proximoTramiteDiscordanciaCalculo);
+routes.get(`${process.env.API_URL}/proximo-tramite-direcionado/:proId/:prxId`, TramiteController.proximoTramiteDirecionado);
+routes.get(`${process.env.API_URL}/gera-juntada/:id`, DadosProcessoController.geraJuntada);
 
 export default routes;

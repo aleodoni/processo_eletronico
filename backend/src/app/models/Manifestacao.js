@@ -69,6 +69,11 @@ class Manifestacao extends Model {
                 },
                 man_ciencia_calculo: {
                     type: Sequelize.STRING
+                },
+                man_tramitada: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                 }
 
             },

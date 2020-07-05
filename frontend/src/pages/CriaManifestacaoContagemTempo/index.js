@@ -7,6 +7,7 @@ import { FaPaperclip } from 'react-icons/fa';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
 import ModalApaga from '../../components/ModalExcluir';
+import Select from '../../components/layout/Select';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import api from '../../service/api';
@@ -21,6 +22,7 @@ import ModalProcesso from '../../components/ModalProcesso';
 import {
     Container,
     Container2,
+    Container3,
     Main,
     Erro,
     BotaoComoLink,
@@ -39,6 +41,7 @@ function CriarManifestacaoContagemTempo(props) {
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
+    const [tpdId, setTpdId] = useState('-1');
     const [proIdModal, setProId] = useState(-1);
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
@@ -48,6 +51,7 @@ function CriarManifestacaoContagemTempo(props) {
     const [modalProcesso, setModalProcesso] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
     const [nodId, setNodId] = useState('');
+    const [tiposDocumento, setTiposDocumento] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
 
@@ -64,6 +68,10 @@ function CriarManifestacaoContagemTempo(props) {
 
     function fechaModalProcesso() {
         setModalProcesso(false);
+    }
+
+    function handleTpdId(e) {
+        setTpdId(e.target.value);
     }
 
     function abreModalExcluir(id) {
@@ -86,6 +94,7 @@ function CriarManifestacaoContagemTempo(props) {
 
     function limpaCampos() {
         setManId(null);
+        formRef.current.setFieldValue('tpdId', '-1');
         setManifestacao({
             ...manifestacao,
             manAvalHorario: '-1',
@@ -172,6 +181,24 @@ function CriarManifestacaoContagemTempo(props) {
             });
     }, [props.match.params.proId]);
 
+    async function carregaTipoDocumento() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/tipos-documento-combo');
+
+            const data = response.data.map(tipoDocumento => {
+                return {
+                    label: tipoDocumento.tpd_nome,
+                    value: tipoDocumento.tpd_id,
+                };
+            });
+            setTiposDocumento(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
     async function carregaManifestacaoProcesso() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
@@ -182,6 +209,7 @@ function CriarManifestacaoContagemTempo(props) {
                 carregaAnexos(response.data[0].man_id);
                 setManId(response.data[0].man_id);
                 setManifestacao({ manId: response.data[0].man_id });
+                // setRetornoDiscordancia(response.data[0].discordancia);
             }
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
@@ -227,38 +255,58 @@ function CriarManifestacaoContagemTempo(props) {
         async function carrega() {
             await carregaDadosProcesso();
             await carregaManifestacaoProcesso();
+            await carregaTipoDocumento();
         }
         carrega();
     }, []);
 
     function apaga(id) {
-        axios({
-            method: 'DELETE',
-            url: `arquivos/${id}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                axios({
-                    method: 'DELETE',
-                    url: `manifestacoes/${manId}`,
-                    headers: {
-                        authorization: sessionStorage.getItem('token'),
-                    },
-                })
-                    .then(() => {
-                        mensagem.success('Aval apagado com sucesso.');
-                        carregaAnexos(manId);
-                        carregaManifestacaoProcesso();
-                    })
-                    .catch(err => {
-                        setErro(err.response.data.error);
-                    });
+        if (anexos.length === 1) {
+            axios({
+                method: 'DELETE',
+                url: `arquivos/${id}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
             })
-            .catch(erroDeleteArquivo => {
-                setErro(erroDeleteArquivo.response.data.error);
-            });
+                .then(() => {
+                    axios({
+                        method: 'DELETE',
+                        url: `manifestacoes/${manId}`,
+                        headers: {
+                            authorization: sessionStorage.getItem('token'),
+                        },
+                    })
+                        .then(() => {
+                            mensagem.success('Documento e manifestação apagados com sucesso.');
+                            carregaAnexos(manId);
+                            carregaManifestacaoProcesso();
+                            carregaDadosProcesso();
+                        })
+                        .catch(err => {
+                            setErro(err.response.data.error);
+                        });
+                })
+                .catch(erroDeleteArquivo => {
+                    setErro(erroDeleteArquivo.response.data.error);
+                });
+        } else {
+            axios({
+                method: 'DELETE',
+                url: `arquivos/${id}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(() => {
+                    mensagem.success('Documento apagado com sucesso.');
+                    carregaAnexos(manId);
+                    carregaManifestacaoProcesso();
+                })
+                .catch(erroDeleteArquivo => {
+                    setErro(erroDeleteArquivo.response.data.error);
+                });
+        }
     }
 
     function tramita() {
@@ -311,6 +359,7 @@ function CriarManifestacaoContagemTempo(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: document.getElementById('manId').value,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -370,7 +419,7 @@ function CriarManifestacaoContagemTempo(props) {
                             data: {
                                 arq_id: null,
                                 arq_nome: arq.name,
-                                pro_id: null,
+                                pro_id: resultado.data.pro_id,
                                 man_id: resultado.data.man_id,
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
@@ -393,6 +442,7 @@ function CriarManifestacaoContagemTempo(props) {
                                         if (resAnexos.status === 204) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
+
                                             carregaManifestacaoProcesso();
                                         }
                                     })
@@ -435,6 +485,85 @@ function CriarManifestacaoContagemTempo(props) {
         }
     };
 
+    const verificaArquivo = e => {
+        if (tpdId === '-1') {
+            setErro('Selecione o tipo de documento.');
+            e.preventDefault();
+        }
+    };
+
+    function incluiAnexoManifestacao(e) {
+        setErro('');
+        const arq = e.target.files[0];
+        const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
+        const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
+        if (e.target.files[0].size <= tamanhoAnexo) {
+            if (e.target.files[0].type === 'application/pdf') {
+                const data = new FormData();
+                data.append('file', arq);
+                axios({
+                    method: 'POST',
+                    url: '/arquivos',
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
+                    data: {
+                        arq_id: null,
+                        arq_nome: arq.name,
+                        pro_id: Number(props.match.params.proId),
+                        man_id: document.getElementById('manId').value,
+                        arq_tipo: arq.type,
+                        arq_doc_id: document.getElementById('manId').value,
+                        arq_doc_tipo: 'manifestação',
+                        tpd_id: tpdId,
+                        arq_login: sessionStorage.getItem('usuario'),
+                    },
+                })
+                    .then(res => {
+                        axios({
+                            method: 'POST',
+                            url: `/anexo-manifestacao/${res.data.arq_id}`,
+                            headers: {
+                                authorization: sessionStorage.getItem('token'),
+                                'Content-Type': 'multipart/form-data',
+                            },
+                            data,
+                        })
+                            .then(resAnexos => {
+                                if (resAnexos.status === 204) {
+                                    limpaCampos();
+                                    mensagem.success('Documento inserido com sucesso.');
+                                    carregaAnexos(manId);
+                                    carregaManifestacaoProcesso();
+                                }
+                            })
+                            .catch(() => {
+                                const idArquivo = res.data.arq_id;
+                                axios({
+                                    method: 'DELETE',
+                                    url: `arquivos/${idArquivo}`,
+                                    headers: {
+                                        authorization: sessionStorage.getItem('token'),
+                                    },
+                                })
+                                    .then(() => {})
+                                    .catch(erroDeleteArquivo => {
+                                        setErro(erroDeleteArquivo.response.data.error);
+                                    });
+                                setErro('Erro ao criar arquivo anexo.');
+                            });
+                    })
+                    .catch(() => {
+                        setErro('Erro ao inserir na tabela arquivo.');
+                    });
+            } else {
+                setErro('São válidos somente arquivos PDF.');
+            }
+        } else {
+            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+        }
+    }
+
     return (
         <DefaultLayout>
             <Container>
@@ -462,15 +591,25 @@ function CriarManifestacaoContagemTempo(props) {
                         ref={formRef}
                         initialData={manifestacao}
                         onSubmit={criaManifestacaoContagemTempo}>
+                        <Input name="manId" type="hidden" />
+                        <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
-                                <Input name="manId" type="hidden" />
-                                <Input name="proId" type="hidden" />
                                 <ContagemTempo
                                     name="manContagemTempo"
                                     changeHandler={() => limpaErros()}
                                 />
                             </Container2>
+                        ) : null}
+                        {manifestacaoProcesso.length > 0 ? (
+                            <Container3>
+                                <Select
+                                    name="tpdId"
+                                    label="Tipo do documento"
+                                    options={tiposDocumento}
+                                    onChange={handleTpdId}
+                                />
+                            </Container3>
                         ) : null}
                         <ContainerBotoes>
                             {manifestacaoProcesso.length === 0 ? (
@@ -489,7 +628,24 @@ function CriarManifestacaoContagemTempo(props) {
                                         }}
                                     />
                                 </>
-                            ) : null}
+                            ) : (
+                                <>
+                                    <label htmlFor="anexo">
+                                        <FaPaperclip />
+                                        &nbsp;Inserir documento
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        onChange={incluiAnexoManifestacao}
+                                        id="anexo"
+                                        onClick={e => {
+                                            verificaArquivo(e);
+                                        }}
+                                    />
+                                </>
+                            )}
                             {manifestacaoProcesso.length > 0 ? (
                                 <Tramitar name="btnTramita" clickHandler={tramita} />
                             ) : null}

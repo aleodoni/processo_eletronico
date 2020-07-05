@@ -7,6 +7,7 @@ import VManifestacaoProcesso from '../models/VManifestacaoProcesso';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
 import VNodoDecisao from '../models/VNodoDecisao';
 import DataHoraAtual from '../models/DataHoraAtual';
+import Tramite from '../models/Tramite';
 import moment from 'moment';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import * as caminhos from '../../config/arquivos';
@@ -28,6 +29,19 @@ class ManifestacaoController {
     }
 
     async manifestacaoProcesso(req, res) {
+        // vou verificar nos tramites deste processo se o último trâmite teve
+        // como razão "Discordância de cálculo", se teve é que voltou, então
+        // tem que ter uma nova manifestação do DARH
+        const RAZ_DISCORDANCIA_DE_CALCULO = 120;
+        const tramite = await Tramite.findAll({
+            attributes: ['tra_id', 'pro_id', 'raz_id', 'tra_retorno_discordancia'],
+            logging: true,
+            where: {
+                pro_id: req.params.id,
+                raz_id: RAZ_DISCORDANCIA_DE_CALCULO,
+                tra_retorno_discordancia: true
+            }
+        });
         const manifestacao = await VManifestacao.findAll({
             attributes: ['man_id',
                 'pro_id',
@@ -47,13 +61,30 @@ class ManifestacaoController {
                 'man_aval_horario',
                 'man_contagem_tempo',
                 'man_ciencia_calculo',
-                'nod_id'],
+                'nod_id',
+                'man_tramitada'],
+
             logging: true,
             where: {
-                pro_id: req.params.id
-            }
+                pro_id: req.params.id,
+                man_data_cancelamento: null,
+                man_login_cancelamento: null,
+                man_tramitada: false
+            },
+            order: [
+                ['man_id', 'DESC']]
         });
-        return res.json(manifestacao);
+        if (tramite.length === 0) {
+            for (let i = 0; i < manifestacao.length; i++) {
+                manifestacao[i].dataValues.discordancia = false;
+            }
+            return res.json(manifestacao);
+        } else {
+            for (let i = 0; i < manifestacao.length; i++) {
+                manifestacao[i].dataValues.discordancia = true;
+            }
+            return res.json(manifestacao);
+        }
     }
 
     async manifestacaoProcessoDados(req, res) {

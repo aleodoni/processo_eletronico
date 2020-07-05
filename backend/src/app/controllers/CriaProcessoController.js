@@ -9,7 +9,9 @@ import VDadosProcesso from '../models/VDadosProcesso';
 import VDadosLogin from '../models/VDadosLogin';
 import TipoProcesso from '../models/TipoProcesso';
 import Nodo from '../models/Nodo';
+import Arquivo from '../models/Arquivo';
 import DataHoraAtual from '../models/DataHoraAtual';
+import CriaCapaService from '../services/pdf/CriaCapaService';
 // import AuditoriaController from './AuditoriaController';
 
 class CriaProcessoController {
@@ -99,7 +101,7 @@ class CriaProcessoController {
         // com o tpr_id verifico qual é o nó de início do fluxo e se
         // o processo é pessoal ou não
         const tipoProcesso = await TipoProcesso.findAll({
-            attributes: ['tpr_id', 'flu_id', 'tpr_pessoal'],
+            attributes: ['tpr_id', 'flu_id', 'tpr_pessoal', 'tpr_nome'],
             logging: false,
             plain: true,
             where: {
@@ -207,6 +209,27 @@ class CriaProcessoController {
             });
             console.log(JSON.stringify(processoOrigem, null, 4));
         }
+
+        // grava na tabela arquivo a capa do processo
+        const TIPO_DOCUMENTO_CAPA_PROCESSO = 38;
+        const arquivo = await Arquivo.create({
+            arq_id: null,
+            arq_nome: 'capa-' + pro_id + '.pdf',
+            pro_id: pro_id,
+            man_id: null,
+            arq_tipo: 'application/pdf',
+            arq_doc_id: pro_id,
+            arq_doc_tipo: 'capa-processo',
+            tpd_id: TIPO_DOCUMENTO_CAPA_PROCESSO,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: usu_autuador
+        }, {
+            logging: true
+        });
+
+        // cria o arquivo pdf
+        const criaCapa = new CriaCapaService(Processo);
+        await criaCapa.execute(arquivo.arq_id, pro_id, tipoProcesso.dataValues.tpr_nome);
 
         return res.json({
             pro_id,
