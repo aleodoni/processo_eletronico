@@ -142,6 +142,7 @@ function CriarManifestacao(props) {
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
                 setManId(response.data[0].man_id);
+                document.getElementById('manId').value = response.data[0].man_id;
                 setManifestacao({ manId: response.data[0].man_id });
             }
         } catch (err) {
@@ -563,7 +564,7 @@ function CriarManifestacao(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
-                man_id: document.getElementById('manId').value,
+                man_id: manId,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),

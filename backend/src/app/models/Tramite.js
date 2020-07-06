@@ -44,10 +44,6 @@ class Tramite extends Model {
                     type: Sequelize.BOOLEAN,
                     defaultValue: false
                 },
-                tra_retorno_discordancia: {
-                    type: Sequelize.BOOLEAN,
-                    defaultValue: false
-                },
                 versao: {
                     type: Sequelize.INTEGER,
                     allowNull: false,

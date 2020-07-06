@@ -30,8 +30,7 @@ class TramiteController {
                 'area_id_recebe',
                 'nod_id_envia',
                 'nod_id_recebe',
-                'tra_inicial',
-                'tra_retorno_discordancia'],
+                'tra_inicial'],
             logging: false
         });
         return res.json(tramites);
@@ -431,11 +430,6 @@ class TramiteController {
         const loginEnvia = req.body.login_envia;
         const areaIdEnvia = req.body.area_id_envia;
         const areaIdRecebe = req.body.area_id_recebe;
-        const RAZ_DISCORDANCIA_CALCULO = 120;
-        let traRetornoDiscordancia = false;
-        if (razId === RAZ_DISCORDANCIA_CALCULO) {
-            traRetornoDiscordancia = true;
-        }
 
         const {
             tra_id,
@@ -447,8 +441,7 @@ class TramiteController {
             area_id_recebe,
             nod_id_envia,
             nod_id_recebe,
-            tra_inicial,
-            tra_retorno_discordancia
+            tra_inicial
         } = await Tramite.create({
             tra_id: traId,
             tra_envio: traEnvio,
@@ -459,8 +452,7 @@ class TramiteController {
             area_id_recebe: areaIdRecebe,
             nod_id_envia: nodIdEnvia,
             nod_id_recebe: nodIdRecebe,
-            tra_inicial: traInicial,
-            tra_retorno_discordancia: traRetornoDiscordancia
+            tra_inicial: traInicial
         }, {
             logging: true
         });
@@ -524,8 +516,7 @@ class TramiteController {
             area_id_recebe,
             nod_id_envia,
             nod_id_recebe,
-            tra_inicial,
-            tra_retorno_discordancia
+            tra_inicial
         });
     }
 

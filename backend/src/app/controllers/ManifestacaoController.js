@@ -34,12 +34,11 @@ class ManifestacaoController {
         // tem que ter uma nova manifestação do DARH
         const RAZ_DISCORDANCIA_DE_CALCULO = 120;
         const tramite = await Tramite.findAll({
-            attributes: ['tra_id', 'pro_id', 'raz_id', 'tra_retorno_discordancia'],
+            attributes: ['tra_id', 'pro_id', 'raz_id'],
             logging: true,
             where: {
                 pro_id: req.params.id,
-                raz_id: RAZ_DISCORDANCIA_DE_CALCULO,
-                tra_retorno_discordancia: true
+                raz_id: RAZ_DISCORDANCIA_DE_CALCULO
             }
         });
         const manifestacao = await VManifestacao.findAll({
