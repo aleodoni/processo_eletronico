@@ -784,6 +784,138 @@ class TramiteController {
         });
     }
 
+    async criaTramiteDirecionado(req, res) {
+        let traInicial = false;
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: true,
+            plain: true
+        });
+        const proximoTramite = await VProximoTramiteNormal.findAll({
+            attributes: [
+                'pro_id',
+                'prx_id',
+                'nod_id',
+                'nod_id_proximo',
+                'raz_id',
+                'raz_nome',
+                'set_id',
+                'set_nome',
+                'set_sigla'],
+            where: {
+                prx_id: req.body.prx_id,
+                pro_id: req.body.pro_id
+
+            },
+            logging: true,
+            plain: true
+        });
+
+        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: true, plain: true });
+
+        const nodoInicio = nodo.dataValues.nod_inicio;
+
+        if (nodoInicio) {
+            traInicial = true;
+        }
+
+        const traId = null;
+        const traEnvio = dataHoraAtual.dataValues.data_hora_atual;
+        const nodIdEnvia = proximoTramite.dataValues.nod_id;
+        const nodIdRecebe = proximoTramite.dataValues.nod_id_proximo;
+        const proId = req.body.pro_id;
+        const razId = proximoTramite.dataValues.raz_id;
+        const loginEnvia = req.body.login_envia;
+        const areaIdEnvia = req.body.area_id_envia;
+        const areaIdRecebe = req.body.area_id_recebe;
+        const {
+            tra_id,
+            tra_envio,
+            pro_id,
+            raz_id,
+            login_envia,
+            area_id_envia,
+            area_id_recebe,
+            nod_id_envia,
+            nod_id_recebe,
+            tra_inicial
+        } = await Tramite.create({
+            tra_id: traId,
+            tra_envio: traEnvio,
+            pro_id: proId,
+            raz_id: razId,
+            login_envia: loginEnvia,
+            area_id_envia: areaIdEnvia,
+            area_id_recebe: areaIdRecebe,
+            nod_id_envia: nodIdEnvia,
+            nod_id_recebe: nodIdRecebe,
+            tra_inicial: traInicial
+        }, {
+            logging: true
+        });
+            // auditoria de inserção
+            // AuditoriaController.audita(req.body, req, 'I', tra_id);
+            //
+
+        // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: true });
+        if (!manifestacao) {
+            return res.status(400).json({ error: 'Manifestação não encontrada' });
+        }
+        await manifestacao.update({
+            man_tramitada: true
+        }, { logging: true });
+
+        // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
+        const processo = await Processo.findByPk(proId, { logging: true });
+        // auditoria de edição
+        // AuditoriaController.audita(
+        //    processo._previousDataValues,
+        //    req,
+        //    'U',
+        //    proId
+        // );
+        //
+        if (!processo) {
+            return res.status(400).json({ error: 'Processo não encontrado' });
+        }
+
+        // await processo.update({
+        //    area_id: areaIdRecebe
+        // }, { logging: true });
+
+        // verifica se é o último nó, se for já encerra o processo
+        if (nodo.dataValues.nod_fim) {
+            await processo.update({
+                area_id: areaIdRecebe,
+                nod_id: nodIdRecebe,
+                pro_ultimo_tramite: dataHoraAtual.dataValues.data_hora_atual,
+                pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,
+                usu_finalizador: req.body.login_recebe,
+                set_id_finalizador: req.body.set_id_recebe
+            }, { logging: false });
+        } else {
+            await processo.update({
+                area_id: areaIdRecebe,
+                nod_id: nodIdRecebe,
+                pro_ultimo_tramite: dataHoraAtual.dataValues.data_hora_atual
+            }, { logging: false });
+        }
+
+        return res.json({
+            tra_id,
+            tra_envio,
+            pro_id,
+            raz_id,
+            login_envia,
+            area_id_envia,
+            area_id_recebe,
+            nod_id_envia,
+            nod_id_recebe,
+            tra_inicial
+        });
+    }
+
     async update(req, res) {
         const tramite = await Tramite.findByPk(req.params.id, { logging: false });
         // auditoria de edição

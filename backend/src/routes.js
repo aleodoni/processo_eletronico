@@ -256,6 +256,7 @@ routes.get(`${process.env.API_URL}/tramites`, TramiteController.index);
 routes.get(`${process.env.API_URL}/grid-tramites/:id`, TramiteController.gridTramite);
 routes.post(`${process.env.API_URL}/tramites`, TramiteController.store);
 routes.post(`${process.env.API_URL}/tramites-averbacao`, TramiteController.criaTramiteAverbacao);
+routes.post(`${process.env.API_URL}/tramites-direcionado`, TramiteController.criaTramiteDirecionado);
 // rota de envio de processo
 routes.get(`${process.env.API_URL}/processo-envia/:id`, TramiteController.processosEnvio);
 // rotas de recebimento de processo
@@ -284,6 +285,7 @@ routes.delete(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoControl
 routes.post(`${process.env.API_URL}/arquivo-visto-executiva`, CriaPdfController.criaPdfVistoExecutiva);
 routes.post(`${process.env.API_URL}/arquivo-ciencia`, CriaPdfController.criaPdfCiencia);
 routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao`, CriaPdfController.criaPdfCienciaAverbacao);
+routes.post(`${process.env.API_URL}/arquivo-ciencia-calculo`, CriaPdfController.criaPdfCienciaCalculo);
 
 // rotas do cadastro de regras de aposentação
 routes.get(`${process.env.API_URL}/regras-aposentacao`, RegraAposentacaoController.index);

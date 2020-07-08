@@ -19,6 +19,11 @@ class CriaPdfController {
         await criaManifestacao.criaManifestacaoCienciaAverbacao(req.body.arq_id, req.body.man_id);
         return res.status(204).end();
     }
+
+    async criaPdfCienciaCalculo(req, res) {
+        await criaManifestacao.criaManifestacaoCienciaCalculo(req.body.arq_id, req.body.man_id);
+        return res.status(204).end();
+    }
 }
 
 export default new CriaPdfController();
