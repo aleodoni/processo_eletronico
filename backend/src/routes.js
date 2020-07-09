@@ -37,6 +37,7 @@ import generoValidator from './app/validators/generoValidator';
 import lotacaoValidator from './app/validators/lotacaoValidator';
 import modeloMenuValidator from './app/validators/modeloMenuValidator';
 import areaMenuValidator from './app/validators/areaMenuValidator';
+import nodoValidator from './app/validators/nodoValidator';
 
 require('dotenv/config');
 
@@ -118,8 +119,8 @@ routes.delete(`${process.env.API_URL}/telas/:id`, TelaController.delete);
 routes.get(`${process.env.API_URL}/nodos`, NodoController.index);
 routes.get(`${process.env.API_URL}/grid-nodos/:fluId`, NodoController.gridNodo);
 routes.get(`${process.env.API_URL}/seleciona-nodo/:id`, NodoController.findOne);
-routes.post(`${process.env.API_URL}/nodos`, NodoController.store);
-routes.put(`${process.env.API_URL}/nodos/:id`, NodoController.update);
+routes.post(`${process.env.API_URL}/nodos`, nodoValidator, NodoController.store);
+routes.put(`${process.env.API_URL}/nodos/:id`, nodoValidator, NodoController.update);
 routes.delete(`${process.env.API_URL}/nodos/:id`, NodoController.delete);
 
 // rotas do cadastro de gêneros
