@@ -43,6 +43,27 @@ class ArquivoController {
         return res.json(arquivos);
     }
 
+    async indexManifestacaoDiscordancia(req, res) {
+        const arquivos = await ArquivoManifestacao.findAll({
+            order: ['man_id'],
+            attributes: [
+                'contador',
+                'arq_id',
+                'arq_nome',
+                'man_id',
+                'arq_tipo',
+                'data',
+                'arq_login',
+                'tpd_nome'
+            ],
+            logging: true,
+            where: {
+                man_id: req.params.manId
+            }
+        });
+        return res.json(arquivos);
+    }
+
     async store(req, res) {
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],

@@ -21,7 +21,6 @@ import ModalProcesso from '../../components/ModalProcesso';
 
 import {
     Container,
-    Container2,
     Main,
     Erro,
     LinkProcesso,
@@ -168,7 +167,7 @@ function CriarManifestacaoCiencia(props) {
                     data: {
                         arq_id: null,
                         arq_nome: ARQ_CIENCIA,
-                        pro_id: null,
+                        pro_id: resultado.data.pro_id,
                         man_id: resultado.data.man_id,
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
@@ -186,7 +185,7 @@ function CriarManifestacaoCiencia(props) {
                             },
                             data: {
                                 arq_id: res.data.arq_id,
-                                usuario: sessionStorage.getItem('usuario'),
+                                man_id: resultado.data.man_id,
                             },
                         })
                             .then(resAnexos => {
@@ -396,6 +395,7 @@ function CriarManifestacaoCiencia(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: document.getElementById('manId').value,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -434,12 +434,8 @@ function CriarManifestacaoCiencia(props) {
                         - {tprNome}
                     </span>
                     <Form ref={formRef} initialData={manifestacao} onSubmit={criaManifestacao}>
-                        {manifestacaoProcesso.length === 0 ? (
-                            <Container2>
-                                <Input name="manId" type="hidden" />
-                                <Input name="proId" type="hidden" />
-                            </Container2>
-                        ) : null}
+                        <Input name="manId" type="hidden" />
+                        <Input name="proId" type="hidden" />
                         <ContainerBotoes>
                             {manifestacaoProcesso.length === 0 ? (
                                 <Ciencia name="btnCiencia" type="submit" />

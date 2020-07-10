@@ -118,7 +118,7 @@ export const BotaoCriaManifestacao = styled.button`
     border: 0;
     border-radius: 4px;
     height: 30px;
-    width: 180px;
+    width: 150px;
 
     ${({ cor }) => handleColorType(cor)};
     font-size: 14px;

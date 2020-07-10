@@ -113,6 +113,12 @@ export const Container2 = styled.div`
     margin-bottom: 10px;
 `;
 
+export const Container3 = styled.div`
+    display: grid;
+    grid-template-columns: 900px;
+    margin-bottom: 10px;
+`;
+
 export const ContainerBotoes = styled.div`
     display: grid;
     grid-template-columns: 185px 185px 185px;

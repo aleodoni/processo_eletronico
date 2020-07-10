@@ -2,9 +2,13 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import VDadosProcesso from '../models/VDadosProcesso';
+import * as caminhos from '../../config/arquivos';
+import Arquivo from '../models/Arquivo';
 import VProcessosPessoais from '../models/VProcessosPessoais';
 import VProcessosArea from '../models/VProcessosArea';
 import VDecisaoPessoal from '../models/VDecisaoPessoal';
+import { PDFDocument } from 'pdf-lib';
+import fs from 'fs';
 
 class DadosProcessoController {
     async dadosProcesso(req, res) {
@@ -233,6 +237,71 @@ class DadosProcessoController {
             }
         });
         return res.send({ visto: decisao.dataValues.man_visto_executiva, prazo: decisao.dataValues.tpr_prazo_recurso, tpr_id: decisao.dataValues.tpr_id });
+    }
+
+    async geraJuntada(req, res) {
+        const arquivos = await Arquivo.findAll({
+            attributes: [
+                'arq_id',
+                'pro_id',
+                'man_id',
+                'arq_nome'
+            ],
+            logging: false,
+            where: {
+                pro_id: req.params.id
+            },
+            order: ['arq_id']
+        });
+        const arquivosDisco = [];
+        for (let i = 0; i < arquivos.length; i++) {
+            const caminho = caminhos.destino + caminhos.finalDoCaminho(arquivos[i].arq_id);
+            let nome = arquivos[i].arq_id.toString();
+            let extensao = '';
+            // o primeiro sempre vai ser a capa
+            if (i === 0) {
+                extensao = 'C.pdf';
+            } else {
+                extensao = 'M.pdf';
+            }
+            if (nome.length === 1) {
+                nome = '000000' + nome + extensao;
+            }
+            if (nome.length === 2) {
+                nome = '00000' + nome + extensao;
+            }
+            if (nome.length === 3) {
+                nome = '0000' + nome + extensao;
+            }
+            if (nome.length === 4) {
+                nome = '000' + nome + extensao;
+            }
+            if (nome.length === 5) {
+                nome = '00' + nome + extensao;
+            }
+            if (nome.length === 6) {
+                nome = '0' + nome + extensao;
+            }
+            arquivosDisco.push(caminho + nome);
+        }
+        const arquivoJuntada = caminhos.destino + 'Juntada/' + caminhos.nomeFisico(req.params.id) + 'J' + '.pdf';
+        const mergedPdf = await PDFDocument.create();
+        for (const pdfCopyDoc of arquivosDisco) {
+            const pdfBytes = fs.readFileSync(pdfCopyDoc);
+            const pdf = await PDFDocument.load(pdfBytes);
+            const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+            copiedPages.forEach((page) => {
+                mergedPdf.addPage(page);
+            });
+        }
+        fs.writeFileSync(arquivoJuntada, await mergedPdf.save());
+        fs.readFile(arquivoJuntada, function(_err, data) {
+            if (_err) {
+                console.log(_err);
+            }
+            res.contentType('application/pdf');
+            return res.send(data);
+        });
     }
 }
 export default new DadosProcessoController();

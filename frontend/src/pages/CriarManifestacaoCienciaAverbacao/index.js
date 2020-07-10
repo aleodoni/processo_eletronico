@@ -166,7 +166,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
                     data: {
                         arq_id: null,
                         arq_nome: ARQ_CIENCIA_AVERBACAO,
-                        pro_id: null,
+                        pro_id: resultado.data.pro_id,
                         man_id: resultado.data.man_id,
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
@@ -184,7 +184,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
                             },
                             data: {
                                 arq_id: res.data.arq_id,
-                                usuario: sessionStorage.getItem('usuario'),
+                                man_id: resultado.data.man_id,
                             },
                         })
                             .then(resAnexos => {
@@ -371,6 +371,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: document.getElementById('manId').value,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -415,10 +416,10 @@ function CriarManifestacaoCienciaAverbacao(props) {
                         ref={formRef}
                         initialData={manifestacao}
                         onSubmit={criaManifestacaoCienciaAverbacao}>
+                        <Input name="manId" type="hidden" />
+                        <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
-                                <Input name="manId" type="hidden" />
-                                <Input name="proId" type="hidden" />
                                 <CienciaAverbacao
                                     name="manCienciaAverbacao"
                                     changeHandler={() => limpaErros()}

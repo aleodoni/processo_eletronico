@@ -109,7 +109,7 @@ export const Erro = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 350px 350px;
+    grid-template-columns: 350px 200px;
     margin-bottom: 10px;
 
 span {
@@ -221,6 +221,16 @@ export const LinkProcesso = styled.button`
     }
 `;
 
-export const Vermelho = styled.span`
-    color: red;
+export const LinkJuntada = styled.button`
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    text-decoration: underline;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+        background: transparent;
+        text-decoration: none;
+    }
 `;

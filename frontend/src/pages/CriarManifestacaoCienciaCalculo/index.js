@@ -11,11 +11,9 @@ import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
-import Select from '../../components/layout/Select';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
 import CienciaCalculo from '../../components/system/select/CienciaCalculo';
-import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import Ciencia from '../../components/layout/button/Ciencia';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
@@ -27,6 +25,7 @@ import {
     Erro,
     BotaoComoLink,
     LinkProcesso,
+    LinkJuntada,
     ContainerBotoes,
     Titulo,
 } from './styles';
@@ -53,7 +52,6 @@ function CriarManifestacaoCienciaCalculo(props) {
     const [modalProcesso, setModalProcesso] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
     const [nodId, setNodId] = useState('');
-    const [regras, setRegras] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
 
@@ -103,24 +101,6 @@ function CriarManifestacaoCienciaCalculo(props) {
             setMostraRegra(false);
             setMostraBotaoDiscorda(false);
             setMostraCiencia(false);
-        }
-    }
-
-    async function carregaRegraAposentacao() {
-        api.defaults.headers.Authorization = sessionStorage.getItem('token');
-
-        try {
-            const response = await api.get('/regras-aposentacao');
-
-            const data = response.data.map(regra => {
-                return {
-                    label: regra.reg_nome,
-                    value: regra.reg_id,
-                };
-            });
-            setRegras(data);
-        } catch (err) {
-            mensagem.error(`Falha na autenticação - ${err}`);
         }
     }
 
@@ -207,7 +187,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                     data: {
                         arq_id: null,
                         arq_nome: ARQ_CIENCIA_CALCULO,
-                        pro_id: null,
+                        pro_id: resultado.data.pro_id,
                         man_id: resultado.data.man_id,
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
@@ -225,14 +205,17 @@ function CriarManifestacaoCienciaCalculo(props) {
                             },
                             data: {
                                 arq_id: res.data.arq_id,
-                                usuario: sessionStorage.getItem('usuario'),
+                                man_id: resultado.data.man_id,
                             },
                         })
                             .then(resAnexos => {
                                 if (resAnexos.status === 204) {
                                     limpaCampos();
-                                    mensagem.success('Arquivo de ciência inserido com sucesso.');
+                                    mensagem.success('Manifestação inserida com sucesso.');
                                     carregaManifestacaoProcesso();
+                                    setMostraRegra(false);
+                                    setMostraBotaoDiscorda(false);
+                                    setMostraCiencia(false);
                                 }
                             })
                             .catch(() => {
@@ -324,7 +307,6 @@ function CriarManifestacaoCienciaCalculo(props) {
         async function carrega() {
             await carregaDadosProcesso();
             await carregaManifestacaoProcesso();
-            await carregaRegraAposentacao();
         }
         carrega();
     }, []);
@@ -350,8 +332,6 @@ function CriarManifestacaoCienciaCalculo(props) {
                         carregaDadosProcesso();
                         carregaAnexos(manId);
                         carregaManifestacaoProcesso();
-                        // setMostraRegra(false);
-                        // setMostraBotaoDiscorda(false);
                     })
                     .catch(err => {
                         setErro(err.response.data.error);
@@ -366,9 +346,10 @@ function CriarManifestacaoCienciaCalculo(props) {
         // Verifica qual foi a ciência
         const ciencia_calculo = manifestacaoProcesso[0].man_ciencia_calculo;
         if (ciencia_calculo === 'Discordo do cálculo') {
+            const NODO_CALCULO_RH = 91;
             axios({
                 method: 'GET',
-                url: `/proximo-tramite-discordancia-calculo/${props.match.params.proId}`,
+                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_CALCULO_RH}`,
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
@@ -379,17 +360,33 @@ function CriarManifestacaoCienciaCalculo(props) {
                         mensagem.info('Sem próximos trâmites.');
                         return;
                     }
-                    // alert(JSON.stringify(res.data, null, 4));
                     abreModalTramitaUm(res.data[0]);
                 })
                 .catch(() => {
                     setErro('Erro ao carregar próximos trâmites.');
                 });
         }
-        /*
-
-
-            */
+        if (ciencia_calculo === 'Estou ciente do cálculo') {
+            const NODO_CALCULO_RH = 92;
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_CALCULO_RH}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaUm(res.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+        }
     }
 
     function incluiAnexoDiscorda(e) {
@@ -440,7 +437,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                             data: {
                                 arq_id: null,
                                 arq_nome: arq.name,
-                                pro_id: null,
+                                pro_id: resultado.data.pro_id,
                                 man_id: resultado.data.man_id,
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
@@ -501,14 +498,21 @@ function CriarManifestacaoCienciaCalculo(props) {
         }
     }
 
-    function consulta() {
-        history.push('/processo-consulta');
-    }
-
     function insereTramite(prxId, setId) {
+        const ciencia_calculo = manifestacaoProcesso[0].man_ciencia_calculo;
+        let url = '';
+        if (ciencia_calculo === 'Discordo do cálculo') {
+            url = '/tramites';
+        } else if (ciencia_calculo === 'Estou ciente do cálculo') {
+            url = '/tramites-direcionado';
+        } else {
+            mensagem.error('Ciência em branco.');
+            return;
+        }
+
         axios({
             method: 'POST',
-            url: '/tramites-ciencia-calculo',
+            url,
             data: {
                 tra_id: null,
                 prx_id: prxId,
@@ -516,6 +520,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: document.getElementById('manId').value,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -527,6 +532,40 @@ function CriarManifestacaoCienciaCalculo(props) {
             })
             .catch(() => {
                 setErro('Erro ao inserir trâmite.');
+            });
+    }
+
+    function geraJuntada() {
+        axios({
+            method: 'GET',
+            url: `/gera-juntada/${Number(props.match.params.proId)}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+                Accept: 'application/pdf',
+            },
+            responseType: 'blob',
+        })
+            .then(res => {
+                const blob = new Blob([res.data], { type: res.data.type });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const contentDisposition = res.headers['content-disposition'];
+                let fileName = `juntada${Number(props.match.params.proId)}.pdf`;
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (fileNameMatch.length === 2) {
+                        fileName = fileNameMatch[1];
+                    }
+                }
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => {
+                setErro('Erro ao gerar juntada.');
             });
     }
 
@@ -565,13 +604,9 @@ function CriarManifestacaoCienciaCalculo(props) {
                                     name="manCienciaCalculo"
                                     changeHandler={selecionaCiencia}
                                 />
-                                {mostraRegra ? (
-                                    <Select
-                                        name="regId"
-                                        label="Regra de aposentação"
-                                        options={regras}
-                                    />
-                                ) : null}
+                                <LinkJuntada type="button" onClick={geraJuntada}>
+                                    Ver juntada do processo
+                                </LinkJuntada>
                             </Container2>
                         ) : null}
                         <ContainerBotoes>
@@ -581,7 +616,6 @@ function CriarManifestacaoCienciaCalculo(props) {
                             {manifestacaoProcesso.length > 0 ? (
                                 <Tramitar name="btnTramita" clickHandler={tramita} />
                             ) : null}
-                            <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                             {mostraBotaoDiscorda && !mostraRegra ? (
                                 <>
                                     <label htmlFor="anexo">
@@ -622,7 +656,7 @@ function CriarManifestacaoCienciaCalculo(props) {
 
                     {anexos.length > 0 ? (
                         <div>
-                            <p>Arquivos da manifestação</p>
+                            <p>Manifestação</p>
                             <fieldset>
                                 <table>
                                     <thead>

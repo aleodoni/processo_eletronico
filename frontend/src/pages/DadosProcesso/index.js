@@ -9,6 +9,7 @@ import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import GeraFluxo from '../../components/layout/button/GeraFluxo';
+import Juntada from '../../components/layout/button/Juntada';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
 import ModalFluxo from '../../components/ModalFluxo';
 import TabelaManifestacoes from '../../components/TabelaManifestacoes';
@@ -95,6 +96,40 @@ function DadosProcesso({ match }) {
         }
     }
 
+    function geraJuntada(proIdJuntada) {
+        axios({
+            method: 'GET',
+            url: `/gera-juntada/${proIdJuntada}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+                Accept: 'application/pdf',
+            },
+            responseType: 'blob',
+        })
+            .then(res => {
+                const blob = new Blob([res.data], { type: res.data.type });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const contentDisposition = res.headers['content-disposition'];
+                let fileName = `juntada${proIdJuntada}.pdf`;
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (fileNameMatch.length === 2) {
+                        fileName = fileNameMatch[1];
+                    }
+                }
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => {
+                setErro('Erro ao gerar juntada.');
+            });
+    }
+
     return (
         <DefaultLayout>
             {mostraProcesso ? (
@@ -125,10 +160,13 @@ function DadosProcesso({ match }) {
                                                 name="btnConsulta"
                                                 clickHandler={consulta}
                                             />
-
                                             <GeraFluxo
                                                 name="btnGrafico"
                                                 clickHandler={() => abreModalFluxo(pro.flu_id)}
+                                            />
+                                            <Juntada
+                                                name="btnJuntada"
+                                                clickHandler={() => geraJuntada(pro.pro_id)}
                                             />
                                             <br />
                                         </ContainerBotoes>
@@ -141,6 +179,10 @@ function DadosProcesso({ match }) {
                                             <GeraFluxo
                                                 name="btnGrafico"
                                                 clickHandler={() => abreModalFluxo(pro.flu_id)}
+                                            />
+                                            <Juntada
+                                                name="btnJuntada"
+                                                clickHandler={() => geraJuntada(pro.pro_id)}
                                             />
                                             <br />
                                         </ContainerBotoes>

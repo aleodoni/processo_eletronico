@@ -334,6 +334,7 @@ function CriarManifestacaoExecutiva(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: document.getElementById('manId').value,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -390,7 +391,7 @@ function CriarManifestacaoExecutiva(props) {
                             data: {
                                 arq_id: null,
                                 arq_nome: arq.name,
-                                pro_id: null,
+                                pro_id: resultado.data.pro_id,
                                 man_id: resultado.data.man_id,
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
@@ -489,10 +490,10 @@ function CriarManifestacaoExecutiva(props) {
                         ref={formRef}
                         initialData={manifestacao}
                         onSubmit={criaManifestacaoExecutiva}>
+                        <Input name="manId" type="hidden" />
+                        <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
-                                <Input name="manId" type="hidden" />
-                                <Input name="proId" type="hidden" />
                                 <DecisaoExecutiva
                                     name="manVistoExecutiva"
                                     changeHandler={() => limpaErros()}

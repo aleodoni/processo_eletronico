@@ -142,6 +142,7 @@ function CriarManifestacao(props) {
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
                 setManId(response.data[0].man_id);
+                document.getElementById('manId').value = response.data[0].man_id;
                 setManifestacao({ manId: response.data[0].man_id });
             }
         } catch (err) {
@@ -203,7 +204,7 @@ function CriarManifestacao(props) {
                             data: {
                                 arq_id: null,
                                 arq_nome: arq.name,
-                                pro_id: null,
+                                pro_id: resultado.data.pro_id,
                                 man_id: resultado.data.man_id,
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
@@ -279,7 +280,7 @@ function CriarManifestacao(props) {
                     data: {
                         arq_id: null,
                         arq_nome: arq.name,
-                        pro_id: null,
+                        pro_id: document.getElementById('proId').value,
                         man_id: manId,
                         arq_tipo: arq.type,
                         arq_doc_id: manId,
@@ -563,6 +564,7 @@ function CriarManifestacao(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: manId,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),

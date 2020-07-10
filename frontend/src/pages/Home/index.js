@@ -183,7 +183,7 @@ function Home() {
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
-                                                                            Criar manifestação
+                                                                            Manifestação
                                                                         </BotaoCriaManifestacao>
                                                                     );
                                                                 case 2:
@@ -206,7 +206,7 @@ function Home() {
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
-                                                                            Criar manifestação
+                                                                            Manifestação
                                                                         </BotaoCriaManifestacao>
                                                                     );
                                                                 case 3:
@@ -229,7 +229,7 @@ function Home() {
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
-                                                                            Criar manifestação
+                                                                            Manifestação
                                                                         </BotaoCriaManifestacao>
                                                                     );
                                                                 default:
@@ -252,7 +252,7 @@ function Home() {
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
-                                                                            Criar manifestação
+                                                                            Manifestação
                                                                         </BotaoCriaManifestacao>
                                                                     );
                                                             }
