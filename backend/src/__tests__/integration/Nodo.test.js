@@ -33,8 +33,6 @@ describe('Nodos', () => {
             .get(`${process.env.API_URL}/nodos`)
             .set('authorization', `${token}`);
 
-        console.log(response.error);
-
         expect(response.status).toBe(200);
 
         expect(response.body).toEqual(
