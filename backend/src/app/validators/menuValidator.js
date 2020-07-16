@@ -4,7 +4,7 @@ export default celebrate({
     [Segments.BODY]: {
         men_id: Joi.optional(),
 
-        men_id_pai: Joi.number(),
+        men_id_pai: [Joi.number().optional, Joi.allow(null)],
 
         men_nome: Joi.string()
             .trim()
@@ -18,7 +18,7 @@ export default celebrate({
 
         men_url: Joi.string()
             .trim()
-            .max(200).message('Url menu não pode ter mais que 60 caracteres')
+            .max(200).message('Url menu não pode ter mais que 200 caracteres')
             .required()
             .messages({
                 'string.base': 'Url menu obrigatório',
@@ -44,7 +44,7 @@ export default celebrate({
 
         men_ordem_pai: Joi.number(),
 
-        tela_interna: Joi.boolean()
+        tel_interna: Joi.boolean()
             .default(false)
     }
 });
