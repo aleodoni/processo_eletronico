@@ -8,6 +8,12 @@ class CreateMenuService {
     }
 
     async execute({ men_id, men_id_pai, men_nome, men_url, tel_id, mmu_id, men_ordem_pai, tela_interna }) {
+        // Trata men_id_pai
+        if (men_id_pai === '' || men_id_pai <= 0) {
+            men_id_pai = null;
+        }
+        //
+
         // Verifica se men_id_pai existe
         if (men_id_pai) {
             const menuPaiExiste = await this.menuModel.findByPk(men_id_pai, { logging: true });
