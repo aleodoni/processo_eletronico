@@ -32,6 +32,7 @@ import {
 function CriarManifestacaoCiencia(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
@@ -119,7 +120,7 @@ function CriarManifestacaoCiencia(props) {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            const response = await api.get(`/manifestacao-processo/${match.params.proId}`);
             setManifestacaoProcesso(response.data);
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
@@ -143,13 +144,11 @@ function CriarManifestacaoCiencia(props) {
             url: '/manifestacoes',
             data: {
                 man_id: null,
-                pro_id: props.match.params.proId,
+                pro_id: match.params.proId,
                 tmn_id: TIPO_MANIFESTACAO_CIENCIA,
                 man_login: manLogin,
                 man_id_area: manIdArea,
-                man_visto_executiva: 'Não necessário',
                 man_ciencia: 'Ciente do processo',
-                man_averbacao: 'Não necessário',
                 nod_id: nodId,
             },
             headers: {
@@ -261,7 +260,7 @@ function CriarManifestacaoCiencia(props) {
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${props.match.params.proId}`,
+            url: `/ver-processo/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -279,7 +278,7 @@ function CriarManifestacaoCiencia(props) {
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
+    }, [match.params.proId]);
 
     useEffect(() => {
         async function carrega() {
@@ -325,7 +324,7 @@ function CriarManifestacaoCiencia(props) {
 
         axios({
             method: 'PUT',
-            url: `/encerra/${props.match.params.proId}`,
+            url: `/encerra/${match.params.proId}`,
             data: {
                 usuario,
                 areaId,
@@ -356,7 +355,7 @@ function CriarManifestacaoCiencia(props) {
         // aqui vai verificar se vai tramitar para um ou para vários
         axios({
             method: 'GET',
-            url: `/proximo-tramite/${props.match.params.proId}`,
+            url: `/proximo-tramite/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -391,7 +390,7 @@ function CriarManifestacaoCiencia(props) {
             data: {
                 tra_id: null,
                 prx_id: prxId,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
@@ -428,7 +427,7 @@ function CriarManifestacaoCiencia(props) {
                     <span>
                         <LinkProcesso
                             type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                            onClick={() => abreModalProcesso(match.params.proId)}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}

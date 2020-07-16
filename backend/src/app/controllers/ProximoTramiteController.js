@@ -5,6 +5,7 @@ import ProximoTramite from '../models/ProximoTramite';
 import VNodoFluxo from '../models/VNodoFluxo';
 import VProximoTramite from '../models/VProximoTramite';
 import Sequelize from 'sequelize';
+import { renderDot } from 'render-dot';
 // import AuditoriaController from './AuditoriaController';
 
 class ProximoTramiteController {
@@ -47,7 +48,7 @@ class ProximoTramiteController {
         return res.json(proximoTramite);
     }
 
-    async geraGrafo(req, res) {
+    async criaGrafo(req, res) {
         const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
             host: process.env.DB_HOST,
             dialect: 'postgres',
@@ -73,8 +74,13 @@ class ProximoTramiteController {
                 raw: true
             }
         );
-        console.log(montaGrafo.grafo_fluxo);
-        return res.json(montaGrafo.grafo_fluxo);
+        // console.log(montaGrafo.grafo_fluxo);
+        const imagem = await renderDot({
+            input: montaGrafo.grafo_fluxo,
+            format: 'png'
+        });
+        const img = Buffer.from(imagem, 'binary');
+        return res.send(img);
     }
 
     async store(req, res) {

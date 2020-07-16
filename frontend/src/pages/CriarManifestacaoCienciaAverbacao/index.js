@@ -32,6 +32,7 @@ import {
 function CriarManifestacaoCienciaAverbacao(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
@@ -110,7 +111,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            const response = await api.get(`/manifestacao-processo/${match.params.proId}`);
             setManifestacaoProcesso(response.data);
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
@@ -145,10 +146,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
                 tpd_id: TIPO_DOCUMENTO_CIENCIA_AVERBACAO,
                 man_login: manLogin,
                 man_id_area: manIdArea,
-                man_visto_executiva: 'Não necessário',
                 nod_id: nodId,
-                man_ciencia: 'Não necessário',
-                man_averbacao: 'Não necessário',
                 man_ciencia_averbacao: manCienciaAverbacao,
             },
             headers: {
@@ -192,6 +190,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
                                     limpaCampos();
                                     mensagem.success('Arquivo de ciência inserido com sucesso.');
                                     carregaManifestacaoProcesso();
+                                    document.getElementById('anexo').value = '';
                                 }
                             })
                             .catch(() => {
@@ -225,7 +224,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${props.match.params.proId}`,
+            url: `/ver-processo/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -242,7 +241,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
+    }, [match.params.proId]);
 
     function downloadAnexo(e, idArquivo, id, arqNome) {
         e.preventDefault();
@@ -324,7 +323,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
 
         axios({
             method: 'GET',
-            url: `/proximo-tramite/${props.match.params.proId}`,
+            url: `/proximo-tramite/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -335,8 +334,6 @@ function CriarManifestacaoCienciaAverbacao(props) {
                     mensagem.info('Sem próximos trâmites.');
                     return;
                 }
-                // alert(ciencia_averbacao);
-                // alert(JSON.stringify(res.data, null, 4));
                 if (ciencia_averbacao === 'Concordo com a averbação parcial') {
                     abreModalTramitaUm(res.data[0]);
                 } else if (ciencia_averbacao === 'Nova apresentação de CTC') {
@@ -367,7 +364,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
             data: {
                 tra_id: null,
                 prx_id: prxId,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
@@ -407,7 +404,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
                     <span>
                         <LinkProcesso
                             type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                            onClick={() => abreModalProcesso(match.params.proId)}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}

@@ -74,9 +74,9 @@ function Home() {
         noCienciaAverbacao,
         noAvalHorario,
         noContagemTempo,
-        noCienciaCalculo
+        noCienciaCalculo,
+        noParecerProjurisAposentadoria
     ) {
-        // alert(noCienciaCalculo);
         // se tiver o aval da executiva a manifestação é diferenciada
         if (aval) {
             if (noDecisao) {
@@ -102,6 +102,9 @@ function Home() {
             // se se for uma ciência de cálculo de aposentadoria
         } else if (noCienciaCalculo) {
             history.push(`/manifestacao-cria-ciencia-calculo/${id}`);
+            // se se for um parecer do Projuris de aposentadoria
+        } else if (noParecerProjurisAposentadoria) {
+            history.push(`/manifestacao-cria-parecer-projuris-aposentadoria/${id}`);
         } else {
             history.push(`/manifestacao-cria/${id}`);
         }
@@ -179,7 +182,8 @@ function Home() {
                                                                                     proc.nod_ciencia_averbacao,
                                                                                     proc.nod_aval_horario,
                                                                                     proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo
+                                                                                    proc.nod_ciencia_calculo,
+                                                                                    proc.nod_parecer_projuris_aposentadoria
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -202,7 +206,8 @@ function Home() {
                                                                                     proc.nod_ciencia_averbacao,
                                                                                     proc.nod_aval_horario,
                                                                                     proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo
+                                                                                    proc.nod_ciencia_calculo,
+                                                                                    proc.nod_parecer_projuris_aposentadoria
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -225,7 +230,8 @@ function Home() {
                                                                                     proc.nod_ciencia_averbacao,
                                                                                     proc.nod_aval_horario,
                                                                                     proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo
+                                                                                    proc.nod_ciencia_calculo,
+                                                                                    proc.nod_parecer_projuris_aposentadoria
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -248,7 +254,8 @@ function Home() {
                                                                                     proc.nod_ciencia_averbacao,
                                                                                     proc.nod_aval_horario,
                                                                                     proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo
+                                                                                    proc.nod_ciencia_calculo,
+                                                                                    proc.nod_parecer_projuris_aposentadoria
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />

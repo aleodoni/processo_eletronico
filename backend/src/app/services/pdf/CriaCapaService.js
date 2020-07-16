@@ -24,9 +24,10 @@ class CriaCapaService {
         doc.pipe(fs.createWriteStream(arquivo));
         doc.image(brasao, 10, 10, { scale: 0.50 });
         doc.fontSize(20).text(titulo, 160, 20);
-        doc.fontSize(16).text('Processo nº ' + processo.pro_codigo, 190, 80);
-        doc.fontSize(14).text('Tipo do processo: ' + tpr_nome, 10, 150);
-        doc.fontSize(14).text('Iniciativa: ' + processo.pro_nome, 10, 170);
+        doc.fontSize(16).text('PROCESSO ADMINISTRATIVO Nº ' + processo.pro_codigo, 190, 60);
+        doc.fontSize(16).text('INICIATIVA: ' + processo.pro_nome, 10, 150);
+        doc.rect(doc.x, 160, 450, doc.y).stroke();
+        doc.fontSize(14).text('ASSUNTO: ' + tpr_nome, 10, 170);
 
         doc.end();
     }

@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
-import { FaFileAlt, FaSistrix } from 'react-icons/fa';
+import { FaFileAlt } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
 
 import {
     Container,
     Main,
     ContainerProcessos,
-    ContainerBotoes,
     BotaoComoLink,
     Erro,
     BotaoCriaManifestacao,
 } from './styles';
-import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapido';
 import DefaultLayout from '../_layouts/default';
 import axios from '../../configs/axiosConfig';
 import ModalProcesso from '../../components/ModalProcesso';
@@ -23,12 +20,8 @@ function Home() {
         width: '50px',
     };
     const colunaManifestacao = {
-        width: '180px',
+        width: '100px',
     };
-    const colunaPessoal = {
-        textAlign: 'center',
-    };
-
     const history = useHistory();
     const [gridProcessosArea, setGridProcessosArea] = useState([]);
     const [erro, setErro] = useState('');
@@ -65,46 +58,8 @@ function Home() {
         carregaGridArea();
     }, [carregaGridArea]);
 
-    function criaManifestacao(
-        id,
-        aval,
-        noDecisao,
-        noCiencia,
-        noAverbacao,
-        noCienciaAverbacao,
-        noAvalHorario,
-        noContagemTempo,
-        noCienciaCalculo
-    ) {
-        // alert(noCienciaCalculo);
-        // se tiver o aval da executiva a manifestação é diferenciada
-        if (aval) {
-            if (noDecisao) {
-                history.push(`/manifestacao-cria-executiva/${id}`);
-            } else {
-                history.push(`/manifestacao-cria-visto/${id}`);
-            }
-            // se for uma ciência a manifestação é diferenciada
-        } else if (noCiencia) {
-            history.push(`/manifestacao-cria-ciencia/${id}`);
-            // se se for uma averbação a manifestação é diferenciada
-        } else if (noAverbacao) {
-            history.push(`/manifestacao-cria-averbacao/${id}`);
-            // se se for uma ciência de averbação a manifestação é diferenciada
-        } else if (noCienciaAverbacao) {
-            history.push(`/manifestacao-cria-ciencia-averbacao/${id}`);
-            // se se for um aval de horário especial
-        } else if (noAvalHorario) {
-            history.push(`/manifestacao-cria-aval-horario/${id}`);
-            // se se for uma contagem de tempo
-        } else if (noContagemTempo) {
-            history.push(`/manifestacao-cria-contagem-tempo/${id}`);
-            // se se for uma ciência de cálculo de aposentadoria
-        } else if (noCienciaCalculo) {
-            history.push(`/manifestacao-cria-ciencia-calculo/${id}`);
-        } else {
-            history.push(`/manifestacao-cria/${id}`);
-        }
+    function criaManifestacao(id) {
+        history.push(`/manifestacao-cria/${id}`);
     }
 
     return (
@@ -114,35 +69,20 @@ function Home() {
 
                 <Main>
                     <Erro dangerouslySetInnerHTML={{ __html: erro }} />
-                    <ContainerBotoes>
-                        <ButtonAcessoRapido>
-                            <Link to="/processo-cria">
-                                <FaFileAlt />
-                                Criar processo
-                            </Link>
-                        </ButtonAcessoRapido>
-
-                        <ButtonAcessoRapido>
-                            <Link to="/processo-consulta">
-                                <FaSistrix />
-                                Consultar processos
-                            </Link>
-                        </ButtonAcessoRapido>
-                    </ContainerBotoes>
                     <hr />
                     <ContainerProcessos>
                         {gridProcessosArea.length > 0 ? (
                             <div>
                                 <p>
-                                    Processos na área: {sessionStorage.getItem('nomeAreaUsuario')}
+                                    Processos no órgão: {sessionStorage.getItem('nomeAreaUsuario')}
                                 </p>
                                 <table>
                                     <thead>
                                         <tr>
                                             <th>Código</th>
                                             <th>Tipo</th>
-                                            <th>Pessoal</th>
-                                            <th />
+                                            <th>Nome</th>
+                                            <th>&nbsp;</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -158,7 +98,7 @@ function Home() {
                                                     </BotaoComoLink>
                                                 </td>
                                                 <td>{proc.tpr_nome}</td>
-                                                <td style={colunaPessoal}>{proc.pessoal}</td>
+                                                <td>{proc.pro_nome}</td>
                                                 <td style={colunaManifestacao}>
                                                     <>
                                                         {(() => {
@@ -171,15 +111,7 @@ function Home() {
                                                                             corHover="vermelho-claro"
                                                                             onClick={() => {
                                                                                 criaManifestacao(
-                                                                                    proc.pro_id,
-                                                                                    proc.nod_aval_executiva,
-                                                                                    proc.nod_decisao,
-                                                                                    proc.nod_ciencia,
-                                                                                    proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario,
-                                                                                    proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo
+                                                                                    proc.pro_id
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -194,15 +126,7 @@ function Home() {
                                                                             corHover="laranja-claro"
                                                                             onClick={() => {
                                                                                 criaManifestacao(
-                                                                                    proc.pro_id,
-                                                                                    proc.nod_aval_executiva,
-                                                                                    proc.nod_decisao,
-                                                                                    proc.nod_ciencia,
-                                                                                    proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario,
-                                                                                    proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo
+                                                                                    proc.pro_id
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -213,19 +137,11 @@ function Home() {
                                                                     return (
                                                                         <BotaoCriaManifestacao
                                                                             name="btnCriaManifestacao"
-                                                                            cor="azul"
-                                                                            corHover="azul-claro"
+                                                                            cor="verde"
+                                                                            corHover="verde-claro"
                                                                             onClick={() => {
                                                                                 criaManifestacao(
-                                                                                    proc.pro_id,
-                                                                                    proc.nod_aval_executiva,
-                                                                                    proc.nod_decisao,
-                                                                                    proc.nod_ciencia,
-                                                                                    proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario,
-                                                                                    proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo
+                                                                                    proc.pro_id
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -236,19 +152,11 @@ function Home() {
                                                                     return (
                                                                         <BotaoCriaManifestacao
                                                                             name="btnCriaManifestacao"
-                                                                            cor="azul"
-                                                                            corHover="azul-claro"
+                                                                            cor="verde"
+                                                                            corHover="verde-claro"
                                                                             onClick={() => {
                                                                                 criaManifestacao(
-                                                                                    proc.pro_id,
-                                                                                    proc.nod_aval_executiva,
-                                                                                    proc.nod_decisao,
-                                                                                    proc.nod_ciencia,
-                                                                                    proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario,
-                                                                                    proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo
+                                                                                    proc.pro_id
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />

@@ -32,6 +32,7 @@ import {
 function CriarManifestacaoAvalHorario(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
@@ -106,49 +107,6 @@ function CriarManifestacaoAvalHorario(props) {
         }
     }
 
-    function criaManifestacaoAvalHorario({ proId, manAvalHorario }) {
-        // Manifestação de aval de horário
-        const TIPO_MANIFESTACAO_AVAL_HORARIO = 13;
-
-        // Tipo de documento de aval de horário
-        const TIPO_DOCUMENTO_AVAL_HORARIO = 34;
-
-        const manLogin = sessionStorage.getItem('usuario');
-        const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        if (manAvalHorario === '-1') {
-            setErro('Selecione o aval de horário.');
-            return;
-        }
-        axios({
-            method: 'POST',
-            url: '/manifestacoes',
-            data: {
-                man_id: null,
-                pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_AVAL_HORARIO,
-                tpd_id: TIPO_DOCUMENTO_AVAL_HORARIO,
-                man_login: manLogin,
-                man_id_area: manIdArea,
-                man_visto_executiva: 'Não necessário',
-                nod_id: nodId,
-                man_ciencia: 'Não necessário',
-                man_averbacao: 'Não necessário',
-                man_aval_horario: manAvalHorario,
-            },
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                limpaCampos();
-                mensagem.success('Manifestação inserida com sucesso.');
-                carregaAnexos(proId);
-            })
-            .catch(() => {
-                setErro('Erro ao inserir manifestação.');
-            });
-    }
-
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
@@ -169,7 +127,7 @@ function CriarManifestacaoAvalHorario(props) {
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
+    }, [match.params.proId]);
 
     async function carregaManifestacaoProcesso() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
@@ -274,9 +232,7 @@ function CriarManifestacaoAvalHorario(props) {
                     mensagem.info('Sem próximos trâmites.');
                     return;
                 }
-                // alert(aval);
                 abreModalTramitaUm(res.data[0]);
-                // alert(JSON.stringify(res.data, null, 4));
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
@@ -339,10 +295,7 @@ function CriarManifestacaoAvalHorario(props) {
                         tmn_id: TIPO_MANIFESTACAO_AVAL_HORARIO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
-                        man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
-                        man_ciencia: 'Não necessário',
-                        man_averbacao: 'Não necessário',
                         man_aval_horario: document.getElementById('manAvalHorario').value,
                     },
                     headers: {
@@ -385,6 +338,7 @@ function CriarManifestacaoAvalHorario(props) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
                                             carregaManifestacaoProcesso();
+                                            document.getElementById('anexo').value = '';
                                         }
                                     })
                                     .catch(() => {
@@ -421,7 +375,7 @@ function CriarManifestacaoAvalHorario(props) {
 
     const verificaAvalHorario = e => {
         if (document.getElementById('manAvalHorario').value === '-1') {
-            setErro('Selecione a averbação.');
+            setErro('Selecione o aval de horário.');
             e.preventDefault();
         }
     };
@@ -449,10 +403,7 @@ function CriarManifestacaoAvalHorario(props) {
                         </LinkProcesso>
                         - {tprNome}
                     </span>
-                    <Form
-                        ref={formRef}
-                        initialData={manifestacao}
-                        onSubmit={criaManifestacaoAvalHorario}>
+                    <Form ref={formRef} initialData={manifestacao} onSubmit={null}>
                         <Input name="manId" type="hidden" />
                         <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (

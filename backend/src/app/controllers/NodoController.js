@@ -35,7 +35,8 @@ class NodoController {
                 'nod_ciencia_averbacao',
                 'nod_aval_horario',
                 'nod_contagem_tempo',
-                'nod_ciencia_calculo'
+                'nod_ciencia_calculo',
+                'nod_parecer_projuris_aposentadoria'
             ],
             logging: false
         });
@@ -85,7 +86,9 @@ class NodoController {
                 'nod_contagem_tempo',
                 'contagem_tempo',
                 'nod_ciencia_calculo',
-                'ciencia_calculo'
+                'ciencia_calculo',
+                'nod_parecer_projuris_aposentadoria',
+                'parecer_projuris_aposentadoria'
             ],
             logging: false
         });
@@ -132,7 +135,8 @@ class NodoController {
             nod_ciencia_averbacao,
             nod_aval_horario,
             nod_contagem_tempo,
-            nod_ciencia_calculo
+            nod_ciencia_calculo,
+            nod_parecer_projuris_aposentadoria
         } = req.body;
 
         const updatedNodo = await updateNodo.execute({
@@ -151,7 +155,8 @@ class NodoController {
             nod_ciencia_averbacao,
             nod_aval_horario,
             nod_contagem_tempo,
-            nod_ciencia_calculo
+            nod_ciencia_calculo,
+            nod_parecer_projuris_aposentadoria
         });
 
         // auditoria de edição

@@ -188,7 +188,3 @@ export const LinkProcesso = styled.button`
         margin-left: 45px;
     }
 `;
-
-export const Vermelho = styled.span`
-    color: red;
-`;

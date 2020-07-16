@@ -45,7 +45,7 @@ export const ContainerProcessoOrigem = styled.div`
 export const ContainerModal = styled.div`
     width: 1200px;
     height: 620px;
-    background-color: #303f9f;
+    background-color: ${({ theme }) => theme.primary};
 
     p {
         font-size: 14px;

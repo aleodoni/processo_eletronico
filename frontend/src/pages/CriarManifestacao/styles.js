@@ -4,10 +4,23 @@ export const Container = styled.div`
     display: grid;
     grid-template-columns: 1100px;
 
+    fieldset {
+        border: 1px solid #ffffff;
+        border-radius: 5px;
+        padding: 7px;
+        label {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        span {
+            color: #ffffff;
+        }
+    }
+
     p {
         color: #fff;
         font-weight: bold;
-        margin-top: 10px;
         margin-bottom: 3px;
     }
 
@@ -38,6 +51,28 @@ export const Container = styled.div`
         width: 100%;
         background: #fff;
     }
+
+    div {
+        fieldset {
+            background: #fff;
+        }
+    }
+`;
+
+export const Titulo = styled.div`
+    display: grid;
+    grid-template-columns: 1600px;
+    margin-left: 5px;
+    p {
+        color: #fff;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 3px;
+    }
+    hr {
+        width: 100%;
+        color: #fff;
+    }
 `;
 
 export const Main = styled.main`
@@ -56,12 +91,10 @@ export const Main = styled.main`
 
     label {
         padding-left: 5px;
-        padding-top: 5px;
         color: #ffffff;
         font-weight: bold;
     }
     span {
-        padding-top: 5px;
         color: #ffffff;
     }
 `;

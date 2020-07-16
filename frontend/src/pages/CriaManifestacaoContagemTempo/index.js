@@ -34,6 +34,7 @@ import {
 function CriarManifestacaoContagemTempo(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
@@ -115,6 +116,7 @@ function CriarManifestacaoContagemTempo(props) {
         }
     }
 
+    /*
     function criaManifestacaoContagemTempo({ proId, manContagemTempo }) {
         // Manifestação de contagem de tempo
         const TIPO_MANIFESTACAO_CONTAGEM_TEMPO = 14;
@@ -138,11 +140,7 @@ function CriarManifestacaoContagemTempo(props) {
                 tpd_id: TIPO_DOCUMENTO_CONTAGEM_TEMPO,
                 man_login: manLogin,
                 man_id_area: manIdArea,
-                man_visto_executiva: 'Não necessário',
                 nod_id: nodId,
-                man_ciencia: 'Não necessário',
-                man_averbacao: 'Não necessário',
-                man_aval_horario: 'Não necessário',
                 man_contagem_tempo: manContagemTempo,
             },
             headers: {
@@ -158,11 +156,12 @@ function CriarManifestacaoContagemTempo(props) {
                 setErro('Erro ao inserir manifestação.');
             });
     }
+*/
 
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${props.match.params.proId}`,
+            url: `/ver-processo/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -179,7 +178,7 @@ function CriarManifestacaoContagemTempo(props) {
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
+    }, [match.params.proId]);
 
     async function carregaTipoDocumento() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
@@ -203,13 +202,12 @@ function CriarManifestacaoContagemTempo(props) {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            const response = await api.get(`/manifestacao-processo/${match.params.proId}`);
             setManifestacaoProcesso(response.data);
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
                 setManId(response.data[0].man_id);
                 setManifestacao({ manId: response.data[0].man_id });
-                // setRetornoDiscordancia(response.data[0].discordancia);
             }
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
@@ -321,14 +319,12 @@ function CriarManifestacaoContagemTempo(props) {
         }
         axios({
             method: 'GET',
-            url: `/proximo-tramite-aposentadoria-calculo/${props.match.params.proId}/${tipoContagem}`,
+            url: `/proximo-tramite-aposentadoria-calculo/${match.params.proId}/${tipoContagem}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                // alert(JSON.stringify(res.data, null, 4));
-                // se não tiver registros
                 if (res.data.length === 0) {
                     mensagem.info('Sem próximos trâmites.');
                     return;
@@ -355,7 +351,7 @@ function CriarManifestacaoContagemTempo(props) {
             data: {
                 tra_id: null,
                 prx_id: prxId,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
@@ -392,15 +388,11 @@ function CriarManifestacaoContagemTempo(props) {
                     url: '/manifestacoes',
                     data: {
                         man_id: null,
-                        pro_id: Number(props.match.params.proId),
+                        pro_id: Number(match.params.proId),
                         tmn_id: TIPO_MANIFESTACAO_CONTAGEM_TEMPO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
-                        man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
-                        man_ciencia: 'Não necessário',
-                        man_averbacao: 'Não necessário',
-                        man_aval_horario: 'Não necessário',
                         man_contagem_tempo: document.getElementById('manContagemTempo').value,
                     },
                     headers: {
@@ -442,8 +434,8 @@ function CriarManifestacaoContagemTempo(props) {
                                         if (resAnexos.status === 204) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
-
                                             carregaManifestacaoProcesso();
+                                            document.getElementById('anexo').value = '';
                                         }
                                     })
                                     .catch(() => {
@@ -510,7 +502,7 @@ function CriarManifestacaoContagemTempo(props) {
                     data: {
                         arq_id: null,
                         arq_nome: arq.name,
-                        pro_id: Number(props.match.params.proId),
+                        pro_id: Number(match.params.proId),
                         man_id: document.getElementById('manId').value,
                         arq_tipo: arq.type,
                         arq_doc_id: document.getElementById('manId').value,
@@ -582,15 +574,12 @@ function CriarManifestacaoContagemTempo(props) {
                     <span>
                         <LinkProcesso
                             type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                            onClick={() => abreModalProcesso(match.params.proId)}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
                     </span>
-                    <Form
-                        ref={formRef}
-                        initialData={manifestacao}
-                        onSubmit={criaManifestacaoContagemTempo}>
+                    <Form ref={formRef} initialData={manifestacao} onSubmit={null}>
                         <Input name="manId" type="hidden" />
                         <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (

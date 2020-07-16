@@ -37,6 +37,7 @@ import NoDecisao from '../../components/system/select/NoDecisao';
 import NoAvalHorario from '../../components/system/select/NoAvalHorario';
 import NoContagemTempo from '../../components/system/select/NoContagemTempo';
 import NoCienciaCalculo from '../../components/system/select/NoCienciaCalculo';
+import NoParecerProjurisAposentadoria from '../../components/system/select/NoParecerProjurisAposentadoria';
 
 function Nodo() {
     const [erro, setErro] = useState('');
@@ -55,6 +56,7 @@ function Nodo() {
         nodAvalHorario: -1,
         nodContagemTempo: -1,
         nodCienciaCalculo: -1,
+        nodParecerProjurisAposentadoria: -1,
         nodDiasPrazo: 0,
         nodOrdem: 0,
     });
@@ -120,6 +122,7 @@ function Nodo() {
             nodAvalHorario: -1,
             nodContagemTempo: -1,
             nodCienciaCalculo: -1,
+            nodParecerProjurisAposentadoria: -1,
             nodDiasPrazo: 0,
             nodOrdem: 0,
         });
@@ -205,6 +208,7 @@ function Nodo() {
             nodAvalHorario: linha.nod_aval_horario,
             nodContagemTempo: linha.nod_contagem_tempo,
             nodCienciaCalculo: linha.nod_ciencia_calculo,
+            nodParecerProjurisAposentadoria: linha.nod_parecer_projuris_aposentadoria,
         });
         posiciona();
     }
@@ -241,6 +245,7 @@ function Nodo() {
         nodAvalHorario,
         nodContagemTempo,
         nodCienciaCalculo,
+        nodParecerProjurisAposentadoria,
     }) {
         try {
             const schema = Yup.object().shape({
@@ -267,6 +272,10 @@ function Nodo() {
                     [true, false],
                     'É um nó de ciência de cálculo?'
                 ),
+                nodParecerProjurisAposentadoria: Yup.boolean().oneOf(
+                    [true, false],
+                    'É um nó de parecer de aposentadoria do Projuris?'
+                ),
             });
 
             await schema.validate(
@@ -285,6 +294,7 @@ function Nodo() {
                     nodAvalHorario,
                     nodContagemTempo,
                     nodCienciaCalculo,
+                    nodParecerProjurisAposentadoria,
                 },
                 { abortEarly: false }
             );
@@ -310,6 +320,7 @@ function Nodo() {
                         nod_aval_horario: nodAvalHorario,
                         nod_contagem_tempo: nodContagemTempo,
                         nod_ciencia_calculo: nodCienciaCalculo,
+                        // nod_parecer_projuris_aposentadoria: nodParecerProjurisAposentadoria,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -345,6 +356,7 @@ function Nodo() {
                         nod_aval_horario: nodAvalHorario,
                         nod_contagem_tempo: nodContagemTempo,
                         nod_ciencia_calculo: nodCienciaCalculo,
+                        nod_parecer_projuris_aposentadoria: nodParecerProjurisAposentadoria,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -462,6 +474,7 @@ function Nodo() {
                                     <NoAvalHorario name="nodAvalHorario" />
                                     <NoContagemTempo name="nodContagemTempo" />
                                     <NoCienciaCalculo name="nodCienciaCalculo" />
+                                    <NoParecerProjurisAposentadoria name="nodParecerProjurisAposentadoria" />
                                 </ContainerCamposNodos2>
                                 <ButtonContainer>
                                     <Salvar name="btnSalva" type="submit" />
@@ -504,6 +517,11 @@ function Nodo() {
                                         {
                                             title: 'Ciência de cálculo',
                                             field: 'ciencia_calculo',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Parecer de aposentadoria Projuris',
+                                            field: 'parecer_projuris_aposentadoria',
                                             width: 100,
                                         },
                                     ]}

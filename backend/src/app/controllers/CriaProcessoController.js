@@ -12,6 +12,7 @@ import Nodo from '../models/Nodo';
 import Arquivo from '../models/Arquivo';
 import DataHoraAtual from '../models/DataHoraAtual';
 import CriaCapaService from '../services/pdf/CriaCapaService';
+import Sequelize from 'sequelize';
 // import AuditoriaController from './AuditoriaController';
 
 class CriaProcessoController {
@@ -39,9 +40,24 @@ class CriaProcessoController {
         return res.json(processos);
     }
 
+    async processosRecurso(req, res) {
+        const Op = Sequelize.Op;
+        const processos = await VDadosProcesso.findAll({
+            attributes: ['pro_id', 'pro_codigo', 'pro_matricula', 'pro_nome', 'cpf', 'tpr_id', 'tpr_nome'],
+            logging: true,
+            where: {
+                usu_autuador: req.params.usuario,
+                tpr_id: { [Op.notIn]: [28, 15, 16, 30, 248] },
+                usu_finalizador: { [Op.ne]: null }
+            },
+            order: ['pro_codigo']
+        });
+        return res.json(processos);
+    }
+
     async processoOrigem(req, res) {
         const processoOrigem = await VProcessoOrigem.findAll({
-            attributes: ['pro_id_origem', 'pro_id_atual', 'processo_origem'],
+            attributes: ['pro_id_origem', 'pro_id_atual', 'processo_origem', 'tpr_id', 'tpr_nome'],
             logging: true,
             where: {
                 pro_id_atual: req.params.id
@@ -205,6 +221,14 @@ class CriaProcessoController {
         // de processo_origem
         if (req.body.pro_pensao !== null && req.body.pro_pensao !== undefined) {
             const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: req.body.pro_pensao, pro_id_atual: pro_id }, {
+                logging: true
+            });
+            console.log(JSON.stringify(processoOrigem, null, 4));
+        }
+
+        // se for um recurso de processo grava na tabela de processo_origem
+        if (req.body.pro_recurso === true) {
+            const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: req.body.pro_codigo_recurso, pro_id_atual: pro_id }, {
                 logging: true
             });
             console.log(JSON.stringify(processoOrigem, null, 4));

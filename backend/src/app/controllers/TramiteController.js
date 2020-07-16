@@ -3,8 +3,11 @@
 /* eslint-disable camelcase */
 import Tramite from '../models/Tramite';
 import Manifestacao from '../models/Manifestacao';
+import Setor from '../models/Setor';
 import VTramite from '../models/VTramite';
 import VProcessoEnvia from '../models/VProcessoEnvia';
+import ProximoTramite from '../models/ProximoTramite';
+import RazaoTramite from '../models/RazaoTramite';
 import VProcessoRecebe from '../models/VProcessoRecebe';
 import VAreaTramitacaoPessoal from '../models/VAreaTramitacaoPessoal';
 import Nodo from '../models/Nodo';
@@ -341,6 +344,72 @@ class TramiteController {
         return res.json(combo);
     }
 
+    async proximoTramiteAposentadoriaDecisao(req, res) {
+        const AREA_EXECUTIVA = 398;
+        const manifestacao = await Manifestacao.findAll({
+            where: {
+                pro_id: req.params.id,
+                man_id_area: AREA_EXECUTIVA
+            },
+            attributes: [
+                'man_visto_executiva'
+            ],
+            logging: true,
+            plain: true
+        });
+        let prxId;
+        if (manifestacao.dataValues.man_visto_executiva === 'Concedido') {
+            prxId = 112;
+        }
+        if (manifestacao.dataValues.man_visto_executiva === 'Negado') {
+            prxId = 111;
+        }
+
+        const proximoTramite = await ProximoTramite.findByPk(prxId, { logging: true, plain: true });
+
+        const razaoTramite = await RazaoTramite.findByPk(proximoTramite.raz_id, { logging: true, plain: true });
+
+        const processo = await Processo.findAll({
+            where: {
+                pro_id: req.params.id
+            },
+            attributes: [
+                'pro_id',
+                'nod_id',
+                'tpr_id',
+                'area_id_iniciativa',
+                'usu_autuador',
+                'pro_nome'
+            ],
+            logging: true,
+            plain: true
+        });
+        const areaProcesso = processo.dataValues.area_id_iniciativa;
+        const proNome = processo.dataValues.pro_nome;
+        const area = await Setor.findAll({
+            where: {
+                set_id: areaProcesso
+            },
+            attributes: [
+                'set_id',
+                'set_nome'
+            ],
+            logging: true,
+            plain: true
+        });
+
+        const combo = [];
+        combo.push({
+            id: 1,
+            prx_id: proximoTramite.prx_id,
+            set_id: area.dataValues.set_id,
+            pro_nome: proNome,
+            set_nome: area.dataValues.set_nome,
+            raz_nome: razaoTramite.raz_nome
+        });
+        return res.json(combo);
+    }
+
     async proximoTramiteDirecionado(req, res) {
         const processo = await Processo.findAll({
             where: {
@@ -376,14 +445,31 @@ class TramiteController {
             logging: true
         });
         const combo = [];
-        combo.push({
-            id: 0,
-            prx_id: proximo[0].prx_id,
-            set_id: proximo[0].dataValues.set_id,
-            set_nome: proximo[0].dataValues.set_nome,
-            raz_nome: proximo[0].raz_nome,
-            pro_nome: proNome
-        });
+        // se for toda área é o setor do usuário
+        if (proximo[0].dataValues.set_id === 556) {
+            const area = await Setor.findByPk(processo.dataValues.area_id_iniciativa, { logging: false });
+            if (!area) {
+                return res.status(400).json({ error: 'Área não encontrada' });
+            }
+            combo.push({
+                id: 0,
+                prx_id: proximo[0].prx_id,
+                set_id: area.set_id,
+                set_nome: area.set_nome,
+                raz_nome: proximo[0].raz_nome,
+                pro_nome: proNome
+            });
+        } else {
+            combo.push({
+                id: 0,
+                prx_id: proximo[0].prx_id,
+                set_id: proximo[0].dataValues.set_id,
+                set_nome: proximo[0].dataValues.set_nome,
+                raz_nome: proximo[0].raz_nome,
+                pro_nome: proNome
+            });
+        }
+
         // console.log(combo);
         return res.json(combo);
     }

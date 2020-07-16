@@ -22,7 +22,8 @@ class CreateNodoService {
         nod_ciencia_averbacao,
         nod_aval_horario,
         nod_contagem_tempo,
-        nod_ciencia_calculo
+        nod_ciencia_calculo,
+        nod_parecer_projuris_aposentadoria
     }) {
         // Verifica se o fluxo existe
         const fluxoExiste = await this.fluxoModel.findByPk(flu_id, { logging: true });
@@ -48,7 +49,8 @@ class CreateNodoService {
             nod_ciencia_averbacao,
             nod_aval_horario,
             nod_contagem_tempo,
-            nod_ciencia_calculo
+            nod_ciencia_calculo,
+            nod_parecer_projuris_aposentadoria
         }, {
             logging: true
         });

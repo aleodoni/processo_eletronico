@@ -85,6 +85,11 @@ class Nodo extends Model {
                     type: Sequelize.BOOLEAN,
                     allowNull: false,
                     defaultValue: false
+                },
+                nod_parecer_projuris_aposentadoria: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                 }
             },
             {

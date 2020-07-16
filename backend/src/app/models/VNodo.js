@@ -91,6 +91,9 @@ class VNodo extends Model {
                 },
                 ciencia_calculo: {
                     type: Sequelize.STRING
+                },
+                parecer_projuris_aposentadoria: {
+                    type: Sequelize.STRING
                 }
             },
             {

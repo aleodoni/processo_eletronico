@@ -26,8 +26,7 @@ class Manifestacao extends Model {
                     allowNull: false
                 },
                 man_visto_executiva: {
-                    type: Sequelize.STRING,
-                    allowNull: false
+                    type: Sequelize.STRING
                 },
                 man_id_area: {
                     type: Sequelize.INTEGER,
@@ -74,6 +73,9 @@ class Manifestacao extends Model {
                     type: Sequelize.BOOLEAN,
                     allowNull: false,
                     defaultValue: false
+                },
+                man_parecer_projuris_aposentadoria: {
+                    type: Sequelize.STRING
                 }
 
             },

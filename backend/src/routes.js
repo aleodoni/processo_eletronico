@@ -79,6 +79,7 @@ const uploadManifestacao = multer({ storage: storageManifestacao });
  * Rotas sem autenticação
  */
 routes.post(`${process.env.API_URL}/autorizacao`, validatorSessionStore, LoginController.index);
+routes.post(`${process.env.API_URL}/autorizacao-externa`, validatorSessionStore, LoginController.indexExterno);
 routes.get(`${process.env.API_URL}/bd`, LoginController.getBd);
 routes.get(`${process.env.API_URL}/`, Spa2Controller.index);
 
@@ -173,6 +174,7 @@ routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
 routes.get(`${process.env.API_URL}/processo-origem/:id`, CriaProcessoController.processoOrigem);
 routes.get(`${process.env.API_URL}/combo-processos-pensao-alimenticia`, CriaProcessoController.processosDescontoFolhaDeterminacaoJudicial);
+routes.get(`${process.env.API_URL}/combo-processos-recurso/:usuario`, CriaProcessoController.processosRecurso);
 routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 
 // rota de pesquisa de processo
@@ -246,7 +248,7 @@ routes.delete(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController
 routes.get(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.index);
 routes.get(`${process.env.API_URL}/combo-nodo/:id`, ProximoTramiteController.comboNodo);
 routes.get(`${process.env.API_URL}/grid-proximo-tramite/:id`, ProximoTramiteController.gridProximoTramite);
-routes.get(`${process.env.API_URL}/gera-grafo/:id`, ProximoTramiteController.geraGrafo);
+routes.get(`${process.env.API_URL}/cria-grafo/:id`, ProximoTramiteController.criaGrafo);
 routes.get(`${process.env.API_URL}/seleciona-proximo-tramite/:id`, ProximoTramiteController.selecionaProximoTramite);
 routes.post(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.store);
 routes.put(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteController.update);
@@ -265,6 +267,8 @@ routes.get(`${process.env.API_URL}/processo-recebe/:id`, TramiteController.proce
 routes.post(`${process.env.API_URL}/tramite-recebe-ou-nega`, TramiteController.recebeOuNega);
 // rota de retorno de próximo trâmite
 routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proximoTramite);
+// rota de retorno de próximo trâmite de decisão de aposentadoria
+routes.get(`${process.env.API_URL}/proximo-tramite-decisao-aposentadoria/:id`, TramiteController.proximoTramiteAposentadoriaDecisao);
 
 // rota de encerramento de processo
 routes.put(`${process.env.API_URL}/encerra/:id`, CriaProcessoController.encerra);

@@ -14,6 +14,9 @@ class VProcessosArea extends Model {
                 tpr_nome: {
                     type: Sequelize.STRING
                 },
+                pro_nome: {
+                    type: Sequelize.STRING
+                },
                 area_id: {
                     type: Sequelize.INTEGER
                 },
