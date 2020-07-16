@@ -38,6 +38,7 @@ import lotacaoValidator from './app/validators/lotacaoValidator';
 import modeloMenuValidator from './app/validators/modeloMenuValidator';
 import areaMenuValidator from './app/validators/areaMenuValidator';
 import nodoValidator from './app/validators/nodoValidator';
+import menuValidator from './app/validators/menuValidator';
 
 require('dotenv/config');
 
@@ -165,8 +166,8 @@ routes.delete(
 routes.get(`${process.env.API_URL}/menu`, MenuController.index);
 routes.get(`${process.env.API_URL}/tela-menu`, MenuController.telaMenu);
 routes.get(`${process.env.API_URL}/menu-pai`, MenuController.telaPai);
-routes.post(`${process.env.API_URL}/menu`, MenuController.store);
-routes.put(`${process.env.API_URL}/menu/:id`, MenuController.update);
+routes.post(`${process.env.API_URL}/menu`, menuValidator, MenuController.store);
+routes.put(`${process.env.API_URL}/menu/:id`, menuValidator, MenuController.update);
 routes.delete(`${process.env.API_URL}/menu/:id`, MenuController.delete);
 routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 
