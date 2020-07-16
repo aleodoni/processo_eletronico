@@ -11,6 +11,12 @@ class UpdateMenuService {
         // Verifica se id existe
         const menu = await this.menuModel.findByPk(id, { logging: true });
 
+        // Trata men_id_pai
+        if (men_id_pai === '' || men_id_pai <= 0) {
+            men_id_pai = null;
+        }
+        //
+
         if (!menu) {
             throw new AppError('Menu não encontrado');
         }
