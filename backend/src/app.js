@@ -60,12 +60,15 @@ class App {
         this.server.use(async(err, req, res, next) => {
             if (process.env.NODE_ENV === 'development') {
                 if (err instanceof AppError) {
+                    // console.log(err);
                     return res.status(err.statusCode).json({
                         status: 'error',
                         message: err.message
                     });
                 }
             }
+
+            // console.log(err);
 
             if (err instanceof AppError) {
                 return res.status(err.statusCode).json({
