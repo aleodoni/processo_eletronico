@@ -22,7 +22,8 @@ class UpdateNodoService {
         nod_ciencia_averbacao,
         nod_aval_horario,
         nod_contagem_tempo,
-        nod_ciencia_calculo
+        nod_ciencia_calculo,
+        nod_parecer_projuris_aposentadoria
     }) {
         const nodo = await this.nodoModel.findByPk(id, { logging: true });
 
@@ -53,7 +54,8 @@ class UpdateNodoService {
             nod_ciencia_averbacao,
             nod_aval_horario,
             nod_contagem_tempo,
-            nod_ciencia_calculo
+            nod_ciencia_calculo,
+            nod_parecer_projuris_aposentadoria
         }, { logging: true });
 
         return updatedNodo;

@@ -32,6 +32,7 @@ import {
 function CriarManifestacaoAverbacao(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
@@ -106,52 +107,10 @@ function CriarManifestacaoAverbacao(props) {
         }
     }
 
-    function criaManifestacaoAverbacao({ proId, manAverbacao }) {
-        // Manifestação de averbação
-        const TIPO_MANIFESTACAO_AVERBACAO = 11;
-
-        // Tipo de documento de averbação
-        const TIPO_DOCUMENTO_AVERBACAO = 32;
-
-        const manLogin = sessionStorage.getItem('usuario');
-        const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        if (manAverbacao === '-1') {
-            setErro('Selecione a averbação.');
-            return;
-        }
-        axios({
-            method: 'POST',
-            url: '/manifestacoes',
-            data: {
-                man_id: null,
-                pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_AVERBACAO,
-                tpd_id: TIPO_DOCUMENTO_AVERBACAO,
-                man_login: manLogin,
-                man_id_area: manIdArea,
-                man_visto_executiva: 'Não necessário',
-                nod_id: nodId,
-                man_ciencia: 'Não necessário',
-                man_averbacao: manAverbacao,
-            },
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                limpaCampos();
-                mensagem.success('Manifestação inserida com sucesso.');
-                carregaAnexos(proId);
-            })
-            .catch(() => {
-                setErro('Erro ao inserir manifestação.');
-            });
-    }
-
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${props.match.params.proId}`,
+            url: `/ver-processo/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -168,13 +127,13 @@ function CriarManifestacaoAverbacao(props) {
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
+    }, [match.params.proId]);
 
     async function carregaManifestacaoProcesso() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            const response = await api.get(`/manifestacao-processo/${match.params.proId}`);
             setManifestacaoProcesso(response.data);
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
@@ -265,7 +224,7 @@ function CriarManifestacaoAverbacao(props) {
 
         axios({
             method: 'GET',
-            url: `/proximo-tramite/${props.match.params.proId}`,
+            url: `/proximo-tramite/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -281,14 +240,12 @@ function CriarManifestacaoAverbacao(props) {
                 if (averbacao === 'Favorável') {
                     abreModalTramitaUm(res.data[0]);
                 } else if (averbacao === 'Parcialmente favorável') {
-                    // alert(JSON.stringify(res.data[1], null, 4));
                     abreModalTramitaUm(res.data[1]);
                 } else if (averbacao === 'Desfavorável') {
                     abreModalTramitaUm(res.data[1]);
                 } else {
                     mensagem.info('Erro ao tramitar.');
                 }
-                // alert(JSON.stringify(res.data, null, 4));
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
@@ -310,7 +267,7 @@ function CriarManifestacaoAverbacao(props) {
             data: {
                 tra_id: null,
                 prx_id: prxId,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
@@ -347,13 +304,11 @@ function CriarManifestacaoAverbacao(props) {
                     url: '/manifestacoes',
                     data: {
                         man_id: null,
-                        pro_id: Number(props.match.params.proId),
+                        pro_id: Number(match.params.proId),
                         tmn_id: TIPO_MANIFESTACAO_AVERBACAO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
-                        man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
-                        man_ciencia: 'Não necessário',
                         man_averbacao: document.getElementById('manAverbacao').value,
                     },
                     headers: {
@@ -396,6 +351,7 @@ function CriarManifestacaoAverbacao(props) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
                                             carregaManifestacaoProcesso();
+                                            document.getElementById('anexo').value = '';
                                         }
                                     })
                                     .catch(() => {
@@ -455,15 +411,12 @@ function CriarManifestacaoAverbacao(props) {
                     <span>
                         <LinkProcesso
                             type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                            onClick={() => abreModalProcesso(match.params.proId)}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
                     </span>
-                    <Form
-                        ref={formRef}
-                        initialData={manifestacao}
-                        onSubmit={criaManifestacaoAverbacao}>
+                    <Form ref={formRef} initialData={manifestacao} onSubmit={null}>
                         <Input name="manId" type="hidden" />
                         <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (

@@ -61,7 +61,8 @@ class ManifestacaoController {
                 'man_contagem_tempo',
                 'man_ciencia_calculo',
                 'nod_id',
-                'man_tramitada'],
+                'man_tramitada',
+                'man_parecer_projuris_aposentadoria'],
 
             logging: true,
             where: {
@@ -165,7 +166,8 @@ class ManifestacaoController {
             man_ciencia_averbacao,
             man_aval_horario,
             man_contagem_tempo,
-            man_ciencia_calculo
+            man_ciencia_calculo,
+            man_parecer_projuris_aposentadoria
         } = await Manifestacao.create({
             man_id: req.body.man_id,
             pro_id: req.body.pro_id,
@@ -180,7 +182,8 @@ class ManifestacaoController {
             man_ciencia_averbacao: req.body.man_ciencia_averbacao,
             man_aval_horario: req.body.man_aval_horario,
             man_contagem_tempo: req.body.man_contagem_tempo,
-            man_ciencia_calculo: req.body.man_ciencia_calculo
+            man_ciencia_calculo: req.body.man_ciencia_calculo,
+            man_parecer_projuris_aposentadoria: req.body.man_parecer_projuris_aposentadoria
         }, {
             logging: true
         });
@@ -201,7 +204,8 @@ class ManifestacaoController {
             man_ciencia_averbacao,
             man_aval_horario,
             man_contagem_tempo,
-            man_ciencia_calculo
+            man_ciencia_calculo,
+            man_parecer_projuris_aposentadoria
         });
     }
 

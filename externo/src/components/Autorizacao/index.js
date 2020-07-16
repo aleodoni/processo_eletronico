@@ -21,7 +21,7 @@ class Autorizacao extends Component {
                 // se não achou não pode ver a tela
                 if (achou === undefined) {
                     mensagem.error(`Não achou a permissão para a tela:${this.props.tela}`);
-                    window.location.href = '/processo-eletronico';
+                    window.location.href = '/processo-eletronico-externo';
                 }
             })
             .catch((err) => {

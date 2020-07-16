@@ -18,6 +18,7 @@ import {
     ContainerDadosServidorPublico,
     ContainerNome,
     ContainerRevisaoPensaoAlimenticia,
+    ContainerRecurso,
     ContainerAbonoPermanencia,
     ContainerBotoes,
     Erro,
@@ -65,6 +66,7 @@ function CriarProcesso() {
     const [assuntoVisivel, setAssuntoVisivel] = useState(false);
     const [revisaoPensaoAlimenticiaVisivel, setRevisaoPensaoAlimenticiaVisivel] = useState(false);
     const [abonoPermanenciaVisivel, setAbonoPermanenciaVisivel] = useState(false);
+    const [recursoVisivel, setRecursoVisivel] = useState(false);
     const [campoNumeroAbonoPermanenciaVisivel, setCampoNumeroAbonoPermanenciaVisivel] = useState(
         false
     );
@@ -74,9 +76,11 @@ function CriarProcesso() {
     const [generos, setGeneros] = useState([]);
     const [areas, setAreas] = useState([]);
     const [pensoesAlimenticias, setPensoesAlimenticias] = useState([]);
+    const [recursos, setRecursos] = useState([]);
 
     const DEMAIS_PROCESSOS = '26';
     const REVISAO_DESCONTO_PENSAO_ALIMENTICIA = '247';
+    const RECURSO = '248';
     const ABONO_DE_PERMANENCIA = '17';
 
     const formRef = useRef(null);
@@ -174,6 +178,26 @@ function CriarProcesso() {
         }
     }
 
+    async function carregaRecurso() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(
+                `/combo-processos-recurso/${sessionStorage.getItem('usuario')}`
+            );
+
+            const data = response.data.map(processoRecurso => {
+                return {
+                    label: `${processoRecurso.pro_codigo} - ${processoRecurso.pro_nome} - ${processoRecurso.tpr_nome}`,
+                    value: processoRecurso.pro_id,
+                };
+            });
+            setRecursos(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
     function handleTprId(e) {
         // demais processos
         if (e.target.value === DEMAIS_PROCESSOS) {
@@ -189,6 +213,12 @@ function CriarProcesso() {
                 setAbonoPermanenciaVisivel(true);
             } else {
                 setAbonoPermanenciaVisivel(false);
+            }
+            if (e.target.value === RECURSO) {
+                carregaRecurso();
+                setRecursoVisivel(true);
+            } else {
+                setRecursoVisivel(false);
             }
             setAssuntoVisivel(false);
         }
@@ -498,6 +528,19 @@ function CriarProcesso() {
             p.proComAbono = null;
             p.proNumComAbono = null;
         }
+
+        // aqui valida se é do tipo recurso
+        let proRecurso = false;
+        let proCodigoRecurso = null;
+        if (p.tprId === RECURSO) {
+            if (p.proRecurso === '-1') {
+                setErro('Selecione o processo.');
+                return;
+            }
+            proCodigoRecurso = Number(p.proRecurso);
+            proRecurso = true;
+        }
+
         //
         let cpfNumeros;
         let cnpjNumeros;
@@ -535,10 +578,11 @@ function CriarProcesso() {
                 tpr_id: p.tprId,
                 pro_contato_pj: p.proContatoPj,
                 pro_autuacao: null,
-                pro_recurso: false,
+                pro_recurso: proRecurso,
                 pro_pensao: pensao,
                 pro_com_abono: p.proComAbono,
                 pro_num_com_abono: p.proNumComAbono,
+                pro_codigo_recurso: proCodigoRecurso,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -805,6 +849,15 @@ function CriarProcesso() {
                                     options={pensoesAlimenticias}
                                 />
                             </ContainerRevisaoPensaoAlimenticia>
+                        ) : null}
+                        {recursoVisivel ? (
+                            <ContainerRecurso>
+                                <Select
+                                    name="proRecurso"
+                                    label="Selecione o processo para recurso"
+                                    options={recursos}
+                                />
+                            </ContainerRecurso>
                         ) : null}
                         {abonoPermanenciaVisivel ? (
                             <ContainerAbonoPermanencia>

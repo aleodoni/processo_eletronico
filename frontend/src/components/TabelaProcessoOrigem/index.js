@@ -33,6 +33,7 @@ function TabelaProcessoOrigem({ proId }) {
                     processoOrigem.push({
                         pro_id_origem: res.data[i].pro_id_origem,
                         processo_origem: res.data[i].processo_origem,
+                        tpr_nome: res.data[i].tpr_nome,
                     });
                 }
                 setRows(processoOrigem);
@@ -54,7 +55,7 @@ function TabelaProcessoOrigem({ proId }) {
                     <LinkProcesso
                         type="button"
                         onClick={() => abreModalProcesso(linha.pro_id_origem)}>
-                        {linha.processo_origem}
+                        {linha.processo_origem} - {linha.tpr_nome}
                     </LinkProcesso>
                 </span>
             ))}

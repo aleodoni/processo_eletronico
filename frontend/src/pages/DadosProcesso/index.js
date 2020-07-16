@@ -11,7 +11,6 @@ import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import GeraFluxo from '../../components/layout/button/GeraFluxo';
 import Juntada from '../../components/layout/button/Juntada';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
-import ModalFluxo from '../../components/ModalFluxo';
 import TabelaManifestacoes from '../../components/TabelaManifestacoes';
 import TabelaTramitacao from '../../components/TabelaTramitacao';
 import TabelaProcessoOrigem from '../../components/TabelaProcessoOrigem';
@@ -34,32 +33,9 @@ function DadosProcesso({ match }) {
     const history = useHistory();
     const [erro, setErro] = useState('');
     const [processos, setProcessos] = useState([]);
-    const [grafo, setGrafo] = useState('');
     const [mostraProcesso, setMostraProcesso] = useState(false);
-    const [modalFluxo, setModalFluxo] = useState(false);
 
     const formRef = useRef(null);
-
-    function abreModalFluxo(fluxo) {
-        axios({
-            method: 'GET',
-            url: `/gera-grafo/${fluxo}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setGrafo(res.data);
-                setModalFluxo(true);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar grafo.');
-            });
-    }
-
-    function fechaModalFluxo() {
-        setModalFluxo(false);
-    }
 
     const carregaDadosProcesso = useCallback(() => {
         axios({
@@ -85,6 +61,39 @@ function DadosProcesso({ match }) {
 
     function consulta() {
         history.push('/processo-consulta');
+    }
+
+    function criaGrafo(fluId) {
+        axios({
+            method: 'GET',
+            responseType: 'blob',
+            url: `/cria-grafo/${fluId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const blob = new Blob([res.data], { type: res.data.type });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const contentDisposition = res.headers['content-disposition'];
+                let fileName = `fluxo.png`;
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (fileNameMatch.length === 2) {
+                        fileName = fileNameMatch[1];
+                    }
+                }
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar grafo.');
+            });
     }
 
     function criaManifestacao() {
@@ -162,7 +171,7 @@ function DadosProcesso({ match }) {
                                             />
                                             <GeraFluxo
                                                 name="btnGrafico"
-                                                clickHandler={() => abreModalFluxo(pro.flu_id)}
+                                                clickHandler={() => criaGrafo(pro.flu_id)}
                                             />
                                             <Juntada
                                                 name="btnJuntada"
@@ -178,7 +187,7 @@ function DadosProcesso({ match }) {
                                             />
                                             <GeraFluxo
                                                 name="btnGrafico"
-                                                clickHandler={() => abreModalFluxo(pro.flu_id)}
+                                                clickHandler={() => criaGrafo(pro.flu_id)}
                                             />
                                             <Juntada
                                                 name="btnJuntada"
@@ -351,11 +360,6 @@ function DadosProcesso({ match }) {
                                             ) : null}
                                         </fieldset>
                                     </ContainerDados>
-                                    <ModalFluxo
-                                        fechaModalFluxo={fechaModalFluxo}
-                                        modalFluxo={modalFluxo}
-                                        id={grafo}
-                                    />
                                 </div>
                             ))}
                             <ContainerManifestacoes>

@@ -16,6 +16,12 @@ class VProcessoOrigem extends Model {
                 },
                 processo_origem: {
                     type: Sequelize.STRING
+                },
+                tpr_id: {
+                    type: Sequelize.INTEGER
+                },
+                tpr_nome: {
+                    type: Sequelize.STRING
                 }
             },
             {

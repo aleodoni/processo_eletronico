@@ -193,6 +193,7 @@ class DadosProcessoController {
             attributes: [
                 'pro_id',
                 'pro_codigo',
+                'pro_nome',
                 'tpr_nome',
                 'area_id',
                 'usu_autuador',
@@ -208,7 +209,8 @@ class DadosProcessoController {
                 'nod_ciencia_averbacao',
                 'nod_aval_horario',
                 'nod_contagem_tempo',
-                'nod_ciencia_calculo'
+                'nod_ciencia_calculo',
+                'nod_parecer_projuris_aposentadoria'
             ],
             logging: true,
             where: {

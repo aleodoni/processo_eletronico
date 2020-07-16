@@ -29,6 +29,7 @@ import CriarManifestacaoCienciaAverbacao from './pages/CriarManifestacaoCienciaA
 import CriarManifestacaoAvalHorario from './pages/CriarManifestacaoAvalHorario';
 import CriaManifestacaoContagemTempo from './pages/CriaManifestacaoContagemTempo';
 import CriarManifestacaoCienciaCalculo from './pages/CriarManifestacaoCienciaCalculo';
+import CriarManifestacaoParecerProjurisAposentadoria from './pages/CriarManifestacaoParecerProjurisAposentadoria';
 import TipoDocumento from './pages/TipoDocumento';
 import Tramite from './pages/Tramite';
 
@@ -107,6 +108,11 @@ const Routes = () => (
             exact
             path="/manifestacao-cria-ciencia-calculo/:proId"
             component={CriarManifestacaoCienciaCalculo}
+        />
+        <PrivateRoute
+            exact
+            path="/manifestacao-cria-parecer-projuris-aposentadoria/:proId"
+            component={CriarManifestacaoParecerProjurisAposentadoria}
         />
         <PrivateRoute exact path="/tramita/:id" component={Tramite} />
         <PrivateRoute exact path="/tipos-documento" component={TipoDocumento} />

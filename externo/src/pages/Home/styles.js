@@ -6,10 +6,10 @@ const handleColorType = (cor) => {
             return 'color: #fff; background: #e0001e;';
         case 'laranja':
             return 'color: #fff; background: #fc5f00;';
-        case 'azul':
-            return 'color: #fff; background: #293689;';
+        case 'verde':
+            return 'color: #fff; background: #2E8B57;';
         default:
-            return 'color: #fff; background: #293689;';
+            return 'color: #fff; background: #2E8B57;';
     }
 };
 
@@ -19,10 +19,10 @@ const handleColorHover = (corHover) => {
             return 'background: #ff4040;';
         case 'laranja-claro':
             return 'background: #ffbc40;';
-        case 'azul-claro':
-            return 'background: #3e50c5;';
+        case 'verde-claro':
+            return 'background: #44c17b;';
         default:
-            return 'background: #3e50c5;';
+            return 'background: #44c17b;';
     }
 };
 
@@ -43,12 +43,6 @@ export const Main = styled.main`
         color: #fff;
         margin-left: 10px;
     }
-`;
-
-export const ContainerBotoes = styled.div`
-    display: grid;
-    grid-template-columns: 190px 230px;
-    margin-bottom: 10px;
 `;
 
 export const ContainerProcessos = styled.div`
@@ -75,11 +69,14 @@ export const ContainerProcessos = styled.div`
         thead {
             background: #d3d3d3;
 
-            tr,
-            th {
-                padding: 3px;
-                border: solid 1px #d3d3d3;
-            }
+            tr {
+                th {
+                    text-align: left;
+                    padding: 3px;
+                    border: solid 1px #d3d3d3;
+                }
+            },
+
         }
         tbody {
             background: #fff;
@@ -101,7 +98,7 @@ export const BotaoComoLink = styled.button`
     padding: 3px;
     font-size: 14px;
     text-decoration: underline;
-    color: #303f9f !important;
+    color: ${({ theme }) => theme.primary} !important;
     cursor: pointer;
 
     display: block;
@@ -117,6 +114,7 @@ export const Erro = styled.div`
 export const BotaoCriaManifestacao = styled.button`
     border: 0;
     border-radius: 4px;
+    background: ${({ theme }) => theme.primary};
     height: 30px;
     width: 150px;
 
@@ -126,48 +124,6 @@ export const BotaoCriaManifestacao = styled.button`
 
     &:hover {
         ${({ corHover }) => handleColorHover(corHover)};
-    }
-
-    svg {
-        margin-right: 10px;
-        margin-left: 5px;
-    }
-`;
-
-export const BotaoFinalizaProcesso = styled.button`
-    background: #008000;
-    align-items: center;
-    border: 0;
-    border-radius: 4px;
-    height: 27px;
-    width: 180px;
-    color: ${({ theme }) => theme.text};
-    font-size: 14px;
-    transition: background 0.2s;
-
-    &:hover {
-        background: #32cd32;
-    }
-
-    svg {
-        margin-right: 10px;
-        margin-left: 5px;
-    }
-`;
-
-export const BotaoCienciaProcesso = styled.button`
-    background: #008000;
-    align-items: center;
-    border: 0;
-    border-radius: 4px;
-    height: 27px;
-    width: 180px;
-    color: ${({ theme }) => theme.text};
-    font-size: 14px;
-    transition: background 0.2s;
-
-    &:hover {
-        background: #32cd32;
     }
 
     svg {

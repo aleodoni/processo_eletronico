@@ -28,7 +28,7 @@ function Login() {
         sessionStorage.removeItem('setorUsuario');
         sessionStorage.removeItem('nomeSetorUsuario');
         sessionStorage.removeItem('nomeAreaUsuario');
-        sessionStorage.removeItem('menu');
+        sessionStorage.removeItem('orgao');
     }
 
     useEffect(() => {
@@ -70,7 +70,7 @@ function Login() {
             try {
                 const { usuario, senha, timeout } = data;
 
-                const response = await api.post('/autorizacao', {
+                const response = await api.post('/autorizacao-externa', {
                     usuario,
                     senha,
                     timeout,
@@ -83,7 +83,7 @@ function Login() {
                 sessionStorage.setItem('setorUsuario', response.data.setorUsuario);
                 sessionStorage.setItem('nomeSetorUsuario', response.data.nomeSetorUsuario);
                 sessionStorage.setItem('nomeAreaUsuario', response.data.nomeAreaUsuario);
-                sessionStorage.setItem('menu', response.data.menu);
+                sessionStorage.setItem('orgao', response.data.orgao);
 
                 history.push('/home');
             } catch (err) {
@@ -111,7 +111,6 @@ function Login() {
                     <img src={Logo} alt="Câmara Municipal de Curitiba" />
                     <span>Processo eletrônico</span>
                     <div>Acesso externo</div>
-                    <br />
 
                     <Input type="text" name="usuario" placeholder="Usuário" />
 

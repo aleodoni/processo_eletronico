@@ -33,6 +33,7 @@ import {
 function CriarManifestacaoVisto(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
@@ -151,15 +152,13 @@ function CriarManifestacaoVisto(props) {
             url: '/manifestacoes',
             data: {
                 man_id: null,
-                pro_id: props.match.params.proId,
+                pro_id: match.params.proId,
                 tmn_id: TIPO_MANIFESTACAO_EXECUTIVA,
                 tpd_id: TIPO_DOCUMENTO_EXECUTIVA,
                 man_login: manLogin,
                 man_id_area: manIdArea,
                 man_visto_executiva: manVistoExecutiva,
                 nod_id: nodId,
-                man_ciencia: 'Não necessário',
-                man_averbacao: 'Não necessário',
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -226,7 +225,6 @@ function CriarManifestacaoVisto(props) {
                         setErro('Erro ao inserir na tabela arquivo.');
                     });
                 limpaCampos();
-                // arquivo-visto-executiva
                 carregaManifestacaoProcesso();
                 mensagem.success('Manifestação inserida com sucesso.');
             })
@@ -290,7 +288,7 @@ function CriarManifestacaoVisto(props) {
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
+    }, [match.params.proId]);
 
     useEffect(() => {
         async function carrega() {

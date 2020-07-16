@@ -33,6 +33,7 @@ import {
 function CriarManifestacaoCienciaCalculo(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
@@ -130,7 +131,7 @@ function CriarManifestacaoCienciaCalculo(props) {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            const response = await api.get(`/manifestacao-processo/${match.params.proId}`);
             setManifestacaoProcesso(response.data);
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
@@ -165,11 +166,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                 tpd_id: TIPO_DOCUMENTO_CIENCIA_CALCULO,
                 man_login: manLogin,
                 man_id_area: manIdArea,
-                man_visto_executiva: 'Não necessário',
                 nod_id: nodId,
-                man_ciencia: 'Não necessário',
-                man_averbacao: 'Não necessário',
-                man_ciencia_averbacao: 'Não necessário',
                 man_ciencia_calculo: manCienciaCalculo,
             },
             headers: {
@@ -216,6 +213,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                                     setMostraRegra(false);
                                     setMostraBotaoDiscorda(false);
                                     setMostraCiencia(false);
+                                    document.getElementById('anexo').value = '';
                                 }
                             })
                             .catch(() => {
@@ -249,7 +247,7 @@ function CriarManifestacaoCienciaCalculo(props) {
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${props.match.params.proId}`,
+            url: `/ver-processo/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -266,7 +264,7 @@ function CriarManifestacaoCienciaCalculo(props) {
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
+    }, [match.params.proId]);
 
     function downloadAnexo(e, idArquivo, id, arqNome) {
         e.preventDefault();
@@ -349,7 +347,7 @@ function CriarManifestacaoCienciaCalculo(props) {
             const NODO_CALCULO_RH = 91;
             axios({
                 method: 'GET',
-                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_CALCULO_RH}`,
+                url: `/proximo-tramite-direcionado/${match.params.proId}/${NODO_CALCULO_RH}`,
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
@@ -370,7 +368,7 @@ function CriarManifestacaoCienciaCalculo(props) {
             const NODO_CALCULO_RH = 92;
             axios({
                 method: 'GET',
-                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_CALCULO_RH}`,
+                url: `/proximo-tramite-direcionado/${match.params.proId}/${NODO_CALCULO_RH}`,
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
@@ -407,17 +405,11 @@ function CriarManifestacaoCienciaCalculo(props) {
                     url: '/manifestacoes',
                     data: {
                         man_id: null,
-                        pro_id: Number(props.match.params.proId),
+                        pro_id: Number(match.params.proId),
                         tmn_id: TIPO_MANIFESTACAO_DISCORDA_CALCULO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
-                        man_visto_executiva: 'Não necessário',
                         nod_id: nodId,
-                        man_ciencia: 'Não necessário',
-                        man_averbacao: 'Não necessário',
-                        man_ciencia_averbacao: 'Não necessário',
-                        man_aval_horario: 'Não necessário',
-                        man_contagem_tempo: 'Não necessário',
                         man_ciencia_calculo: document.getElementById('manCienciaCalculo').value,
                     },
                     headers: {
@@ -464,6 +456,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                                             setMostraRegra(false);
                                             setMostraBotaoDiscorda(false);
                                             setMostraCiencia(false);
+                                            document.getElementById('anexo').value = '';
                                         }
                                     })
                                     .catch(() => {
@@ -516,7 +509,7 @@ function CriarManifestacaoCienciaCalculo(props) {
             data: {
                 tra_id: null,
                 prx_id: prxId,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
@@ -538,7 +531,7 @@ function CriarManifestacaoCienciaCalculo(props) {
     function geraJuntada() {
         axios({
             method: 'GET',
-            url: `/gera-juntada/${Number(props.match.params.proId)}`,
+            url: `/gera-juntada/${Number(match.params.proId)}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
                 Accept: 'application/pdf',
@@ -551,7 +544,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                 const link = document.createElement('a');
                 link.href = url;
                 const contentDisposition = res.headers['content-disposition'];
-                let fileName = `juntada${Number(props.match.params.proId)}.pdf`;
+                let fileName = `juntada${Number(match.params.proId)}.pdf`;
                 if (contentDisposition) {
                     const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
                     if (fileNameMatch.length === 2) {
@@ -587,7 +580,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                     <span>
                         <LinkProcesso
                             type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                            onClick={() => abreModalProcesso(match.params.proId)}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
@@ -628,7 +621,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                                         name="file"
                                         onChange={incluiAnexoDiscorda}
                                         id="anexo"
-                                        onClick={e => {
+                                        onClick={() => {
                                             // verificaArquivo(e);
                                         }}
                                     />

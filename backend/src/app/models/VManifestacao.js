@@ -66,6 +66,9 @@ class VManifestacao extends Model {
                 },
                 man_tramitada: {
                     type: Sequelize.BOOLEAN
+                },
+                man_parecer_projuris_aposentadoria: {
+                    type: Sequelize.STRING
                 }
 
             },

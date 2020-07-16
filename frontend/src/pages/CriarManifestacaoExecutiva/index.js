@@ -33,6 +33,7 @@ import {
 function CriarManifestacaoExecutiva(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
@@ -133,48 +134,6 @@ function CriarManifestacaoExecutiva(props) {
         }
     }
 
-    function criaManifestacaoExecutiva({ proId, manVistoExecutiva }) {
-        // Manifestação da executiva
-        const TIPO_MANIFESTACAO_EXECUTIVA = 5;
-
-        // Aval da Comissão Executiva
-        const TIPO_DOCUMENTO_EXECUTIVA = 27;
-
-        const manLogin = sessionStorage.getItem('usuario');
-        const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        if (manVistoExecutiva === '-1') {
-            setErro('Selecione o visto da executiva.');
-            return;
-        }
-        axios({
-            method: 'POST',
-            url: '/manifestacoes',
-            data: {
-                man_id: null,
-                pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_EXECUTIVA,
-                tpd_id: TIPO_DOCUMENTO_EXECUTIVA,
-                man_login: manLogin,
-                man_id_area: manIdArea,
-                man_visto_executiva: manVistoExecutiva,
-                nod_id: nodId,
-                man_ciencia: 'Não necessário',
-                man_averbacao: 'Não necessário',
-            },
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                limpaCampos();
-                mensagem.success('Manifestação inserida com sucesso.');
-                carregaAnexos(proId);
-            })
-            .catch(() => {
-                setErro('Erro ao inserir manifestação.');
-            });
-    }
-
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
@@ -195,7 +154,7 @@ function CriarManifestacaoExecutiva(props) {
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
+    }, [match.params.proId]);
 
     async function carregaManifestacaoProcesso() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
@@ -372,8 +331,6 @@ function CriarManifestacaoExecutiva(props) {
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: document.getElementById('manVistoExecutiva').value,
                         nod_id: nodId,
-                        man_ciencia: 'Não necessário',
-                        man_averbacao: 'Não necessário',
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -415,6 +372,7 @@ function CriarManifestacaoExecutiva(props) {
                                             limpaCampos();
                                             mensagem.success('Manifestação inserida com sucesso.');
                                             carregaManifestacaoProcesso();
+                                            document.getElementById('anexo').value = '';
                                         }
                                     })
                                     .catch(() => {
@@ -486,10 +444,7 @@ function CriarManifestacaoExecutiva(props) {
                         </LinkProcesso>
                         - {tprNome}
                     </span>
-                    <Form
-                        ref={formRef}
-                        initialData={manifestacao}
-                        onSubmit={criaManifestacaoExecutiva}>
+                    <Form ref={formRef} initialData={manifestacao} onSubmit={null}>
                         <Input name="manId" type="hidden" />
                         <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (
