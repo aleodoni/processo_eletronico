@@ -50,7 +50,10 @@ import VDecisaoPessoal from '../app/models/VDecisaoPessoal';
 import VManifestacao from '../app/models/VManifestacao';
 import VManifestacaoProcesso from '../app/models/VManifestacaoProcesso';
 import RegraAposentacao from '../app/models/RegraAposentacao';
+
 import databaseConfig from '../config/database';
+
+import ConnectionHelper from '../app/helpers/ConnectionHelper';
 
 const models = [
     Autorizacao,
@@ -117,6 +120,8 @@ class Database {
         models.map(
             model => model.associate && model.associate(this.connection.models)
         );
+
+        ConnectionHelper.init(this.connection);
     }
 }
 export default new Database();
