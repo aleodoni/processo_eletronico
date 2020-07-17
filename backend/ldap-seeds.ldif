@@ -21,6 +21,7 @@ memberUid: fabio.teixeira
 memberUid: deini.porto
 memberUid: bruno.oliveira
 memberUid: rodrigo.ferraro
+memberUid: usuario.invalido
 cn: dif
 
 dn: cn=desenv,ou=grupos,dc=cmc,dc=pr,dc=gov,dc=br
@@ -33,6 +34,7 @@ memberUid: geraldo.wehmhoff
 memberUid: fabio.teixeira
 memberUid: deini.porto
 memberUid: rodrigo.ferraro
+memberUid: usuario.invalido
 cn: desenv
 
 dn: cn=suporte,ou=grupos,dc=cmc,dc=pr,dc=gov,dc=br
@@ -169,3 +171,24 @@ userPassword: 123456
 shadowLastChange: 18275
 shadowMax: 365
 homeDirectory: /home/rodrigo.ferraro
+
+dn: uid=usuario.invalido,ou=usuarios,dc=cmc,dc=pr,dc=gov,dc=br
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: usuario.invalido
+employeeNumber: 9999
+uidNumber: 1031
+gidNumber: 10197
+displayName: Usuario Inválido no SPA
+sn: Inválido no SAP
+cn: Usuário
+givenName: Inválido no SPA
+mail: usuario.invalido@cmc.pr.gov.br
+userPassword: 123456
+shadowLastChange: 18225
+shadowMax: 365
+homeDirectory: /home/usuario.invalido
