@@ -28,6 +28,20 @@ beforeAll(done => {
 });
 
 describe('Menu', () => {
+    it('Deve montar o menu para a area 27', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/geraMenu/027`)
+            .set('authorization', `${token}`);
+
+        expect(response.status).toBe(200);
+
+        expect(JSON.parse(response.body)).toEqual(
+            expect.objectContaining({
+                id1: { name: 'Home', url: '/home' }
+            })
+        );
+    });
+
     it('Deve retornar lista de menus', async() => {
         const response = await request(app)
             .get(`${process.env.API_URL}/menu`)
