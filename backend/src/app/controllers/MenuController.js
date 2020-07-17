@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
-import Sequelize from 'sequelize';
+// import Sequelize from 'sequelize';
 import Menu from '../models/Menu';
 import Tela from '../models/Tela';
 import ModeloMenu from '../models/ModeloMenu';
@@ -11,6 +11,8 @@ import VMenuPai from '../models/VMenuPai';
 import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
 import Auditoria from '../models/Auditoria';
 import DataHoraAtual from '../models/DataHoraAtual';
+
+import ConnectionHelper from '../helpers/ConnectionHelper';
 
 import CreateMenuService from '../services/menu/CreateMenuService';
 import DeleteMenuService from '../services/menu/DeleteMenuService';
@@ -156,24 +158,26 @@ class MenuController {
     }
 
     async montaMenu(req, res) {
-        const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-            host: process.env.DB_HOST,
-            dialect: 'postgres',
-            define: {
-                timestamps: false,
-                underscoredAll: true
-            },
-            pool: {
-                max: 7,
-                min: 0,
-                acquire: 30000,
-                idle: 10000
-            }
-        });
+        // const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+        //     host: process.env.DB_HOST,
+        //     dialect: 'postgres',
+        //     define: {
+        //         timestamps: false,
+        //         underscoredAll: true
+        //     },
+        //     pool: {
+        //         max: 7,
+        //         min: 0,
+        //         acquire: 30000,
+        //         idle: 10000
+        //     }
+        // });
+
+        const connection = ConnectionHelper.getConnection();
         const area = req.params.area;
 
         const sql = "select spa2.monta_menu_raiz('" + area + "')";
-        sequelize.query(sql, {
+        connection.query(sql, {
             logging: false,
             plain: true,
             raw: true
