@@ -30,6 +30,7 @@ import {
     ContainerBotoes,
     Titulo,
 } from './styles';
+import { download } from '../../utils/downloadArquivo';
 
 function CriarManifestacaoContagemTempo(props) {
     const [erro, setErro] = useState('');
@@ -116,48 +117,6 @@ function CriarManifestacaoContagemTempo(props) {
         }
     }
 
-    /*
-    function criaManifestacaoContagemTempo({ proId, manContagemTempo }) {
-        // Manifestação de contagem de tempo
-        const TIPO_MANIFESTACAO_CONTAGEM_TEMPO = 14;
-
-        // Tipo de documento de contagem de tempo
-        const TIPO_DOCUMENTO_CONTAGEM_TEMPO = 35;
-
-        const manLogin = sessionStorage.getItem('usuario');
-        const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        if (manContagemTempo === '-1') {
-            setErro('Selecione a contatem de tempo.');
-            return;
-        }
-        axios({
-            method: 'POST',
-            url: '/manifestacoes',
-            data: {
-                man_id: null,
-                pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_CONTAGEM_TEMPO,
-                tpd_id: TIPO_DOCUMENTO_CONTAGEM_TEMPO,
-                man_login: manLogin,
-                man_id_area: manIdArea,
-                nod_id: nodId,
-                man_contagem_tempo: manContagemTempo,
-            },
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                limpaCampos();
-                mensagem.success('Manifestação inserida com sucesso.');
-                carregaAnexos(proId);
-            })
-            .catch(() => {
-                setErro('Erro ao inserir manifestação.');
-            });
-    }
-*/
-
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
@@ -212,41 +171,6 @@ function CriarManifestacaoContagemTempo(props) {
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);
         }
-    }
-
-    function downloadAnexo(e, idArquivo, id, arqNome) {
-        e.preventDefault();
-        axios({
-            method: 'GET',
-            url: `/download-manifestacao/${id}/${idArquivo}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-                Accept: 'application/pdf',
-            },
-            responseType: 'blob',
-        })
-            .then(res => {
-                const blob = new Blob([res.data], { type: res.data.type });
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                const contentDisposition = res.headers['content-disposition'];
-                let fileName = arqNome;
-                if (contentDisposition) {
-                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                    if (fileNameMatch.length === 2) {
-                        fileName = fileNameMatch[1];
-                    }
-                }
-                link.setAttribute('download', fileName);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(() => {
-                console.log('Erro ao efetuar o download do anexo.');
-            });
     }
 
     useEffect(() => {
@@ -680,7 +604,7 @@ function CriarManifestacaoContagemTempo(props) {
                                                     <BotaoComoLink
                                                         type="button"
                                                         onClick={e =>
-                                                            downloadAnexo(
+                                                            download(
                                                                 e,
                                                                 anexo.arq_id,
                                                                 anexo.man_id,

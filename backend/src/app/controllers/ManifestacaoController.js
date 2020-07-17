@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Manifestacao from '../models/Manifestacao';
+import Arquivo from '../models/Arquivo';
 import VManifestacao from '../models/VManifestacao';
 import VManifestacaoProcesso from '../models/VManifestacaoProcesso';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
@@ -11,6 +12,7 @@ import Tramite from '../models/Tramite';
 import moment from 'moment';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import * as caminhos from '../../config/arquivos';
+import CreateManifestacaoService from '../services/manifestacao/CreateManifestacaoService';
 import fs from 'fs';
 require('dotenv/config');
 // import AuditoriaController from './AuditoriaController';
@@ -146,36 +148,15 @@ class ManifestacaoController {
     }
 
     async store(req, res) {
-        const dataHoraAtual = await DataHoraAtual.findAll({
-            attributes: ['data_hora_atual'],
-            logging: true,
-            plain: true
-        });
-
-        const {
-            man_id,
-            pro_id,
-            tmn_id,
-            man_login,
-            man_id_area,
-            man_visto_executiva,
-            man_data,
-            nod_id,
-            man_ciencia,
-            man_averbacao,
-            man_ciencia_averbacao,
-            man_aval_horario,
-            man_contagem_tempo,
-            man_ciencia_calculo,
-            man_parecer_projuris_aposentadoria
-        } = await Manifestacao.create({
+        const createManifestacao = new CreateManifestacaoService(Manifestacao, DataHoraAtual, Arquivo);
+        const manifestacao = await createManifestacao.criaManifestacao({
             man_id: req.body.man_id,
             pro_id: req.body.pro_id,
             tmn_id: req.body.tmn_id,
             man_login: req.body.man_login,
             man_id_area: req.body.man_id_area,
             man_visto_executiva: req.body.man_visto_executiva,
-            man_data: dataHoraAtual.dataValues.data_hora_atual,
+            man_data: null,
             nod_id: req.body.nod_id,
             man_ciencia: req.body.man_ciencia,
             man_averbacao: req.body.man_averbacao,
@@ -183,30 +164,18 @@ class ManifestacaoController {
             man_aval_horario: req.body.man_aval_horario,
             man_contagem_tempo: req.body.man_contagem_tempo,
             man_ciencia_calculo: req.body.man_ciencia_calculo,
-            man_parecer_projuris_aposentadoria: req.body.man_parecer_projuris_aposentadoria
-        }, {
-            logging: true
+            man_parecer_projuris_aposentadoria: req.body.man_parecer_projuris_aposentadoria,
+            arq_id: req.body.arq_id,
+            arq_nome: req.body.arq_nome,
+            arq_tipo: req.body.arq_tipo,
+            arq_doc_id: null,
+            arq_doc_tipo: req.body.arq_doc_tipo,
+            tpd_id: req.body.tpd_id,
+            arq_data: null,
+            arq_login: req.body.arq_login
         });
-            // auditoria de inserção
-            // AuditoriaController.audita(req.body, req, 'I', man_id);
-            //
-        return res.json({
-            man_id,
-            pro_id,
-            tmn_id,
-            man_login,
-            man_id_area,
-            man_visto_executiva,
-            man_data,
-            nod_id,
-            man_ciencia,
-            man_averbacao,
-            man_ciencia_averbacao,
-            man_aval_horario,
-            man_contagem_tempo,
-            man_ciencia_calculo,
-            man_parecer_projuris_aposentadoria
-        });
+
+        return res.json(manifestacao);
     }
 
     async update(req, res) {
