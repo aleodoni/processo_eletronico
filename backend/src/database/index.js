@@ -50,6 +50,7 @@ import VDecisaoPessoal from '../app/models/VDecisaoPessoal';
 import VManifestacao from '../app/models/VManifestacao';
 import VManifestacaoProcesso from '../app/models/VManifestacaoProcesso';
 import RegraAposentacao from '../app/models/RegraAposentacao';
+import ComissaoProcessante from '../app/models/ComissaoProcessante';
 import databaseConfig from '../config/database';
 
 const models = [
@@ -103,7 +104,8 @@ const models = [
     VManifestacao,
     VManifestacaoProcesso,
     VProcessoOrigem,
-    RegraAposentacao
+    RegraAposentacao,
+    ComissaoProcessante
 ];
 
 class Database {

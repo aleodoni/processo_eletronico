@@ -47,7 +47,7 @@ export const Main = styled.main`
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 190px 230px;
+    grid-template-columns: 190px 230px 230px;
     margin-bottom: 10px;
 `;
 

@@ -29,6 +29,7 @@ function Login() {
         sessionStorage.removeItem('nomeSetorUsuario');
         sessionStorage.removeItem('nomeAreaUsuario');
         sessionStorage.removeItem('menu');
+        sessionStorage.removeItem('permissoes');
     }
 
     useEffect(() => {
@@ -84,6 +85,7 @@ function Login() {
                 sessionStorage.setItem('nomeSetorUsuario', response.data.nomeSetorUsuario);
                 sessionStorage.setItem('nomeAreaUsuario', response.data.nomeAreaUsuario);
                 sessionStorage.setItem('menu', response.data.menu);
+                sessionStorage.setItem('permissoes', response.data.permissoes);
 
                 history.push('/home');
             } catch (err) {

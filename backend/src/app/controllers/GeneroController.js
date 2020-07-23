@@ -6,12 +6,19 @@ import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService
 import DeleteGeneroService from '../services/genero/DeleteGeneroService';
 import UpdateGeneroService from '../services/genero/UpdateGeneroService';
 import AppError from '../error/AppError';
+import sequelize from 'sequelize';
 
 class GeneroController {
     async index(req, res) {
+        const GENERO_PRESIDENCIA = 29;
         const generos = await Genero.findAll({
             order: ['gen_nome'],
             attributes: ['gen_id', 'gen_nome'],
+            where: {
+                gen_id: {
+                    [sequelize.Op.not]: GENERO_PRESIDENCIA
+                }
+            },
             logging: false
         });
         return res.json(generos);

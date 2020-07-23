@@ -1,8 +1,10 @@
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import CriarProcesso from './pages/CriarProcesso';
+import CriarProcessoPasPad from './pages/CriarProcessoPasPad';
 import ConsultarProcesso from './pages/ConsultarProcesso';
 import ConsultarManifestacao from './pages/ConsultarManifestacao';
 import Tela from './pages/Tela';
@@ -54,6 +56,7 @@ const Routes = () => (
         <PrivateRoute exact path="/processo-consulta" component={ConsultarProcesso} />
         <PrivateRoute exact path="/manifestacao-consulta" component={ConsultarManifestacao} />
         <PrivateRoute exact path="/processo-cria" component={CriarProcesso} />
+        <PrivateRoute exact path="/processo-pas-pad" component={CriarProcessoPasPad} />
         <PrivateRoute exact path="/telas" component={Tela} />
         <PrivateRoute exact path="/fluxos" component={Fluxo} />
         <PrivateRoute exact path="/generos" component={Genero} />
@@ -120,5 +123,9 @@ const Routes = () => (
         <Route path="*" component={Login} />
     </Switch>
 );
+
+PrivateRoute.propTypes = {
+    component: PropTypes.elementType.isRequired,
+};
 
 export default Routes;

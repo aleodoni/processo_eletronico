@@ -4,6 +4,7 @@
 import nJwt from 'njwt';
 import VDadosLogin from '../models/VDadosLogin';
 import Sequelize from 'sequelize';
+import AreaTela from '../models/AreaTela';
 
 import LdapClient from 'ldapjs-client';
 
@@ -107,6 +108,27 @@ class LoginController {
                     console.log(`Usuário: ${usuario} logado com sucesso no sistema SPA2.`);
                 }
 
+                // monta o array de permissões de tela
+                const permissoes = await AreaTela.findAll(
+                    {
+                        where: {
+                            set_id: dadosLogin.dataValues.set_id_area
+                        },
+                        logging: false
+                    });
+                if (!permissoes) {
+                    return res.status(400).json({ error: '´Telas da área não encontrada' });
+                }
+                const listaPermissoes = [];
+                console.log('*** Telas permitidas ***');
+                for (let i = 0; i < permissoes.length; i++) {
+                    const nome = permissoes[i].tel_nome;
+                    console.log(nome);
+                    listaPermissoes.push(nome);
+                }
+                console.log('************************');
+                //
+
                 const meuToken = login.geraToken(usuario, nome, matricula, timeout);
 
                 return res.status(201).json({
@@ -118,7 +140,8 @@ class LoginController {
                     areaUsuario: idArea,
                     nomeSetorUsuario: nomeSetor,
                     nomeAreaUsuario: nomeArea,
-                    menu: montaMenu.monta_menu_raiz
+                    menu: montaMenu.monta_menu_raiz,
+                    permissoes: listaPermissoes
                 });
             } else {
                 return res.status(400).json({ error: 'Usuário não cadastrado no sistema.' });
@@ -209,6 +232,27 @@ class LoginController {
                     console.log(`Usuário: ${usuario} logado com sucesso no sistema SPA2.`);
                 }
 
+                // monta o array de permissões de tela
+                const permissoes = await AreaTela.findAll(
+                    {
+                        where: {
+                            set_id: dadosLogin.dataValues.set_id_area
+                        },
+                        logging: false
+                    });
+                if (!permissoes) {
+                    return res.status(400).json({ error: '´Telas da área não encontrada' });
+                }
+                const listaPermissoes = [];
+                console.log('*** Telas permitidas ***');
+                for (let i = 0; i < permissoes.length; i++) {
+                    const nome = permissoes[i].tel_nome;
+                    console.log(nome);
+                    listaPermissoes.push(nome);
+                }
+                console.log('************************');
+                //
+
                 const meuToken = login.geraToken(usuario, nome, matricula, timeout);
 
                 return res.status(201).json({
@@ -220,7 +264,8 @@ class LoginController {
                     areaUsuario: idArea,
                     nomeSetorUsuario: nomeSetor,
                     nomeAreaUsuario: nomeArea,
-                    orgao: 'IPMC'
+                    orgao: 'IPMC',
+                    permissoes: listaPermissoes
                 });
             } else {
                 return res.status(400).json({ error: 'Usuário não cadastrado no sistema.' });

@@ -1,6 +1,6 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import { toast as mensagem } from 'react-toastify';
-import axios from '../../configs/axiosConfig';
 
 class Autorizacao extends Component {
     constructor(props) {
@@ -9,28 +9,27 @@ class Autorizacao extends Component {
     }
 
     verifica = () => {
-        axios({
-            method: 'GET',
-            url: `telas-por-area/${parseInt(sessionStorage.getItem('areaUsuario'), 10)}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const achou = res.data.find(registro => registro.tel_nome === this.props.tela);
-                // se não achou não pode ver a tela
-                if (achou === undefined) {
-                    mensagem.error(`Não achou a permissão para a tela:${this.props.tela}`);
-                    window.location.href = '/processo-eletronico';
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        const permissoes = sessionStorage.getItem('permissoes').toString();
+        const permissoesUsuario = permissoes.split(',');
+        const p = Array.from(permissoesUsuario);
+        const dados = [];
+        for (let i = 0; i < p.length; i++) {
+            dados.push(p[i]);
+        }
+        const { tela } = this.props;
+        const achou = dados.find(registro => registro === tela);
+        if (achou === undefined) {
+            mensagem.error(`Não achou a permissão para a tela:${tela}`);
+            window.location.href = '/processo-eletronico';
+        }
     };
 
     render() {
         return null;
     }
 }
+
+Autorizacao.propTypes = {
+    tela: PropTypes.string.isRequired,
+};
 export default Autorizacao;
