@@ -1,4 +1,4 @@
-import Sequelize from 'sequelize';
+import ConnectionHelper from '../../helpers/ConnectionHelper';
 
 class CreateManifestacaoService {
     constructor(manifestacaoModel, dataHoraAtualModel, arquivoModel) {
@@ -33,22 +33,23 @@ class CreateManifestacaoService {
         arq_login
     }) {
         try {
-            const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-                host: process.env.DB_HOST,
-                dialect: 'postgres',
-                define: {
-                    timestamps: false,
-                    underscoredAll: true
-                },
-                pool: {
-                    max: 7,
-                    min: 0,
-                    acquire: 30000,
-                    idle: 10000
-                }
-            });
+            // const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+            //     host: process.env.DB_HOST,
+            //     dialect: 'postgres',
+            //     define: {
+            //         timestamps: false,
+            //         underscoredAll: true
+            //     },
+            //     pool: {
+            //         max: 7,
+            //         min: 0,
+            //         acquire: 30000,
+            //         idle: 10000
+            //     }
+            // });
 
-            const transaction = await sequelize.transaction({ autocommit: false });
+            // const transaction = await sequelize.transaction({ autocommit: false });
+            const transaction = await ConnectionHelper.getTransaction();
             const dataHoraAtual = await this.dataHoraAtualModel.findAll({
                 attributes: ['data_hora_atual'],
                 logging: true,
