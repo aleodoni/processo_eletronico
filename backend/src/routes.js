@@ -173,10 +173,12 @@ routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 
 // rotas de criação de processo
 routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
+routes.get(`${process.env.API_URL}/dados-pessoa-comissao/:matricula`, CriaProcessoController.dadosPessoaComissao);
 routes.get(`${process.env.API_URL}/processo-origem/:id`, CriaProcessoController.processoOrigem);
 routes.get(`${process.env.API_URL}/combo-processos-pensao-alimenticia`, CriaProcessoController.processosDescontoFolhaDeterminacaoJudicial);
 routes.get(`${process.env.API_URL}/combo-processos-recurso/:usuario`, CriaProcessoController.processosRecurso);
 routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
+routes.post(`${process.env.API_URL}/processo-pas-pad`, CriaProcessoController.criaPasPad);
 
 // rota de pesquisa de processo
 routes.post(`${process.env.API_URL}/pesquisa-processo`, DadosProcessoController.pesquisaProcesso);
@@ -186,6 +188,7 @@ routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.da
 routes.get(`${process.env.API_URL}/processos-pessoa/:areaId/:usuario`, DadosProcessoController.processosPessoais);
 routes.get(`${process.env.API_URL}/processos-area/:areaId`, DadosProcessoController.processosArea);
 routes.post(`${process.env.API_URL}/processo-por-codigo`, DadosProcessoController.processoPorCodigo);
+routes.post(`${process.env.API_URL}/processo-por-codigo-pas`, DadosProcessoController.processoPorCodigoPas);
 
 // rotas do cadastro de fluxos
 routes.get(`${process.env.API_URL}/fluxos`, FluxoController.index);

@@ -169,6 +169,22 @@ class DadosProcessoController {
         return res.json(dadosProcesso);
     }
 
+    async processoPorCodigoPas(req, res) {
+        const dadosProcesso = await VDadosProcesso.findAll({
+            attributes: [
+                'pro_id',
+                'pro_codigo'
+            ],
+            logging: false,
+            plain: true,
+            where: {
+                pro_codigo: req.body.proCodigo,
+                tpr_id: 16
+            }
+        });
+        return res.json(dadosProcesso);
+    }
+
     async processosPessoais(req, res) {
         const dadosProcessoPessoa = await VProcessosPessoais.findAll({
             attributes: [

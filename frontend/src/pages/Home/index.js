@@ -33,6 +33,7 @@ function Home() {
     const [gridProcessosArea, setGridProcessosArea] = useState([]);
     const [erro, setErro] = useState('');
     const [modalProcesso, setModalProcesso] = useState(false);
+    const [botaoPasPadVisivel, setBotaoPasPadVisivel] = useState(false);
     const [proId, setProId] = useState(-1);
 
     function abreModalProcesso(id) {
@@ -61,7 +62,15 @@ function Home() {
             });
     }, []);
 
+    function verificaPadPas(areaId) {
+        const COMISSAO_EXECUTIVA = 398;
+        if (areaId === COMISSAO_EXECUTIVA) {
+            setBotaoPasPadVisivel(true);
+        }
+    }
+
     useEffect(() => {
+        verificaPadPas(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         carregaGridArea();
     }, [carregaGridArea]);
 
@@ -114,7 +123,6 @@ function Home() {
         <DefaultLayout>
             <Container>
                 <Autorizacao tela="Home" />
-
                 <Main>
                     <Erro dangerouslySetInnerHTML={{ __html: erro }} />
                     <ContainerBotoes>
@@ -124,7 +132,14 @@ function Home() {
                                 Criar processo
                             </Link>
                         </ButtonAcessoRapido>
-
+                        {botaoPasPadVisivel ? (
+                            <ButtonAcessoRapido>
+                                <Link to="/processo-pas-pad">
+                                    <FaFileAlt />
+                                    Criar PAS / PAD
+                                </Link>
+                            </ButtonAcessoRapido>
+                        ) : null}
                         <ButtonAcessoRapido>
                             <Link to="/processo-consulta">
                                 <FaSistrix />
