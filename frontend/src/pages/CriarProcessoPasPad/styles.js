@@ -42,11 +42,6 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
-export const ContainerEmail = styled.div`
-    display: grid;
-    grid-template-columns: 800px;
-`;
-
 export const ContainerIrregularidade = styled.div`
     display: grid;
     grid-template-columns: 800px;
@@ -58,27 +53,10 @@ export const ContainerProcessoPAS = styled.div`
     grid-column-gap: 15px;
 `;
 
-export const ContainerNome = styled.div`
-    display: grid;
-    grid-template-columns: 800px;
-    grid-column-gap: 15px;
-`;
-
 export const ContainerTipoProcesso = styled.div`
     display: grid;
     grid-template-columns: 400px 400px;
     grid-column-gap: 15px;
-`;
-
-export const ContainerMatricula = styled.div`
-    display: grid;
-    grid-template-columns: 90px 120px;
-    grid-template-rows: 70px;
-    grid-column-gap: 15px;
-
-    button {
-        margin-top: 22px;
-    }
 `;
 
 export const BotaoProcura = styled.button`
@@ -105,13 +83,6 @@ export const BotaoProcura = styled.button`
     }
 `;
 
-export const ContainerDadosServidorPublico = styled.div`
-    display: grid;
-    grid-template-columns: 160px 300px 300px;
-    grid-template-rows: 70px;
-    grid-gap: 20px;
-`;
-
 export const ContainerMembrosTitulo = styled.div`
     display: grid;
     grid-template-columns: 790px;
@@ -119,7 +90,6 @@ export const ContainerMembrosTitulo = styled.div`
     margin-bottom: 10px;
     p {
         color: #fff;
-        font-weight: bold;
         margin-top: 10px;
         margin-bottom: 3px;
     }
@@ -128,14 +98,47 @@ export const ContainerMembrosTitulo = styled.div`
         color: #fff;
     }
 `;
-export const ContainerLocalizaMembros = styled.div`
+export const ContainerLocaliza = styled.div`
     display: grid;
-    grid-template-columns: 90px 200px;
+    grid-template-columns: 120px 200px;
     grid-template-rows: 70px;
     grid-column-gap: 15px;
 
     button {
         margin-top: 22px;
+    }
+`;
+
+export const ContainerLocalizaMembros = styled.div`
+    display: grid;
+    grid-template-columns: 120px 200px;
+    grid-template-rows: 70px;
+    grid-column-gap: 15px;
+
+    div {
+        margin-top: 5px;
+        margin-left: 5px;
+
+        input {
+            width: 1.2em;
+            height: 1.2em;
+            background-color: white;
+            border-radius: 50%;
+            vertical-align: middle;
+            border: 1px solid #ddd;
+            -webkit-appearance: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input:checked {
+            background-color: #26c7ac;
+        }
+
+        label {
+            margin-left: 5px;
+            color: #fff;
+        }
     }
 `;
 

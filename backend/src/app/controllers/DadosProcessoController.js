@@ -2,11 +2,14 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import VDadosProcesso from '../models/VDadosProcesso';
+import VDadosProcessoPasPad from '../models/VDadosProcessoPasPad';
 import * as caminhos from '../../config/arquivos';
 import Arquivo from '../models/Arquivo';
 import VProcessosPessoais from '../models/VProcessosPessoais';
 import VProcessosArea from '../models/VProcessosArea';
 import VDecisaoPessoal from '../models/VDecisaoPessoal';
+import VDadosMembrosComissao from '../models/VDadosMembrosComissao';
+import NomePasPad from '../models/NomePasPad';
 import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
 
@@ -61,6 +64,61 @@ class DadosProcessoController {
             }
         });
         return res.json(dadosProcesso);
+    }
+
+    async dadosProcessoPasPad(req, res) {
+        const dadosProcessoPasPad = await VDadosProcessoPasPad.findAll({
+            attributes: [
+                'pro_id',
+                'pro_codigo',
+                'pro_assunto',
+                'pro_numero',
+                'pro_autuacao',
+                'pro_autuacao_data',
+                'usu_autuador',
+                'pro_ultimo_tramite',
+                'usu_finalizador',
+                'nod_id',
+                'area_id',
+                'set_id_finalizador',
+                'pro_iniciativa',
+                'pro_tipo_iniciativa',
+                'area_id_iniciativa',
+                'tpr_id',
+                'pro_ano',
+                'tpr_nome',
+                'tpr_visualizacao',
+                'gen_nome',
+                'flu_id',
+                'flu_nome',
+                'area_atual_processo',
+                'visualizacao'
+            ],
+            logging: false,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+        return res.json(dadosProcessoPasPad);
+    }
+
+    async nomePasPad(req, res) {
+        const nomePasPad = await NomePasPad.findAll({
+            attributes: [
+                'nom_id',
+                'nom_matricula',
+                'nom_nome',
+                'nom_area_id',
+                'nom_area_nome',
+                'pro_id',
+                'nom_login'
+            ],
+            logging: false,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+        return res.json(nomePasPad);
     }
 
     async pesquisaProcesso(req, res) {
@@ -169,20 +227,28 @@ class DadosProcessoController {
         return res.json(dadosProcesso);
     }
 
-    async processoPorCodigoPas(req, res) {
-        const dadosProcesso = await VDadosProcesso.findAll({
-            attributes: [
-                'pro_id',
-                'pro_codigo'
-            ],
-            logging: false,
-            plain: true,
-            where: {
-                pro_codigo: req.body.proCodigo,
-                tpr_id: 16
-            }
-        });
-        return res.json(dadosProcesso);
+    async membrosComissao(req, res) {
+        try {
+            const dadosMembrosComissao = await VDadosMembrosComissao.findAll({
+                attributes: [
+                    'cop_id',
+                    'pro_id',
+                    'cargo',
+                    'matricula',
+                    'nome',
+                    'login',
+                    'area'
+                ],
+                logging: false,
+                where: {
+                    pro_id: req.params.id
+                }
+            });
+            return res.json(dadosMembrosComissao);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
     }
 
     async processosPessoais(req, res) {

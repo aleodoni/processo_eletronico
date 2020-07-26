@@ -15,6 +15,7 @@ import ModeloMenu from './pages/ModeloMenu';
 import AreaMenu from './pages/AreaMenu';
 import TelaMenu from './pages/TelaMenu';
 import DadosProcesso from './pages/DadosProcesso';
+import DadosProcessoPasPad from './pages/DadosProcessoPasPad';
 import RazaoTramite from './pages/RazaoTramite';
 import TipoManifestacao from './pages/TipoManifestacao';
 import Setor from './pages/Setor';
@@ -71,6 +72,7 @@ const Routes = () => (
         <PrivateRoute exact path="/tipos-manifestacao" component={TipoManifestacao} />
         <PrivateRoute exact path="/proximos-tramites" component={ProximoTramite} />
         <PrivateRoute exact path="/dados-processo/:id" component={DadosProcesso} />
+        <PrivateRoute exact path="/dados-processo-pas-pad/:id" component={DadosProcessoPasPad} />
         <PrivateRoute exact path="/manifestacao-cria/:proId" component={CriarManifestacao} />
         <PrivateRoute
             exact

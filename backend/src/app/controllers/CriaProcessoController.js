@@ -4,12 +4,16 @@
 import VDadosPessoa from '../models/VDadosPessoa';
 import Processo from '../models/Processo';
 import ComissaoProcessante from '../models/ComissaoProcessante';
+import NomePasPad from '../models/NomePasPad';
 import Lotacao from '../models/Lotacao';
 import Setor from '../models/Setor';
 import Area from '../models/Area';
 import ProcessoOrigem from '../models/ProcessoOrigem';
+import MembroComissao from '../models/MembroComissao';
 import VProcessoOrigem from '../models/VProcessoOrigem';
 import VDadosProcesso from '../models/VDadosProcesso';
+import VDadosProcessoPasPad from '../models/VDadosProcessoPasPad';
+import VMembrosComissao from '../models/VMembrosComissao';
 import VDadosLogin from '../models/VDadosLogin';
 import TipoProcesso from '../models/TipoProcesso';
 import Nodo from '../models/Nodo';
@@ -109,6 +113,17 @@ class CriaProcessoController {
             }
         });
         return res.json(processoOrigem);
+    }
+
+    async comboMembrosComissaoProcessante(req, res) {
+        const membrosComissaoProcessante = await VMembrosComissao.findAll({
+            where: {
+                area_id: 2000
+            },
+            attributes: ['mco_id', 'area_id', 'mco_matricula', 'mco_nome', 'mco_login', 'set_nome'],
+            logging: true
+        });
+        return res.json(membrosComissaoProcessante);
     }
 
     async store(req, res) {
@@ -331,29 +346,8 @@ class CriaProcessoController {
     }
 
     async criaPasPad(req, res) {
-        if (req.body.pro_nome === '') {
-            req.body.pro_nome = null;
-        }
-        if (req.body.pro_matricula === '') {
-            req.body.pro_matricula = null;
-        }
-        if (req.body.pro_cpf === '') {
-            req.body.pro_cpf = null;
-        }
-        if (req.body.pro_fone === '') {
-            req.body.pro_fone = null;
-        }
-        if (req.body.pro_celular === '') {
-            req.body.pro_celular = null;
-        }
-        if (req.body.pro_email === '') {
-            req.body.pro_email = null;
-        }
         if (req.body.pro_assunto === '') {
             req.body.pro_assunto = null;
-        }
-        if (req.body.area_id_iniciativa === '') {
-            req.body.area_id_iniciativa = null;
         }
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
@@ -361,11 +355,9 @@ class CriaProcessoController {
             plain: true
         });
         req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
-
-        // com o tpr_id verifico qual é o nó de início do fluxo e se
-        // o processo é pessoal ou não
+        // com o tpr_id verifico qual é o nó de início do fluxo
         const tipoProcesso = await TipoProcesso.findAll({
-            attributes: ['tpr_id', 'flu_id', 'tpr_pessoal', 'tpr_nome'],
+            attributes: ['tpr_id', 'flu_id', 'tpr_nome'],
             logging: false,
             plain: true,
             where: {
@@ -373,49 +365,12 @@ class CriaProcessoController {
             }
         });
 
-        let areaPessoa;
-        if (req.body.pro_matricula !== null && req.body.pro_matricula !== undefined) {
-            // procura na tabela de lotação a área
-            const lotacao = await VDadosLogin.findAll({
-                attributes: ['matricula', 'set_id_area'],
-                logging: false,
-                plain: true,
-                where: {
-                    matricula: req.body.pro_matricula.trim()
-                }
-            });
-            areaPessoa = lotacao.dataValues.set_id_area;
-        } else if (req.body.pro_cpf !== null && req.body.pro_cpf !== undefined) {
-            const dadosPessoa = await VDadosPessoa.findAll({
-                attributes: ['pes_matricula', 'pes_cpf'],
-                logging: false,
-                plain: true,
-                where: {
-                    pes_cpf: req.body.pro_cpf
-                }
-            });
-            console.log(dadosPessoa.dataValues.pes_matricula);
-            const lotacao = await VDadosLogin.findAll({
-                attributes: ['matricula', 'set_id_area'],
-                logging: false,
-                plain: true,
-                where: {
-                    matricula: dadosPessoa.dataValues.pes_matricula.toString()
-                }
-            });
-            areaPessoa = lotacao.dataValues.set_id_area;
-        } else {
-            return res.status(400).json({ error: 'Erro ao retornar dados de área de pessoa.' });
-        }
-        req.body.area_id_iniciativa = areaPessoa;
-
-        const fluId = tipoProcesso.dataValues.flu_id;
         const nodo = await Nodo.findAll({
             attributes: ['nod_id', 'flu_id', 'nod_inicio'],
             logging: false,
             plain: true,
             where: {
-                flu_id: fluId,
+                flu_id: tipoProcesso.dataValues.flu_id,
                 nod_inicio: true
             }
         });
@@ -424,8 +379,6 @@ class CriaProcessoController {
         } else {
             return res.status(400).json({ error: 'Processo sem fluxo. Cadastre um fluxo primeiro.' });
         }
-
-        console.log(JSON.stringify(req.body, null, 4));
 
         const {
             pro_id,
@@ -452,13 +405,53 @@ class CriaProcessoController {
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', pro_id);
         //
-
         // se for PAD e tiver processo PAD grava na tabela de processo_origem
         if (tipoProcesso.dataValues.tpr_id === 15) {
-            const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: req.body.pro_id_origem, pro_id_atual: pro_id }, {
-                logging: true
-            });
-            console.log(JSON.stringify(processoOrigem, null, 4));
+            if (req.body.pro_codigo_origem !== '') {
+                const localizaProcessoOrigem = await VDadosProcessoPasPad.findAll({
+                    attributes: [
+                        'pro_id',
+                        'pro_codigo'
+                    ],
+                    logging: false,
+                    plain: true,
+                    where: {
+                        pro_codigo: req.body.pro_codigo_origem,
+                        tpr_id: 16
+                    }
+                });
+                if (localizaProcessoOrigem !== null) {
+                    const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: localizaProcessoOrigem.dataValues.pro_id, pro_id_atual: pro_id }, {
+                        logging: true
+                    });
+                    console.log(JSON.stringify(processoOrigem, null, 4));
+                } else {
+                    return res.status(400).json({ error: 'Processo de origem inexistente. Insira um código de processo válido.' });
+                }
+            }
+        }
+
+        // grava na tabela spa2.nome_pas_pad
+        const arrayNomes = req.body.nomes_processo;
+        if (arrayNomes.length > 0) {
+            console.log(arrayNomes);
+            for (const key in arrayNomes) {
+                try {
+                    await NomePasPad.create({
+                        nom_id: null,
+                        nom_matricula: arrayNomes[key].matricula,
+                        nom_nome: arrayNomes[key].nome,
+                        nom_area_id: arrayNomes[key].areaId,
+                        nom_area_nome: arrayNomes[key].areaNome,
+                        pro_id: pro_id,
+                        nom_login: arrayNomes[key].login
+                    }, {
+                        logging: false
+                    });
+                } catch (e) {
+                    console.log(e);
+                }
+            }
         }
 
         // grava na tabela spa2.comissao_processante
@@ -466,27 +459,35 @@ class CriaProcessoController {
         console.log(arrayMembros);
         for (const key in arrayMembros) {
             try {
+                // localiza o membro
+                const membroComissao = await MembroComissao.findAll({
+                    attributes: [
+                        'mco_id',
+                        'mco_matricula'
+                    ],
+                    logging: false,
+                    plain: true,
+                    where: {
+                        mco_matricula: arrayMembros[key].matricula
+                    }
+                });
+                let cargo = false;
+                if (arrayMembros[key].bCargo) {
+                    cargo = true;
+                }
+
                 await ComissaoProcessante.create({
                     cop_id: null,
-                    cop_matricula_membro: arrayMembros[key].matricula,
-                    cop_nome_membro: arrayMembros[key].nome,
-                    cop_area_id_membro: arrayMembros[key].areaId,
-                    cop_area_nome_membro: arrayMembros[key].areaNome,
-                    area_id: 2000,
+                    mco_id: membroComissao.dataValues.mco_id,
                     pro_id: pro_id,
-                    cop_ativo: true,
-                    cop_login: arrayMembros[key].login
+                    cop_presidente: cargo
                 }, {
                     logging: false
                 });
             } catch (e) {
                 console.log(e);
             }
-
-            // ...
         }
-
-        //
 
         // grava na tabela arquivo a capa do processo
         const TIPO_DOCUMENTO_CAPA_PROCESSO = 38;

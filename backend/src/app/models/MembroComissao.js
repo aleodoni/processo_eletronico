@@ -1,31 +1,43 @@
 import Sequelize, { Model } from 'sequelize';
 
-class ComissaoProcessante extends Model {
+class MembroComissao extends Model {
     static init(sequelize) {
         super.init(
             {
-                cop_id: {
+                mco_id: {
                     type: Sequelize.INTEGER,
-                    defaultValue: "nextval('spa2.comissao_processante_cop_id_seq')",
+                    defaultValue: "nextval('spa2.membro_comissao_mco_id_seq')",
                     primaryKey: true,
                     autoIncrement: true
                 },
-                mco_id: {
+                area_id: {
                     type: Sequelize.INTEGER,
                     allowNull: false
                 },
-                pro_id: {
+                mco_matricula: {
                     type: Sequelize.STRING,
                     allowNull: false
                 },
-                cop_presidente: {
+                mco_nome: {
+                    type: Sequelize.STRING,
+                    allowNull: false
+                },
+                mco_area_id_membro: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false
+                },
+                mco_ativo: {
                     type: Sequelize.BOOLEAN,
+                    allowNull: false
+                },
+                mco_login: {
+                    type: Sequelize.STRING,
                     allowNull: false
                 }
 
             },
             {
-                tableName: 'comissao_processante',
+                tableName: 'membro_comissao',
                 schema: 'spa2',
                 sequelize,
                 operatorsAliases: false
@@ -36,4 +48,4 @@ class ComissaoProcessante extends Model {
     }
 }
 
-export default ComissaoProcessante;
+export default MembroComissao;

@@ -21,7 +21,15 @@ export default function TextArea({ name, label, rows, cols, ...rest }) {
         <Container>
             {label && <label htmlFor={fieldName}>{label}</label>}
 
-            <textarea name={fieldName} id={fieldName} ref={inputRef} rows={rows} cols={cols} defaultValue={defaultValue} {...rest} />
+            <textarea
+                name={fieldName}
+                id={fieldName}
+                ref={inputRef}
+                rows={rows}
+                cols={cols}
+                defaultValue={defaultValue}
+                {...rest}
+            />
 
             {error && <span className="error">{error}</span>}
         </Container>

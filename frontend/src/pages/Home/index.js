@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { FaFileAlt, FaSistrix } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -63,8 +64,7 @@ function Home() {
     }, []);
 
     function verificaPadPas(areaId) {
-        const COMISSAO_EXECUTIVA = 398;
-        if (areaId === COMISSAO_EXECUTIVA) {
+        if (areaId === constantes.AREA_PRESIDENCIA) {
             setBotaoPasPadVisivel(true);
         }
     }
@@ -136,7 +136,7 @@ function Home() {
                             <ButtonAcessoRapido>
                                 <Link to="/processo-pas-pad">
                                     <FaFileAlt />
-                                    Criar PAS / PAD
+                                    Instaurar PAS / PAD
                                 </Link>
                             </ButtonAcessoRapido>
                         ) : null}

@@ -24,6 +24,7 @@ import ProcessoOrigem from '../app/models/ProcessoOrigem';
 import Nodo from '../app/models/Nodo';
 import VNodo from '../app/models/VNodo';
 import VDadosProcesso from '../app/models/VDadosProcesso';
+import VDadosProcessoPasPad from '../app/models/VDadosProcessoPasPad';
 import DataHoraAtual from '../app/models/DataHoraAtual';
 import RazaoTramite from '../app/models/RazaoTramite';
 import ProximoTramite from '../app/models/ProximoTramite';
@@ -51,9 +52,13 @@ import VManifestacao from '../app/models/VManifestacao';
 import VManifestacaoProcesso from '../app/models/VManifestacaoProcesso';
 import RegraAposentacao from '../app/models/RegraAposentacao';
 import ComissaoProcessante from '../app/models/ComissaoProcessante';
+import VMembrosComissao from '../app/models/VMembrosComissao';
+import MembroComissao from '../app/models/MembroComissao';
+import NomePasPad from '../app/models/NomePasPad';
 import databaseConfig from '../config/database';
 
 import ConnectionHelper from '../app/helpers/ConnectionHelper';
+import VDadosMembrosComissao from '../app/models/VDadosMembrosComissao';
 
 const models = [
     Autorizacao,
@@ -107,7 +112,12 @@ const models = [
     VManifestacaoProcesso,
     VProcessoOrigem,
     RegraAposentacao,
-    ComissaoProcessante
+    ComissaoProcessante,
+    MembroComissao,
+    NomePasPad,
+    VMembrosComissao,
+    VDadosProcessoPasPad,
+    VDadosMembrosComissao
 ];
 
 class Database {

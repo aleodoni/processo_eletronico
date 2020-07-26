@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Form } from '@unform/web';
 import { useHistory } from 'react-router';
 import { toast as mensagem } from 'react-toastify';
-import { FaSearch, FaChild } from 'react-icons/fa';
+import { FaChild } from 'react-icons/fa';
 import axios from '../../configs/axiosConfig';
 import SelecionaPasPad from '../../components/system/select/SelecionaPasPad';
 import InputMask from '../../components/layout/InputMask';
 import ProcessoInputMask from '../../components/layout/InputMask/ProcessoInputMask';
 import TableComissao from '../../components/layout/TableComissao';
 import Input from '../../components/layout/Input';
+import Select from '../../components/layout/Select';
+import api from '../../service/api';
 import Autorizacao from '../../components/Autorizacao';
 import * as constantes from '../../utils/constantes';
 import {
@@ -19,14 +21,11 @@ import {
     ContainerTipoProcesso,
     ContainerMembrosTitulo,
     BotaoProcura,
-    ContainerMatricula,
-    ContainerDadosServidorPublico,
+    ContainerLocaliza,
     ContainerLocalizaMembros,
-    ContainerEmail,
     ContainerIrregularidade,
     ContainerProcessoPAS,
     ContainerMembros,
-    ContainerNome,
 } from './styles';
 import CriaProcesso from '../../components/layout/button/CriaProcesso';
 import Limpar from '../../components/layout/button/Limpar';
@@ -36,35 +35,58 @@ import ButtonContainer from '../../components/layout/button/ButtonContainer';
 function CriarProcessoPasPad() {
     const history = useHistory();
     const [erro, setErro] = useState('');
-    const [matriculaVisivel, setMatriculaVisivel] = useState(false);
+    const [listaNome, setListaNome] = useState([]);
     const [listaComissao, setListaComissao] = useState([]);
     const [dadosVisivel, setDadosVisivel] = useState(false);
     const [processoPasVisivel, setProcessoPasVisivel] = useState(false);
+    const [membros, setMembros] = useState([]);
     const formRef = useRef(null);
 
     function limpaCampos() {
         setErro('');
         formRef.current.reset();
         formRef.current.setFieldValue('tprId', '-1');
+        formRef.current.setFieldValue('mcoId', '-1');
         formRef.current.setFieldValue('proId', undefined);
         formRef.current.setFieldValue('proMatricula', '');
-        formRef.current.setFieldValue('proNome', '');
-        formRef.current.setFieldValue('proCpf', '');
-        formRef.current.setFieldValue('proFone', '');
-        formRef.current.setFieldValue('proCelular', '');
-        formRef.current.setFieldValue('proEmail', '');
         formRef.current.setFieldValue('proCodigoPas', '');
-        formRef.current.setFieldValue('proIdPas', undefined);
         formRef.current.setFieldValue('proIrregularidade', '');
-        setMatriculaVisivel(false);
+        formRef.current.setFieldValue('chkPresidente', false);
         setDadosVisivel(false);
         setProcessoPasVisivel(false);
         setListaComissao([]);
+        setListaNome([]);
+    }
+
+    async function carregaMembros() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/membros-comissao');
+
+            const data = response.data.map(m => {
+                return {
+                    label: `${m.mco_nome} - ${m.set_nome}`,
+                    value: m.mco_matricula,
+                };
+            });
+            setMembros(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
     }
 
     function retiraMembro(linha) {
         setListaComissao(
             listaComissao.filter(lista => {
+                return lista.matricula !== linha.matricula;
+            })
+        );
+    }
+
+    function retiraNome(linha) {
+        setListaNome(
+            listaNome.filter(lista => {
                 return lista.matricula !== linha.matricula;
             })
         );
@@ -76,59 +98,31 @@ function CriarProcessoPasPad() {
         if (p.tprId === '-1') {
             setErro('Selecione o tipo de processo.');
         }
-        if (p.proMatricula === '') {
-            setErro('Matrícula em branco.');
-        }
-        if (p.proNome === '') {
-            setErro('Nome em branco.');
-        }
-        if (p.proIrregularidade === '') {
+        // quando for PAD a irregularidade é obrigatória
+        if (Number(p.tprId) === constantes.TPR_PAD && p.proIrregularidade === '') {
             setErro('Irregularidade em branco.');
         }
         if (listaComissao.length === 0) {
             setErro('Selecione os membros da comissão.');
         }
 
-        if (Number(p.tprId) === constantes.TPR_PAD) {
-            if (p.proCodigoPas !== '') {
-                const proCodigo = p.proCodigoPas;
-                axios({
-                    method: 'POST',
-                    url: '/processo-por-codigo-pas',
-                    data: { proCodigo },
-                    headers: {
-                        authorization: sessionStorage.getItem('token'),
-                    },
-                })
-                    .then(res => {
-                        if (res.data === null) {
-                            setErro('Código do processo PAS inválido ou inexistente.');
-                            return;
-                        }
-                        formRef.current.setFieldValue('proIdPas', res.data.pro_id);
-                    })
-                    .catch(() => {
-                        setErro('Erro ao localizar processo PAS.');
-                    });
-            }
+        // quando for PAD a lista de nome(s) é obrigatória
+        if (Number(p.tprId) === constantes.TPR_PAD && listaNome.length === 0) {
+            setErro('Selecione o(s) nome(s).');
         }
-        let cpfNumeros;
-        if (p.proCpf !== '' && p.proCpf !== undefined) {
-            cpfNumeros = p.proCpf.replace(/[^\d]+/g, '');
-        }
-        alert(formRef.current.getFieldValue('proIdPas'));
+
         axios({
             method: 'POST',
             url: '/processo-pas-pad',
             data: {
                 pro_id: null,
-                pro_nome: p.proNome,
-                pro_matricula: p.proMatricula,
-                pro_cpf: cpfNumeros,
+                pro_nome: null,
+                pro_matricula: null,
+                pro_cpf: null,
                 pro_cnpj: null,
-                pro_fone: p.proFone,
-                pro_celular: p.proCelular,
-                pro_email: p.proEmail,
+                pro_fone: null,
+                pro_celular: null,
+                pro_email: null,
                 pro_encerramento: null,
                 pro_assunto: p.proIrregularidade,
                 usu_autuador: sessionStorage.getItem('usuario'),
@@ -148,20 +142,26 @@ function CriarProcessoPasPad() {
                 pro_com_abono: false,
                 pro_num_com_abono: null,
                 membros_comissao: listaComissao,
-                pro_id_origem: p.proIdPas,
+                nomes_processo: listaNome,
+                pro_codigo_origem: p.proCodigoPas,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                history.push(`/dados-processo/${res.data.pro_id}`);
+                history.push(`/dados-processo-pas-pad/${res.data.pro_id}`);
                 mensagem.success('Processo criado com sucesso.');
             })
             .catch(erroCria => {
                 if (
                     erroCria.response.data.error ===
                     'Processo sem fluxo. Cadastre um fluxo primeiro.'
+                ) {
+                    setErro(erroCria.response.data.error);
+                } else if (
+                    erroCria.response.data.error ===
+                    'Processo de origem inexistente. Insira um código de processo válido.'
                 ) {
                     setErro(erroCria.response.data.error);
                 } else {
@@ -172,7 +172,7 @@ function CriarProcessoPasPad() {
 
     useEffect(() => {
         async function carrega() {
-            // carregaGrid();
+            await carregaMembros();
         }
         carrega();
     }, []);
@@ -180,12 +180,13 @@ function CriarProcessoPasPad() {
     function selecionaPasPad() {
         const p = formRef.current.getData();
         setErro('');
+        formRef.current.setFieldValue('proIrregularidade', '');
+        setListaComissao([]);
+        setListaNome([]);
         if (p.tprId === '-1') {
-            setMatriculaVisivel(false);
             setDadosVisivel(false);
             setProcessoPasVisivel(false);
         } else {
-            setMatriculaVisivel(true);
             setDadosVisivel(true);
             if (Number(p.tprId) === constantes.TPR_PAD) {
                 setProcessoPasVisivel(true);
@@ -196,6 +197,16 @@ function CriarProcessoPasPad() {
         }
     }
 
+    function handleChange(e) {
+        const isChecked = e.target.checked;
+        formRef.current.setFieldValue('chkPresidente', isChecked);
+        if (isChecked) {
+            document.getElementById('chkPresidente').checked = true;
+        } else {
+            document.getElementById('chkPresidente').checked = false;
+        }
+    }
+
     function localiza() {
         const matricula = formRef.current.getFieldValue('proMatricula');
         if (matricula.trim() === '') {
@@ -203,61 +214,6 @@ function CriarProcessoPasPad() {
             return;
         }
         formRef.current.setFieldValue('proNome', '');
-        formRef.current.setFieldValue('proCpf', '');
-        formRef.current.setFieldValue('proFone', '');
-        formRef.current.setFieldValue('proCelular', '');
-        formRef.current.setFieldValue('proEmail', '');
-        setErro('');
-        axios({
-            method: 'GET',
-            url: `/dados-pessoa/${matricula}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                if (res.data === null) {
-                    setErro('Matrícula inválida ou inexistente.');
-                    formRef.current.setFieldValue('proMatricula', '');
-                } else {
-                    if (res.data.pes_email !== null) {
-                        res.data.pes_email = res.data.pes_email.toLowerCase();
-                    } else {
-                        res.data.pes_email = '';
-                    }
-                    if (res.data.pes_cpf === null) {
-                        res.data.pes_cpf = '';
-                    }
-                    if (res.data.fone === null) {
-                        res.data.fone = '';
-                    }
-                    if (res.data.pes_celular === null) {
-                        res.data.pes_celular = '';
-                    }
-                    if (res.data.pes_cpf.toString().length === 10) {
-                        res.data.pes_cpf = `0${res.data.pes_cpf.toString()}`;
-                    }
-                    if (res.data.pes_cpf.toString().length === 9) {
-                        res.data.pes_cpf = `00${res.data.pes_cpf.toString()}`;
-                    }
-                    formRef.current.setFieldValue('proNome', res.data.pes_nome);
-                    formRef.current.setFieldValue('proCpf', res.data.pes_cpf);
-                    formRef.current.setFieldValue('proFone', res.data.fone);
-                    formRef.current.setFieldValue('proCelular', res.data.pes_celular);
-                    formRef.current.setFieldValue('proEmail', res.data.pes_email);
-                }
-            })
-            .catch(() => {
-                setErro('Erro ao carregar dados de pessoa.');
-            });
-    }
-
-    function localizaMembro() {
-        const matricula = formRef.current.getFieldValue('matriculaMembro');
-        if (matricula.trim() === '') {
-            setErro('Digite a matrícula.');
-            return;
-        }
         setErro('');
         axios({
             method: 'GET',
@@ -269,6 +225,36 @@ function CriarProcessoPasPad() {
             .then(res => {
                 if (res.data === null || res.data === '') {
                     mensagem.error(`Matrícula inválida ou inexistente.`);
+                } else {
+                    const nome = {};
+                    nome.matricula = res.data.matricula;
+                    nome.nome = res.data.nome;
+                    nome.areaId = res.data.areaId;
+                    nome.areaNome = res.data.areaNome;
+                    nome.login = res.data.login;
+                    setListaNome(arrayAntigo => [...arrayAntigo, nome]);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao carregar dados de pessoa.');
+            });
+        formRef.current.setFieldValue('proMatricula', '');
+    }
+
+    function localizaMembro() {
+        const matricula = formRef.current.getFieldValue('mcoId');
+
+        setErro('');
+        axios({
+            method: 'GET',
+            url: `/dados-pessoa-comissao/${matricula}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                if (res.data === null || res.data === '') {
+                    mensagem.error(`Selecione um membro.`);
                 } else if (listaComissao.length > 2) {
                     mensagem.error(`Número limite de membros excedido.`);
                 } else {
@@ -278,7 +264,33 @@ function CriarProcessoPasPad() {
                     membro.areaId = res.data.areaId;
                     membro.areaNome = res.data.areaNome;
                     membro.login = res.data.login;
-                    setListaComissao(arrayAntigo => [...arrayAntigo, membro]);
+                    if (document.getElementById('chkPresidente').checked) {
+                        membro.cargo = 'Presidente';
+                        membro.bCargo = true;
+                    } else {
+                        membro.cargo = 'Membro';
+                        membro.bCargo = false;
+                    }
+                    // aqui verifica se já existe um membro cadastrado
+                    const listaExistente = listaComissao.filter(lista => {
+                        return lista.matricula === membro.matricula;
+                    });
+                    if (listaExistente.length === 1) {
+                        mensagem.error(`Membro já consta na lista.`);
+                    } else {
+                        // aqui verifica se existe já um membro que é presidente
+                        // se existir não pode cadastrar
+                        const listaAntiga = listaComissao.filter(lista => {
+                            return lista.bCargo === true;
+                        });
+                        if (listaAntiga.length === 1 && membro.bCargo) {
+                            mensagem.error(`Só um membro da comissão pode ser presidente.`);
+                        } else {
+                            setListaComissao(arrayAntigo => [...arrayAntigo, membro]);
+                            document.getElementById('chkPresidente').checked = false;
+                            formRef.current.setFieldValue('mcoId', '-1');
+                        }
+                    }
                 }
             })
             .catch(() => {
@@ -299,27 +311,8 @@ function CriarProcessoPasPad() {
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} onSubmit={criaProcesso}>
                         <Input name="proId" type="hidden" />
-                        <Input name="proIdPas" type="hidden" />
                         <ContainerTipoProcesso>
                             <SelecionaPasPad name="tprId" changeHandler={selecionaPasPad} />
-                            {matriculaVisivel ? (
-                                <ContainerMatricula>
-                                    <InputMask
-                                        name="proMatricula"
-                                        label="Matrícula"
-                                        mask="99999"
-                                        maskChar=" "
-                                    />
-                                    <BotaoProcura
-                                        id="btnLocaliza"
-                                        name="btnLocaliza"
-                                        type="button"
-                                        onClick={localiza}>
-                                        <FaSearch />
-                                        Localizar
-                                    </BotaoProcura>
-                                </ContainerMatricula>
-                            ) : null}
                         </ContainerTipoProcesso>
                         {processoPasVisivel ? (
                             <ContainerProcessoPAS>
@@ -332,47 +325,49 @@ function CriarProcessoPasPad() {
                         ) : null}
                         {dadosVisivel ? (
                             <>
-                                <ContainerNome>
-                                    <Input
-                                        name="proNome"
-                                        label="Nome"
-                                        type="text"
-                                        size="100"
-                                        maxLength="100"
-                                    />
-                                </ContainerNome>
-
-                                <ContainerDadosServidorPublico>
+                                <ContainerMembrosTitulo>
+                                    <p>Nome(s)</p>
+                                    <hr />
+                                </ContainerMembrosTitulo>
+                                <ContainerLocaliza>
                                     <InputMask
-                                        name="proCpf"
-                                        label="Cpf"
-                                        mask="999.999.999-99"
+                                        name="proMatricula"
+                                        label="Matrícula"
+                                        mask="99999"
                                         maskChar=" "
                                     />
-                                    <Input
-                                        name="proFone"
-                                        label="Fone"
-                                        type="text"
-                                        size="30"
-                                        maxLength="31"
-                                    />
-                                    <Input
-                                        name="proCelular"
-                                        label="Celular"
-                                        type="text"
-                                        size="30"
-                                        maxLength="30"
-                                    />
-                                </ContainerDadosServidorPublico>
-                                <ContainerEmail>
-                                    <Input
-                                        name="proEmail"
-                                        label="E-mail"
-                                        type="text"
-                                        size="101"
-                                        maxLength="100"
-                                    />
-                                </ContainerEmail>
+                                    <BotaoProcura
+                                        id="btnLocaliza"
+                                        name="btnLocaliza"
+                                        type="button"
+                                        onClick={localiza}>
+                                        <FaChild />
+                                        Inserir nome
+                                    </BotaoProcura>
+                                </ContainerLocaliza>
+                                <ContainerMembros>
+                                    {listaNome.length > 0 ? (
+                                        <TableComissao
+                                            columns={[
+                                                {
+                                                    title: 'Matrícula',
+                                                    field: 'matricula',
+                                                    width: '30px',
+                                                },
+                                                {
+                                                    title: 'Login',
+                                                    field: 'login',
+                                                    width: '50px',
+                                                },
+                                                { title: 'Nome', field: 'nome' },
+                                                { title: 'Área', field: 'areaNome' },
+                                            ]}
+                                            data={listaNome}
+                                            fillData={retiraNome}
+                                        />
+                                    ) : null}
+                                </ContainerMembros>
+                                <br />
                                 <ContainerIrregularidade>
                                     <Input
                                         name="proIrregularidade"
@@ -386,13 +381,19 @@ function CriarProcessoPasPad() {
                                     <p>Membros da comissão processante</p>
                                     <hr />
                                 </ContainerMembrosTitulo>
+                                <ContainerIrregularidade>
+                                    <Select name="mcoId" label="Membro" options={membros} />
+                                </ContainerIrregularidade>
                                 <ContainerLocalizaMembros>
-                                    <InputMask
-                                        name="matriculaMembro"
-                                        label="Matrícula"
-                                        mask="99999"
-                                        maskChar=" "
-                                    />
+                                    <div>
+                                        <input
+                                            type="checkbox"
+                                            id="chkPresidente"
+                                            name="chkPresidente"
+                                            onChange={e => handleChange(e)}
+                                        />
+                                        <label htmlFor="chkPresidente">Presidente</label>
+                                    </div>
                                     <BotaoProcura
                                         id="btnLocalizaMembro"
                                         name="btnLocalizaMembro"
@@ -418,6 +419,7 @@ function CriarProcessoPasPad() {
                                                 },
                                                 { title: 'Nome', field: 'nome' },
                                                 { title: 'Área', field: 'areaNome' },
+                                                { title: 'Cargo', field: 'cargo' },
                                             ]}
                                             data={listaComissao}
                                             fillData={retiraMembro}
@@ -426,6 +428,7 @@ function CriarProcessoPasPad() {
                                 </ContainerMembros>
                             </>
                         ) : null}
+                        <br />
                         <ButtonContainer>
                             <CriaProcesso name="btnCriaProcesso" />
                             <Limpar name="btnLimpa" clickHandler={limpaCampos} />

@@ -185,10 +185,13 @@ routes.post(`${process.env.API_URL}/pesquisa-processo`, DadosProcessoController.
 
 // rotas de dados do processo
 routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.dadosProcesso);
+routes.get(`${process.env.API_URL}/dados-membros-comissao/:id`, DadosProcessoController.membrosComissao);
+routes.get(`${process.env.API_URL}/dados-nome-pas-pad/:id`, DadosProcessoController.nomePasPad);
+routes.get(`${process.env.API_URL}/ver-processo-pas-pad/:id`, DadosProcessoController.dadosProcessoPasPad);
+routes.get(`${process.env.API_URL}/membros-comissao`, CriaProcessoController.comboMembrosComissaoProcessante);
 routes.get(`${process.env.API_URL}/processos-pessoa/:areaId/:usuario`, DadosProcessoController.processosPessoais);
 routes.get(`${process.env.API_URL}/processos-area/:areaId`, DadosProcessoController.processosArea);
 routes.post(`${process.env.API_URL}/processo-por-codigo`, DadosProcessoController.processoPorCodigo);
-routes.post(`${process.env.API_URL}/processo-por-codigo-pas`, DadosProcessoController.processoPorCodigoPas);
 
 // rotas do cadastro de fluxos
 routes.get(`${process.env.API_URL}/fluxos`, FluxoController.index);

@@ -17,3 +17,6 @@ export const TPR_HORARIO_ESPECIAL_ESTUDANTE = 241;
 export const TPR_REVISOES_RETROATIVOS = 242;
 export const TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA = 247;
 export const TPR_RECURSO = 248;
+
+// Área
+export const AREA_PRESIDENCIA = 88;
