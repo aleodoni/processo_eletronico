@@ -39,6 +39,7 @@ import modeloMenuValidator from './app/validators/modeloMenuValidator';
 import areaMenuValidator from './app/validators/areaMenuValidator';
 import nodoValidator from './app/validators/nodoValidator';
 import menuValidator from './app/validators/menuValidator';
+import regraAposentacaoValidator from './app/validators/regraAposentacaoValidator';
 
 require('dotenv/config');
 
@@ -301,8 +302,8 @@ routes.post(`${process.env.API_URL}/arquivo-ciencia-calculo`, CriaPdfController.
 
 // rotas do cadastro de regras de aposentação
 routes.get(`${process.env.API_URL}/regras-aposentacao`, RegraAposentacaoController.index);
-routes.post(`${process.env.API_URL}/regras-aposentacao`, RegraAposentacaoController.store);
-routes.put(`${process.env.API_URL}/regras-aposentacao/:id`, RegraAposentacaoController.update);
+routes.post(`${process.env.API_URL}/regras-aposentacao`, regraAposentacaoValidator, RegraAposentacaoController.store);
+routes.put(`${process.env.API_URL}/regras-aposentacao/:id`, regraAposentacaoValidator, RegraAposentacaoController.update);
 routes.delete(`${process.env.API_URL}/regras-aposentacao/:id`, RegraAposentacaoController.delete);
 
 routes.post(`${process.env.API_URL}/tramites-calculo-aposentadoria`, TramiteController.criaTramiteCalculoAposentadoria);
