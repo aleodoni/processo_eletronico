@@ -28,7 +28,7 @@ module.exports = {
     down: async(queryInterface, Sequelize) => {
         const transaction = await queryInterface.sequelize.transaction();
         try {
-            await queryInterface.removeColumn({ tableName: 'nodo', schema: 'spa2' }, 'nod_parecer_projuris_aposentadoria');
+            // await queryInterface.removeColumn({ tableName: 'nodo', schema: 'spa2' }, 'nod_parecer_projuris_aposentadoria');
             await transaction.commit();
 
             return Promise.resolve();
