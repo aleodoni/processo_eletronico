@@ -83,6 +83,7 @@ module.exports = {
     },
 
     down: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.query(`DROP VIEW ${viewName}`);
+        // return queryInterface.sequelize.query(`DROP VIEW ${viewName}`);
+        return Promise.resolve();
     }
 };
