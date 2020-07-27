@@ -40,6 +40,7 @@ import areaMenuValidator from './app/validators/areaMenuValidator';
 import nodoValidator from './app/validators/nodoValidator';
 import menuValidator from './app/validators/menuValidator';
 import regraAposentacaoValidator from './app/validators/regraAposentacaoValidator';
+import razaoTramiteValidator from './app/validators/razaoTramiteValidator';
 
 require('dotenv/config');
 
@@ -202,8 +203,8 @@ routes.delete(`${process.env.API_URL}/fluxos/:id`, FluxoController.delete);
 
 // rotas do cadastro de razoes de trâmite
 routes.get(`${process.env.API_URL}/razao-tramite`, RazaoTramiteController.index);
-routes.post(`${process.env.API_URL}/razao-tramite`, RazaoTramiteController.store);
-routes.put(`${process.env.API_URL}/razao-tramite/:id`, RazaoTramiteController.update);
+routes.post(`${process.env.API_URL}/razao-tramite`, razaoTramiteValidator, RazaoTramiteController.store);
+routes.put(`${process.env.API_URL}/razao-tramite/:id`, razaoTramiteValidator, RazaoTramiteController.update);
 routes.delete(`${process.env.API_URL}/razao-tramite/:id`, RazaoTramiteController.delete);
 
 // rotas de arquivos
