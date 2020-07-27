@@ -3,6 +3,15 @@
 /* eslint-disable camelcase */
 import RegraAposentacao from '../models/RegraAposentacao';
 // import AuditoriaController from './AuditoriaController';
+import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
+import Auditoria from '../models/Auditoria';
+import DataHoraAtual from '../models/DataHoraAtual';
+
+import CreateRegraAposentacaoService from '../services/regra_aposentacao/CreateRegraAposentacaoService';
+import DeleteRegraAposentacaoService from '../services/regra_aposentacao/DeleteRegraAposentacaoService';
+import UpdateRegraAposentacaoService from '../services/regra_aposentacao/UpdateRegraAposentacaoService';
+
+import AppError from '../error/AppError';
 
 class RegraAposentacaoController {
     async index(req, res) {
@@ -15,20 +24,52 @@ class RegraAposentacaoController {
     }
 
     async store(req, res) {
-        const { reg_id, reg_nome } = await RegraAposentacao.create(req.body, {
-            logging: false
-        });
+        const createRegraAposentacao = new CreateRegraAposentacaoService(RegraAposentacao);
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const regraAposencatao = await createRegraAposentacao.execute(req.body);
+
+        // auditoria de inserção
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', regraAposencatao.reg_id);
+        //
+
+        return res.json(regraAposencatao);
+
+        // const { reg_id, reg_nome } = await RegraAposentacao.create(req.body, {
+        //     logging: false
+        // });
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', flu_id);
         //
-        return res.json({
-            reg_id,
-            reg_nome
-        });
+        // return res.json({
+        //     reg_id,
+        //     reg_nome
+        // });
     }
 
     async update(req, res) {
-        const regra = await RegraAposentacao.findByPk(req.params.id, { logging: false });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const updateRegraAposentacao = new UpdateRegraAposentacaoService(RegraAposentacao);
+
+        const { id } = req.params;
+        const { reg_nome } = req.body;
+
+        const updatedRegraAposentacao = await updateRegraAposentacao.execute({ id, reg_nome });
+
+        // auditoria de edição
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        await createAuditoria.execute(updatedRegraAposentacao._previousDataValues, url, usuario, clientIP, 'U', id);
+        //
+
+        return res.json(updatedRegraAposentacao);
+        // const regra = await RegraAposentacao.findByPk(req.params.id, { logging: false });
 
         // auditoria de edição
         // AuditoriaController.audita(
@@ -38,39 +79,59 @@ class RegraAposentacaoController {
         //    req.params.id
         // );
         //
-        if (!regra) {
-            return res.status(400).json({ error: 'Regra não encontrada' });
-        }
-        console.log(req.body);
-        await RegraAposentacao.update(req.body, { logging: true });
-        return res.json(regra);
+        // if (!regra) {
+        //     return res.status(400).json({ error: 'Regra não encontrada' });
+        // }
+        // console.log(req.body);
+        // await RegraAposentacao.update(req.body, { logging: true });
+        // return res.json(regra);
     }
 
     async delete(req, res) {
-        const regra = await RegraAposentacao.findByPk(req.params.id, { logging: false });
-        if (!regra) {
-            return res.status(400).json({ error: 'Regra não encontrada' });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteRegraAposentacao = new DeleteRegraAposentacaoService(RegraAposentacao);
+
+        const { id } = req.params;
+
+        try {
+            const regraAposentacao = await deleteRegraAposentacao.execute({ id });
+
+            // auditoria de deleção
+            const { url, headers } = req;
+            const { usuario } = headers;
+            const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await createAuditoria.execute(regraAposentacao._previousDataValues, url, usuario, clientIP, 'D', id);
+            //
+        } catch (err) {
+            throw new AppError('Erro ao excluir modelo menu. O modelo menu possui uma ou mais ligações.');
         }
-        await regra
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                // AuditoriaController.audita(
-                //    fluxo._previousDataValues,
-                //    req,
-                //    'D',
-                //    req.params.id
-                // );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error: 'Erro ao excluir regea de aposentação. A regra possui uma ou mais ligações.'
-                    });
-                }
-            });
+
         return res.send();
+
+        // const regra = await RegraAposentacao.findByPk(req.params.id, { logging: false });
+        // if (!regra) {
+        //     return res.status(400).json({ error: 'Regra não encontrada' });
+        // }
+        // await regra
+        //     .destroy({ logging: false })
+        //     .then(auditoria => {
+        //         // auditoria de deleção
+        //         // AuditoriaController.audita(
+        //         //    fluxo._previousDataValues,
+        //         //    req,
+        //         //    'D',
+        //         //    req.params.id
+        //         // );
+        //         //
+        //     })
+        //     .catch(function(err) {
+        //         if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
+        //             return res.status(400).json({
+        //                 error: 'Erro ao excluir regea de aposentação. A regra possui uma ou mais ligações.'
+        //             });
+        //         }
+        //     });
+        // return res.send();
     }
 }
 export default new RegraAposentacaoController();
