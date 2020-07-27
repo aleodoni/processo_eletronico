@@ -35,9 +35,6 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 allowNull: false
             },
-            tra_observacao: {
-                type: Sequelize.TEXT
-            },
             tra_inicial: {
                 type: Sequelize.BOOLEAN,
                 allowNull: false,
@@ -51,6 +48,11 @@ module.exports = {
             tra_envio: {
                 type: Sequelize.DATE,
                 allowNull: false
+            },
+            tra_retorno_discordancia: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
         },
         {
