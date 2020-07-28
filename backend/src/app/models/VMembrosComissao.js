@@ -23,6 +23,14 @@ class VMembrosComissao extends Model {
                 set_nome: {
                     type: Sequelize.STRING,
                     allowNull: false
+                },
+                mco_ativo: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
+                },
+                ativo: {
+                    type: Sequelize.STRING,
+                    allowNull: false
                 }
 
             },

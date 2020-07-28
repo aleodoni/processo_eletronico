@@ -16,6 +16,7 @@ import ModeloMenuController from './app/controllers/ModeloMenuController';
 import AreaMenuController from './app/controllers/AreaMenuController';
 import AreaTelaController from './app/controllers/AreaTelaController';
 import NodoController from './app/controllers/NodoController';
+import MembroComissaoController from './app/controllers/MembroComissaoController';
 import CriaProcessoController from './app/controllers/CriaProcessoController';
 import DadosProcessoController from './app/controllers/DadosProcessoController';
 import ArquivoController from './app/controllers/ArquivoController';
@@ -125,6 +126,13 @@ routes.post(`${process.env.API_URL}/nodos`, nodoValidator, NodoController.store)
 routes.put(`${process.env.API_URL}/nodos/:id`, nodoValidator, NodoController.update);
 routes.delete(`${process.env.API_URL}/nodos/:id`, NodoController.delete);
 
+// rotas do cadastro de membros de comissão
+routes.get(`${process.env.API_URL}/comissoes`, MembroComissaoController.comissao);
+routes.get(`${process.env.API_URL}/grid-membros-comissao/:id`, MembroComissaoController.gridMembrosComissao);
+routes.post(`${process.env.API_URL}/membros-comissao`, MembroComissaoController.store);
+routes.put(`${process.env.API_URL}/membros-comissao/:id`, MembroComissaoController.update);
+routes.delete(`${process.env.API_URL}/membros-comissao/:id`, MembroComissaoController.delete);
+
 // rotas do cadastro de gêneros
 routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
 routes.post(`${process.env.API_URL}/generos`, generoValidator, GeneroController.store);
@@ -191,6 +199,7 @@ routes.get(`${process.env.API_URL}/ver-processo-pas-pad/:id`, DadosProcessoContr
 routes.get(`${process.env.API_URL}/membros-comissao`, CriaProcessoController.comboMembrosComissaoProcessante);
 routes.get(`${process.env.API_URL}/processos-pessoa/:areaId/:usuario`, DadosProcessoController.processosPessoais);
 routes.get(`${process.env.API_URL}/processos-area/:areaId`, DadosProcessoController.processosArea);
+routes.get(`${process.env.API_URL}/processos-sigiloso/:areaId/:login`, DadosProcessoController.processosSigiloso);
 routes.post(`${process.env.API_URL}/processo-por-codigo`, DadosProcessoController.processoPorCodigo);
 
 // rotas do cadastro de fluxos

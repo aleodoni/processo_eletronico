@@ -59,6 +59,7 @@ import databaseConfig from '../config/database';
 
 import ConnectionHelper from '../app/helpers/ConnectionHelper';
 import VDadosMembrosComissao from '../app/models/VDadosMembrosComissao';
+import VProcessosSigiloso from '../app/models/VProcessosSigiloso';
 
 const models = [
     Autorizacao,
@@ -117,7 +118,8 @@ const models = [
     NomePasPad,
     VMembrosComissao,
     VDadosProcessoPasPad,
-    VDadosMembrosComissao
+    VDadosMembrosComissao,
+    VProcessosSigiloso
 ];
 
 class Database {

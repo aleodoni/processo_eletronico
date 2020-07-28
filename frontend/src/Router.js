@@ -21,6 +21,7 @@ import TipoManifestacao from './pages/TipoManifestacao';
 import Setor from './pages/Setor';
 import Lotacao from './pages/Lotacao';
 import Nodo from './pages/Nodo';
+import MembroComissao from './pages/MembroComissao';
 import ProximoTramite from './pages/ProximoTramite';
 import RegraAposentacao from './pages/RegraAposentacao';
 import CriarManifestacao from './pages/CriarManifestacao';
@@ -66,6 +67,7 @@ const Routes = () => (
         <PrivateRoute exact path="/areas-menu" component={AreaMenu} />
         <PrivateRoute exact path="/menus" component={TelaMenu} />
         <PrivateRoute exact path="/nodos" component={Nodo} />
+        <PrivateRoute exact path="/membros-comissao" component={MembroComissao} />
         <PrivateRoute exact path="/razao" component={RazaoTramite} />
         <PrivateRoute exact path="/setores" component={Setor} />
         <PrivateRoute exact path="/lotacoes" component={Lotacao} />
