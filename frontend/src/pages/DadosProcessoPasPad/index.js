@@ -96,7 +96,7 @@ function DadosProcessoPasPad({ match }) {
     }
 
     function criaManifestacao() {
-        history.push(`/manifestacao-cria/${proId}`);
+        history.push(`/manifestacao-cria-pas-pad/${proId}`);
     }
 
     function geraJuntada(proIdJuntada) {

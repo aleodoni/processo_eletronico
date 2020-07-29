@@ -11,6 +11,7 @@ import {
     Erro,
     ContainerNomeFluxo,
     ContainerCamposNodos,
+    ContainerSelecione,
     ContainerCamposNodos1,
     Titulo,
 } from './styles';
@@ -24,7 +25,6 @@ import Limpar from '../../components/layout/button/Limpar';
 import ConsultarOutroFluxo from '../../components/layout/button/ConsultarOutroFluxo';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
-import FormLine from '../../components/layout/FormLine';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
 function ProximoTramite() {
@@ -372,7 +372,7 @@ function ProximoTramite() {
                         <Input name="prxId" type="hidden" />
                         <Input name="fluId" type="hidden" />
                         {fluxosVisiveis ? (
-                            <FormLine>
+                            <ContainerSelecione>
                                 <Select
                                     name="selectFluxo"
                                     label="Selecione o fluxo"
@@ -380,7 +380,7 @@ function ProximoTramite() {
                                     options={fluxos}
                                     onChange={handleFluId}
                                 />
-                            </FormLine>
+                            </ContainerSelecione>
                         ) : null}
                         {nomeFluxosVisiveis ? (
                             <ContainerNomeFluxo>

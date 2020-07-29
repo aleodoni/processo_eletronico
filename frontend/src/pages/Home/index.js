@@ -94,6 +94,10 @@ function Home() {
         carregaGridSigiloso();
     }, [carregaGridArea, carregaGridSigiloso]);
 
+    function criaManifestacaoPasPad(id) {
+        history.push(`/manifestacao-cria-pas-pad/${id}`);
+    }
+
     function criaManifestacao(
         id,
         aval,
@@ -200,21 +204,12 @@ function Home() {
                                                                 case 1:
                                                                     return (
                                                                         <BotaoCriaManifestacao
-                                                                            name="btnCriaManifestacao"
+                                                                            name="btnCriaManifestacaoPasPad"
                                                                             cor="vermelho"
                                                                             corHover="vermelho-claro"
                                                                             onClick={() => {
-                                                                                criaManifestacao(
-                                                                                    proc.pro_id,
-                                                                                    proc.nod_aval_executiva,
-                                                                                    proc.nod_decisao,
-                                                                                    proc.nod_ciencia,
-                                                                                    proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario,
-                                                                                    proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo,
-                                                                                    proc.nod_parecer_projuris_aposentadoria
+                                                                                criaManifestacaoPasPad(
+                                                                                    proc.pro_id
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -224,21 +219,12 @@ function Home() {
                                                                 case 2:
                                                                     return (
                                                                         <BotaoCriaManifestacao
-                                                                            name="btnCriaManifestacao"
+                                                                            name="btnCriaManifestacaoPasPad"
                                                                             cor="laranja"
                                                                             corHover="laranja-claro"
                                                                             onClick={() => {
-                                                                                criaManifestacao(
-                                                                                    proc.pro_id,
-                                                                                    proc.nod_aval_executiva,
-                                                                                    proc.nod_decisao,
-                                                                                    proc.nod_ciencia,
-                                                                                    proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario,
-                                                                                    proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo,
-                                                                                    proc.nod_parecer_projuris_aposentadoria
+                                                                                criaManifestacaoPasPad(
+                                                                                    proc.pro_id
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -248,21 +234,12 @@ function Home() {
                                                                 case 3:
                                                                     return (
                                                                         <BotaoCriaManifestacao
-                                                                            name="btnCriaManifestacao"
+                                                                            name="btnCriaManifestacaoPasPad"
                                                                             cor="azul"
                                                                             corHover="azul-claro"
                                                                             onClick={() => {
-                                                                                criaManifestacao(
-                                                                                    proc.pro_id,
-                                                                                    proc.nod_aval_executiva,
-                                                                                    proc.nod_decisao,
-                                                                                    proc.nod_ciencia,
-                                                                                    proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario,
-                                                                                    proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo,
-                                                                                    proc.nod_parecer_projuris_aposentadoria
+                                                                                criaManifestacaoPasPad(
+                                                                                    proc.pro_id
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -272,21 +249,12 @@ function Home() {
                                                                 default:
                                                                     return (
                                                                         <BotaoCriaManifestacao
-                                                                            name="btnCriaManifestacao"
+                                                                            name="btnCriaManifestacaoPasPad"
                                                                             cor="azul"
                                                                             corHover="azul-claro"
                                                                             onClick={() => {
-                                                                                criaManifestacao(
-                                                                                    proc.pro_id,
-                                                                                    proc.nod_aval_executiva,
-                                                                                    proc.nod_decisao,
-                                                                                    proc.nod_ciencia,
-                                                                                    proc.nod_averbacao,
-                                                                                    proc.nod_ciencia_averbacao,
-                                                                                    proc.nod_aval_horario,
-                                                                                    proc.nod_contagem_tempo,
-                                                                                    proc.nod_ciencia_calculo,
-                                                                                    proc.nod_parecer_projuris_aposentadoria
+                                                                                criaManifestacaoPasPad(
+                                                                                    proc.pro_id
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />

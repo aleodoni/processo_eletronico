@@ -24,6 +24,7 @@ import TipoManifestacaoController from './app/controllers/TipoManifestacaoContro
 import ManifestacaoController from './app/controllers/ManifestacaoController';
 import SetorController from './app/controllers/SetorController';
 import LotacaoController from './app/controllers/LotacaoController';
+import SigiloController from './app/controllers/SigiloController';
 import ProximoTramiteController from './app/controllers/ProximoTramiteController';
 import TramiteController from './app/controllers/TramiteController';
 import TipoDocumentoController from './app/controllers/TipoDocumentoController';
@@ -132,6 +133,14 @@ routes.get(`${process.env.API_URL}/grid-membros-comissao/:id`, MembroComissaoCon
 routes.post(`${process.env.API_URL}/membros-comissao`, MembroComissaoController.store);
 routes.put(`${process.env.API_URL}/membros-comissao/:id`, MembroComissaoController.update);
 routes.delete(`${process.env.API_URL}/membros-comissao/:id`, MembroComissaoController.delete);
+
+// rotas do cadastro de sigilo
+routes.get(`${process.env.API_URL}/area-sigilo`, SigiloController.area);
+routes.get(`${process.env.API_URL}/tipo-processo-sigilo`, SigiloController.tipoProcesso);
+routes.get(`${process.env.API_URL}/grid-sigilo`, SigiloController.gridSigilo);
+routes.post(`${process.env.API_URL}/sigilos`, SigiloController.store);
+routes.put(`${process.env.API_URL}/sigilos/:id`, SigiloController.update);
+routes.delete(`${process.env.API_URL}/sigilos/:id`, SigiloController.delete);
 
 // rotas do cadastro de gêneros
 routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
