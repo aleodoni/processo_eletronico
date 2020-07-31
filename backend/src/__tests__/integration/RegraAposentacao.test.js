@@ -10,7 +10,7 @@ let token = '';
 // eslint-disable-next-line no-unused-vars
 let usuario = '';
 
-let razaoTramite;
+let regraAposentacao;
 
 beforeAll(done => {
     request(app)
@@ -28,77 +28,77 @@ beforeAll(done => {
         });
 });
 
-describe('Razão Trâmite', () => {
-    it('Deve retornar lista de razões', async() => {
+describe('Regra Aposentação', () => {
+    it('Deve retornar lista de regras', async() => {
         const response = await request(app)
-            .get(`${process.env.API_URL}/razao-tramite`)
+            .get(`${process.env.API_URL}/regras-aposentacao`)
             .set('authorization', `${token}`);
 
         expect(response.status).toBe(200);
 
         expect(response.body).toEqual(
             expect.arrayContaining([{
-                raz_id: 82,
-                raz_nome: 'Encaminhamento'
+                reg_id: 1,
+                reg_nome: 'Regra 1'
             }])
         );
     });
 
-    it('Deve inserir uma nova razão trâmite', async() => {
-        const insereRazaoTramite = {
-            raz_id: null,
-            raz_nome: `Inserção nome - ${Math.random()}`
+    it('Deve inserir uma nova regra aposentação', async() => {
+        const insereRegraAposentacao = {
+            reg_id: null,
+            reg_nome: `Inserção nome - ${Math.random()}`
         };
 
         const response = await request(app)
-            .post(`${process.env.API_URL}/razao-tramite`)
+            .post(`${process.env.API_URL}/regras-aposentacao`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`)
-            .send(insereRazaoTramite);
+            .send(insereRegraAposentacao);
 
-        razaoTramite = response.body;
+        regraAposentacao = response.body;
 
         expect(response.status).toBe(200);
 
-        expect(response.body).toHaveProperty('raz_nome', insereRazaoTramite.raz_nome);
+        expect(response.body).toHaveProperty('reg_nome', insereRegraAposentacao.reg_nome);
     });
 
-    it('Deve alterar uma razão trâmite', async() => {
-        const editaRazaoTramite = {
-            raz_nome: `Edição nome - ${Math.random()}`
+    it('Deve alterar uma regra aposentação', async() => {
+        const editaRegraAposentacao = {
+            reg_nome: `Edição nome - ${Math.random()}`
         };
 
         const response = await request(app)
-            .put(`${process.env.API_URL}/razao-tramite/${razaoTramite.raz_id}`)
+            .put(`${process.env.API_URL}/regras-aposentacao/${regraAposentacao.reg_id}`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`)
-            .send(editaRazaoTramite);
+            .send(editaRegraAposentacao);
 
         expect(response.status).toBe(200);
 
-        expect(response.body).toHaveProperty('raz_nome', editaRazaoTramite.raz_nome);
+        expect(response.body).toHaveProperty('reg_nome', editaRegraAposentacao.reg_nome);
     });
 
-    it('Deve deletar uma razão trâmite', async() => {
+    it('Deve deletar uma regra aposentação', async() => {
         const response = await request(app)
-            .delete(`${process.env.API_URL}/razao-tramite/${razaoTramite.raz_id}`)
+            .delete(`${process.env.API_URL}/regras-aposentacao/${regraAposentacao.reg_id}`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`);
 
         expect(response.status).toBe(200);
     });
 
-    it('Não deve inserir uma nova razão trâmite com o nome nulo', async() => {
-        const insereRazaoTramite = {
-            raz_id: null,
-            raz_nome: null
+    it('Não deve inserir uma nova regra aposentação com o nome nulo', async() => {
+        const insereRegraAposentacao = {
+            reg_id: null,
+            reg_nome: null
         };
 
         const response = await request(app)
-            .post(`${process.env.API_URL}/razao-tramite`)
+            .post(`${process.env.API_URL}/regras-aposentacao`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`)
-            .send(insereRazaoTramite);
+            .send(insereRegraAposentacao);
 
         expect(response.status).toBe(422);
 
@@ -106,17 +106,17 @@ describe('Razão Trâmite', () => {
         expect(errorParsed.message).toBe('Nome obrigatório');
     });
 
-    it('Não deve inserir uma nova razão trâmite com o nome em branco', async() => {
-        const insereRazaoTramite = {
-            raz_id: null,
-            raz_nome: '   '
+    it('Não deve inserir uma nova regra aposentação com o nome em branco', async() => {
+        const insereRegraAposentacao = {
+            reg_id: null,
+            reg_nome: '   '
         };
 
         const response = await request(app)
-            .post(`${process.env.API_URL}/razao-tramite`)
+            .post(`${process.env.API_URL}/regras-aposentacao`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`)
-            .send(insereRazaoTramite);
+            .send(insereRegraAposentacao);
 
         expect(response.status).toBe(422);
 
@@ -124,21 +124,21 @@ describe('Razão Trâmite', () => {
         expect(errorParsed.message).toBe('Nome obrigatório');
     });
 
-    it('Não deve inserir uma nova razão trâmite com o nome maior que 100 caracteres', async() => {
-        const insereRazaoTramite = {
-            raz_id: null,
-            raz_nome: '1'.repeat(101)
+    it('Não deve inserir uma nova regra aposentação com o nome maior que 80 caracteres', async() => {
+        const insereRegraAposentacao = {
+            reg_id: null,
+            reg_nome: '1'.repeat(81)
         };
 
         const response = await request(app)
-            .post(`${process.env.API_URL}/razao-tramite`)
+            .post(`${process.env.API_URL}/regras-aposentacao`)
             .set('authorization', `${token}`)
             .set('usuario', `${usuario}`)
-            .send(insereRazaoTramite);
+            .send(insereRegraAposentacao);
 
         expect(response.status).toBe(422);
 
         const errorParsed = JSON.parse(response.text);
-        expect(errorParsed.message).toBe('Nome não pode ter mais que 100 caracteres');
+        expect(errorParsed.message).toBe('Nome não pode ter mais que 80 caracteres');
     });
 });
