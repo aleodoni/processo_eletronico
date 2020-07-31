@@ -26,7 +26,7 @@ class CreateNodoService {
         nod_parecer_projuris_aposentadoria
     }) {
         // Verifica se o fluxo existe
-        const fluxoExiste = await this.fluxoModel.findByPk(flu_id, { logging: true });
+        const fluxoExiste = await this.fluxoModel.findByPk(flu_id, { logging: false });
 
         if (!fluxoExiste) {
             throw new AppError('Fluxo não existe');
@@ -52,7 +52,7 @@ class CreateNodoService {
             nod_ciencia_calculo,
             nod_parecer_projuris_aposentadoria
         }, {
-            logging: true
+            logging: false
         });
 
         return nodo.toJSON();

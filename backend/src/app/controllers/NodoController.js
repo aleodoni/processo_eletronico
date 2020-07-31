@@ -100,7 +100,7 @@ class NodoController {
         const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
 
         const nodo = await createNodo.execute(req.body, {
-            logging: true
+            logging: false
         });
 
         // auditoria de inserção

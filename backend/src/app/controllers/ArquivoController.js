@@ -35,7 +35,7 @@ class ArquivoController {
                 'arq_login',
                 'tpd_nome'
             ],
-            logging: true,
+            logging: false,
             where: {
                 man_id: req.params.manId
             }
@@ -56,7 +56,7 @@ class ArquivoController {
                 'arq_login',
                 'tpd_nome'
             ],
-            logging: true,
+            logging: false,
             where: {
                 man_id: req.params.manId
             }
@@ -67,7 +67,7 @@ class ArquivoController {
     async store(req, res) {
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
 
@@ -83,7 +83,7 @@ class ArquivoController {
             arq_data: dataHoraAtual.dataValues.data_hora_atual,
             arq_login: req.body.arq_login
         }, {
-            logging: true
+            logging: false
         });
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', arq_id);

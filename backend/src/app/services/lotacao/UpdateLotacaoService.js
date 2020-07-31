@@ -8,7 +8,7 @@ class UpdateLotacaoService {
 
     async execute({ matricula, pes_nome, set_id, pes_login }) {
         // Verifica se matrícula é válida
-        const lotacao = await this.lotacaoModel.findOne({ where: { matricula: matricula } }, { logging: true });
+        const lotacao = await this.lotacaoModel.findOne({ where: { matricula: matricula } }, { logging: false });
 
         if (!lotacao) {
             throw new AppError('Lotação não encontrada.');
@@ -21,7 +21,7 @@ class UpdateLotacaoService {
             throw new AppError('Setor não existe');
         }
 
-        const updatedLotacao = await lotacao.update({ matricula, pes_nome, set_id, pes_login }, { logging: true });
+        const updatedLotacao = await lotacao.update({ matricula, pes_nome, set_id, pes_login }, { logging: false });
 
         return updatedLotacao;
     }

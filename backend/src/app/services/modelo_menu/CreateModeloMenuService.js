@@ -5,7 +5,7 @@ class CreateModeloMenuService {
 
     async execute({ mmu_id, mmu_nome }) {
         const modeloMenu = await this.modeloMenuModel.create({ mmu_id, mmu_nome }, {
-            logging: true
+            logging: false
         });
 
         return modeloMenu.toJSON();

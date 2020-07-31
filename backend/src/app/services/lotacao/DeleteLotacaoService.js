@@ -7,7 +7,7 @@ class DeleteLotacaoService {
 
     async execute({ matricula }) {
         // Verifica se matrícula é válida
-        const lotacao = await this.lotacaoModel.findOne({ where: { matricula: matricula } }, { logging: true });
+        const lotacao = await this.lotacaoModel.findOne({ where: { matricula: matricula } }, { logging: false });
 
         if (!lotacao) {
             throw new AppError('Lotação não encontrada.');

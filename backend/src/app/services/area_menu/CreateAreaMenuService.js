@@ -9,7 +9,7 @@ class CreateAreaMenuService {
 
     async execute({ amu_id, set_id, mmu_id }) {
         // Verifica se o setor existe
-        const setorExiste = await this.setorModel.findByPk(set_id, { logging: true });
+        const setorExiste = await this.setorModel.findByPk(set_id, { logging: false });
 
         if (!setorExiste) {
             throw new AppError('Setor não existe');
@@ -17,7 +17,7 @@ class CreateAreaMenuService {
         //
 
         // Verifica se o modelo menu existe
-        const modeloMenuExiste = await this.modeloMenuModel.findByPk(mmu_id, { logging: true });
+        const modeloMenuExiste = await this.modeloMenuModel.findByPk(mmu_id, { logging: false });
 
         if (!modeloMenuExiste) {
             throw new AppError('Model Menu não existe');
@@ -25,7 +25,7 @@ class CreateAreaMenuService {
         //
 
         const areaMenu = await this.areaMenuModel.create({ amu_id, set_id, mmu_id }, {
-            logging: true
+            logging: false
         });
 
         return areaMenu.toJSON();

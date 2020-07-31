@@ -40,7 +40,7 @@ class CriaProcessoController {
         try {
             const dadosPessoasComissao = await VDadosPessoa.findAll({
                 attributes: ['pes_matricula', 'pes_nome'],
-                logging: true,
+                logging: false,
                 plain: true,
                 where: {
                     pes_matricula: req.params.matricula
@@ -89,7 +89,7 @@ class CriaProcessoController {
         const TIPO_PENSAO_ALIMENTICIA = 25;
         const processos = await VDadosProcesso.findAll({
             attributes: ['pro_id', 'pro_codigo', 'pro_matricula', 'pro_nome', 'cpf', 'tpr_id'],
-            logging: true,
+            logging: false,
             where: {
                 tpr_id: TIPO_PENSAO_ALIMENTICIA
             }
@@ -101,7 +101,7 @@ class CriaProcessoController {
         const Op = Sequelize.Op;
         const processos = await VDadosProcesso.findAll({
             attributes: ['pro_id', 'pro_codigo', 'pro_matricula', 'pro_nome', 'cpf', 'tpr_id', 'tpr_nome'],
-            logging: true,
+            logging: false,
             where: {
                 usu_autuador: req.params.usuario,
                 tpr_id: { [Op.notIn]: [28, 15, 16, 30, 248] },
@@ -115,7 +115,7 @@ class CriaProcessoController {
     async processoOrigem(req, res) {
         const processoOrigem = await VProcessoOrigem.findAll({
             attributes: ['pro_id_origem', 'pro_id_atual', 'processo_origem', 'tpr_id', 'tpr_nome'],
-            logging: true,
+            logging: false,
             where: {
                 pro_id_atual: req.params.id
             }
@@ -130,7 +130,7 @@ class CriaProcessoController {
                 mco_ativo: true
             },
             attributes: ['mco_id', 'area_id', 'mco_matricula', 'mco_nome', 'mco_login', 'set_nome'],
-            logging: true
+            logging: false
         });
         return res.json(membrosComissaoProcessante);
     }
@@ -178,7 +178,7 @@ class CriaProcessoController {
 
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
         req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
@@ -287,14 +287,14 @@ class CriaProcessoController {
         // de processo_origem
         if (req.body.pro_pensao !== null && req.body.pro_pensao !== undefined) {
             const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: req.body.pro_pensao, pro_id_atual: pro_id }, {
-                logging: true
+                logging: false
             });
             console.log(JSON.stringify(processoOrigem, null, 4));
         }
         // se for um recurso de processo grava na tabela de processo_origem
         if (req.body.pro_recurso === true) {
             const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: req.body.pro_codigo_recurso, pro_id_atual: pro_id }, {
-                logging: true
+                logging: false
             });
             console.log(JSON.stringify(processoOrigem, null, 4));
         }
@@ -312,7 +312,7 @@ class CriaProcessoController {
             arq_data: dataHoraAtual.dataValues.data_hora_atual,
             arq_login: usu_autuador
         }, {
-            logging: true
+            logging: false
         });
         // cria o arquivo pdf
         const criaCapa = new CriaCapaService(Processo);
@@ -353,7 +353,7 @@ class CriaProcessoController {
         }
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
         req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
@@ -424,7 +424,7 @@ class CriaProcessoController {
 
                 if (localizaProcessoOrigem !== null) {
                     const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: localizaProcessoOrigem.dataValues.pro_id, pro_id_atual: pro_id }, {
-                        logging: true
+                        logging: false
                     });
                     console.log(JSON.stringify(processoOrigem, null, 4));
                 } else {
@@ -500,7 +500,7 @@ class CriaProcessoController {
             arq_data: dataHoraAtual.dataValues.data_hora_atual,
             arq_login: usu_autuador
         }, {
-            logging: true
+            logging: false
         });
         // cria o arquivo pdf
         const criaCapa = new CriaCapaService(Processo);
@@ -531,7 +531,7 @@ class CriaProcessoController {
         const processo = await Processo.findByPk(req.params.id, { logging: false });
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
 
@@ -559,7 +559,7 @@ class CriaProcessoController {
         const processo = await Processo.findByPk(req.params.id, { logging: false });
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
 

@@ -6,13 +6,13 @@ class UpdateFluxoService {
     }
 
     async execute({ id, flu_nome }) {
-        const fluxo = await this.fluxoModel.findByPk(id, { logging: true });
+        const fluxo = await this.fluxoModel.findByPk(id, { logging: false });
 
         if (!fluxo) {
             throw new AppError('Fluxo não encontrado.');
         }
 
-        const updatedFluxo = await fluxo.update({ flu_nome }, { logging: true });
+        const updatedFluxo = await fluxo.update({ flu_nome }, { logging: false });
         return updatedFluxo;
     }
 }

@@ -24,7 +24,7 @@ class ProximoTramiteController {
                 flu_id: req.params.id
             },
             attributes: ['nod_id', 'flu_id', 'set_nome'],
-            logging: true
+            logging: false
         });
         return res.json(nodoFluxos);
     }
@@ -35,7 +35,7 @@ class ProximoTramiteController {
                 flu_id: req.params.id
             },
             attributes: ['prx_id', 'flu_id', 'nod_id', 'nod_id_proximo', 'raz_id', 'nodo', 'nodo_proximo', 'raz_nome', 'prx_prioridade'],
-            logging: true
+            logging: false
         });
         return res.json(gridProximoTramite);
     }
@@ -85,7 +85,7 @@ class ProximoTramiteController {
 
     async store(req, res) {
         const { prx_id, prx_prioridade, nod_id, nod_id_proximo, raz_id, flu_id } = await ProximoTramite.create(req.body, {
-            logging: true
+            logging: false
         });
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', nod_id);

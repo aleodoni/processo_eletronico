@@ -77,7 +77,7 @@ class MenuController {
         const createMenu = new CreateMenuService(Menu, Tela, ModeloMenu);
         const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
 
-        const menu = await createMenu.execute(req.body, { logging: true });
+        const menu = await createMenu.execute(req.body, { logging: false });
 
         // auditoria de inserção
         const { url, headers } = req;

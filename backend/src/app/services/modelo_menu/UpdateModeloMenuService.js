@@ -6,13 +6,13 @@ class UpdateModeloMenuService {
     }
 
     async execute({ id, mmu_nome }) {
-        const modeloMenu = await this.modeloMenuModel.findByPk(id, { logging: true });
+        const modeloMenu = await this.modeloMenuModel.findByPk(id, { logging: false });
 
         if (!modeloMenu) {
             throw new AppError('Modelo Menu não encontrado.');
         }
 
-        const updatedmodeloMenu = await modeloMenu.update({ mmu_nome }, { logging: true });
+        const updatedmodeloMenu = await modeloMenu.update({ mmu_nome }, { logging: false });
         return updatedmodeloMenu;
     }
 }

@@ -6,7 +6,7 @@ class DeleteTelaService {
     }
 
     async execute({ id }) {
-        const tela = await this.telaModel.findByPk(id, { logging: true });
+        const tela = await this.telaModel.findByPk(id, { logging: false });
 
         if (!tela) {
             throw new AppError('Tela não encontrada');

@@ -13,7 +13,7 @@ class CriaCapaService {
     }
 
     async execute(arq_id, pro_id, tpr_nome) {
-        const processo = await this.processoModel.findByPk(pro_id, { logging: true });
+        const processo = await this.processoModel.findByPk(pro_id, { logging: false });
 
         if (!processo) {
             throw new AppError('Processo não encontrado.');

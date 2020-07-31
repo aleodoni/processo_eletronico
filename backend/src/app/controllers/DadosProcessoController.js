@@ -13,6 +13,7 @@ import VDadosMembrosComissao from '../models/VDadosMembrosComissao';
 import NomePasPad from '../models/NomePasPad';
 import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
+import ConnectionHelper from '../helpers/ConnectionHelper';
 
 class DadosProcessoController {
     async dadosProcesso(req, res) {
@@ -59,7 +60,7 @@ class DadosProcessoController {
                 'com_abono',
                 'num_abono'
             ],
-            logging: true,
+            logging: false,
             where: {
                 pro_id: req.params.id
             }
@@ -207,7 +208,7 @@ class DadosProcessoController {
                 'area_iniciativa_processo',
                 'setor_autuador_processo'
             ],
-            logging: true,
+            logging: false,
             where: wherePesquisa
         });
         return res.json(pesquisaProcesso);
@@ -262,7 +263,7 @@ class DadosProcessoController {
                 'usu_autuador',
                 'nod_aval_executiva'
             ],
-            logging: true,
+            logging: false,
             where: {
                 area_id: req.params.areaId,
                 usu_autuador: req.params.usuario
@@ -295,7 +296,7 @@ class DadosProcessoController {
                 'nod_ciencia_calculo',
                 'nod_parecer_projuris_aposentadoria'
             ],
-            logging: true,
+            logging: false,
             where: {
                 area_id: req.params.areaId
             }
@@ -304,35 +305,49 @@ class DadosProcessoController {
     }
 
     async processosSigiloso(req, res) {
-        const dadosProcessoSigiloso = await VProcessosSigiloso.findAll({
-            attributes: [
-                'pro_id',
-                'pro_codigo',
-                'pro_nome',
-                'tpr_nome',
-                'area_id',
-                'usu_autuador',
-                'nod_aval_executiva',
-                'tpr_pessoal',
-                'pessoal',
-                'nod_fim',
-                'nod_decisao',
-                'nod_dias_prazo',
-                'alerta',
-                'nod_ciencia',
-                'nod_averbacao',
-                'nod_ciencia_averbacao',
-                'nod_aval_horario',
-                'nod_contagem_tempo',
-                'nod_ciencia_calculo',
-                'nod_parecer_projuris_aposentadoria'
-            ],
-            logging: true,
-            where: {
-                area_id: req.params.areaId
+        const login = req.params.login;
+        const connection = ConnectionHelper.getConnection();
+        const sql = "select spa2.verifica_sigilo('" + login + "')";
+        const verificaSigilo = await connection.query(sql,
+            {
+                logging: false,
+                plain: true,
+                raw: true
             }
-        });
-        return res.json(dadosProcessoSigiloso);
+        );
+        if (verificaSigilo.verifica_sigilo) {
+            const dadosProcessoSigiloso = await VProcessosSigiloso.findAll({
+                attributes: [
+                    'pro_id',
+                    'pro_codigo',
+                    'pro_nome',
+                    'tpr_nome',
+                    'area_id',
+                    'usu_autuador',
+                    'nod_aval_executiva',
+                    'tpr_pessoal',
+                    'pessoal',
+                    'nod_fim',
+                    'nod_decisao',
+                    'nod_dias_prazo',
+                    'alerta',
+                    'nod_ciencia',
+                    'nod_averbacao',
+                    'nod_ciencia_averbacao',
+                    'nod_aval_horario',
+                    'nod_contagem_tempo',
+                    'nod_ciencia_calculo',
+                    'nod_parecer_projuris_aposentadoria'
+                ],
+                logging: false,
+                where: {
+                    area_id: req.params.areaId
+                }
+            });
+            return res.json(dadosProcessoSigiloso);
+        } else {
+            return res.json([]);
+        }
     }
 
     async decisaoPessoal(req, res) {
@@ -347,7 +362,7 @@ class DadosProcessoController {
                 'man_visto_executiva',
                 'tpr_prazo_recurso'
             ],
-            logging: true,
+            logging: false,
             plain: true,
             where: {
                 pro_id: req.params.id

@@ -21,7 +21,7 @@ class ManifestacaoController {
     async index(req, res) {
         const nodoDecisao = await VNodoDecisao.findAll({
             attributes: ['nod_id', 'pro_id', 'nod_decisao'],
-            logging: true,
+            logging: false,
             plain: true,
             where: {
                 pro_id: req.params.id
@@ -37,7 +37,7 @@ class ManifestacaoController {
         const RAZ_DISCORDANCIA_DE_CALCULO = 120;
         const tramite = await Tramite.findAll({
             attributes: ['tra_id', 'pro_id', 'raz_id'],
-            logging: true,
+            logging: false,
             where: {
                 pro_id: req.params.id,
                 raz_id: RAZ_DISCORDANCIA_DE_CALCULO
@@ -66,7 +66,7 @@ class ManifestacaoController {
                 'man_tramitada',
                 'man_parecer_projuris_aposentadoria'],
 
-            logging: true,
+            logging: false,
             where: {
                 pro_id: req.params.id,
                 man_data_cancelamento: null,
@@ -194,7 +194,7 @@ class ManifestacaoController {
         if (req.body.man_data_cancelamento === null) {
             const dataHoraAtual = await DataHoraAtual.findAll({
                 attributes: ['data_hora_atual'],
-                logging: true,
+                logging: false,
                 plain: true
             });
             req.body.man_data_cancelamento = dataHoraAtual.dataValues.data_hora_atual;

@@ -25,14 +25,14 @@ class UpdateNodoService {
         nod_ciencia_calculo,
         nod_parecer_projuris_aposentadoria
     }) {
-        const nodo = await this.nodoModel.findByPk(id, { logging: true });
+        const nodo = await this.nodoModel.findByPk(id, { logging: false });
 
         if (!nodo) {
             throw new AppError('Nodo não encontrado.');
         }
 
         // Verifica se o fluxo existe
-        const fluxoExiste = await this.fluxoModel.findByPk(flu_id, { logging: true });
+        const fluxoExiste = await this.fluxoModel.findByPk(flu_id, { logging: false });
 
         if (!fluxoExiste) {
             throw new AppError('Fluxo não existe');
@@ -56,7 +56,7 @@ class UpdateNodoService {
             nod_contagem_tempo,
             nod_ciencia_calculo,
             nod_parecer_projuris_aposentadoria
-        }, { logging: true });
+        }, { logging: false });
 
         return updatedNodo;
     }

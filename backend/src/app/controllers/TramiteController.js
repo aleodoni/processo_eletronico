@@ -17,6 +17,7 @@ import TipoProcesso from '../models/TipoProcesso';
 import DataHoraAtual from '../models/DataHoraAtual';
 import VProximoTramiteNormal from '../models/VProximoTramiteNormal';
 import Sequelize from 'sequelize';
+// import { StandardFontValues } from 'pdf-lib';
 // import AuditoriaController from './AuditoriaController';
 
 class TramiteController {
@@ -51,7 +52,7 @@ class TramiteController {
             where: {
                 pro_id: req.params.id
             },
-            logging: true
+            logging: false
         });
         return res.json(tramites);
     }
@@ -65,7 +66,7 @@ class TramiteController {
             where: {
                 area_id: req.params.id
             },
-            logging: true
+            logging: false
         });
         return res.json(processos);
     }
@@ -80,7 +81,7 @@ class TramiteController {
             where: {
                 area_id_pendente: req.params.id
             },
-            logging: true
+            logging: false
         });
         return res.json(processos);
     }
@@ -98,7 +99,7 @@ class TramiteController {
                 'usu_autuador',
                 'pro_nome'
             ],
-            logging: true,
+            logging: false,
             plain: true
         });
         const areaProcesso = processo.dataValues.area_id_iniciativa;
@@ -113,7 +114,7 @@ class TramiteController {
                 'tpr_id',
                 'tpr_pessoal'
             ],
-            logging: true,
+            logging: false,
             plain: true
         });
 
@@ -131,7 +132,7 @@ class TramiteController {
             where: {
                 pro_id: req.params.id
             },
-            logging: true
+            logging: false
         });
         // console.log(JSON.stringify(proximo, null, 4));
         const Op = Sequelize.Op;
@@ -169,7 +170,7 @@ class TramiteController {
                         'nod_fim',
                         'nod_interessado'
                     ],
-                    logging: true,
+                    logging: false,
                     plain: true
                 });
                 console.log(JSON.stringify(nodoProximo, null, 4));
@@ -187,7 +188,7 @@ class TramiteController {
                             // pes_login: usuAutuador
                             area_id: areaProcesso
                         },
-                        logging: true,
+                        logging: false,
                         plain: true
                     });
 
@@ -214,7 +215,7 @@ class TramiteController {
                             // pes_login: usuAutuador
                             area_id: areaProcesso
                         },
-                        logging: true,
+                        logging: false,
                         plain: true
                     });
                     combo.push({
@@ -241,7 +242,7 @@ class TramiteController {
                             // pes_login: usuAutuador
                                 area_id: areaProcesso
                             },
-                            logging: true,
+                            logging: false,
                             plain: true
                         });
                         combo.push({
@@ -284,7 +285,7 @@ class TramiteController {
                 'usu_autuador',
                 'pro_nome'
             ],
-            logging: true,
+            logging: false,
             plain: true
         });
         const areaProcesso = processo.dataValues.area_id_iniciativa;
@@ -303,7 +304,7 @@ class TramiteController {
             where: {
                 pro_id: req.params.id
             },
-            logging: true
+            logging: false
         });
         const combo = [];
         const contador = 1;
@@ -317,7 +318,7 @@ class TramiteController {
                 where: {
                     area_id: areaProcesso
                 },
-                logging: true,
+                logging: false,
                 plain: true
             });
             if (req.params.decisao === 'S' && proximo[p].prx_id === 90) {
@@ -354,7 +355,7 @@ class TramiteController {
             attributes: [
                 'man_visto_executiva'
             ],
-            logging: true,
+            logging: false,
             plain: true
         });
         let prxId;
@@ -365,9 +366,9 @@ class TramiteController {
             prxId = 111;
         }
 
-        const proximoTramite = await ProximoTramite.findByPk(prxId, { logging: true, plain: true });
+        const proximoTramite = await ProximoTramite.findByPk(prxId, { logging: false, plain: true });
 
-        const razaoTramite = await RazaoTramite.findByPk(proximoTramite.raz_id, { logging: true, plain: true });
+        const razaoTramite = await RazaoTramite.findByPk(proximoTramite.raz_id, { logging: false, plain: true });
 
         const processo = await Processo.findAll({
             where: {
@@ -381,7 +382,7 @@ class TramiteController {
                 'usu_autuador',
                 'pro_nome'
             ],
-            logging: true,
+            logging: false,
             plain: true
         });
         const areaProcesso = processo.dataValues.area_id_iniciativa;
@@ -394,7 +395,7 @@ class TramiteController {
                 'set_id',
                 'set_nome'
             ],
-            logging: true,
+            logging: false,
             plain: true
         });
 
@@ -423,7 +424,7 @@ class TramiteController {
                 'usu_autuador',
                 'pro_nome'
             ],
-            logging: true,
+            logging: false,
             plain: true
         });
         const proNome = processo.dataValues.pro_nome;
@@ -442,7 +443,7 @@ class TramiteController {
                 pro_id: req.params.proId,
                 prx_id: req.params.prxId
             },
-            logging: true
+            logging: false
         });
         const combo = [];
         // se for toda área é o setor do usuário
@@ -478,7 +479,7 @@ class TramiteController {
         let traInicial = false;
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
         const proximoTramite = await VProximoTramiteNormal.findAll({
@@ -495,11 +496,11 @@ class TramiteController {
             where: {
                 pro_id: req.body.pro_id
             },
-            logging: true,
+            logging: false,
             plain: true
         });
 
-        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: true, plain: true });
+        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: false, plain: true });
 
         const nodoInicio = nodo.dataValues.nod_inicio;
 
@@ -540,24 +541,24 @@ class TramiteController {
             nod_id_recebe: nodIdRecebe,
             tra_inicial: traInicial
         }, {
-            logging: true
+            logging: false
         });
 
         // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
-        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: true });
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: false });
         if (!manifestacao) {
             return res.status(400).json({ error: 'Manifestação não encontrada' });
         }
         await manifestacao.update({
             man_tramitada: true
-        }, { logging: true });
+        }, { logging: false });
 
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', tra_id);
         //
 
         // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
-        const processo = await Processo.findByPk(proId, { logging: true });
+        const processo = await Processo.findByPk(proId, { logging: false });
         // auditoria de edição
         // AuditoriaController.audita(
         //    processo._previousDataValues,
@@ -572,7 +573,7 @@ class TramiteController {
 
         // await processo.update({
         //    area_id: areaIdRecebe
-        // }, { logging: true });
+        // }, { logging: false });
 
         // verifica se é o último nó, se for já encerra o processo
         if (nodo.dataValues.nod_fim) {
@@ -610,7 +611,7 @@ class TramiteController {
         let traInicial = false;
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
         const proximoTramite = await VProximoTramiteNormal.findAll({
@@ -629,11 +630,11 @@ class TramiteController {
                 pro_id: req.body.pro_id
 
             },
-            logging: true,
+            logging: false,
             plain: true
         });
 
-        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: true, plain: true });
+        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: false, plain: true });
 
         const nodoInicio = nodo.dataValues.nod_inicio;
 
@@ -673,23 +674,23 @@ class TramiteController {
             nod_id_recebe: nodIdRecebe,
             tra_inicial: traInicial
         }, {
-            logging: true
+            logging: false
         });
             // auditoria de inserção
             // AuditoriaController.audita(req.body, req, 'I', tra_id);
             //
 
         // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
-        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: true });
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: false });
         if (!manifestacao) {
             return res.status(400).json({ error: 'Manifestação não encontrada' });
         }
         await manifestacao.update({
             man_tramitada: true
-        }, { logging: true });
+        }, { logging: false });
 
         // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
-        const processo = await Processo.findByPk(proId, { logging: true });
+        const processo = await Processo.findByPk(proId, { logging: false });
         // auditoria de edição
         // AuditoriaController.audita(
         //    processo._previousDataValues,
@@ -704,7 +705,7 @@ class TramiteController {
 
         // await processo.update({
         //    area_id: areaIdRecebe
-        // }, { logging: true });
+        // }, { logging: false });
 
         // verifica se é o último nó, se for já encerra o processo
         if (nodo.dataValues.nod_fim) {
@@ -742,7 +743,7 @@ class TramiteController {
         let traInicial = false;
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
         const proximoTramite = await VProximoTramiteNormal.findAll({
@@ -761,11 +762,11 @@ class TramiteController {
                 pro_id: req.body.pro_id
 
             },
-            logging: true,
+            logging: false,
             plain: true
         });
 
-        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: true, plain: true });
+        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: false, plain: true });
 
         const nodoInicio = nodo.dataValues.nod_inicio;
 
@@ -805,23 +806,23 @@ class TramiteController {
             nod_id_recebe: nodIdRecebe,
             tra_inicial: traInicial
         }, {
-            logging: true
+            logging: false
         });
             // auditoria de inserção
             // AuditoriaController.audita(req.body, req, 'I', tra_id);
             //
 
         // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
-        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: true });
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: false });
         if (!manifestacao) {
             return res.status(400).json({ error: 'Manifestação não encontrada' });
         }
         await manifestacao.update({
             man_tramitada: true
-        }, { logging: true });
+        }, { logging: false });
 
         // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
-        const processo = await Processo.findByPk(proId, { logging: true });
+        const processo = await Processo.findByPk(proId, { logging: false });
         // auditoria de edição
         // AuditoriaController.audita(
         //    processo._previousDataValues,
@@ -836,7 +837,7 @@ class TramiteController {
 
         // await processo.update({
         //    area_id: areaIdRecebe
-        // }, { logging: true });
+        // }, { logging: false });
 
         // verifica se é o último nó, se for já encerra o processo
         if (nodo.dataValues.nod_fim) {
@@ -874,7 +875,7 @@ class TramiteController {
         let traInicial = false;
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
         const proximoTramite = await VProximoTramiteNormal.findAll({
@@ -893,11 +894,11 @@ class TramiteController {
                 pro_id: req.body.pro_id
 
             },
-            logging: true,
+            logging: false,
             plain: true
         });
 
-        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: true, plain: true });
+        const nodo = await Nodo.findByPk(proximoTramite.dataValues.nod_id, { logging: false, plain: true });
 
         const nodoInicio = nodo.dataValues.nod_inicio;
 
@@ -937,23 +938,23 @@ class TramiteController {
             nod_id_recebe: nodIdRecebe,
             tra_inicial: traInicial
         }, {
-            logging: true
+            logging: false
         });
             // auditoria de inserção
             // AuditoriaController.audita(req.body, req, 'I', tra_id);
             //
 
         // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
-        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: true });
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, { logging: false });
         if (!manifestacao) {
             return res.status(400).json({ error: 'Manifestação não encontrada' });
         }
         await manifestacao.update({
             man_tramitada: true
-        }, { logging: true });
+        }, { logging: false });
 
         // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
-        const processo = await Processo.findByPk(proId, { logging: true });
+        const processo = await Processo.findByPk(proId, { logging: false });
         // auditoria de edição
         // AuditoriaController.audita(
         //    processo._previousDataValues,
@@ -968,7 +969,7 @@ class TramiteController {
 
         // await processo.update({
         //    area_id: areaIdRecebe
-        // }, { logging: true });
+        // }, { logging: false });
 
         // verifica se é o último nó, se for já encerra o processo
         if (nodo.dataValues.nod_fim) {
@@ -1022,7 +1023,7 @@ class TramiteController {
     async recebeOuNega(req, res) {
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
         const localizaTramite = await Tramite.findAll({
@@ -1035,12 +1036,12 @@ class TramiteController {
                 tra_recebimento: null,
                 area_id_recebe: req.body.area_id_recebe
             },
-            logging: true,
+            logging: false,
             plain: true
         });
 
-        const tramite = await Tramite.findByPk(localizaTramite.dataValues.tra_id, { logging: true, plain: true });
-        const processo = await Processo.findByPk(localizaTramite.dataValues.pro_id, { logging: true, plain: true });
+        const tramite = await Tramite.findByPk(localizaTramite.dataValues.tra_id, { logging: false, plain: true });
+        const processo = await Processo.findByPk(localizaTramite.dataValues.pro_id, { logging: false, plain: true });
 
         if (req.body.tipo === 'recebe') {
             await tramite.update({
@@ -1048,7 +1049,7 @@ class TramiteController {
                 tra_recebimento: dataHoraAtual.dataValues.data_hora_atual
             }, { logging: false });
             // verifica se é o último nó, se for já encerra o processo
-            const nodo = await Nodo.findByPk(tramite.dataValues.nod_id_recebe, { logging: true, plain: true });
+            const nodo = await Nodo.findByPk(tramite.dataValues.nod_id_recebe, { logging: false, plain: true });
             if (nodo.dataValues.nod_fim) {
                 await processo.update({
                     nod_id: tramite.dataValues.nod_id_recebe,

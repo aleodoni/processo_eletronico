@@ -15,7 +15,7 @@ class TipoManifestacaoController {
                 'tmn_publica',
                 [Sequelize.literal('CASE WHEN "tmn_publica" = true THEN \'Sim\' ELSE \'Não\' END'), 'publica']
             ],
-            logging: true
+            logging: false
         });
         return res.json(tiposManifestacao);
     }
@@ -31,7 +31,7 @@ class TipoManifestacaoController {
             where: [
                 { tmn_publica: true }
             ],
-            logging: true
+            logging: false
         });
         return res.json(tiposManifestacao);
     }

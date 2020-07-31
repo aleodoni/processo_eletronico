@@ -6,13 +6,13 @@ class UpdateSetorService {
     }
 
     async execute({ id, set_nome, set_sigla, set_id_area, set_ativo, set_tipo }) {
-        const setor = await this.setorModel.findByPk(id, { logging: true });
+        const setor = await this.setorModel.findByPk(id, { logging: false });
 
         if (!setor) {
             throw new AppError('Setor não encontrado.');
         }
 
-        const updatedSetor = await setor.update({ set_nome, set_sigla, set_id_area, set_ativo, set_tipo }, { logging: true });
+        const updatedSetor = await setor.update({ set_nome, set_sigla, set_id_area, set_ativo, set_tipo }, { logging: false });
 
         return updatedSetor;
     }

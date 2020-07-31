@@ -6,13 +6,13 @@ class UpdateGeneroService {
     }
 
     async execute({ id, gen_nome }) {
-        const genero = await this.generoModel.findByPk(id, { logging: true });
+        const genero = await this.generoModel.findByPk(id, { logging: false });
 
         if (!genero) {
             throw new AppError('Gênero não encontrado.');
         }
 
-        const updatedGenero = await genero.update({ gen_nome }, { logging: true });
+        const updatedGenero = await genero.update({ gen_nome }, { logging: false });
         return updatedGenero;
     }
 }

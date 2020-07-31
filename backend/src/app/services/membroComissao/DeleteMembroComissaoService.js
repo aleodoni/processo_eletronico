@@ -6,7 +6,7 @@ class DeleteMembroComissaoService {
     }
 
     async execute({ mco_id }) {
-        const membroComissao = await this.membroComissaoModel.findOne({ where: { mco_id: mco_id } }, { logging: true });
+        const membroComissao = await this.membroComissaoModel.findOne({ where: { mco_id: mco_id } }, { logging: false });
 
         if (!membroComissao) {
             throw new AppError('Membro não encontrada.');

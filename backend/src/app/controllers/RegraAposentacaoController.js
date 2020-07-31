@@ -42,7 +42,7 @@ class RegraAposentacaoController {
             return res.status(400).json({ error: 'Regra não encontrada' });
         }
         console.log(req.body);
-        await RegraAposentacao.update(req.body, { logging: true });
+        await RegraAposentacao.update(req.body, { logging: false });
         return res.json(regra);
     }
 

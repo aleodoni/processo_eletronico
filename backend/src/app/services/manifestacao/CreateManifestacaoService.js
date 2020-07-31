@@ -52,7 +52,7 @@ class CreateManifestacaoService {
             const transaction = await ConnectionHelper.getTransaction();
             const dataHoraAtual = await this.dataHoraAtualModel.findAll({
                 attributes: ['data_hora_atual'],
-                logging: true,
+                logging: false,
                 plain: true
             }, { transaction: transaction });
             man_data = dataHoraAtual.dataValues.data_hora_atual;

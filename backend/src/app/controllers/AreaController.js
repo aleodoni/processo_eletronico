@@ -26,7 +26,7 @@ class AreaController {
 
             order: ['set_nome'],
             attributes: ['set_id', 'set_nome'],
-            logging: true
+            logging: false
         });
         return res.json(areas);
     }
@@ -36,7 +36,7 @@ class AreaController {
             where: { set_tipo: 'N' },
             order: ['set_nome'],
             attributes: ['set_id', 'set_nome'],
-            logging: true
+            logging: false
         });
         return res.json(areas);
     }

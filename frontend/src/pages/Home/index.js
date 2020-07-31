@@ -66,7 +66,7 @@ function Home() {
 
     const carregaGridSigiloso = useCallback(() => {
         const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
-        const login = sessionStorage.getItem('login');
+        const login = sessionStorage.getItem('usuario');
         axios({
             method: 'GET',
             url: `/processos-sigiloso/${areaId}/${login}`,

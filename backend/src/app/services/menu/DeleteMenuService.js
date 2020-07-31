@@ -7,7 +7,7 @@ class DeleteMenuService {
 
     async execute({ id }) {
         // Verifica se id existe
-        const menu = await this.menuModel.findByPk(id, { logging: true });
+        const menu = await this.menuModel.findByPk(id, { logging: false });
 
         if (!menu) {
             throw new AppError('Menu não encontrado');
@@ -15,7 +15,7 @@ class DeleteMenuService {
         //
 
         await menu.destroy({ where: { men_id: id } }, {
-            logging: true
+            logging: false
         });
 
         return menu;

@@ -6,7 +6,7 @@ class DeleteSigiloService {
     }
 
     async execute({ sig_id }) {
-        const sigilo = await this.sigiloModel.findOne({ where: { sig_id: sig_id } }, { logging: true });
+        const sigilo = await this.sigiloModel.findOne({ where: { sig_id: sig_id } }, { logging: false });
 
         if (!sigilo) {
             throw new AppError('Sigilo não encontrada.');
