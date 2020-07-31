@@ -33,48 +33,56 @@ class CriaProcessoController {
                 pes_matricula: req.params.matricula
             }
         });
-
         return res.json(dadosPessoas);
     }
 
     async dadosPessoaComissao(req, res) {
-        let areaId, areaNome, loginMembro;
-        const dadosPessoasComissao = await VDadosPessoa.findAll({
-            attributes: ['pes_matricula', 'pes_nome'],
-            logging: false,
-            plain: true,
-            where: {
-                pes_matricula: req.params.matricula
-            }
-        });
-        if (dadosPessoasComissao !== null) {
-            const setorPessoaComissao = await Lotacao.findByPk(dadosPessoasComissao.dataValues.pes_matricula, { logging: false });
-            if (!setorPessoaComissao) {
-                return res.status(400).json({ error: 'Id da pessoa da comissão não encontrada' });
-            }
-            loginMembro = setorPessoaComissao.pes_login;
-            const idSetor = setorPessoaComissao.set_id;
-            const setor = await Setor.findByPk(idSetor, { logging: false });
-            if (!setor) {
-                return res.status(400).json({ error: 'Setor da pessoa da comissão não encontrada' });
-            }
-            areaId = setor.set_id_area;
-            const area = await Area.findByPk(areaId, { logging: false });
-            if (!area) {
-                return res.status(400).json({ error: 'Área da pessoa da comissão não encontrada' });
-            }
-            areaNome = area.set_nome;
-        } else {
-            return res.send(null);
-        }
-        return res.json(
-            {
-                matricula: dadosPessoasComissao.dataValues.pes_matricula,
-                nome: dadosPessoasComissao.dataValues.pes_nome,
-                areaId: areaId,
-                areaNome: areaNome,
-                login: loginMembro
+        try {
+            const dadosPessoasComissao = await VDadosPessoa.findAll({
+                attributes: ['pes_matricula', 'pes_nome'],
+                logging: true,
+                plain: true,
+                where: {
+                    pes_matricula: req.params.matricula
+                }
             });
+
+            if (dadosPessoasComissao !== null) {
+                const setorPessoaComissao = await Lotacao.findByPk(dadosPessoasComissao.dataValues.pes_matricula.toString(), { logging: false });
+                if (!setorPessoaComissao) {
+                    return res.status(400).json({ error: 'Id da pessoa da comissão não encontrada' });
+                }
+
+                const loginMembro = setorPessoaComissao.pes_login;
+                const idSetor = setorPessoaComissao.set_id;
+                const setor = await Setor.findByPk(idSetor, { logging: false });
+                if (!setor) {
+                    return res.status(400).json({ error: 'Setor da pessoa da comissão não encontrada' });
+                }
+
+                const areaId = setor.set_id_area;
+
+                const area = await Area.findByPk(areaId, { logging: false });
+                if (!area) {
+                    return res.status(400).json({ error: 'Área da pessoa da comissão não encontrada' });
+                }
+
+                const areaNome = area.set_nome;
+
+                return res.json(
+                    {
+                        matricula: dadosPessoasComissao.dataValues.pes_matricula,
+                        nome: dadosPessoasComissao.dataValues.pes_nome,
+                        areaId: areaId,
+                        areaNome: areaNome,
+                        login: loginMembro
+                    });
+            } else {
+                return res.send(null);
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     async processosDescontoFolhaDeterminacaoJudicial(req, res) {
@@ -118,7 +126,8 @@ class CriaProcessoController {
     async comboMembrosComissaoProcessante(req, res) {
         const membrosComissaoProcessante = await VMembrosComissao.findAll({
             where: {
-                area_id: 2000
+                area_id: 2000,
+                mco_ativo: true
             },
             attributes: ['mco_id', 'area_id', 'mco_matricula', 'mco_nome', 'mco_login', 'set_nome'],
             logging: true
@@ -240,9 +249,7 @@ class CriaProcessoController {
         } else {
             return res.status(400).json({ error: 'Processo sem fluxo. Cadastre um fluxo primeiro.' });
         }
-
         console.log(JSON.stringify(req.body, null, 4));
-
         const {
             pro_id,
             tpr_id,
@@ -276,7 +283,6 @@ class CriaProcessoController {
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', pro_id);
         //
-
         // se tiver revisão de desconto de pensão alimentícia grava na tabela
         // de processo_origem
         if (req.body.pro_pensao !== null && req.body.pro_pensao !== undefined) {
@@ -285,7 +291,6 @@ class CriaProcessoController {
             });
             console.log(JSON.stringify(processoOrigem, null, 4));
         }
-
         // se for um recurso de processo grava na tabela de processo_origem
         if (req.body.pro_recurso === true) {
             const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: req.body.pro_codigo_recurso, pro_id_atual: pro_id }, {
@@ -293,7 +298,6 @@ class CriaProcessoController {
             });
             console.log(JSON.stringify(processoOrigem, null, 4));
         }
-
         // grava na tabela arquivo a capa do processo
         const TIPO_DOCUMENTO_CAPA_PROCESSO = 38;
         const arquivo = await Arquivo.create({
@@ -310,11 +314,9 @@ class CriaProcessoController {
         }, {
             logging: true
         });
-
         // cria o arquivo pdf
         const criaCapa = new CriaCapaService(Processo);
         await criaCapa.execute(arquivo.arq_id, pro_id, tipoProcesso.dataValues.tpr_nome);
-
         return res.json({
             pro_id,
             tpr_id,
@@ -364,7 +366,6 @@ class CriaProcessoController {
                 tpr_id: req.body.tpr_id
             }
         });
-
         const nodo = await Nodo.findAll({
             attributes: ['nod_id', 'flu_id', 'nod_inicio'],
             logging: false,
@@ -374,12 +375,12 @@ class CriaProcessoController {
                 nod_inicio: true
             }
         });
+
         if (nodo !== null) {
             req.body.nod_id = nodo.dataValues.nod_id;
         } else {
             return res.status(400).json({ error: 'Processo sem fluxo. Cadastre um fluxo primeiro.' });
         }
-
         const {
             pro_id,
             tpr_id,
@@ -420,6 +421,7 @@ class CriaProcessoController {
                         tpr_id: 16
                     }
                 });
+
                 if (localizaProcessoOrigem !== null) {
                     const processoOrigem = await ProcessoOrigem.create({ pro_id_pai: localizaProcessoOrigem.dataValues.pro_id, pro_id_atual: pro_id }, {
                         logging: true
@@ -434,7 +436,6 @@ class CriaProcessoController {
         // grava na tabela spa2.nome_pas_pad
         const arrayNomes = req.body.nomes_processo;
         if (arrayNomes.length > 0) {
-            console.log(arrayNomes);
             for (const key in arrayNomes) {
                 try {
                     await NomePasPad.create({
@@ -453,10 +454,8 @@ class CriaProcessoController {
                 }
             }
         }
-
         // grava na tabela spa2.comissao_processante
         const arrayMembros = req.body.membros_comissao;
-        console.log(arrayMembros);
         for (const key in arrayMembros) {
             try {
                 // localiza o membro
@@ -475,7 +474,6 @@ class CriaProcessoController {
                 if (arrayMembros[key].bCargo) {
                     cargo = true;
                 }
-
                 await ComissaoProcessante.create({
                     cop_id: null,
                     mco_id: membroComissao.dataValues.mco_id,
@@ -488,7 +486,6 @@ class CriaProcessoController {
                 console.log(e);
             }
         }
-
         // grava na tabela arquivo a capa do processo
         const TIPO_DOCUMENTO_CAPA_PROCESSO = 38;
         const arquivo = await Arquivo.create({
@@ -505,11 +502,9 @@ class CriaProcessoController {
         }, {
             logging: true
         });
-
         // cria o arquivo pdf
         const criaCapa = new CriaCapaService(Processo);
         await criaCapa.execute(arquivo.arq_id, pro_id, tipoProcesso.dataValues.tpr_nome);
-
         return res.json({
             pro_id,
             tpr_id,
@@ -539,10 +534,13 @@ class CriaProcessoController {
             logging: true,
             plain: true
         });
+
         if (!processo) {
             return res.status(400).json({ error: 'Processo não encontrado' });
         }
+
         const tipoProcesso = await TipoProcesso.findByPk(processo.tpr_id, { logging: false });
+
         if (!tipoProcesso) {
             return res.status(400).json({ error: 'Tipo de processo não encontrado' });
         }
@@ -553,6 +551,7 @@ class CriaProcessoController {
             usu_finalizador: req.body.usuario,
             set_id_finalizador: req.body.areaId
         }, { logging: false });
+
         return res.json(prazo);
     }
 
@@ -563,9 +562,11 @@ class CriaProcessoController {
             logging: true,
             plain: true
         });
+
         if (!processo) {
             return res.status(400).json({ error: 'Processo não encontrado' });
         }
+
         if (req.body.decisao === 'Concedido') {
             await processo.update({
                 pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,
@@ -573,6 +574,7 @@ class CriaProcessoController {
                 set_id_finalizador: req.body.areaId
             }, { logging: false });
         }
+
         if (req.body.decisao === 'Negado') {
             await processo.update({
                 pro_encerramento: dataHoraAtual.dataValues.data_hora_atual,
@@ -581,8 +583,8 @@ class CriaProcessoController {
                 pro_recurso: true
             }, { logging: false });
         }
-
         return res.json(processo);
     }
 }
+
 export default new CriaProcessoController();

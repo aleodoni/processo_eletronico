@@ -1,41 +1,37 @@
 import Sequelize, { Model } from 'sequelize';
 
-class VMembrosComissao extends Model {
+class VSigilo extends Model {
     static init(sequelize) {
         super.init(
             {
-                mco_id: {
+                sig_id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true
                 },
-                mco_matricula: {
+                area_id: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false
+                },
+                tpr_id: {
+                    type: Sequelize.INTEGER,
+                    allowNull: false
+                },
+                tpr_nome: {
                     type: Sequelize.STRING,
                     allowNull: false
                 },
-                mco_nome: {
-                    type: Sequelize.STRING,
-                    allowNull: false
-                },
-                mco_login: {
+                sig_login: {
                     type: Sequelize.STRING,
                     allowNull: false
                 },
                 set_nome: {
                     type: Sequelize.STRING,
                     allowNull: false
-                },
-                mco_ativo: {
-                    type: Sequelize.BOOLEAN,
-                    allowNull: false
-                },
-                ativo: {
-                    type: Sequelize.STRING,
-                    allowNull: false
                 }
 
             },
             {
-                tableName: 'v_membros_comissao',
+                tableName: 'v_sigilo',
                 schema: 'spa2',
                 sequelize,
                 operatorsAliases: false
@@ -46,4 +42,4 @@ class VMembrosComissao extends Model {
     }
 }
 
-export default VMembrosComissao;
+export default VSigilo;

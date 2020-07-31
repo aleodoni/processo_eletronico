@@ -53,13 +53,9 @@ export const Main = styled.main`
 export const Erro = styled.div`
     font-size: 14px;
     color: red;
-    padding-bottom: 10px;
-`;
-
-export const ContainerSelecione = styled.div`
-    display: grid;
-    grid-template-columns: 740px;
-    margin-bottom: 10px;
+    padding-bottom: 5px;
+    margin-left: 5px;
+    margin-top: 3px;
 `;
 
 export const Titulo = styled.div`
@@ -78,9 +74,9 @@ export const Titulo = styled.div`
     }
 `;
 
-export const ContainerNomeFluxo = styled.div`
+export const ContainerNomeComissao = styled.div`
     display: grid;
-    grid-template-columns: 820px 210px;
+    grid-template-columns: 720px 250px;
     margin-bottom: 10px;
     fieldset {
         border: 1px solid #ffffff;
@@ -97,19 +93,26 @@ export const ContainerNomeFluxo = styled.div`
     }
 `;
 
-export const ContainerCamposNodos = styled.div`
+export const ContainerCamposArea = styled.div`
     display: grid;
-    grid-template-columns: 740px 140px 140px;
+    grid-template-columns: 740px;
     margin-bottom: 10px;
 `;
 
-export const ContainerCamposNodos1 = styled.div`
+export const ContainerSelecione = styled.div`
     display: grid;
-    grid-template-columns: 120px 80px 180px 180px 180px 180px 180px;
+    grid-template-columns: 740px;
     margin-bottom: 10px;
 `;
-export const ContainerCamposNodos2 = styled.div`
+
+export const ContainerCamposMembro = styled.div`
     display: grid;
-    grid-template-columns: 180px 180px 180px 180px 250px;
+    grid-template-columns: 115px 625px;
+    margin-bottom: 10px;
+`;
+
+export const ContainerCamposMembroDados = styled.div`
+    display: grid;
+    grid-template-columns: 320px 150px;
     margin-bottom: 10px;
 `;

@@ -55,10 +55,13 @@ import ComissaoProcessante from '../app/models/ComissaoProcessante';
 import VMembrosComissao from '../app/models/VMembrosComissao';
 import MembroComissao from '../app/models/MembroComissao';
 import NomePasPad from '../app/models/NomePasPad';
+import Sigilo from '../app/models/Sigilo';
+import VSigilo from '../app/models/VSigilo';
 import databaseConfig from '../config/database';
 
 import ConnectionHelper from '../app/helpers/ConnectionHelper';
 import VDadosMembrosComissao from '../app/models/VDadosMembrosComissao';
+import VProcessosSigiloso from '../app/models/VProcessosSigiloso';
 
 const models = [
     Autorizacao,
@@ -117,7 +120,10 @@ const models = [
     NomePasPad,
     VMembrosComissao,
     VDadosProcessoPasPad,
-    VDadosMembrosComissao
+    VDadosMembrosComissao,
+    VProcessosSigiloso,
+    Sigilo,
+    VSigilo
 ];
 
 class Database {

@@ -40,6 +40,12 @@ export const Container = styled.div`
     }
 `;
 
+export const ContainerSelecione = styled.div`
+    display: grid;
+    grid-template-columns: 740px;
+    margin-bottom: 10px;
+`;
+
 export const Titulo = styled.div`
     display: grid;
     grid-template-columns: 1600px;

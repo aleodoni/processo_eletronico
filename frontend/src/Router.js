@@ -21,9 +21,12 @@ import TipoManifestacao from './pages/TipoManifestacao';
 import Setor from './pages/Setor';
 import Lotacao from './pages/Lotacao';
 import Nodo from './pages/Nodo';
+import MembroComissao from './pages/MembroComissao';
+import Sigilo from './pages/Sigilo';
 import ProximoTramite from './pages/ProximoTramite';
 import RegraAposentacao from './pages/RegraAposentacao';
 import CriarManifestacao from './pages/CriarManifestacao';
+import CriarManifestacaoPasPad from './pages/CriarManifestacaoPasPad';
 import CriarManifestacaoExecutiva from './pages/CriarManifestacaoExecutiva';
 import CriarManifestacaoVisto from './pages/CriarManifestacaoVisto';
 import CriarManifestacaoCiencia from './pages/CriarManifestacaoCiencia';
@@ -66,6 +69,8 @@ const Routes = () => (
         <PrivateRoute exact path="/areas-menu" component={AreaMenu} />
         <PrivateRoute exact path="/menus" component={TelaMenu} />
         <PrivateRoute exact path="/nodos" component={Nodo} />
+        <PrivateRoute exact path="/membros-comissao" component={MembroComissao} />
+        <PrivateRoute exact path="/sigilos" component={Sigilo} />
         <PrivateRoute exact path="/razao" component={RazaoTramite} />
         <PrivateRoute exact path="/setores" component={Setor} />
         <PrivateRoute exact path="/lotacoes" component={Lotacao} />
@@ -118,6 +123,11 @@ const Routes = () => (
             exact
             path="/manifestacao-cria-parecer-projuris-aposentadoria/:proId"
             component={CriarManifestacaoParecerProjurisAposentadoria}
+        />
+        <PrivateRoute
+            exact
+            path="/manifestacao-cria-pas-pad/:proId"
+            component={CriarManifestacaoPasPad}
         />
         <PrivateRoute exact path="/tramita/:id" component={Tramite} />
         <PrivateRoute exact path="/tipos-documento" component={TipoDocumento} />

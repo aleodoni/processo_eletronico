@@ -32,6 +32,7 @@ function Home() {
 
     const history = useHistory();
     const [gridProcessosArea, setGridProcessosArea] = useState([]);
+    const [gridProcessosSigiloso, setGridProcessosSigiloso] = useState([]);
     const [erro, setErro] = useState('');
     const [modalProcesso, setModalProcesso] = useState(false);
     const [botaoPasPadVisivel, setBotaoPasPadVisivel] = useState(false);
@@ -63,6 +64,24 @@ function Home() {
             });
     }, []);
 
+    const carregaGridSigiloso = useCallback(() => {
+        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        const login = sessionStorage.getItem('login');
+        axios({
+            method: 'GET',
+            url: `/processos-sigiloso/${areaId}/${login}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setGridProcessosSigiloso(res.data);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }, []);
+
     function verificaPadPas(areaId) {
         if (areaId === constantes.AREA_PRESIDENCIA) {
             setBotaoPasPadVisivel(true);
@@ -72,7 +91,12 @@ function Home() {
     useEffect(() => {
         verificaPadPas(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         carregaGridArea();
-    }, [carregaGridArea]);
+        carregaGridSigiloso();
+    }, [carregaGridArea, carregaGridSigiloso]);
+
+    function criaManifestacaoPasPad(id) {
+        history.push(`/manifestacao-cria-pas-pad/${id}`);
+    }
 
     function criaManifestacao(
         id,
@@ -148,6 +172,107 @@ function Home() {
                         </ButtonAcessoRapido>
                     </ContainerBotoes>
                     <hr />
+                    <ContainerProcessos>
+                        {gridProcessosSigiloso.length > 0 ? (
+                            <div>
+                                <p>Processo(s) sigiloso(s):</p>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Tipo</th>
+                                            <th />
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {gridProcessosSigiloso.map(proc => (
+                                            <tr key={proc.pro_id}>
+                                                <td style={colunaCodigoProcesso}>
+                                                    <BotaoComoLink
+                                                        type="button"
+                                                        onClick={() =>
+                                                            abreModalProcesso(proc.pro_id)
+                                                        }>
+                                                        {proc.pro_codigo}
+                                                    </BotaoComoLink>
+                                                </td>
+                                                <td>{proc.tpr_nome}</td>
+                                                <td style={colunaManifestacao}>
+                                                    <>
+                                                        {(() => {
+                                                            switch (proc.alerta) {
+                                                                case 1:
+                                                                    return (
+                                                                        <BotaoCriaManifestacao
+                                                                            name="btnCriaManifestacaoPasPad"
+                                                                            cor="vermelho"
+                                                                            corHover="vermelho-claro"
+                                                                            onClick={() => {
+                                                                                criaManifestacaoPasPad(
+                                                                                    proc.pro_id
+                                                                                );
+                                                                            }}>
+                                                                            <FaFileAlt />
+                                                                            Manifestação
+                                                                        </BotaoCriaManifestacao>
+                                                                    );
+                                                                case 2:
+                                                                    return (
+                                                                        <BotaoCriaManifestacao
+                                                                            name="btnCriaManifestacaoPasPad"
+                                                                            cor="laranja"
+                                                                            corHover="laranja-claro"
+                                                                            onClick={() => {
+                                                                                criaManifestacaoPasPad(
+                                                                                    proc.pro_id
+                                                                                );
+                                                                            }}>
+                                                                            <FaFileAlt />
+                                                                            Manifestação
+                                                                        </BotaoCriaManifestacao>
+                                                                    );
+                                                                case 3:
+                                                                    return (
+                                                                        <BotaoCriaManifestacao
+                                                                            name="btnCriaManifestacaoPasPad"
+                                                                            cor="azul"
+                                                                            corHover="azul-claro"
+                                                                            onClick={() => {
+                                                                                criaManifestacaoPasPad(
+                                                                                    proc.pro_id
+                                                                                );
+                                                                            }}>
+                                                                            <FaFileAlt />
+                                                                            Manifestação
+                                                                        </BotaoCriaManifestacao>
+                                                                    );
+                                                                default:
+                                                                    return (
+                                                                        <BotaoCriaManifestacao
+                                                                            name="btnCriaManifestacaoPasPad"
+                                                                            cor="azul"
+                                                                            corHover="azul-claro"
+                                                                            onClick={() => {
+                                                                                criaManifestacaoPasPad(
+                                                                                    proc.pro_id
+                                                                                );
+                                                                            }}>
+                                                                            <FaFileAlt />
+                                                                            Manifestação
+                                                                        </BotaoCriaManifestacao>
+                                                                    );
+                                                            }
+                                                        })()}
+                                                    </>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : null}
+                    </ContainerProcessos>
+                    <br />
                     <ContainerProcessos>
                         {gridProcessosArea.length > 0 ? (
                             <div>

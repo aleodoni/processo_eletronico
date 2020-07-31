@@ -7,6 +7,7 @@ import * as caminhos from '../../config/arquivos';
 import Arquivo from '../models/Arquivo';
 import VProcessosPessoais from '../models/VProcessosPessoais';
 import VProcessosArea from '../models/VProcessosArea';
+import VProcessosSigiloso from '../models/VProcessosSigiloso';
 import VDecisaoPessoal from '../models/VDecisaoPessoal';
 import VDadosMembrosComissao from '../models/VDadosMembrosComissao';
 import NomePasPad from '../models/NomePasPad';
@@ -300,6 +301,38 @@ class DadosProcessoController {
             }
         });
         return res.json(dadosProcessoArea);
+    }
+
+    async processosSigiloso(req, res) {
+        const dadosProcessoSigiloso = await VProcessosSigiloso.findAll({
+            attributes: [
+                'pro_id',
+                'pro_codigo',
+                'pro_nome',
+                'tpr_nome',
+                'area_id',
+                'usu_autuador',
+                'nod_aval_executiva',
+                'tpr_pessoal',
+                'pessoal',
+                'nod_fim',
+                'nod_decisao',
+                'nod_dias_prazo',
+                'alerta',
+                'nod_ciencia',
+                'nod_averbacao',
+                'nod_ciencia_averbacao',
+                'nod_aval_horario',
+                'nod_contagem_tempo',
+                'nod_ciencia_calculo',
+                'nod_parecer_projuris_aposentadoria'
+            ],
+            logging: true,
+            where: {
+                area_id: req.params.areaId
+            }
+        });
+        return res.json(dadosProcessoSigiloso);
     }
 
     async decisaoPessoal(req, res) {

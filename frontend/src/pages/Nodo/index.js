@@ -12,6 +12,7 @@ import {
     ContainerNomeFluxo,
     ContainerCamposNodos,
     ContainerCamposNodos1,
+    ContainerSelecione,
     ContainerCamposNodos2,
     Titulo,
 } from './styles';
@@ -24,7 +25,6 @@ import Limpar from '../../components/layout/button/Limpar';
 import ConsultarOutroFluxo from '../../components/layout/button/ConsultarOutroFluxo';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
-import FormLine from '../../components/layout/FormLine';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 import NoInicio from '../../components/system/select/NoInicio';
 import NoFim from '../../components/system/select/NoFim';
@@ -421,14 +421,14 @@ function Nodo() {
                         <Input name="nodId" type="hidden" />
                         <Input name="fluId" type="hidden" />
                         {fluxosVisiveis ? (
-                            <FormLine>
+                            <ContainerSelecione>
                                 <Select
                                     name="selectFluxo"
                                     label="Selecione o fluxo"
                                     options={fluxos}
                                     onChange={handleFluId}
                                 />
-                            </FormLine>
+                            </ContainerSelecione>
                         ) : null}
                         {nomeFluxosVisiveis ? (
                             <ContainerNomeFluxo>
