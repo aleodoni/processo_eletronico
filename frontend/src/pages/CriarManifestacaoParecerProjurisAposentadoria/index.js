@@ -33,14 +33,14 @@ import { download } from '../../utils/downloadArquivo';
 function CriarManifestacaoParecerProjurisAposentadoria(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
-        proId: props.match.params.proId,
+        proId: match.params.proId,
         manVistoExecutiva: '',
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
-    const [proIdModal, setProId] = useState(-1);
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
     const [proCodigo, setProCodigo] = useState('');
@@ -51,6 +51,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
     const [manParecerProjurisAposentadoria, setManParecerProjurisAposentadoria] = useState('-1');
+    const [processoModal, setProcessoModal] = useState([]);
 
     const [dadosTramite, setDadosTramite] = useState([]);
 
@@ -66,8 +67,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         setTpdId(e.target.value);
     }
 
-    function abreModalProcesso(id) {
-        setProId(id);
+    function abreModalProcesso() {
         setModalProcesso(true);
     }
 
@@ -367,6 +367,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                     setProCodigo(processo[i].pro_codigo);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
+                    setProcessoModal(processo[i]);
                 }
             })
             .catch(() => {
@@ -559,9 +560,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
                     <span>
-                        <LinkProcesso
-                            type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                        <LinkProcesso type="button" onClick={() => abreModalProcesso()}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
@@ -652,7 +651,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                     <ModalProcesso
                         fechaModalProcesso={fechaModalProcesso}
                         modalProcesso={modalProcesso}
-                        proId={proIdModal}
+                        processo={processoModal}
                     />
 
                     {anexos.length > 0 ? (

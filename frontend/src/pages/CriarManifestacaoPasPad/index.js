@@ -16,7 +16,7 @@ import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
 import Finalizar from '../../components/layout/button/Finalizar';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
-import ModalProcesso from '../../components/ModalProcesso';
+import ModalProcessoPasPad from '../../components/ModalProcessoPasPad';
 import {
     Container,
     Titulo,
@@ -41,7 +41,6 @@ function CriarManifestacaoPasPad(props) {
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
     const [nodFim, setNodFim] = useState(false);
-    const [proIdModal, setProId] = useState(-1);
     const [tmnId, setTmnId] = useState('-1');
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
@@ -52,7 +51,8 @@ function CriarManifestacaoPasPad(props) {
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
-    const [modalProcesso, setModalProcesso] = useState(false);
+    const [modalProcessoPasPad, setModalProcessoPasPad] = useState(false);
+    const [processoPasPad, setProcessoPasPad] = useState([]);
 
     const [dadosTramite, setDadosTramite] = useState([]);
 
@@ -72,13 +72,12 @@ function CriarManifestacaoPasPad(props) {
         setTpdId(e.target.value);
     }
 
-    function abreModalProcesso(id) {
-        setProId(id);
-        setModalProcesso(true);
+    function abreModalProcessoPasPad() {
+        setModalProcessoPasPad(true);
     }
 
-    function fechaModalProcesso() {
-        setModalProcesso(false);
+    function fechaModalProcessoPasPad() {
+        setModalProcessoPasPad(false);
     }
 
     function abreModalExcluir(id) {
@@ -357,6 +356,7 @@ function CriarManifestacaoPasPad(props) {
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
                     setNodFim(processo[i].nod_fim);
+                    setProcessoPasPad(processo[i]);
                 }
             })
             .catch(() => {
@@ -521,7 +521,7 @@ function CriarManifestacaoPasPad(props) {
                     <span>
                         <LinkProcesso
                             type="button"
-                            onClick={() => abreModalProcesso(match.params.proId)}>
+                            onClick={() => abreModalProcessoPasPad(match.params.proId)}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
@@ -611,10 +611,10 @@ function CriarManifestacaoPasPad(props) {
                         tramita={insereTramite}
                         dados={dadosTramite}
                     />
-                    <ModalProcesso
-                        fechaModalProcesso={fechaModalProcesso}
-                        modalProcesso={modalProcesso}
-                        proId={proIdModal}
+                    <ModalProcessoPasPad
+                        fechaModalProcessoPasPad={fechaModalProcessoPasPad}
+                        modalProcessoPasPad={modalProcessoPasPad}
+                        processoPasPad={processoPasPad}
                     />
 
                     {anexos.length > 0 ? (

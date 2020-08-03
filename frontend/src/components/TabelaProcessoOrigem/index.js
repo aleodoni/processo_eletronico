@@ -28,6 +28,7 @@ function TabelaProcessoOrigem({ proId }) {
             },
         })
             .then(res => {
+                alert(JSON.stringify(res.data, null, 4));
                 const processoOrigem = [];
                 for (let i = 0; i < res.data.length; i++) {
                     processoOrigem.push({
@@ -36,7 +37,18 @@ function TabelaProcessoOrigem({ proId }) {
                         tpr_nome: res.data[i].tpr_nome,
                     });
                 }
-                setRows(processoOrigem);
+                if (processoOrigem.length > 0) {
+                    processoOrigem.map(linha => (
+                        <span>
+                            <LinkProcesso
+                                type="button"
+                                onClick={() => abreModalProcesso(linha.pro_id_origem)}>
+                                {linha.processo_origem} - {linha.tpr_nome}
+                            </LinkProcesso>
+                        </span>
+                    ));
+                }
+                // setRows(processoOrigem);
             })
             .catch(() => {
                 console.log('Erro ao carregar processo de origem.');

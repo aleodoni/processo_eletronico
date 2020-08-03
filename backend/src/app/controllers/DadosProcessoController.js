@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import VDadosProcesso from '../models/VDadosProcesso';
+import MembroComissao from '../models/MembroComissao';
 import VDadosProcessoPasPad from '../models/VDadosProcessoPasPad';
 import * as caminhos from '../../config/arquivos';
 import Arquivo from '../models/Arquivo';
@@ -94,7 +95,8 @@ class DadosProcessoController {
                 'flu_id',
                 'flu_nome',
                 'area_atual_processo',
-                'visualizacao'
+                'visualizacao',
+                'nod_fim'
             ],
             logging: false,
             where: {
@@ -305,6 +307,7 @@ class DadosProcessoController {
     }
 
     async processosSigiloso(req, res) {
+        let areaId = req.params.areaId;
         const login = req.params.login;
         const connection = ConnectionHelper.getConnection();
         const sql = "select spa2.verifica_sigilo('" + login + "')";
@@ -316,6 +319,22 @@ class DadosProcessoController {
             }
         );
         if (verificaSigilo.verifica_sigilo) {
+            // se é membro da comissão processante abre como esta "área"
+            const membroComissao = await MembroComissao.findOne({
+                attributes: [
+                    'mco_login',
+                    'area_id'
+                ],
+                logging: false,
+                where: {
+                    mco_login: login
+                }
+            });
+
+            if (membroComissao) {
+                areaId = membroComissao.area_id;
+            }
+
             const dadosProcessoSigiloso = await VProcessosSigiloso.findAll({
                 attributes: [
                     'pro_id',
@@ -341,7 +360,7 @@ class DadosProcessoController {
                 ],
                 logging: false,
                 where: {
-                    area_id: req.params.areaId
+                    area_id: areaId
                 }
             });
             return res.json(dadosProcessoSigiloso);

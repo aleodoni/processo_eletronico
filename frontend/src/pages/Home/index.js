@@ -18,6 +18,7 @@ import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapid
 import DefaultLayout from '../_layouts/default';
 import axios from '../../configs/axiosConfig';
 import ModalProcesso from '../../components/ModalProcesso';
+import ModalProcessoPasPad from '../../components/ModalProcessoPasPad';
 
 function Home() {
     const colunaCodigoProcesso = {
@@ -35,16 +36,60 @@ function Home() {
     const [gridProcessosSigiloso, setGridProcessosSigiloso] = useState([]);
     const [erro, setErro] = useState('');
     const [modalProcesso, setModalProcesso] = useState(false);
+    const [modalProcessoPasPad, setModalProcessoPasPad] = useState(false);
+    const [processoPasPad, setProcessoPasPad] = useState([]);
+
     const [botaoPasPadVisivel, setBotaoPasPadVisivel] = useState(false);
-    const [proId, setProId] = useState(-1);
+    const [processoModal, setProcessoModal] = useState([]);
+    const [processoModalPasPad, setProcessoModalPasPad] = useState([]);
 
     function abreModalProcesso(id) {
-        setProId(id);
-        setModalProcesso(true);
+        axios({
+            method: 'GET',
+            url: `/ver-processo/${id}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const processo = res.data;
+                for (let i = 0; i < processo.length; i++) {
+                    setProcessoModal(processo[i]);
+                    setModalProcesso(true);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao retornar dados do processo.');
+            });
     }
 
     function fechaModalProcesso() {
         setModalProcesso(false);
+    }
+
+    function abreModalProcessoPasPad(id) {
+        axios({
+            method: 'GET',
+            url: `/ver-processo-pas-pad/${id}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const processo = res.data;
+                alert('1');
+                for (let i = 0; i < processo.length; i++) {
+                    setProcessoModalPasPad(processo[i]);
+                    setModalProcessoPasPad(true);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao retornar dados do processo.');
+            });
+    }
+
+    function fechaModalProcessoPasPad() {
+        setModalProcessoPasPad(false);
     }
 
     const carregaGridArea = useCallback(() => {
@@ -191,7 +236,7 @@ function Home() {
                                                     <BotaoComoLink
                                                         type="button"
                                                         onClick={() =>
-                                                            abreModalProcesso(proc.pro_id)
+                                                            abreModalProcessoPasPad(proc.pro_id)
                                                         }>
                                                         {proc.pro_codigo}
                                                     </BotaoComoLink>
@@ -416,7 +461,12 @@ function Home() {
                     <ModalProcesso
                         fechaModalProcesso={fechaModalProcesso}
                         modalProcesso={modalProcesso}
-                        proId={proId}
+                        processo={processoModal}
+                    />
+                    <ModalProcessoPasPad
+                        fechaModalProcessoPasPad={fechaModalProcessoPasPad}
+                        modalProcessoPasPad={modalProcessoPasPad}
+                        processoPasPad={processoModalPasPad}
                     />
                 </Main>
             </Container>

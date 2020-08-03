@@ -76,6 +76,9 @@ class VDadosProcessoPasPad extends Model {
                 },
                 visualizacao: {
                     type: Sequelize.STRING
+                },
+                nod_fim: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

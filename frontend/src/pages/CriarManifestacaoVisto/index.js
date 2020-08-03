@@ -42,7 +42,6 @@ function CriarManifestacaoVisto(props) {
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
-    const [proIdModal, setProId] = useState(-1);
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [modalExcluir, setModalExcluir] = useState(false);
@@ -52,6 +51,7 @@ function CriarManifestacaoVisto(props) {
     const [dadosTramite, setDadosTramite] = useState([]);
     const [nodId, setNodId] = useState('');
     const [anexos, setAnexos] = useState([]);
+    const [processoModal, setProcessoModal] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
 
@@ -61,8 +61,7 @@ function CriarManifestacaoVisto(props) {
         formRef.current.setData(manifestacao);
     }, [manifestacao]);
 
-    function abreModalProcesso(id) {
-        setProId(id);
+    function abreModalProcesso() {
         setModalProcesso(true);
     }
 
@@ -249,6 +248,7 @@ function CriarManifestacaoVisto(props) {
                     setProCodigo(processo[i].pro_codigo);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
+                    setProcessoModal(processo[i]);
                 }
             })
             .catch(() => {
@@ -372,9 +372,7 @@ function CriarManifestacaoVisto(props) {
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
                     <span>
-                        <LinkProcesso
-                            type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                        <LinkProcesso type="button" onClick={() => abreModalProcesso()}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
@@ -421,7 +419,7 @@ function CriarManifestacaoVisto(props) {
                     <ModalProcesso
                         fechaModalProcesso={fechaModalProcesso}
                         modalProcesso={modalProcesso}
-                        proId={proIdModal}
+                        processo={processoModal}
                     />
                     {anexos.length > 0 ? (
                         <div>
