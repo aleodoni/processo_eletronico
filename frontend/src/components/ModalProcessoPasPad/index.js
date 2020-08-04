@@ -5,7 +5,6 @@ import Modal from 'react-modal';
 import TabelaManifestacoes from '../TabelaManifestacoes';
 import TabelaTramitacao from '../TabelaTramitacao';
 // eslint-disable-next-line import/no-cycle
-import TabelaProcessoOrigem from '../TabelaProcessoOrigem';
 import axios from '../../configs/axiosConfig';
 
 import {
@@ -16,6 +15,7 @@ import {
     ContainerDados,
     ContainerComponente,
     ContainerProcessoOrigem,
+    ContainerMembroComissao,
 } from './styles';
 
 const ModalProcessoPasPad = props => {
@@ -43,6 +43,7 @@ const ModalProcessoPasPad = props => {
     };
     const { fechaModalProcessoPasPad, modalProcessoPasPad, processoPasPad } = props;
     const [processosOrigem, setProcessosOrigem] = useState([]);
+    const [comissaoProcessante, setComissaoProcessante] = useState([]);
 
     function fechaHandler(e) {
         if (typeof onClick === 'function') {
@@ -76,9 +77,38 @@ const ModalProcessoPasPad = props => {
         }
     }, [processoPasPad.pro_id]);
 
+    const carregaMembrosComissao = useCallback(() => {
+        if (processoPasPad.pro_id !== undefined) {
+            axios({
+                method: 'GET',
+                url: `/popup-membros-comissao/${processoPasPad.pro_id}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    const membrosComissao = [];
+                    for (let i = 0; i < res.data.length; i++) {
+                        membrosComissao.push({
+                            matricula: res.data[i].matricula,
+                            cargo: res.data[i].cargo,
+                            nome: res.data[i].nome,
+                            login: res.data[i].login,
+                            area: res.data[i].area,
+                        });
+                    }
+                    setComissaoProcessante(membrosComissao);
+                })
+                .catch(() => {
+                    console.log('Erro ao carregar processo de origem.');
+                });
+        }
+    }, [processoPasPad.pro_id]);
+
     useEffect(() => {
         carregaProcessoOrigem();
-    }, [carregaProcessoOrigem]);
+        carregaMembrosComissao();
+    }, [carregaProcessoOrigem, carregaMembrosComissao]);
 
     return (
         <>
@@ -103,6 +133,19 @@ const ModalProcessoPasPad = props => {
                                         </label>
                                     ))}
                                 </ContainerProcessoOrigem>
+                            </>
+                        ) : null}
+                        {comissaoProcessante.length > 0 ? (
+                            <>
+                                <p>Membros da Comissão</p>
+                                <ContainerMembroComissao>
+                                    {comissaoProcessante.map(linha => (
+                                        <div>
+                                            {linha.matricula} - {linha.nome} - {linha.login} -{' '}
+                                            {linha.area} - {linha.cargo}
+                                        </div>
+                                    ))}
+                                </ContainerMembroComissao>
                             </>
                         ) : null}
                         <p>Iniciativa</p>

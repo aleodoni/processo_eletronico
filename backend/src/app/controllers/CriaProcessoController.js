@@ -14,6 +14,7 @@ import VProcessoOrigem from '../models/VProcessoOrigem';
 import VDadosProcesso from '../models/VDadosProcesso';
 import VDadosProcessoPasPad from '../models/VDadosProcessoPasPad';
 import VMembrosComissao from '../models/VMembrosComissao';
+import VDadosMembrosComissao from '../models/VDadosMembrosComissao';
 import VDadosLogin from '../models/VDadosLogin';
 import TipoProcesso from '../models/TipoProcesso';
 import Nodo from '../models/Nodo';
@@ -133,6 +134,17 @@ class CriaProcessoController {
             logging: false
         });
         return res.json(membrosComissaoProcessante);
+    }
+
+    async popupMembrosComissao(req, res) {
+        const membrosDadosMembrosComissao = await VDadosMembrosComissao.findAll({
+            where: {
+                pro_id: req.params.id
+            },
+            attributes: ['cop_id', 'pro_id', 'area', 'matricula', 'nome', 'login', 'cargo'],
+            logging: false
+        });
+        return res.json(membrosDadosMembrosComissao);
     }
 
     async store(req, res) {

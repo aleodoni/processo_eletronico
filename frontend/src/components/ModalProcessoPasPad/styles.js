@@ -39,10 +39,18 @@ export const ContainerProcessoOrigem = styled.div`
     background: #fff;
     border-radius: 3px;
     margin-bottom: 5px;
-    margin-left: 5px;
     label {
         font-weight: bold;
         margin: 3px;
+    }
+`;
+
+export const ContainerMembroComissao = styled.div`
+    background: #fff;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    div {
+        margin: 5px;
     }
 `;
 
@@ -56,18 +64,19 @@ export const ContainerModal = styled.div`
         font-weight: bold;
         color: #fff;
         margin-top: 10px;
-        margin-left: 15px;
+        margin-left: 10px;
     }
 `;
 
 export const ContainerIniciativa = styled.div`
     background: #fff;
     border-radius: 3px;
+    margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 5px;
     label {
         font-weight: bold;
-        margin: 3px;
+        margin-left: 5px;
     }
 `;
 
@@ -78,12 +87,13 @@ export const ContainerDados = styled.div`
     font-size: 16px;
 
     grid-template-columns: 280px 690px;
+    margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 5px;
 
     label {
         font-weight: bold;
-        margin: 3px;
+        margin-left: 3px;
     }
     span {
         margin: 3px;

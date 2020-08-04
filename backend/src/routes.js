@@ -132,6 +132,7 @@ routes.delete(`${process.env.API_URL}/nodos/:id`, NodoController.delete);
 // rotas do cadastro de membros de comissão
 routes.get(`${process.env.API_URL}/comissoes`, MembroComissaoController.comissao);
 routes.get(`${process.env.API_URL}/grid-membros-comissao/:id`, MembroComissaoController.gridMembrosComissao);
+routes.get(`${process.env.API_URL}/popup-membros-comissao/:id`, CriaProcessoController.popupMembrosComissao);
 routes.post(`${process.env.API_URL}/membros-comissao`, MembroComissaoController.store);
 routes.put(`${process.env.API_URL}/membros-comissao/:id`, MembroComissaoController.update);
 routes.delete(`${process.env.API_URL}/membros-comissao/:id`, MembroComissaoController.delete);

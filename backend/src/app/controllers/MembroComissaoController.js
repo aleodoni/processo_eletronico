@@ -54,6 +54,27 @@ class MembroComissaoController {
         return res.json(membrosComissao);
     }
 
+    async popupMembrosComissao(req, res) {
+        const membrosComissao = await VMembrosComissao.findAll({
+            order: ['set_nome'],
+            where: {
+                pro_id: req.params.id
+            },
+            attributes: ['mco_id',
+                'area_id',
+                'pro_id',
+                'mco_matricula',
+                'mco_area_id_membro',
+                'mco_nome',
+                'mco_login',
+                'set_nome',
+                'mco_ativo',
+                'ativo'],
+            logging: false
+        });
+        return res.json(membrosComissao);
+    }
+
     async store(req, res) {
         const createMembroComissao = new CreateMembroComissaoService(MembroComissao, Setor);
         const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);

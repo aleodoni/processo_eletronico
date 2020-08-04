@@ -77,7 +77,6 @@ function Home() {
         })
             .then(res => {
                 const processo = res.data;
-                alert('1');
                 for (let i = 0; i < processo.length; i++) {
                     setProcessoModalPasPad(processo[i]);
                     setModalProcessoPasPad(true);
