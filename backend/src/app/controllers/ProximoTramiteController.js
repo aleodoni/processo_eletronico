@@ -4,9 +4,10 @@
 import ProximoTramite from '../models/ProximoTramite';
 import VNodoFluxo from '../models/VNodoFluxo';
 import VProximoTramite from '../models/VProximoTramite';
-import Sequelize from 'sequelize';
+// import Sequelize from 'sequelize';
 import { renderDot } from 'render-dot';
 // import AuditoriaController from './AuditoriaController';
+import ConnectionHelper from '../helpers/ConnectionHelper';
 
 class ProximoTramiteController {
     async index(req, res) {
@@ -49,25 +50,12 @@ class ProximoTramiteController {
     }
 
     async criaGrafo(req, res) {
-        const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-            host: process.env.DB_HOST,
-            dialect: 'postgres',
-            define: {
-                timestamps: false,
-                underscoredAll: true
-            },
-            pool: {
-                max: 7,
-                min: 0,
-                acquire: 30000,
-                idle: 10000
-            }
-        });
+        const connection = ConnectionHelper.getConnection();
 
         // monta o grafo do fluxo passado por parâmetro
         const sql = 'select spa2.grafo_fluxo(' + req.params.id + ')';
 
-        const montaGrafo = await sequelize.query(sql,
+        const montaGrafo = await connection.query(sql,
             {
                 logging: false,
                 plain: true,
