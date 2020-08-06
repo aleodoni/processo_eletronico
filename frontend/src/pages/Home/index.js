@@ -15,6 +15,7 @@ import {
     BotaoCriaManifestacao,
 } from './styles';
 import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapido';
+import ButtonAposentadoriaAdm from '../../components/layout/button/ButtonAposentadoriaAdm';
 import DefaultLayout from '../_layouts/default';
 import axios from '../../configs/axiosConfig';
 import ModalProcesso from '../../components/ModalProcesso';
@@ -37,9 +38,8 @@ function Home() {
     const [erro, setErro] = useState('');
     const [modalProcesso, setModalProcesso] = useState(false);
     const [modalProcessoPasPad, setModalProcessoPasPad] = useState(false);
-    const [processoPasPad, setProcessoPasPad] = useState([]);
-
     const [botaoPasPadVisivel, setBotaoPasPadVisivel] = useState(false);
+    const [botaoAposentadoriaAdmVisivel, setBotaoAposentadoriaAdmVisivel] = useState(false);
     const [processoModal, setProcessoModal] = useState([]);
     const [processoModalPasPad, setProcessoModalPasPad] = useState([]);
 
@@ -132,14 +132,25 @@ function Home() {
         }
     }
 
+    function verificaAposentadoriaAdm(areaId) {
+        if (areaId === constantes.AREA_DARH) {
+            setBotaoAposentadoriaAdmVisivel(true);
+        }
+    }
+
     useEffect(() => {
         verificaPadPas(parseInt(sessionStorage.getItem('areaUsuario'), 10));
+        verificaAposentadoriaAdm(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         carregaGridArea();
         carregaGridSigiloso();
     }, [carregaGridArea, carregaGridSigiloso]);
 
-    function criaManifestacaoPasPad(id) {
-        history.push(`/manifestacao-cria-pas-pad/${id}`);
+    function criaManifestacaoPasPad(id, noDecisaoPad) {
+        if (noDecisaoPad) {
+            history.push(`/manifestacao-cria-decisao-pad/${id}`);
+        } else {
+            history.push(`/manifestacao-cria-pas-pad/${id}`);
+        }
     }
 
     function criaManifestacao(
@@ -200,6 +211,12 @@ function Home() {
                                 Criar processo
                             </Link>
                         </ButtonAcessoRapido>
+                        <ButtonAcessoRapido>
+                            <Link to="/processo-consulta">
+                                <FaSistrix />
+                                Consultar processos
+                            </Link>
+                        </ButtonAcessoRapido>
                         {botaoPasPadVisivel ? (
                             <ButtonAcessoRapido>
                                 <Link to="/processo-pas-pad">
@@ -208,12 +225,14 @@ function Home() {
                                 </Link>
                             </ButtonAcessoRapido>
                         ) : null}
-                        <ButtonAcessoRapido>
-                            <Link to="/processo-consulta">
-                                <FaSistrix />
-                                Consultar processos
-                            </Link>
-                        </ButtonAcessoRapido>
+                        {botaoAposentadoriaAdmVisivel ? (
+                            <ButtonAposentadoriaAdm>
+                                <Link to="/processo-cria-aposentadoria-adm">
+                                    <FaFileAlt />
+                                    Criar processo de aposentadoria iniciativa da administração
+                                </Link>
+                            </ButtonAposentadoriaAdm>
+                        ) : null}
                     </ContainerBotoes>
                     <hr />
                     <ContainerProcessos>
@@ -253,7 +272,8 @@ function Home() {
                                                                             corHover="vermelho-claro"
                                                                             onClick={() => {
                                                                                 criaManifestacaoPasPad(
-                                                                                    proc.pro_id
+                                                                                    proc.pro_id,
+                                                                                    proc.nod_decisao_pad
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -268,7 +288,8 @@ function Home() {
                                                                             corHover="laranja-claro"
                                                                             onClick={() => {
                                                                                 criaManifestacaoPasPad(
-                                                                                    proc.pro_id
+                                                                                    proc.pro_id,
+                                                                                    proc.nod_decisao_pad
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -283,7 +304,8 @@ function Home() {
                                                                             corHover="azul-claro"
                                                                             onClick={() => {
                                                                                 criaManifestacaoPasPad(
-                                                                                    proc.pro_id
+                                                                                    proc.pro_id,
+                                                                                    proc.nod_decisao_pad
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -298,7 +320,8 @@ function Home() {
                                                                             corHover="azul-claro"
                                                                             onClick={() => {
                                                                                 criaManifestacaoPasPad(
-                                                                                    proc.pro_id
+                                                                                    proc.pro_id,
+                                                                                    proc.nod_decisao_pad
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />

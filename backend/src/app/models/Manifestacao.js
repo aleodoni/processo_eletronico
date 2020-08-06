@@ -76,6 +76,9 @@ class Manifestacao extends Model {
                 },
                 man_parecer_projuris_aposentadoria: {
                     type: Sequelize.STRING
+                },
+                man_decisao_pad: {
+                    type: Sequelize.STRING
                 }
 
             },

@@ -38,6 +38,7 @@ import NoAvalHorario from '../../components/system/select/NoAvalHorario';
 import NoContagemTempo from '../../components/system/select/NoContagemTempo';
 import NoCienciaCalculo from '../../components/system/select/NoCienciaCalculo';
 import NoParecerProjurisAposentadoria from '../../components/system/select/NoParecerProjurisAposentadoria';
+import NoDecisaoPad from '../../components/system/select/NoDecisaoPad';
 
 function Nodo() {
     const [erro, setErro] = useState('');
@@ -57,6 +58,7 @@ function Nodo() {
         nodContagemTempo: -1,
         nodCienciaCalculo: -1,
         nodParecerProjurisAposentadoria: -1,
+        nodDecisaoPad: -1,
         nodDiasPrazo: 0,
         nodOrdem: 0,
     });
@@ -123,6 +125,7 @@ function Nodo() {
             nodContagemTempo: -1,
             nodCienciaCalculo: -1,
             nodParecerProjurisAposentadoria: -1,
+            nodDecisaoPad: -1,
             nodDiasPrazo: 0,
             nodOrdem: 0,
         });
@@ -209,6 +212,7 @@ function Nodo() {
             nodContagemTempo: linha.nod_contagem_tempo,
             nodCienciaCalculo: linha.nod_ciencia_calculo,
             nodParecerProjurisAposentadoria: linha.nod_parecer_projuris_aposentadoria,
+            nodDecisaoPad: linha.nod_decisao_pad,
         });
         posiciona();
     }
@@ -246,6 +250,7 @@ function Nodo() {
         nodContagemTempo,
         nodCienciaCalculo,
         nodParecerProjurisAposentadoria,
+        nodDecisaoPad,
     }) {
         try {
             const schema = Yup.object().shape({
@@ -276,6 +281,7 @@ function Nodo() {
                     [true, false],
                     'É um nó de parecer de aposentadoria do Projuris?'
                 ),
+                nodDecisaoPad: Yup.boolean().oneOf([true, false], 'É um nó de decisão de PAD?'),
             });
 
             await schema.validate(
@@ -295,6 +301,7 @@ function Nodo() {
                     nodContagemTempo,
                     nodCienciaCalculo,
                     nodParecerProjurisAposentadoria,
+                    nodDecisaoPad,
                 },
                 { abortEarly: false }
             );
@@ -320,7 +327,8 @@ function Nodo() {
                         nod_aval_horario: nodAvalHorario,
                         nod_contagem_tempo: nodContagemTempo,
                         nod_ciencia_calculo: nodCienciaCalculo,
-                        // nod_parecer_projuris_aposentadoria: nodParecerProjurisAposentadoria,
+                        nod_decisao_pad: nodDecisaoPad,
+                        nod_parecer_projuris_aposentadoria: nodParecerProjurisAposentadoria,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -356,6 +364,7 @@ function Nodo() {
                         nod_aval_horario: nodAvalHorario,
                         nod_contagem_tempo: nodContagemTempo,
                         nod_ciencia_calculo: nodCienciaCalculo,
+                        nod_decisao_pad: nodDecisaoPad,
                         nod_parecer_projuris_aposentadoria: nodParecerProjurisAposentadoria,
                     },
                     headers: {
@@ -475,6 +484,7 @@ function Nodo() {
                                     <NoContagemTempo name="nodContagemTempo" />
                                     <NoCienciaCalculo name="nodCienciaCalculo" />
                                     <NoParecerProjurisAposentadoria name="nodParecerProjurisAposentadoria" />
+                                    <NoDecisaoPad name="nodDecisaoPad" />
                                 </ContainerCamposNodos2>
                                 <ButtonContainer>
                                     <Salvar name="btnSalva" type="submit" />
@@ -522,6 +532,11 @@ function Nodo() {
                                         {
                                             title: 'Parecer de aposentadoria Projuris',
                                             field: 'parecer_projuris_aposentadoria',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Decisão de PAD',
+                                            field: 'decisao_pad',
                                             width: 100,
                                         },
                                     ]}

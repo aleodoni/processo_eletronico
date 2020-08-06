@@ -36,7 +36,8 @@ class NodoController {
                 'nod_aval_horario',
                 'nod_contagem_tempo',
                 'nod_ciencia_calculo',
-                'nod_parecer_projuris_aposentadoria'
+                'nod_parecer_projuris_aposentadoria',
+                'nod_decisao_pad'
             ],
             logging: false
         });
@@ -88,7 +89,9 @@ class NodoController {
                 'nod_ciencia_calculo',
                 'ciencia_calculo',
                 'nod_parecer_projuris_aposentadoria',
-                'parecer_projuris_aposentadoria'
+                'parecer_projuris_aposentadoria',
+                'nod_decisao_pad',
+                'decisao_pad'
             ],
             logging: false
         });
@@ -136,7 +139,8 @@ class NodoController {
             nod_aval_horario,
             nod_contagem_tempo,
             nod_ciencia_calculo,
-            nod_parecer_projuris_aposentadoria
+            nod_parecer_projuris_aposentadoria,
+            nod_decisao_pad
         } = req.body;
 
         const updatedNodo = await updateNodo.execute({
@@ -156,7 +160,8 @@ class NodoController {
             nod_aval_horario,
             nod_contagem_tempo,
             nod_ciencia_calculo,
-            nod_parecer_projuris_aposentadoria
+            nod_parecer_projuris_aposentadoria,
+            nod_decisao_pad
         });
 
         // auditoria de edição

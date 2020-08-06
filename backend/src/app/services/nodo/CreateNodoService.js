@@ -23,7 +23,8 @@ class CreateNodoService {
         nod_aval_horario,
         nod_contagem_tempo,
         nod_ciencia_calculo,
-        nod_parecer_projuris_aposentadoria
+        nod_parecer_projuris_aposentadoria,
+        nod_decisao_pad
     }) {
         // Verifica se o fluxo existe
         const fluxoExiste = await this.fluxoModel.findByPk(flu_id, { logging: false });
@@ -50,7 +51,8 @@ class CreateNodoService {
             nod_aval_horario,
             nod_contagem_tempo,
             nod_ciencia_calculo,
-            nod_parecer_projuris_aposentadoria
+            nod_parecer_projuris_aposentadoria,
+            nod_decisao_pad
         }, {
             logging: false
         });

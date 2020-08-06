@@ -23,6 +23,7 @@ class CreateManifestacaoService {
         man_contagem_tempo,
         man_ciencia_calculo,
         man_parecer_projuris_aposentadoria,
+        man_decisao_pad,
         arq_id,
         arq_nome,
         arq_tipo,
@@ -72,7 +73,8 @@ class CreateManifestacaoService {
                 man_aval_horario,
                 man_contagem_tempo,
                 man_ciencia_calculo,
-                man_parecer_projuris_aposentadoria
+                man_parecer_projuris_aposentadoria,
+                man_decisao_pad
             }, {
                 logging: false
             }, { transaction: transaction });

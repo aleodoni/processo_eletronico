@@ -90,6 +90,11 @@ class Nodo extends Model {
                     type: Sequelize.BOOLEAN,
                     allowNull: false,
                     defaultValue: false
+                },
+                nod_decisao_pad: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                 }
             },
             {

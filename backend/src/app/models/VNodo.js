@@ -94,6 +94,9 @@ class VNodo extends Model {
                 },
                 parecer_projuris_aposentadoria: {
                     type: Sequelize.STRING
+                },
+                decisao_pad: {
+                    type: Sequelize.STRING
                 }
             },
             {

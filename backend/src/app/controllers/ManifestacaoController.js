@@ -64,7 +64,8 @@ class ManifestacaoController {
                 'man_ciencia_calculo',
                 'nod_id',
                 'man_tramitada',
-                'man_parecer_projuris_aposentadoria'],
+                'man_parecer_projuris_aposentadoria',
+                'man_decisao_pad'],
 
             logging: false,
             where: {
@@ -165,6 +166,7 @@ class ManifestacaoController {
             man_contagem_tempo: req.body.man_contagem_tempo,
             man_ciencia_calculo: req.body.man_ciencia_calculo,
             man_parecer_projuris_aposentadoria: req.body.man_parecer_projuris_aposentadoria,
+            man_decisao_pad: req.body.man_decisao_pad,
             arq_id: req.body.arq_id,
             arq_nome: req.body.arq_nome,
             arq_tipo: req.body.arq_tipo,

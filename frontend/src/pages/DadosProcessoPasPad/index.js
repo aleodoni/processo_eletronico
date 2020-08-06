@@ -14,7 +14,6 @@ import TabelaManifestacoes from '../../components/TabelaManifestacoes';
 import TabelaTramitacao from '../../components/TabelaTramitacao';
 import TabelaMembrosComissao from '../../components/TabelaMembrosComissao';
 import TabelaNomePasPad from '../../components/TabelaNomePasPad';
-import TabelaProcessoOrigem from '../../components/TabelaProcessoOrigem';
 import {
     Container,
     Main,
@@ -37,6 +36,7 @@ function DadosProcessoPasPad({ match }) {
     const [erro, setErro] = useState('');
     const [processos, setProcessos] = useState([]);
     const [mostraProcesso, setMostraProcesso] = useState(false);
+    const [processosOrigem, setProcessosOrigem] = useState([]);
 
     const formRef = useRef(null);
 
@@ -57,10 +57,37 @@ function DadosProcessoPasPad({ match }) {
             });
     }, [proId]);
 
+    const carregaProcessoOrigem = useCallback(() => {
+        if (proId !== undefined) {
+            axios({
+                method: 'GET',
+                url: `/processo-origem/${proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    const processoOrigem = [];
+                    for (let i = 0; i < res.data.length; i++) {
+                        processoOrigem.push({
+                            pro_id_origem: res.data[i].pro_id_origem,
+                            processo_origem: res.data[i].processo_origem,
+                            tpr_nome: res.data[i].tpr_nome,
+                        });
+                    }
+                    setProcessosOrigem(processoOrigem);
+                })
+                .catch(() => {
+                    console.log('Erro ao carregar processo de origem.');
+                });
+        }
+    }, [proId]);
+
     useEffect(() => {
         mensagem.success('Carregando processo...');
         carregaDadosProcesso();
-    }, [carregaDadosProcesso]);
+        carregaProcessoOrigem();
+    }, [carregaDadosProcesso, carregaProcessoOrigem]);
 
     function criaGrafo(fluId) {
         axios({
@@ -182,9 +209,18 @@ function DadosProcessoPasPad({ match }) {
                                             <br />
                                         </ContainerBotoes>
                                     )}
-                                    <ContainerProcessoOrigem>
-                                        <TabelaProcessoOrigem proId={proId} />
-                                    </ContainerProcessoOrigem>
+                                    {processosOrigem.length > 0 ? (
+                                        <>
+                                            <p>Processo de origem</p>
+                                            <ContainerProcessoOrigem>
+                                                {processosOrigem.map(linha => (
+                                                    <label key={linha.pro_id}>
+                                                        {linha.processo_origem} - {linha.tpr_nome}
+                                                    </label>
+                                                ))}
+                                            </ContainerProcessoOrigem>
+                                        </>
+                                    ) : null}
                                     <ContainerIniciativa>
                                         <p>Iniciativa</p>
                                         <fieldset>

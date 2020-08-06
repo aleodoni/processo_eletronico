@@ -27,6 +27,7 @@ import ProximoTramite from './pages/ProximoTramite';
 import RegraAposentacao from './pages/RegraAposentacao';
 import CriarManifestacao from './pages/CriarManifestacao';
 import CriarManifestacaoPasPad from './pages/CriarManifestacaoPasPad';
+import CriarManifestacaoDecisaoPad from './pages/CriarManifestacaoDecisaoPad';
 import CriarManifestacaoExecutiva from './pages/CriarManifestacaoExecutiva';
 import CriarManifestacaoVisto from './pages/CriarManifestacaoVisto';
 import CriarManifestacaoCiencia from './pages/CriarManifestacaoCiencia';
@@ -128,6 +129,11 @@ const Routes = () => (
             exact
             path="/manifestacao-cria-pas-pad/:proId"
             component={CriarManifestacaoPasPad}
+        />
+        <PrivateRoute
+            exact
+            path="/manifestacao-cria-decisao-pad/:proId"
+            component={CriarManifestacaoDecisaoPad}
         />
         <PrivateRoute exact path="/tramita/:id" component={Tramite} />
         <PrivateRoute exact path="/tipos-documento" component={TipoDocumento} />

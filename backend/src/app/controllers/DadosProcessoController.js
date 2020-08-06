@@ -356,7 +356,8 @@ class DadosProcessoController {
                     'nod_aval_horario',
                     'nod_contagem_tempo',
                     'nod_ciencia_calculo',
-                    'nod_parecer_projuris_aposentadoria'
+                    'nod_parecer_projuris_aposentadoria',
+                    'nod_decisao_pad'
                 ],
                 logging: false,
                 where: {

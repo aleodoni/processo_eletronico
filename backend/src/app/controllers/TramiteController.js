@@ -412,6 +412,7 @@ class TramiteController {
     }
 
     async proximoTramiteDirecionado(req, res) {
+        const TPR_PAD = 15;
         const processo = await Processo.findAll({
             where: {
                 pro_id: req.params.proId
@@ -427,7 +428,12 @@ class TramiteController {
             logging: false,
             plain: true
         });
-        const proNome = processo.dataValues.pro_nome;
+        let proNome = '';
+        if (processo.dataValues.tpr_id === TPR_PAD) {
+            proNome = 'Sigiloso';
+        } else {
+            proNome = processo.dataValues.pro_nome;
+        }
         const proximo = await VProximoTramiteNormal.findAll({
             attributes: [
                 'pro_id',

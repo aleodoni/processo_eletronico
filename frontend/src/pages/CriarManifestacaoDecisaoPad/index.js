@@ -11,26 +11,26 @@ import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import api from '../../service/api';
 import Select from '../../components/layout/Select';
-import ParecerProjurisAposentadoria from '../../components/system/select/ParecerProjurisAposentadoria';
+import DecisaoPad from '../../components/system/select/DecisaoPad';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
-import ModalProcesso from '../../components/ModalProcesso';
+import ModalProcessoPasPad from '../../components/ModalProcessoPasPad';
 import {
     Container,
+    Titulo,
     Container2,
     Container3,
     Main,
     Erro,
     BotaoComoLink,
     LinkProcesso,
-    LinkJuntada,
     ContainerBotoes,
 } from './styles';
 import { download } from '../../utils/downloadArquivo';
 
-function CriarManifestacaoParecerProjurisAposentadoria(props) {
+function CriarManifestacaoDecisaoPad(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
     const { match } = props;
@@ -49,9 +49,9 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
-    const [modalProcesso, setModalProcesso] = useState(false);
-    const [manParecerProjurisAposentadoria, setManParecerProjurisAposentadoria] = useState('-1');
-    const [processoModal, setProcessoModal] = useState([]);
+    const [processoPasPad, setProcessoPasPad] = useState([]);
+    const [manDecisaoPad, setManDecisaoPad] = useState('-1');
+    const [modalProcessoPasPad, setModalProcessoPasPad] = useState(false);
 
     const [dadosTramite, setDadosTramite] = useState([]);
 
@@ -67,12 +67,12 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         setTpdId(e.target.value);
     }
 
-    function abreModalProcesso() {
-        setModalProcesso(true);
+    function abreModalProcessoPasPad() {
+        setModalProcessoPasPad(true);
     }
 
-    function fechaModalProcesso() {
-        setModalProcesso(false);
+    function fechaModalProcessoPasPad() {
+        setModalProcessoPasPad(false);
     }
 
     function abreModalExcluir(id) {
@@ -93,8 +93,13 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         setModalTramitaUm(false);
     }
 
+    function selecionaDecisaoPad(e) {
+        setErro('');
+        setManDecisaoPad(e.target.value);
+    }
+
     function limpaCampos() {
-        formRef.current.setFieldValue('tmnId', '-1');
+        formRef.current.setFieldValue('manDecisaoPad', '-1');
         formRef.current.setFieldValue('tpdId', '-1');
         setManId(null);
         setNodId('');
@@ -121,7 +126,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            const response = await api.get(`/manifestacao-processo/${match.params.proId}`);
             setManifestacaoProcesso(response.data);
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
@@ -134,9 +139,9 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         }
     }
 
-    const verificaManifestacao = e => {
-        if (manParecerProjurisAposentadoria === '-1') {
-            setErro('Selecione o tipo da manifestação.');
+    const verificaDecisaoPad = e => {
+        if (manDecisaoPad === '-1') {
+            setErro('Selecione a decisão.');
             e.preventDefault();
         }
     };
@@ -149,113 +154,83 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     };
 
     function incluiManifestacao(e) {
-        let tipoManifestacao = null;
-        let tipoDocumento = null;
-        const TIPO_MANIFESTACAO_PARECER_PROJURIS_APOSENTADORIA = 17;
-        const TIPO_MANIFESTACAO_CORRECAO_INFORMACOES_APOSENTADORIA = 18;
-        const TIPO_DOCUMENTO_PARECER_PROJURIS_APOSENTADORIA = 39;
-        const TIPO_DOCUMENTO_CORRECAO_INFORMACOES_APOSENTADORIA = 40;
-        if (manParecerProjurisAposentadoria === 'Pela legalidade e regularidade') {
-            tipoManifestacao = TIPO_MANIFESTACAO_PARECER_PROJURIS_APOSENTADORIA;
-            tipoDocumento = TIPO_DOCUMENTO_PARECER_PROJURIS_APOSENTADORIA;
-        }
-        if (manParecerProjurisAposentadoria === 'Correção de informações ou esclarecimentos') {
-            tipoManifestacao = TIPO_MANIFESTACAO_CORRECAO_INFORMACOES_APOSENTADORIA;
-            tipoDocumento = TIPO_DOCUMENTO_CORRECAO_INFORMACOES_APOSENTADORIA;
-        }
+        const TIPO_DOCUMENTO_DECISAO_PAD = 41;
+        const TIPO_MANIFESTACAO_DECISAO_PAD = 20;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
-        if (e.target.files[0].size <= tamanhoAnexo) {
-            if (e.target.files[0].type === 'application/pdf') {
-                // aqui vai gravar na manifestação
+        if (e.target.files[0].size > tamanhoAnexo) {
+            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+            return;
+        }
+        if (e.target.files[0].type !== 'application/pdf') {
+            setErro('São válidos somente arquivos PDF.');
+            return;
+        }
+        axios({
+            method: 'POST',
+            url: '/manifestacoes',
+            data: {
+                man_id: null,
+                pro_id: Number(match.params.proId),
+                tmn_id: TIPO_MANIFESTACAO_DECISAO_PAD,
+                man_login: sessionStorage.getItem('usuario'),
+                man_id_area: sessionStorage.getItem('areaUsuario'),
+                nod_id: nodId,
+                arq_id: null,
+                arq_nome: arq.name,
+                arq_tipo: arq.type,
+                arq_doc_id: null,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: TIPO_DOCUMENTO_DECISAO_PAD,
+                arq_login: sessionStorage.getItem('usuario'),
+                man_decisao_pad: manDecisaoPad,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setManifestacao({ manId: res.data.man_id });
+                const data = new FormData();
+                data.append('file', arq);
                 axios({
                     method: 'POST',
-                    url: '/manifestacoes',
-                    data: {
-                        man_id: null,
-                        pro_id: Number(props.match.params.proId),
-                        tmn_id: tipoManifestacao,
-                        man_login: sessionStorage.getItem('usuario'),
-                        man_id_area: sessionStorage.getItem('areaUsuario'),
-                        nod_id: nodId,
-                        man_parecer_projuris_aposentadoria: manParecerProjurisAposentadoria,
-                    },
+                    url: `/anexo-manifestacao/${res.data.arq_id}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
+                        'Content-Type': 'multipart/form-data',
                     },
+                    data,
                 })
-                    .then(resultado => {
-                        setManifestacao({ manId: resultado.data.man_id });
-                        const data = new FormData();
-                        data.append('file', arq);
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Manifestação inserida com sucesso.');
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                        }
+                    })
+                    .catch(() => {
+                        const idArquivo = res.data.arq_id;
                         axios({
-                            method: 'POST',
-                            url: '/arquivos',
+                            method: 'DELETE',
+                            url: `arquivos/${idArquivo}`,
                             headers: {
                                 authorization: sessionStorage.getItem('token'),
                             },
-                            data: {
-                                arq_id: null,
-                                arq_nome: arq.name,
-                                pro_id: resultado.data.pro_id,
-                                man_id: resultado.data.man_id,
-                                arq_tipo: arq.type,
-                                arq_doc_id: resultado.data.man_id,
-                                arq_doc_tipo: 'manifestação',
-                                tpd_id: tipoDocumento,
-                                arq_login: sessionStorage.getItem('usuario'),
-                            },
                         })
-                            .then(res => {
-                                axios({
-                                    method: 'POST',
-                                    url: `/anexo-manifestacao/${res.data.arq_id}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                        'Content-Type': 'multipart/form-data',
-                                    },
-                                    data,
-                                })
-                                    .then(resAnexos => {
-                                        if (resAnexos.status === 204) {
-                                            limpaCampos();
-                                            mensagem.success('Manifestação inserida com sucesso.');
-                                            carregaManifestacaoProcesso();
-                                            document.getElementById('anexo').value = '';
-                                        }
-                                    })
-                                    .catch(() => {
-                                        const idArquivo = res.data.arq_id;
-                                        axios({
-                                            method: 'DELETE',
-                                            url: `arquivos/${idArquivo}`,
-                                            headers: {
-                                                authorization: sessionStorage.getItem('token'),
-                                            },
-                                        })
-                                            .then(() => {})
-                                            .catch(erroDeleteArquivo => {
-                                                setErro(erroDeleteArquivo.response.data.error);
-                                            });
-                                        setErro('Erro ao criar arquivo anexo.');
-                                    });
-                            })
-                            .catch(() => {
-                                setErro('Erro ao inserir na tabela arquivo.');
+                            .then(() => {})
+                            .catch(erroDeleteArquivo => {
+                                setErro(erroDeleteArquivo.response.data.error);
                             });
-                    })
-                    .catch(() => {
-                        setErro('Erro ao inserir manifestação.');
+                        setErro('Erro ao criar arquivo anexo.');
                     });
-                //
-            } else {
-                setErro('São válidos somente arquivos PDF.');
-            }
-        } else {
-            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
-        }
+            })
+            .catch(() => {
+                setErro('Erro ao inserir manifestação.');
+            });
     }
 
     function incluiAnexoManifestacao(e) {
@@ -352,7 +327,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${props.match.params.proId}`,
+            url: `/ver-processo-pas-pad/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -364,7 +339,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                     setProCodigo(processo[i].pro_codigo);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
-                    setProcessoModal(processo[i]);
+                    setProcessoPasPad(processo[i]);
                 }
             })
             .catch(() => {
@@ -431,133 +406,111 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     }
 
     function tramita() {
-        const parecer = manifestacaoProcesso[0].man_parecer_projuris_aposentadoria;
-        if (parecer === 'Pela legalidade e regularidade') {
-            const NODO_PARECER_LEGALIDADE_APOSENTADORIA = 95;
-            axios({
-                method: 'GET',
-                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_PARECER_LEGALIDADE_APOSENTADORIA}`,
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(res => {
-                    // se não tiver registros
-                    if (res.data.length === 0) {
-                        mensagem.info('Sem próximos trâmites.');
-                        return;
-                    }
-                    abreModalTramitaUm(res.data[0]);
-                })
-                .catch(() => {
-                    setErro('Erro ao carregar próximos trâmites.');
-                });
+        const tipoDecisao = manifestacaoProcesso[0].man_decisao_pad;
+        let prxId = null;
+
+        if (tipoDecisao === 'Pela continuidade do processo') {
+            prxId = 126;
         }
-        if (parecer === 'Correção de informações ou esclarecimentos') {
-            const NODO_PARECER_CORRECAO_APOSENTADORIA = 94;
-            axios({
-                method: 'GET',
-                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_PARECER_CORRECAO_APOSENTADORIA}`,
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(res => {
-                    // se não tiver registros
-                    if (res.data.length === 0) {
-                        mensagem.info('Sem próximos trâmites.');
-                        return;
-                    }
-                    abreModalTramitaUm(res.data[0]);
-                })
-                .catch(() => {
-                    setErro('Erro ao carregar próximos trâmites.');
-                });
+
+        if (tipoDecisao === 'Novas diligências' || tipoDecisao === 'Agravamento de penalidade') {
+            prxId = 127;
         }
+        axios({
+            method: 'GET',
+            url: `/proximo-tramite-direcionado/${match.params.proId}/${prxId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(resDirecionado => {
+                // se não tiver registros
+                if (resDirecionado.data.length === 0) {
+                    mensagem.info('Sem próximos trâmites.');
+                    return;
+                }
+                // alert(JSON.stringify(resDirecionado.data[0], null, 4));
+                abreModalTramitaUm(resDirecionado.data[0]);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar próximos trâmites.');
+            });
     }
 
     function insereTramite(prxId, setId) {
-        axios({
-            method: 'POST',
-            url: '/tramites-direcionado',
-            data: {
-                tra_id: null,
-                prx_id: prxId,
-                pro_id: Number(props.match.params.proId),
-                login_envia: sessionStorage.getItem('usuario'),
-                area_id_envia: sessionStorage.getItem('areaUsuario'),
-                area_id_recebe: setId,
-                man_id: manId,
-            },
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                mensagem.success('Trâmite inserido com sucesso.');
-                history.push(`/home/`);
+        // se for "Pela continuidade do processo" vai para frente
+        if (prxId === 126) {
+            axios({
+                method: 'POST',
+                url: '/tramites',
+                data: {
+                    tra_id: null,
+                    prx_id: prxId,
+                    pro_id: Number(match.params.proId),
+                    login_envia: sessionStorage.getItem('usuario'),
+                    area_id_envia: sessionStorage.getItem('areaUsuario'),
+                    area_id_recebe: setId,
+                    man_id: manId,
+                },
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
             })
-            .catch(() => {
-                setErro('Erro ao inserir trâmite.');
-            });
-    }
-
-    function geraJuntada() {
-        axios({
-            method: 'GET',
-            url: `/gera-juntada/${Number(props.match.params.proId)}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-                Accept: 'application/pdf',
-            },
-            responseType: 'blob',
-        })
-            .then(res => {
-                const blob = new Blob([res.data], { type: res.data.type });
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                const contentDisposition = res.headers['content-disposition'];
-                let fileName = `juntada${Number(props.match.params.proId)}.pdf`;
-                if (contentDisposition) {
-                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                    if (fileNameMatch.length === 2) {
-                        fileName = fileNameMatch[1];
-                    }
-                }
-                link.setAttribute('download', fileName);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.URL.revokeObjectURL(url);
+                .then(() => {
+                    mensagem.success('Trâmite inserido com sucesso.');
+                    history.push(`/home/`);
+                })
+                .catch(() => {
+                    setErro('Erro ao inserir trâmite.');
+                });
+        }
+        // se for "Novas diligências ou Agravamento de penalidade" é direcionado
+        if (prxId === 127) {
+            axios({
+                method: 'POST',
+                url: '/tramites-direcionado',
+                data: {
+                    tra_id: null,
+                    prx_id: prxId,
+                    pro_id: Number(match.params.proId),
+                    login_envia: sessionStorage.getItem('usuario'),
+                    area_id_envia: sessionStorage.getItem('areaUsuario'),
+                    area_id_recebe: setId,
+                    man_id: manId,
+                },
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
             })
-            .catch(() => {
-                setErro('Erro ao gerar juntada.');
-            });
-    }
-
-    function selecionaParecer(e) {
-        setErro('');
-        setManParecerProjurisAposentadoria(e.target.value);
+                .then(() => {
+                    mensagem.success('Trâmite inserido com sucesso.');
+                    history.push(`/home/`);
+                })
+                .catch(() => {
+                    setErro('Erro ao inserir trâmite.');
+                });
+        }
     }
 
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Criar parecer Projuris aposentadoria" />
+                <Autorizacao tela="Criar manifestação decisão PAD" />
                 <Main>
-                    {manifestacaoProcesso.length > 0 ? (
-                        <p>
-                            Parecer - {manifestacaoProcesso[0].man_parecer_projuris_aposentadoria}
-                        </p>
-                    ) : (
-                        <p>Criar parecer</p>
-                    )}
-                    <hr />
+                    <Titulo>
+                        {manifestacaoProcesso.length > 0 ? (
+                            <p>Manifestação - {manifestacaoProcesso[0].tmn_nome}</p>
+                        ) : (
+                            <p>Criar manifestação - Decisão de PAD</p>
+                        )}
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
                     <span>
-                        <LinkProcesso type="button" onClick={() => abreModalProcesso()}>
+                        <LinkProcesso
+                            type="button"
+                            onClick={() => abreModalProcessoPasPad(match.params.proId)}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
@@ -568,13 +521,10 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
 
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
-                                <ParecerProjurisAposentadoria
-                                    name="manParecerProjurisAposentadoria"
-                                    changeHandler={selecionaParecer}
+                                <DecisaoPad
+                                    name="manDecisaoPad"
+                                    changeHandler={selecionaDecisaoPad}
                                 />
-                                <LinkJuntada type="button" onClick={geraJuntada}>
-                                    Ver juntada do processo
-                                </LinkJuntada>
                             </Container2>
                         ) : null}
 
@@ -586,9 +536,6 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                                     options={tiposDocumento}
                                     onChange={handleTpdId}
                                 />
-                                <LinkJuntada type="button" onClick={geraJuntada}>
-                                    Ver juntada do processo
-                                </LinkJuntada>
                             </Container3>
                         ) : null}
 
@@ -623,7 +570,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                                         onChange={incluiManifestacao}
                                         id="anexo"
                                         onClick={e => {
-                                            verificaManifestacao(e);
+                                            verificaDecisaoPad(e);
                                         }}
                                     />
                                 </>
@@ -645,61 +592,63 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                         tramita={insereTramite}
                         dados={dadosTramite}
                     />
-                    <ModalProcesso
-                        fechaModalProcesso={fechaModalProcesso}
-                        modalProcesso={modalProcesso}
-                        processo={processoModal}
+                    <ModalProcessoPasPad
+                        fechaModalProcessoPasPad={fechaModalProcessoPasPad}
+                        modalProcessoPasPad={modalProcessoPasPad}
+                        processoPasPad={processoPasPad}
                     />
 
                     {anexos.length > 0 ? (
                         <div>
                             <p>Arquivos da manifestação</p>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Seq</th>
-                                        <th>Documento</th>
-                                        <th>Arquivo</th>
-                                        <th>Data</th>
-                                        <th>Excluir</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {anexos.map((anexo, index) => (
-                                        <tr key={anexo.arq_id}>
-                                            <td>{index + 1}</td>
-                                            <td>{anexo.tpd_nome}</td>
-                                            <td>
-                                                <BotaoComoLink
-                                                    type="button"
-                                                    onClick={e =>
-                                                        download(
-                                                            e,
-                                                            anexo.arq_id,
-                                                            anexo.manId,
-                                                            anexo.arq_nome
-                                                        )
-                                                    }>
-                                                    {anexo.arq_nome}
-                                                </BotaoComoLink>
-                                            </td>
-                                            <td>{anexo.data}</td>
-
-                                            <td>
-                                                {anexo.arq_login ===
-                                                sessionStorage.getItem('usuario') ? (
-                                                    <BotaoComoLink
-                                                        onClick={() =>
-                                                            abreModalExcluir(anexo.arq_id)
-                                                        }>
-                                                        Excluir
-                                                    </BotaoComoLink>
-                                                ) : null}
-                                            </td>
+                            <fieldset>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Seq</th>
+                                            <th>Documento</th>
+                                            <th>Arquivo</th>
+                                            <th>Data</th>
+                                            <th>Excluir</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {anexos.map((anexo, index) => (
+                                            <tr key={anexo.arq_id}>
+                                                <td>{index + 1}</td>
+                                                <td>{anexo.tpd_nome}</td>
+                                                <td>
+                                                    <BotaoComoLink
+                                                        type="button"
+                                                        onClick={e =>
+                                                            download(
+                                                                e,
+                                                                anexo.arq_id,
+                                                                anexo.manId,
+                                                                anexo.arq_nome
+                                                            )
+                                                        }>
+                                                        {anexo.arq_nome}
+                                                    </BotaoComoLink>
+                                                </td>
+                                                <td>{anexo.data}</td>
+
+                                                <td>
+                                                    {anexo.arq_login ===
+                                                    sessionStorage.getItem('usuario') ? (
+                                                        <BotaoComoLink
+                                                            onClick={() =>
+                                                                abreModalExcluir(anexo.arq_id)
+                                                            }>
+                                                            Excluir
+                                                        </BotaoComoLink>
+                                                    ) : null}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </fieldset>
                         </div>
                     ) : null}
                 </Main>
@@ -708,7 +657,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     );
 }
 
-CriarManifestacaoParecerProjurisAposentadoria.propTypes = {
+CriarManifestacaoDecisaoPad.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
             proId: PropTypes.string,
@@ -716,4 +665,4 @@ CriarManifestacaoParecerProjurisAposentadoria.propTypes = {
     }).isRequired,
 };
 
-export default CriarManifestacaoParecerProjurisAposentadoria;
+export default CriarManifestacaoDecisaoPad;

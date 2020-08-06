@@ -1,6 +1,6 @@
 // Tipos de processo
-export const TPR_PAS = 16;
 export const TPR_PAD = 15;
+export const TPR_PAS = 16;
 export const TPR_ABONO_PERMANENCIA = 17;
 export const TPR_FOLHA_PAGAMENTO_GERAL = 18;
 export const TPR_GRATIFICACAO_FORMACAO_ACADEMICA = 20;
@@ -20,3 +20,11 @@ export const TPR_RECURSO = 248;
 
 // Área
 export const AREA_PRESIDENCIA = 88;
+export const AREA_DARH = 7;
+export const TODA_AREA = 556;
+export const GAB_1_SECRETARIA = 558;
+export const GAB_2_SECRETARIA = 559;
+export const IPMC = 1500;
+export const COMISSAO_PROCESSANTE = 2000;
+
+//

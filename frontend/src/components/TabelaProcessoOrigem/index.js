@@ -28,7 +28,6 @@ function TabelaProcessoOrigem({ proId }) {
             },
         })
             .then(res => {
-                alert(JSON.stringify(res.data, null, 4));
                 const processoOrigem = [];
                 for (let i = 0; i < res.data.length; i++) {
                     processoOrigem.push({
@@ -48,7 +47,7 @@ function TabelaProcessoOrigem({ proId }) {
                         </span>
                     ));
                 }
-                // setRows(processoOrigem);
+                setRows(processoOrigem);
             })
             .catch(() => {
                 console.log('Erro ao carregar processo de origem.');

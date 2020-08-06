@@ -109,10 +109,12 @@ export const ContainerNomes = styled.div`
 `;
 
 export const ContainerProcessoOrigem = styled.div`
-    display: grid;
-    grid-template-columns: 1253px;
-    grid-column-gap: 10px;
-    margin-bottom: 20px;
+    background: #fff;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    label {
+        margin: 3px;
+    }
 `;
 
 export const ContainerBotoes = styled.div`
@@ -166,12 +168,4 @@ export const BotaoComoLink = styled.button`
 
 export const ListaArquivo = styled.ul`
     list-style-type: none;
-`;
-
-export const Vermelho = styled.span`
-    color: red;
-`;
-
-export const Centralizado = styled.div`
-    text-align: center;
 `;
