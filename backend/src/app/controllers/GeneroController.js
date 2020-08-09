@@ -1,4 +1,5 @@
 import Genero from '../models/Genero';
+import VGenero from '../models/VGenero';
 import Auditoria from '../models/Auditoria';
 import DataHoraAtual from '../models/DataHoraAtual';
 import CreateGeneroService from '../services/genero/CreateGeneroService';
@@ -6,19 +7,24 @@ import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService
 import DeleteGeneroService from '../services/genero/DeleteGeneroService';
 import UpdateGeneroService from '../services/genero/UpdateGeneroService';
 import AppError from '../error/AppError';
-import sequelize from 'sequelize';
 
 class GeneroController {
     async index(req, res) {
-        const GENERO_PRESIDENCIA = 29;
         const generos = await Genero.findAll({
             order: ['gen_nome'],
-            attributes: ['gen_id', 'gen_nome'],
+            attributes: ['gen_id', 'gen_nome', 'gen_visivel'],
             where: {
-                gen_id: {
-                    [sequelize.Op.not]: GENERO_PRESIDENCIA
-                }
+                gen_visivel: true
             },
+            logging: false
+        });
+        return res.json(generos);
+    }
+
+    async grid(req, res) {
+        const generos = await VGenero.findAll({
+            order: ['gen_nome'],
+            attributes: ['gen_id', 'gen_nome', 'gen_visivel', 'visivel'],
             logging: false
         });
         return res.json(generos);
@@ -28,7 +34,7 @@ class GeneroController {
         const createGenero = new CreateGeneroService(Genero);
         const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
 
-        const { gen_id, gen_nome } = await createGenero.execute(req.body);
+        const { gen_id, gen_nome, gen_visivel } = await createGenero.execute(req.body);
 
         // auditoria de inserção
         const { url, headers } = req;
@@ -39,19 +45,19 @@ class GeneroController {
 
         return res.json({
             gen_id,
-            gen_nome
+            gen_nome,
+            gen_visivel
         });
     }
 
     async update(req, res) {
         const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
-
         const updateGenero = new UpdateGeneroService(Genero);
 
         const { id } = req.params;
-        const { gen_nome } = req.body;
+        const { gen_nome, gen_visivel } = req.body;
 
-        const updatedGenero = await updateGenero.execute({ id, gen_nome });
+        const updatedGenero = await updateGenero.execute({ id, gen_nome, gen_visivel });
 
         // auditoria de edição
         const { url, headers } = req;

@@ -22,6 +22,8 @@ import Arquivo from '../models/Arquivo';
 import DataHoraAtual from '../models/DataHoraAtual';
 import CriaCapaService from '../services/pdf/CriaCapaService';
 import Sequelize from 'sequelize';
+import ConnectionHelper from '../helpers/ConnectionHelper';
+import * as constantes from '../../app/constants/constantes';
 // import AuditoriaController from './AuditoriaController';
 
 class CriaProcessoController {
@@ -87,12 +89,11 @@ class CriaProcessoController {
     }
 
     async processosDescontoFolhaDeterminacaoJudicial(req, res) {
-        const TIPO_PENSAO_ALIMENTICIA = 25;
         const processos = await VDadosProcesso.findAll({
             attributes: ['pro_id', 'pro_codigo', 'pro_matricula', 'pro_nome', 'cpf', 'tpr_id'],
             logging: false,
             where: {
-                tpr_id: TIPO_PENSAO_ALIMENTICIA
+                tpr_id: constantes.TPR_DESCONTO_PENSAO_ALIMENTICIA
             }
         });
         return res.json(processos);
@@ -105,12 +106,35 @@ class CriaProcessoController {
             logging: false,
             where: {
                 usu_autuador: req.params.usuario,
-                tpr_id: { [Op.notIn]: [28, 15, 16, 30, 248] },
+                tpr_id: {
+                    [Op.notIn]: [
+                        constantes.TPR_BAIXA_BENS,
+                        constantes.TPR_PAD,
+                        constantes.TPR_PAS,
+                        constantes.TPR_EXECUCAO_DEESPESAS,
+                        constantes.TPR_RECURSO
+                    ]
+                },
                 usu_finalizador: { [Op.ne]: null }
             },
             order: ['pro_codigo']
         });
         return res.json(processos);
+    }
+
+    async processosRecursoPad(req, res) {
+        const connection = ConnectionHelper.getConnection();
+        const { QueryTypes } = require('sequelize');
+
+        const sql = `select a.pro_id, a.pro_codigo, a.tpr_nome, b.nom_login from spa2.v_dados_processo_pas_pad a, spa2.nome_pas_pad b where a.tpr_id = 15 and a.pro_id = b.pro_id and b.nom_login = '${req.params.usuario}'`;
+
+        const processoRecursoPad = await connection.query(sql,
+            {
+                type: QueryTypes.SELECT,
+                logging: false
+            }
+        );
+        return res.json(processoRecursoPad);
     }
 
     async processoOrigem(req, res) {
@@ -127,7 +151,7 @@ class CriaProcessoController {
     async comboMembrosComissaoProcessante(req, res) {
         const membrosComissaoProcessante = await VMembrosComissao.findAll({
             where: {
-                area_id: 2000,
+                area_id: constantes.COMISSAO_PROCESSANTE,
                 mco_ativo: true
             },
             attributes: ['mco_id', 'area_id', 'mco_matricula', 'mco_nome', 'mco_login', 'set_nome'],
@@ -311,7 +335,6 @@ class CriaProcessoController {
             console.log(JSON.stringify(processoOrigem, null, 4));
         }
         // grava na tabela arquivo a capa do processo
-        const TIPO_DOCUMENTO_CAPA_PROCESSO = 38;
         const arquivo = await Arquivo.create({
             arq_id: null,
             arq_nome: 'capa-' + pro_id + '.pdf',
@@ -320,7 +343,7 @@ class CriaProcessoController {
             arq_tipo: 'application/pdf',
             arq_doc_id: pro_id,
             arq_doc_tipo: 'capa-processo',
-            tpd_id: TIPO_DOCUMENTO_CAPA_PROCESSO,
+            tpd_id: constantes.TPD_CAPA_PROCESSO,
             arq_data: dataHoraAtual.dataValues.data_hora_atual,
             arq_login: usu_autuador
         }, {
@@ -419,7 +442,7 @@ class CriaProcessoController {
         // AuditoriaController.audita(req.body, req, 'I', pro_id);
         //
         // se for PAD e tiver processo PAD grava na tabela de processo_origem
-        if (tipoProcesso.dataValues.tpr_id === 15) {
+        if (tipoProcesso.dataValues.tpr_id === constantes.TPR_PAD) {
             if (req.body.pro_codigo_origem !== '') {
                 const localizaProcessoOrigem = await VDadosProcessoPasPad.findAll({
                     attributes: [
@@ -499,7 +522,6 @@ class CriaProcessoController {
             }
         }
         // grava na tabela arquivo a capa do processo
-        const TIPO_DOCUMENTO_CAPA_PROCESSO = 38;
         const arquivo = await Arquivo.create({
             arq_id: null,
             arq_nome: 'capa-' + pro_id + '.pdf',
@@ -508,7 +530,7 @@ class CriaProcessoController {
             arq_tipo: 'application/pdf',
             arq_doc_id: pro_id,
             arq_doc_tipo: 'capa-processo',
-            tpd_id: TIPO_DOCUMENTO_CAPA_PROCESSO,
+            tpd_id: constantes.TPD_CAPA_PROCESSO,
             arq_data: dataHoraAtual.dataValues.data_hora_atual,
             arq_login: usu_autuador
         }, {

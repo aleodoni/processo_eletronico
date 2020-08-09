@@ -23,6 +23,12 @@ export const Titulo = styled.div`
     }
 `;
 
+export const ContainerCampos = styled.div`
+    display: grid;
+    grid-template-columns: 540px 140px;
+    margin-bottom: 10px;
+`;
+
 export const Main = styled.main`
     margin-left: 10px;
     padding: 5px;

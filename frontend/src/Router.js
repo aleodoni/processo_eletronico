@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import CriarProcesso from './pages/CriarProcesso';
 import CriarProcessoPasPad from './pages/CriarProcessoPasPad';
+import CriarProcessoAposentadoriaAdm from './pages/CriarProcessoAposentadoriaAdm';
 import ConsultarProcesso from './pages/ConsultarProcesso';
 import ConsultarManifestacao from './pages/ConsultarManifestacao';
 import Tela from './pages/Tela';
@@ -61,6 +62,11 @@ const Routes = () => (
         <PrivateRoute exact path="/processo-consulta" component={ConsultarProcesso} />
         <PrivateRoute exact path="/manifestacao-consulta" component={ConsultarManifestacao} />
         <PrivateRoute exact path="/processo-cria" component={CriarProcesso} />
+        <PrivateRoute
+            exact
+            path="/processo-cria-aposentadoria-adm"
+            component={CriarProcessoAposentadoriaAdm}
+        />
         <PrivateRoute exact path="/processo-pas-pad" component={CriarProcessoPasPad} />
         <PrivateRoute exact path="/telas" component={Tela} />
         <PrivateRoute exact path="/fluxos" component={Fluxo} />

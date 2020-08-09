@@ -11,6 +11,7 @@ import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
 import Pessoal from '../../components/system/select/Pessoal';
+import TipoProcessoVisivel from '../../components/system/select/TipoProcessoVisivel';
 import Visualizacao from '../../components/system/select/Visualizacao';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
@@ -29,6 +30,7 @@ function TipoProcesso() {
         fluId: -1,
         tprPessoal: -1,
         tprPrazoRecurso: 0,
+        tprVisivel: -1,
     });
 
     const [tiposProcesso, setTiposProcesso] = useState([]);
@@ -62,6 +64,7 @@ function TipoProcesso() {
             fluId: -1,
             tprPessoal: -1,
             tprPrazoRecurso: 0,
+            tprVisivel: -1,
         });
         setErro('');
 
@@ -84,6 +87,7 @@ function TipoProcesso() {
             fluId: linha.flu_id,
             tprPessoal: linha.tpr_pessoal,
             tprPrazoRecurso: linha.tpr_prazo_recurso,
+            tprVisivel: linha.tpr_visivel,
         });
         posiciona();
     }
@@ -160,6 +164,7 @@ function TipoProcesso() {
         fluId,
         tprPessoal,
         tprPrazoRecurso,
+        tprVisivel,
     }) {
         try {
             const schema = Yup.object().shape({
@@ -172,10 +177,20 @@ function TipoProcesso() {
                 fluId: Yup.number().positive('Fluxo é obrigatório'),
                 tprPessoal: Yup.boolean().oneOf([true, false], 'Selecione se é pessoal'),
                 tprPrazoRecurso: Yup.number().positive('Prazo de recurso é obrigatório'),
+                tprVisivel: Yup.boolean().oneOf([true, false], 'Selecione se é visível'),
             });
 
             await schema.validate(
-                { tprId, tprNome, tprVisualizacao, genId, fluId, tprPessoal, tprPrazoRecurso },
+                {
+                    tprId,
+                    tprNome,
+                    tprVisualizacao,
+                    genId,
+                    fluId,
+                    tprPessoal,
+                    tprPrazoRecurso,
+                    tprVisivel,
+                },
                 { abortEarly: false }
             );
 
@@ -191,6 +206,7 @@ function TipoProcesso() {
                         flu_id: fluId,
                         tpr_pessoal: tprPessoal,
                         tpr_prazo_recurso: tprPrazoRecurso,
+                        tpr_visivel: tprVisivel,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -216,6 +232,7 @@ function TipoProcesso() {
                         flu_id: fluId,
                         tpr_pessoal: tprPessoal,
                         tpr_prazo_recurso: tprPrazoRecurso,
+                        tpr_visivel: tprVisivel,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -296,6 +313,7 @@ function TipoProcesso() {
                                 type="text"
                                 maxLength="2"
                             />
+                            <TipoProcessoVisivel name="tprVisivel" />
                         </Container2>
                         <ButtonContainer>
                             <Salvar name="btnSalva" clickHandler={grava} />
@@ -319,6 +337,7 @@ function TipoProcesso() {
                                 field: 'tpr_prazo_recurso',
                                 width: '170px',
                             },
+                            { title: 'Visível', field: 'visivel', width: '70px' },
                         ]}
                         data={tiposProcesso}
                         fillData={preencheCampos}

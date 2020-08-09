@@ -6,6 +6,7 @@ import Setor from '../app/models/Setor';
 import Lotacao from '../app/models/Lotacao';
 import Tela from '../app/models/Tela';
 import Genero from '../app/models/Genero';
+import VGenero from '../app/models/VGenero';
 import ModeloMenu from '../app/models/ModeloMenu';
 import AreaMenu from '../app/models/AreaMenu';
 import AreaTela from '../app/models/AreaTela';
@@ -78,6 +79,7 @@ const models = [
     AreaMenu,
     AreaTela,
     Genero,
+    VGenero,
     VAreaMenu,
     VTelaMenu,
     VMenuPai,

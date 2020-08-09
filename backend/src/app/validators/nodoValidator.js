@@ -136,6 +136,24 @@ export default celebrate({
                 'boolean.base': 'Ciência cálculo obrigatório',
                 'boolean.empty': 'Ciência cálculo obrigatório',
                 'any.required': 'Ciência cálculo obrigatório'
+            }),
+
+        nod_parecer_projuris_aposentadoria: Joi.boolean()
+            .required()
+            .default(false)
+            .messages({
+                'boolean.base': 'Parecer do Projuris obrigatório',
+                'boolean.empty': 'Parecer do Projuris obrigatório',
+                'any.required': 'Parecer do Projuris obrigatório'
+            }),
+
+        nod_decisao_pad: Joi.boolean()
+            .required()
+            .default(false)
+            .messages({
+                'boolean.base': 'Decisão do PAD obrigatório',
+                'boolean.empty': 'Decisão do PAD obrigatório',
+                'any.required': 'Decisão do PAD obrigatório'
             })
 
     }

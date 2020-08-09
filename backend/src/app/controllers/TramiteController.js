@@ -17,6 +17,7 @@ import TipoProcesso from '../models/TipoProcesso';
 import DataHoraAtual from '../models/DataHoraAtual';
 import VProximoTramiteNormal from '../models/VProximoTramiteNormal';
 import Sequelize from 'sequelize';
+import * as constantes from '../../app/constants/constantes';
 // import { StandardFontValues } from 'pdf-lib';
 // import AuditoriaController from './AuditoriaController';
 
@@ -142,14 +143,14 @@ class TramiteController {
                 'set_nome'
             ],
             where: {
-                set_id: { [Op.notIn]: [556, 557] }
+                set_id: { [Op.notIn]: [constantes.TODA_AREA, constantes.TODO_GABINETE] }
             },
             logging: false
         });
         const combo = [];
         let contador = 1;
         for (const p in proximo) {
-            if (proximo[p].set_id !== 556) {
+            if (proximo[p].set_id !== constantes.TODA_AREA) {
                 combo.push({
                     id: contador,
                     prx_id: proximo[p].prx_id,
@@ -230,7 +231,7 @@ class TramiteController {
                 } else {
                     // aqui vai verificar se o tipo de processo é de HORARIO ESPECIAL
                 // e também se é pessoal, e NÃO é um nó fim
-                    if ((tipoProcesso.dataValues.tpr_pessoal) && (tipoProcesso.dataValues.tpr_id === 241) && (nodoProximo.dataValues.nod_fim === false)) {
+                    if ((tipoProcesso.dataValues.tpr_pessoal) && (tipoProcesso.dataValues.tpr_id === constantes.TPR_HORARIO_ESPECIAL_ESTUDANTE) && (nodoProximo.dataValues.nod_fim === false)) {
                     // carrega a área do usuário
                         const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({
                             attributes: [
@@ -346,11 +347,10 @@ class TramiteController {
     }
 
     async proximoTramiteAposentadoriaDecisao(req, res) {
-        const AREA_EXECUTIVA = 398;
         const manifestacao = await Manifestacao.findAll({
             where: {
                 pro_id: req.params.id,
-                man_id_area: AREA_EXECUTIVA
+                man_id_area: constantes.AREA_COMISSAO_EXECUTIVA
             },
             attributes: [
                 'man_visto_executiva'
@@ -412,7 +412,6 @@ class TramiteController {
     }
 
     async proximoTramiteDirecionado(req, res) {
-        const TPR_PAD = 15;
         const processo = await Processo.findAll({
             where: {
                 pro_id: req.params.proId
@@ -429,7 +428,7 @@ class TramiteController {
             plain: true
         });
         let proNome = '';
-        if (processo.dataValues.tpr_id === TPR_PAD) {
+        if (processo.dataValues.tpr_id === constantes.TPR_PAD) {
             proNome = 'Sigiloso';
         } else {
             proNome = processo.dataValues.pro_nome;
@@ -453,7 +452,7 @@ class TramiteController {
         });
         const combo = [];
         // se for toda área é o setor do usuário
-        if (proximo[0].dataValues.set_id === 556) {
+        if (proximo[0].dataValues.set_id === constantes.TODA_AREA) {
             const area = await Setor.findByPk(processo.dataValues.area_id_iniciativa, { logging: false });
             if (!area) {
                 return res.status(400).json({ error: 'Área não encontrada' });

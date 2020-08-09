@@ -147,6 +147,7 @@ routes.delete(`${process.env.API_URL}/sigilos/:id`, SigiloController.delete);
 
 // rotas do cadastro de gêneros
 routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
+routes.get(`${process.env.API_URL}/generos-grid`, GeneroController.grid);
 routes.post(`${process.env.API_URL}/generos`, generoValidator, GeneroController.store);
 routes.put(`${process.env.API_URL}/generos/:id`, generoValidator, GeneroController.update);
 routes.delete(`${process.env.API_URL}/generos/:id`, GeneroController.delete);
@@ -197,6 +198,7 @@ routes.get(`${process.env.API_URL}/dados-pessoa-comissao/:matricula`, CriaProces
 routes.get(`${process.env.API_URL}/processo-origem/:id`, CriaProcessoController.processoOrigem);
 routes.get(`${process.env.API_URL}/combo-processos-pensao-alimenticia`, CriaProcessoController.processosDescontoFolhaDeterminacaoJudicial);
 routes.get(`${process.env.API_URL}/combo-processos-recurso/:usuario`, CriaProcessoController.processosRecurso);
+routes.get(`${process.env.API_URL}/combo-processos-recurso-pad/:usuario`, CriaProcessoController.processosRecursoPad);
 routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 routes.post(`${process.env.API_URL}/processo-pas-pad`, CriaProcessoController.criaPasPad);
 

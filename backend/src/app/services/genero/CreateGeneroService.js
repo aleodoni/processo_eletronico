@@ -5,13 +5,13 @@ class CreateGeneroService {
         this.generoModel = generoModel;
     }
 
-    async execute({ gen_id, gen_nome }) {
+    async execute({ gen_id, gen_nome, gen_visivel }) {
         // Verifica se gen_nome é nulo ou em branco
         if (!gen_nome || gen_nome.trim().length === 0) {
             throw new AppError('Nome inválido');
         }
 
-        const genero = await this.generoModel.create({ gen_id, gen_nome }, {
+        const genero = await this.generoModel.create({ gen_id, gen_nome, gen_visivel }, {
             logging: false
         });
 

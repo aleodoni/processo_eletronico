@@ -61,7 +61,7 @@ class DadosProcessoController {
                 'com_abono',
                 'num_abono'
             ],
-            logging: false,
+            logging: true,
             where: {
                 pro_id: req.params.id
             }

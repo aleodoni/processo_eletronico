@@ -14,6 +14,7 @@ import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import * as caminhos from '../../config/arquivos';
 import CreateManifestacaoService from '../services/manifestacao/CreateManifestacaoService';
 import fs from 'fs';
+import * as constantes from '../../app/constants/constantes';
 require('dotenv/config');
 // import AuditoriaController from './AuditoriaController';
 
@@ -34,13 +35,12 @@ class ManifestacaoController {
         // vou verificar nos tramites deste processo se o último trâmite teve
         // como razão "Discordância de cálculo", se teve é que voltou, então
         // tem que ter uma nova manifestação do DARH
-        const RAZ_DISCORDANCIA_DE_CALCULO = 120;
         const tramite = await Tramite.findAll({
             attributes: ['tra_id', 'pro_id', 'raz_id'],
             logging: false,
             where: {
                 pro_id: req.params.id,
-                raz_id: RAZ_DISCORDANCIA_DE_CALCULO
+                raz_id: constantes.RAZ_DISCORDANCIA_CALCULO
             }
         });
         const manifestacao = await VManifestacao.findAll({

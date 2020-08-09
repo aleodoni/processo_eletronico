@@ -34,6 +34,9 @@ class VTipoProcesso extends Model {
                 },
                 pessoal: {
                     type: Sequelize.STRING
+                },
+                visivel: {
+                    type: Sequelize.STRING
                 }
             },
             {

@@ -33,6 +33,7 @@ import CriaProcesso from '../../components/layout/button/CriaProcesso';
 import Iniciativa from '../../components/system/select/Iniciativa';
 import ComAbono from '../../components/system/select/ComAbono';
 import { cpf, cnpj } from '../../utils/validaCpfCnpj';
+import * as constantes from '../../utils/constantes';
 
 function CriarProcesso() {
     const history = useHistory();
@@ -67,6 +68,7 @@ function CriarProcesso() {
     const [revisaoPensaoAlimenticiaVisivel, setRevisaoPensaoAlimenticiaVisivel] = useState(false);
     const [abonoPermanenciaVisivel, setAbonoPermanenciaVisivel] = useState(false);
     const [recursoVisivel, setRecursoVisivel] = useState(false);
+    const [recursoPadVisivel, setRecursoPadVisivel] = useState(false);
     const [campoNumeroAbonoPermanenciaVisivel, setCampoNumeroAbonoPermanenciaVisivel] = useState(
         false
     );
@@ -77,11 +79,7 @@ function CriarProcesso() {
     const [areas, setAreas] = useState([]);
     const [pensoesAlimenticias, setPensoesAlimenticias] = useState([]);
     const [recursos, setRecursos] = useState([]);
-
-    const DEMAIS_PROCESSOS = '26';
-    const REVISAO_DESCONTO_PENSAO_ALIMENTICIA = '247';
-    const RECURSO = '248';
-    const ABONO_DE_PERMANENCIA = '17';
+    const [recursosPad, setRecursosPad] = useState([]);
 
     const formRef = useRef(null);
 
@@ -198,27 +196,53 @@ function CriarProcesso() {
         }
     }
 
+    async function carregaRecursoPad() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(
+                `/combo-processos-recurso-pad/${sessionStorage.getItem('usuario')}`
+            );
+
+            const data = response.data.map(processoRecursoPad => {
+                return {
+                    label: `${processoRecursoPad.pro_codigo} - ${processoRecursoPad.tpr_nome}`,
+                    value: processoRecursoPad.pro_id,
+                };
+            });
+            setRecursosPad(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
     function handleTprId(e) {
         // demais processos
-        if (e.target.value === DEMAIS_PROCESSOS) {
+        if (e.target.value === constantes.TPR_DEMAIS) {
             setAssuntoVisivel(true);
         } else {
-            if (e.target.value === REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
+            if (e.target.value === constantes.TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
                 carregaPensaoAlimenticia();
                 setRevisaoPensaoAlimenticiaVisivel(true);
             } else {
                 setRevisaoPensaoAlimenticiaVisivel(false);
             }
-            if (e.target.value === ABONO_DE_PERMANENCIA) {
+            if (e.target.value === constantes.TPR_ABONO_PERMANENCIA) {
                 setAbonoPermanenciaVisivel(true);
             } else {
                 setAbonoPermanenciaVisivel(false);
             }
-            if (e.target.value === RECURSO) {
+            if (e.target.value === constantes.TPR_RECURSO) {
                 carregaRecurso();
                 setRecursoVisivel(true);
             } else {
                 setRecursoVisivel(false);
+            }
+            if (Number(e.target.value) === constantes.TPR_RECURSO_REVISAO_PAD) {
+                carregaRecursoPad();
+                setRecursoPadVisivel(true);
+            } else {
+                setRecursoPadVisivel(false);
             }
             setAssuntoVisivel(false);
         }
@@ -491,7 +515,7 @@ function CriarProcesso() {
             }
         }
         // aqui valida se for pensão alimentícia
-        if (p.tprId === REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
+        if (p.tprId === constantes.TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
             if (p.proCpf.trim() === '') {
                 setErro('Cpf obrigatório.');
                 return;
@@ -532,7 +556,7 @@ function CriarProcesso() {
         // aqui valida se é do tipo recurso
         let proRecurso = false;
         let proCodigoRecurso = null;
-        if (p.tprId === RECURSO) {
+        if (p.tprId === constantes.TPR_RECURSO) {
             if (p.proRecurso === '-1') {
                 setErro('Selecione o processo.');
                 return;
@@ -856,6 +880,15 @@ function CriarProcesso() {
                                     name="proRecurso"
                                     label="Selecione o processo para recurso"
                                     options={recursos}
+                                />
+                            </ContainerRecurso>
+                        ) : null}
+                        {recursoPadVisivel ? (
+                            <ContainerRecurso>
+                                <Select
+                                    name="proRecursoPad"
+                                    label="Selecione o processo para recurso de PAD"
+                                    options={recursosPad}
                                 />
                             </ContainerRecurso>
                         ) : null}
