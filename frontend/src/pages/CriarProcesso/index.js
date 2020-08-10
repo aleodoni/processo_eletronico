@@ -217,28 +217,29 @@ function CriarProcesso() {
     }
 
     function handleTprId(e) {
+        const tipoProcesso = Number(e.target.value);
         // demais processos
-        if (e.target.value === constantes.TPR_DEMAIS) {
+        if (tipoProcesso === constantes.TPR_DEMAIS) {
             setAssuntoVisivel(true);
         } else {
-            if (e.target.value === constantes.TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
+            if (tipoProcesso === constantes.TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
                 carregaPensaoAlimenticia();
                 setRevisaoPensaoAlimenticiaVisivel(true);
             } else {
                 setRevisaoPensaoAlimenticiaVisivel(false);
             }
-            if (e.target.value === constantes.TPR_ABONO_PERMANENCIA) {
+            if (tipoProcesso === constantes.TPR_ABONO_PERMANENCIA) {
                 setAbonoPermanenciaVisivel(true);
             } else {
                 setAbonoPermanenciaVisivel(false);
             }
-            if (e.target.value === constantes.TPR_RECURSO) {
+            if (tipoProcesso === constantes.TPR_RECURSO) {
                 carregaRecurso();
                 setRecursoVisivel(true);
             } else {
                 setRecursoVisivel(false);
             }
-            if (Number(e.target.value) === constantes.TPR_RECURSO_REVISAO_PAD) {
+            if (tipoProcesso === constantes.TPR_RECURSO_REVISAO_PAD) {
                 carregaRecursoPad();
                 setRecursoPadVisivel(true);
             } else {
@@ -537,6 +538,7 @@ function CriarProcesso() {
         }
 
         // aqui valida se é abono de permanência
+
         if (p.tprId === '17') {
             if (p.proComAbono === '-1') {
                 setErro('Selecione se há comunicado eletrônico prévio.');
@@ -549,7 +551,7 @@ function CriarProcesso() {
                 }
             }
         } else {
-            p.proComAbono = null;
+            p.proComAbono = false;
             p.proNumComAbono = null;
         }
 
@@ -574,7 +576,7 @@ function CriarProcesso() {
         if (p.proCnpj !== '' && p.proCnpj !== undefined) {
             cnpjNumeros = p.proCnpj.replace(/[^\d]+/g, '');
         }
-
+        console.log(p.proComAbono);
         axios({
             method: 'POST',
             url: '/processo',
