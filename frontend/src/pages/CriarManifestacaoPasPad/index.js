@@ -17,6 +17,7 @@ import Tramitar from '../../components/layout/button/Tramitar';
 import Finalizar from '../../components/layout/button/Finalizar';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcessoPasPad from '../../components/ModalProcessoPasPad';
+import * as constantes from '../../utils/constantes';
 import {
     Container,
     Titulo,
@@ -153,7 +154,6 @@ function CriarManifestacaoPasPad(props) {
     };
 
     function incluiManifestacao(e) {
-        const TIPO_DOCUMENTO = 29;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -182,7 +182,7 @@ function CriarManifestacaoPasPad(props) {
                 arq_tipo: arq.type,
                 arq_doc_id: null,
                 arq_doc_tipo: 'manifestação',
-                tpd_id: TIPO_DOCUMENTO,
+                tpd_id: constantes.TPD_MANIFESTACAO,
                 arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
@@ -463,7 +463,7 @@ function CriarManifestacaoPasPad(props) {
                 const msg = `Processo encerrado com sucesso.`;
                 mensagem.success(msg, {
                     position: 'top-center',
-                    autoClose: 7000,
+                    autoClose: 5000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,

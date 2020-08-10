@@ -30,6 +30,7 @@ import {
     BotaoComoLink,
 } from './styles';
 import { download } from '../../utils/downloadArquivo';
+import * as constantes from '../../utils/constantes';
 
 function CriarManifestacaoVisto(props) {
     const [erro, setErro] = useState('');
@@ -135,12 +136,7 @@ function CriarManifestacaoVisto(props) {
     }
 
     function criaManifestacao({ manVistoExecutiva }) {
-        // Manifestação da executiva
-        const TIPO_MANIFESTACAO_EXECUTIVA = 5;
-
-        // Aval da Comissão Executiva
-        const TIPO_DOCUMENTO_EXECUTIVA = 27;
-
+        setErro('');
         const manLogin = sessionStorage.getItem('usuario');
         const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
         if (manVistoExecutiva === '-1') {
@@ -153,8 +149,8 @@ function CriarManifestacaoVisto(props) {
             data: {
                 man_id: null,
                 pro_id: match.params.proId,
-                tmn_id: TIPO_MANIFESTACAO_EXECUTIVA,
-                tpd_id: TIPO_DOCUMENTO_EXECUTIVA,
+                tmn_id: constantes.TMN_MANIFESTACAO_EXECUTIVA,
+                tpd_id: constantes.TPD_AVAL_COMISSAO_EXECUTIVA,
                 man_login: manLogin,
                 man_id_area: manIdArea,
                 man_visto_executiva: manVistoExecutiva,
@@ -167,7 +163,6 @@ function CriarManifestacaoVisto(props) {
             .then(resultado => {
                 setManId(resultado.data.man_id);
                 const ARQ_VISTO_EXECUTIVA = `visto-executiva-${resultado.data.man_id}.pdf`;
-                const TIPO_DOCUMENTO_VISTO_EXECUTIVA = 30;
                 axios({
                     method: 'POST',
                     url: '/arquivos',
@@ -182,7 +177,7 @@ function CriarManifestacaoVisto(props) {
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
                         arq_doc_tipo: 'manifestação',
-                        tpd_id: TIPO_DOCUMENTO_VISTO_EXECUTIVA,
+                        tpd_id: constantes.TPD_VISTO_EXECUTIVA,
                         arq_login: sessionStorage.getItem('usuario'),
                     },
                 })

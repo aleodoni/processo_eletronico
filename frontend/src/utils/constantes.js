@@ -33,10 +33,28 @@ export const AREA_COMISSAO_EXECUTIVA = 398;
 export const AREA_DARH = 7;
 export const TODA_AREA = 556;
 export const TODO_GABINETE = 557;
-export const GAB_1_SECRETARIA = 558;
-export const GAB_2_SECRETARIA = 559;
+export const GAB_1_SECRETARIA = 98;
+export const GAB_2_SECRETARIA = 100;
 export const IPMC = 1500;
 export const COMISSAO_PROCESSANTE = 2000;
+
+// tipo de manifestação
+export const TMN_ATESTO = 1;
+export const TMN_INFORMACAO = 2;
+export const TMN_PARECER = 3;
+export const TMN_MANIFESTACAO_EXECUTIVA = 5;
+export const TMN_MANIFESTACAO_PRESIDENCIA = 8;
+export const TMN_CIENCIA_PROCESSO = 10;
+export const TMN_MANIFESTACAO_AVERBACAO = 11;
+export const TMN_CIENCIA_AVERBACAO = 12;
+export const TMN_AVAL_HORARIO_ESPECIAL = 13;
+export const TMN_CALCULO_TEMPO_SERVICO = 14;
+export const TMN_CIENCIA_CALCULO_APOSENTADORIA = 15;
+export const TMN_DISCORDANCIA_CALCULO = 16;
+export const TMN_PARECER_LEGALIDADE_REGULARIDADE = 17;
+export const TMN_CORRECAO_OU_ESCLARECIMENTOS = 18;
+export const TMN_MANIFESTACAO_ORGAO_EXTERNO = 19;
+export const TMN_DECISAO_PAD = 20;
 
 // Tipo documento
 export const TPD_DECISAO_TCE_LEGAL_ADMISSAO = 2;

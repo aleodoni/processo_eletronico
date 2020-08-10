@@ -17,6 +17,7 @@ import AvalHorario from '../../components/system/select/AvalHorario';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -240,11 +241,6 @@ function CriarManifestacaoAvalHorario(props) {
     }
 
     function incluiAnexo(e) {
-        // Manifestação de averbação
-        const TIPO_MANIFESTACAO_AVAL_HORARIO = 13;
-
-        // Tipo de documento de averbação
-        const TIPO_DOCUMENTO_AVAL_HORARIO = 34;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -258,7 +254,7 @@ function CriarManifestacaoAvalHorario(props) {
                     data: {
                         man_id: null,
                         pro_id: Number(props.match.params.proId),
-                        tmn_id: TIPO_MANIFESTACAO_AVAL_HORARIO,
+                        tmn_id: constantes.TMN_AVAL_HORARIO_ESPECIAL,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         nod_id: nodId,
@@ -285,7 +281,7 @@ function CriarManifestacaoAvalHorario(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO_AVAL_HORARIO,
+                                tpd_id: constantes.TPD_AVAL_HORARIO_ESPECIAL,
                                 arq_login: sessionStorage.getItem('usuario'),
                             },
                         })

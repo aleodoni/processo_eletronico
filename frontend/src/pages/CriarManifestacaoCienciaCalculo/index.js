@@ -17,6 +17,7 @@ import CienciaCalculo from '../../components/system/select/CienciaCalculo';
 import Ciencia from '../../components/layout/button/Ciencia';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -144,14 +145,7 @@ function CriarManifestacaoCienciaCalculo(props) {
     }
 
     function criaManifestacaoCienciaCalculo({ proId, manCienciaCalculo }) {
-        // Manifestação de ciência do cálculo
-        const TIPO_MANIFESTACAO_CIENCIA_CALCULO = 15;
-
-        // Tipo de documento de ciência do cálculo
-        const TIPO_DOCUMENTO_CIENCIA_CALCULO = 36;
-
-        const manLogin = sessionStorage.getItem('usuario');
-        const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        setErro('');
         if (manCienciaCalculo === '-1') {
             setErro('Selecione a ciência do cálculo.');
             return;
@@ -162,10 +156,10 @@ function CriarManifestacaoCienciaCalculo(props) {
             data: {
                 man_id: null,
                 pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_CIENCIA_CALCULO,
-                tpd_id: TIPO_DOCUMENTO_CIENCIA_CALCULO,
-                man_login: manLogin,
-                man_id_area: manIdArea,
+                tmn_id: constantes.TMN_CIENCIA_CALCULO_APOSENTADORIA,
+                tpd_id: constantes.TPD_CIENCIA_CALCULO_APOSENTADORIA,
+                man_login: sessionStorage.getItem('usuario'),
+                man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 nod_id: nodId,
                 man_ciencia_calculo: manCienciaCalculo,
             },
@@ -189,7 +183,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
                         arq_doc_tipo: 'manifestação',
-                        tpd_id: TIPO_DOCUMENTO_CIENCIA_CALCULO,
+                        tpd_id: constantes.TPD_CIENCIA_CALCULO_APOSENTADORIA,
                         arq_login: sessionStorage.getItem('usuario'),
                     },
                 })
@@ -354,11 +348,6 @@ function CriarManifestacaoCienciaCalculo(props) {
     }
 
     function incluiAnexoDiscorda(e) {
-        // Manifestação de discordância de cálculo
-        const TIPO_MANIFESTACAO_DISCORDA_CALCULO = 16;
-
-        // Tipo de documento de discordância de cálculo
-        const TIPO_DOCUMENTO_DISCORDA_CALCULO = 37;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -372,7 +361,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                     data: {
                         man_id: null,
                         pro_id: Number(match.params.proId),
-                        tmn_id: TIPO_MANIFESTACAO_DISCORDA_CALCULO,
+                        tmn_id: constantes.TMN_DISCORDANCIA_CALCULO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         nod_id: nodId,
@@ -400,7 +389,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO_DISCORDA_CALCULO,
+                                tpd_id: constantes.TPD_DISCORDANCIA_CALCULO,
                                 arq_login: sessionStorage.getItem('usuario'),
                             },
                         })

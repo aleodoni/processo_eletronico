@@ -17,6 +17,7 @@ import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 import {
     Container,
     Container2,
@@ -149,21 +150,18 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     };
 
     function incluiManifestacao(e) {
+        setErro('');
         let tipoManifestacao = null;
         let tipoDocumento = null;
-        const TIPO_MANIFESTACAO_PARECER_PROJURIS_APOSENTADORIA = 17;
-        const TIPO_MANIFESTACAO_CORRECAO_INFORMACOES_APOSENTADORIA = 18;
-        const TIPO_DOCUMENTO_PARECER_PROJURIS_APOSENTADORIA = 39;
-        const TIPO_DOCUMENTO_CORRECAO_INFORMACOES_APOSENTADORIA = 40;
         if (manParecerProjurisAposentadoria === 'Pela legalidade e regularidade') {
-            tipoManifestacao = TIPO_MANIFESTACAO_PARECER_PROJURIS_APOSENTADORIA;
-            tipoDocumento = TIPO_DOCUMENTO_PARECER_PROJURIS_APOSENTADORIA;
+            tipoManifestacao = constantes.TMN_PARECER_LEGALIDADE_REGULARIDADE;
+            tipoDocumento = constantes.TPD_PARECER_PROJURIS_APOSENTADORIA;
         }
         if (manParecerProjurisAposentadoria === 'Correção de informações ou esclarecimentos') {
-            tipoManifestacao = TIPO_MANIFESTACAO_CORRECAO_INFORMACOES_APOSENTADORIA;
-            tipoDocumento = TIPO_DOCUMENTO_CORRECAO_INFORMACOES_APOSENTADORIA;
+            tipoManifestacao = constantes.TMN_CORRECAO_OU_ESCLARECIMENTOS;
+            tipoDocumento = constantes.TPD_CORRECAO_INFORMACOES_ESCLARECIMENTOS;
         }
-        setErro('');
+
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);

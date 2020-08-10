@@ -18,6 +18,7 @@ import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -275,10 +276,6 @@ function CriarManifestacaoExecutiva(props) {
     }
 
     function incluiAnexo(e) {
-        // Manifestação da presidência
-        const TIPO_MANIFESTACAO_PRESIDENCIA = 8;
-        // Aval da presidência
-        const TIPO_DOCUMENTO_PRESIDENCIA = 28;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -292,7 +289,7 @@ function CriarManifestacaoExecutiva(props) {
                     data: {
                         man_id: null,
                         pro_id: Number(props.match.params.proId),
-                        tmn_id: TIPO_MANIFESTACAO_PRESIDENCIA,
+                        tmn_id: constantes.TMN_MANIFESTACAO_PRESIDENCIA,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         man_visto_executiva: document.getElementById('manVistoExecutiva').value,
@@ -319,7 +316,7 @@ function CriarManifestacaoExecutiva(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO_PRESIDENCIA,
+                                tpd_id: constantes.TPD_DECISAO_EXECUTIVA,
                                 arq_login: sessionStorage.getItem('usuario'),
                             },
                         })

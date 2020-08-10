@@ -17,6 +17,7 @@ import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcessoPasPad from '../../components/ModalProcessoPasPad';
+import * as constantes from '../../utils/constantes';
 import {
     Container,
     Titulo,
@@ -154,8 +155,6 @@ function CriarManifestacaoDecisaoPad(props) {
     };
 
     function incluiManifestacao(e) {
-        const TIPO_DOCUMENTO_DECISAO_PAD = 41;
-        const TIPO_MANIFESTACAO_DECISAO_PAD = 20;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -174,7 +173,7 @@ function CriarManifestacaoDecisaoPad(props) {
             data: {
                 man_id: null,
                 pro_id: Number(match.params.proId),
-                tmn_id: TIPO_MANIFESTACAO_DECISAO_PAD,
+                tmn_id: constantes.TMN_DECISAO_PAD,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: sessionStorage.getItem('areaUsuario'),
                 nod_id: nodId,
@@ -183,7 +182,7 @@ function CriarManifestacaoDecisaoPad(props) {
                 arq_tipo: arq.type,
                 arq_doc_id: null,
                 arq_doc_tipo: 'manifestação',
-                tpd_id: TIPO_DOCUMENTO_DECISAO_PAD,
+                tpd_id: constantes.TPD_DECISAO_PAD,
                 arq_login: sessionStorage.getItem('usuario'),
                 man_decisao_pad: manDecisaoPad,
             },

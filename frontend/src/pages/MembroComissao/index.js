@@ -195,7 +195,6 @@ function MembroComissao() {
         mcoAreaIdMembro,
         mcoAtivo,
         mcoLogin,
-        selectComissao,
     }) {
         try {
             const schema = Yup.object().shape({

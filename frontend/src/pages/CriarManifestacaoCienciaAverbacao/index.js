@@ -17,6 +17,7 @@ import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import Ciencia from '../../components/layout/button/Ciencia';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -124,14 +125,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
     }
 
     function criaManifestacaoCienciaAverbacao({ proId, manCienciaAverbacao }) {
-        // Manifestação de ciência da verbação
-        const TIPO_MANIFESTACAO_CIENCIA_AVERBACAO = 12;
-
-        // Tipo de documento de ciência da averbação
-        const TIPO_DOCUMENTO_CIENCIA_AVERBACAO = 33;
-
-        const manLogin = sessionStorage.getItem('usuario');
-        const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        setErro('');
         if (manCienciaAverbacao === '-1') {
             setErro('Selecione a ciência da averbação.');
             return;
@@ -142,10 +136,10 @@ function CriarManifestacaoCienciaAverbacao(props) {
             data: {
                 man_id: null,
                 pro_id: proId,
-                tmn_id: TIPO_MANIFESTACAO_CIENCIA_AVERBACAO,
-                tpd_id: TIPO_DOCUMENTO_CIENCIA_AVERBACAO,
-                man_login: manLogin,
-                man_id_area: manIdArea,
+                tmn_id: constantes.TMN_CIENCIA_AVERBACAO,
+                tpd_id: constantes.TPD_CIENCIA_AVERBACAO,
+                man_login: sessionStorage.getItem('usuario'),
+                man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 nod_id: nodId,
                 man_ciencia_averbacao: manCienciaAverbacao,
             },
@@ -169,7 +163,7 @@ function CriarManifestacaoCienciaAverbacao(props) {
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
                         arq_doc_tipo: 'manifestação',
-                        tpd_id: TIPO_DOCUMENTO_CIENCIA_AVERBACAO,
+                        tpd_id: constantes.TPD_CIENCIA_AVERBACAO,
                         arq_login: sessionStorage.getItem('usuario'),
                     },
                 })

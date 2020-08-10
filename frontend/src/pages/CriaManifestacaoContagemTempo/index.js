@@ -18,6 +18,7 @@ import ContagemTempo from '../../components/system/select/ContagemTempo';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -295,11 +296,6 @@ function CriarManifestacaoContagemTempo(props) {
     }
 
     function incluiAnexo(e) {
-        // Manifestação de contagem de tempo
-        const TIPO_MANIFESTACAO_CONTAGEM_TEMPO = 14;
-
-        // Tipo de documento de contagem de tempo
-        const TIPO_DOCUMENTO_CONTAGEM_TEMPO = 35;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -313,7 +309,7 @@ function CriarManifestacaoContagemTempo(props) {
                     data: {
                         man_id: null,
                         pro_id: Number(match.params.proId),
-                        tmn_id: TIPO_MANIFESTACAO_CONTAGEM_TEMPO,
+                        tmn_id: constantes.TMN_CALCULO_TEMPO_SERVICO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         nod_id: nodId,
@@ -340,7 +336,7 @@ function CriarManifestacaoContagemTempo(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO_CONTAGEM_TEMPO,
+                                tpd_id: constantes.TPD_CONTAGEM_TEMPO_SERVICO,
                                 arq_login: sessionStorage.getItem('usuario'),
                             },
                         })

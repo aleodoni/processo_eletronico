@@ -17,6 +17,7 @@ import Averbacao from '../../components/system/select/Averbacao';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -253,11 +254,6 @@ function CriarManifestacaoAverbacao(props) {
     }
 
     function incluiAnexo(e) {
-        // Manifestação de averbação
-        const TIPO_MANIFESTACAO_AVERBACAO = 11;
-
-        // Tipo de documento de averbação
-        const TIPO_DOCUMENTO_AVERBACAO = 32;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -271,7 +267,7 @@ function CriarManifestacaoAverbacao(props) {
                     data: {
                         man_id: null,
                         pro_id: Number(match.params.proId),
-                        tmn_id: TIPO_MANIFESTACAO_AVERBACAO,
+                        tmn_id: constantes.TMN_MANIFESTACAO_AVERBACAO,
                         man_login: sessionStorage.getItem('usuario'),
                         man_id_area: sessionStorage.getItem('areaUsuario'),
                         nod_id: nodId,
@@ -298,7 +294,7 @@ function CriarManifestacaoAverbacao(props) {
                                 arq_tipo: arq.type,
                                 arq_doc_id: resultado.data.man_id,
                                 arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO_AVERBACAO,
+                                tpd_id: constantes.TPD_AVERBACAO,
                                 arq_login: sessionStorage.getItem('usuario'),
                             },
                         })

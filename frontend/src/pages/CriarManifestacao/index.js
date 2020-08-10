@@ -19,6 +19,7 @@ import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 import {
     Container,
     Titulo,
@@ -168,7 +169,6 @@ function CriarManifestacao(props) {
     };
 
     function incluiManifestacao(e) {
-        const TIPO_DOCUMENTO = 29;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -190,14 +190,13 @@ function CriarManifestacao(props) {
                 tmn_id: tmnId,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: sessionStorage.getItem('areaUsuario'),
-                man_visto_executiva: 'Não necessário',
                 nod_id: nodId,
                 arq_id: null,
                 arq_nome: arq.name,
                 arq_tipo: arq.type,
                 arq_doc_id: null,
                 arq_doc_tipo: 'manifestação',
-                tpd_id: TIPO_DOCUMENTO,
+                tpd_id: constantes.TPD_MANIFESTACAO,
                 arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
@@ -440,10 +439,8 @@ function CriarManifestacao(props) {
     }
 
     function tramita() {
-        const RECURSO = 248;
-        const APOSENTADORIA_VOLUNTARIA = 23;
         // se o nó for o 291 e o tipo for de aposentadoria voluntária
-        if (tprId === APOSENTADORIA_VOLUNTARIA && nodId === 291) {
+        if (tprId === constantes.TPR_APOSENTADORIA && nodId === 291) {
             // verifica qual foi a decisão da comissão executiva,
             // se foi deferido vai para ciencia e toca o barco
             // se foi indeferido vai para ciencia e termina
@@ -472,7 +469,7 @@ function CriarManifestacao(props) {
         // se o tipo for de aposentadoria encaminha para ciência do interessado
         // e ele encaminha para o DARH, para enviar ao Tribunal de Contas
         // outro tipo encaminha para o interessado
-        if (tprId === RECURSO && nodId === 281) {
+        if (tprId === constantes.TPR_RECURSO && nodId === 281) {
             axios({
                 method: 'GET',
                 url: `/processo-origem/${match.params.proId}`,
@@ -483,7 +480,7 @@ function CriarManifestacao(props) {
                 .then(res => {
                     for (let i = 0; i < res.data.length; i++) {
                         let prxId;
-                        if (res.data[i].tpr_id === APOSENTADORIA_VOLUNTARIA) {
+                        if (res.data[i].tpr_id === constantes.TPR_APOSENTADORIA) {
                             prxId = 102;
                         } else {
                             prxId = 103;
@@ -560,7 +557,7 @@ function CriarManifestacao(props) {
                 const msg = `Processo encerrado com sucesso.`;
                 mensagem.success(msg, {
                     position: 'top-center',
-                    autoClose: 7000,
+                    autoClose: 5000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,

@@ -18,6 +18,7 @@ import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -133,21 +134,16 @@ function CriarManifestacaoCiencia(props) {
     }
 
     function criaManifestacao() {
-        // ciência do processo
-        const TIPO_MANIFESTACAO_CIENCIA = 10;
-        const TIPO_DOCUMENTO_CIENCIA = 31;
-
-        const manLogin = sessionStorage.getItem('usuario');
-        const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        setErro('');
         axios({
             method: 'POST',
             url: '/manifestacoes',
             data: {
                 man_id: null,
                 pro_id: match.params.proId,
-                tmn_id: TIPO_MANIFESTACAO_CIENCIA,
-                man_login: manLogin,
-                man_id_area: manIdArea,
+                tmn_id: constantes.TMN_CIENCIA_PROCESSO,
+                man_login: sessionStorage.getItem('usuario'),
+                man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 man_ciencia: 'Ciente do processo',
                 nod_id: nodId,
             },
@@ -171,7 +167,7 @@ function CriarManifestacaoCiencia(props) {
                         arq_tipo: 'application/pdf',
                         arq_doc_id: resultado.data.man_id,
                         arq_doc_tipo: 'manifestação',
-                        tpd_id: TIPO_DOCUMENTO_CIENCIA,
+                        tpd_id: constantes.TPD_CIENCIA_PROCESSO,
                         arq_login: sessionStorage.getItem('usuario'),
                     },
                 })
@@ -303,7 +299,7 @@ function CriarManifestacaoCiencia(props) {
                 const msg = `Processo encerrado com sucesso. O prazo para recurso é de ${response.data} dias.`;
                 mensagem.success(msg, {
                     position: 'top-center',
-                    autoClose: 7000,
+                    autoClose: 5000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
