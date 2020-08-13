@@ -165,95 +165,78 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
-        if (e.target.files[0].size <= tamanhoAnexo) {
-            if (e.target.files[0].type === 'application/pdf') {
-                // aqui vai gravar na manifestação
+        if (e.target.files[0].size > tamanhoAnexo) {
+            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+            return;
+        }
+        if (e.target.files[0].type !== 'application/pdf') {
+            setErro('São válidos somente arquivos PDF.');
+            return;
+        }
+        axios({
+            method: 'POST',
+            url: '/manifestacoes',
+            data: {
+                man_id: null,
+                pro_id: Number(props.match.params.proId),
+                tmn_id: tipoManifestacao,
+                man_login: sessionStorage.getItem('usuario'),
+                man_id_area: sessionStorage.getItem('areaUsuario'),
+                nod_id: nodId,
+                man_parecer_projuris_aposentadoria: manParecerProjurisAposentadoria,
+
+                arq_id: null,
+                arq_nome: arq.name,
+                arq_tipo: arq.type,
+                arq_doc_id: null,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: tipoDocumento,
+                arq_login: sessionStorage.getItem('usuario'),
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(resultado => {
+                setManifestacao({ manId: resultado.data.man_id });
+                const data = new FormData();
+                data.append('file', arq);
                 axios({
                     method: 'POST',
-                    url: '/manifestacoes',
-                    data: {
-                        man_id: null,
-                        pro_id: Number(props.match.params.proId),
-                        tmn_id: tipoManifestacao,
-                        man_login: sessionStorage.getItem('usuario'),
-                        man_id_area: sessionStorage.getItem('areaUsuario'),
-                        nod_id: nodId,
-                        man_parecer_projuris_aposentadoria: manParecerProjurisAposentadoria,
-                    },
+                    url: `/anexo-manifestacao/${resultado.data.arq_id}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
+                        'Content-Type': 'multipart/form-data',
                     },
+                    data,
                 })
-                    .then(resultado => {
-                        setManifestacao({ manId: resultado.data.man_id });
-                        const data = new FormData();
-                        data.append('file', arq);
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Manifestação inserida com sucesso.');
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                        }
+                    })
+                    .catch(() => {
+                        const idArquivo = resultado.data.arq_id;
                         axios({
-                            method: 'POST',
-                            url: '/arquivos',
+                            method: 'DELETE',
+                            url: `arquivos/${idArquivo}`,
                             headers: {
                                 authorization: sessionStorage.getItem('token'),
                             },
-                            data: {
-                                arq_id: null,
-                                arq_nome: arq.name,
-                                pro_id: resultado.data.pro_id,
-                                man_id: resultado.data.man_id,
-                                arq_tipo: arq.type,
-                                arq_doc_id: resultado.data.man_id,
-                                arq_doc_tipo: 'manifestação',
-                                tpd_id: tipoDocumento,
-                                arq_login: sessionStorage.getItem('usuario'),
-                            },
                         })
-                            .then(res => {
-                                axios({
-                                    method: 'POST',
-                                    url: `/anexo-manifestacao/${res.data.arq_id}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                        'Content-Type': 'multipart/form-data',
-                                    },
-                                    data,
-                                })
-                                    .then(resAnexos => {
-                                        if (resAnexos.status === 204) {
-                                            limpaCampos();
-                                            mensagem.success('Manifestação inserida com sucesso.');
-                                            carregaManifestacaoProcesso();
-                                            document.getElementById('anexo').value = '';
-                                        }
-                                    })
-                                    .catch(() => {
-                                        const idArquivo = res.data.arq_id;
-                                        axios({
-                                            method: 'DELETE',
-                                            url: `arquivos/${idArquivo}`,
-                                            headers: {
-                                                authorization: sessionStorage.getItem('token'),
-                                            },
-                                        })
-                                            .then(() => {})
-                                            .catch(erroDeleteArquivo => {
-                                                setErro(erroDeleteArquivo.response.data.error);
-                                            });
-                                        setErro('Erro ao criar arquivo anexo.');
-                                    });
-                            })
-                            .catch(() => {
-                                setErro('Erro ao inserir na tabela arquivo.');
+                            .then(() => {})
+                            .catch(erroDeleteArquivo => {
+                                setErro(erroDeleteArquivo.response.data.error);
                             });
-                    })
-                    .catch(() => {
-                        setErro('Erro ao inserir manifestação.');
+                        setErro('Erro ao criar arquivo anexo.');
                     });
-                //
-            } else {
-                setErro('São válidos somente arquivos PDF.');
-            }
-        } else {
-            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
-        }
+            })
+            .catch(() => {
+                setErro('Erro ao inserir manifestação.');
+            });
     }
 
     function incluiAnexoManifestacao(e) {
@@ -261,72 +244,72 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
-        if (e.target.files[0].size <= tamanhoAnexo) {
-            if (e.target.files[0].type === 'application/pdf') {
-                const data = new FormData();
-                data.append('file', arq);
+        if (e.target.files[0].size > tamanhoAnexo) {
+            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+            return;
+        }
+        if (e.target.files[0].type !== 'application/pdf') {
+            setErro('São válidos somente arquivos PDF.');
+            return;
+        }
+        const data = new FormData();
+        data.append('file', arq);
+        axios({
+            method: 'POST',
+            url: '/arquivos',
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+            data: {
+                arq_id: null,
+                arq_nome: arq.name,
+                pro_id: document.getElementById('proId').value,
+                man_id: manId,
+                arq_tipo: arq.type,
+                arq_doc_id: manId,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: tpdId,
+                arq_login: sessionStorage.getItem('usuario'),
+            },
+        })
+            .then(res => {
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/anexo-manifestacao/${res.data.arq_id}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
+                        'Content-Type': 'multipart/form-data',
                     },
-                    data: {
-                        arq_id: null,
-                        arq_nome: arq.name,
-                        pro_id: document.getElementById('proId').value,
-                        man_id: manId,
-                        arq_tipo: arq.type,
-                        arq_doc_id: manId,
-                        arq_doc_tipo: 'manifestação',
-                        tpd_id: tpdId,
-                        arq_login: sessionStorage.getItem('usuario'),
-                    },
+                    data,
                 })
-                    .then(res => {
-                        axios({
-                            method: 'POST',
-                            url: `/anexo-manifestacao/${res.data.arq_id}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                                'Content-Type': 'multipart/form-data',
-                            },
-                            data,
-                        })
-                            .then(resAnexos => {
-                                if (resAnexos.status === 204) {
-                                    limpaCampos();
-                                    mensagem.success('Documento inserido com sucesso.');
-                                    carregaAnexos(manId);
-                                    carregaManifestacaoProcesso();
-                                    document.getElementById('anexo').value = '';
-                                }
-                            })
-                            .catch(() => {
-                                const idArquivo = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${idArquivo}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch(erroDeleteArquivo => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
-                            });
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Documento inserido com sucesso.');
+                            carregaAnexos(manId);
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                        }
                     })
                     .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
+                        const idArquivo = res.data.arq_id;
+                        axios({
+                            method: 'DELETE',
+                            url: `arquivos/${idArquivo}`,
+                            headers: {
+                                authorization: sessionStorage.getItem('token'),
+                            },
+                        })
+                            .then(() => {})
+                            .catch(erroDeleteArquivo => {
+                                setErro(erroDeleteArquivo.response.data.error);
+                            });
+                        setErro('Erro ao criar arquivo anexo.');
                     });
-            } else {
-                setErro('São válidos somente arquivos PDF.');
-            }
-        } else {
-            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
-        }
+            })
+            .catch(() => {
+                setErro('Erro ao inserir na tabela arquivo.');
+            });
     }
 
     async function carregaTipoDocumento() {

@@ -144,12 +144,8 @@ function CriarManifestacaoCienciaCalculo(props) {
         }
     }
 
-    function criaManifestacaoCienciaCalculo({ proId, manCienciaCalculo }) {
+    function criaManifestacao({ proId, manCienciaCalculo }) {
         setErro('');
-        if (manCienciaCalculo === '-1') {
-            setErro('Selecione a ciência do cálculo.');
-            return;
-        }
         axios({
             method: 'POST',
             url: '/manifestacoes',
@@ -157,77 +153,59 @@ function CriarManifestacaoCienciaCalculo(props) {
                 man_id: null,
                 pro_id: proId,
                 tmn_id: constantes.TMN_CIENCIA_CALCULO_APOSENTADORIA,
-                tpd_id: constantes.TPD_CIENCIA_CALCULO_APOSENTADORIA,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 nod_id: nodId,
                 man_ciencia_calculo: manCienciaCalculo,
+
+                arq_id: null,
+                arq_nome: `ciencia-cálculo.pdf`,
+                arq_tipo: 'application/pdf',
+                arq_doc_id: null,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: constantes.TPD_CIENCIA_CALCULO_APOSENTADORIA,
+                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(resultado => {
-                const ARQ_CIENCIA_CALCULO = `ciencia-cálculo-${resultado.data.man_id}.pdf`;
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/arquivo-ciencia-calculo`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
                     data: {
-                        arq_id: null,
-                        arq_nome: ARQ_CIENCIA_CALCULO,
-                        pro_id: resultado.data.pro_id,
+                        arq_id: resultado.data.arq_id,
                         man_id: resultado.data.man_id,
-                        arq_tipo: 'application/pdf',
-                        arq_doc_id: resultado.data.man_id,
-                        arq_doc_tipo: 'manifestação',
-                        tpd_id: constantes.TPD_CIENCIA_CALCULO_APOSENTADORIA,
-                        arq_login: sessionStorage.getItem('usuario'),
                     },
                 })
-                    .then(res => {
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Manifestação inserida com sucesso.');
+                            carregaManifestacaoProcesso();
+                            setMostraRegra(false);
+                            setMostraBotaoDiscorda(false);
+                            setMostraCiencia(false);
+                        }
+                    })
+                    .catch(() => {
+                        const idArquivo = resultado.data.arq_id;
                         axios({
-                            method: 'POST',
-                            url: `/arquivo-ciencia-calculo`,
+                            method: 'DELETE',
+                            url: `arquivos/${idArquivo}`,
                             headers: {
                                 authorization: sessionStorage.getItem('token'),
                             },
-                            data: {
-                                arq_id: res.data.arq_id,
-                                man_id: resultado.data.man_id,
-                            },
                         })
-                            .then(resAnexos => {
-                                if (resAnexos.status === 204) {
-                                    limpaCampos();
-                                    mensagem.success('Manifestação inserida com sucesso.');
-                                    carregaManifestacaoProcesso();
-                                    setMostraRegra(false);
-                                    setMostraBotaoDiscorda(false);
-                                    setMostraCiencia(false);
-                                    document.getElementById('anexo').value = '';
-                                }
-                            })
-                            .catch(() => {
-                                const idArquivo = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${idArquivo}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch(erroDeleteArquivo => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
+                            .then(() => {})
+                            .catch(erroDeleteArquivo => {
+                                setErro(erroDeleteArquivo.response.data.error);
                             });
-                    })
-                    .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
+                        setErro('Erro ao criar arquivo anexo.');
                     });
                 limpaCampos();
                 carregaManifestacaoProcesso();
@@ -352,98 +330,80 @@ function CriarManifestacaoCienciaCalculo(props) {
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
-        if (e.target.files[0].size <= tamanhoAnexo) {
-            if (e.target.files[0].type === 'application/pdf') {
-                // aqui vai gravar na manifestação
+        if (e.target.files[0].size > tamanhoAnexo) {
+            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+            return;
+        }
+        if (e.target.files[0].type !== 'application/pdf') {
+            setErro('São válidos somente arquivos PDF.');
+            return;
+        }
+        axios({
+            method: 'POST',
+            url: '/manifestacoes',
+            data: {
+                man_id: null,
+                pro_id: Number(match.params.proId),
+                tmn_id: constantes.TMN_DISCORDANCIA_CALCULO,
+                man_login: sessionStorage.getItem('usuario'),
+                man_id_area: sessionStorage.getItem('areaUsuario'),
+                nod_id: nodId,
+                man_ciencia_calculo: document.getElementById('manCienciaCalculo').value,
+
+                arq_id: null,
+                arq_nome: arq.name,
+                arq_tipo: arq.type,
+                arq_doc_id: null,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: constantes.TPD_DISCORDANCIA_CALCULO,
+                arq_login: sessionStorage.getItem('usuario'),
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(resultado => {
+                setManifestacao({ manId: resultado.data.man_id });
+                const data = new FormData();
+                data.append('file', arq);
                 axios({
                     method: 'POST',
-                    url: '/manifestacoes',
-                    data: {
-                        man_id: null,
-                        pro_id: Number(match.params.proId),
-                        tmn_id: constantes.TMN_DISCORDANCIA_CALCULO,
-                        man_login: sessionStorage.getItem('usuario'),
-                        man_id_area: sessionStorage.getItem('areaUsuario'),
-                        nod_id: nodId,
-                        man_ciencia_calculo: document.getElementById('manCienciaCalculo').value,
-                    },
+                    url: `/anexo-manifestacao/${resultado.data.arq_id}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
+                        'Content-Type': 'multipart/form-data',
                     },
+                    data,
                 })
-                    .then(resultado => {
-                        setManifestacao({ manId: resultado.data.man_id });
-                        const data = new FormData();
-                        data.append('file', arq);
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Manifestação inserida com sucesso.');
+                            carregaManifestacaoProcesso();
+                            setMostraRegra(false);
+                            setMostraBotaoDiscorda(false);
+                            setMostraCiencia(false);
+                        }
+                    })
+                    .catch(err => {
+                        const idArquivo = resultado.data.arq_id;
                         axios({
-                            method: 'POST',
-                            url: '/arquivos',
+                            method: 'DELETE',
+                            url: `arquivos/${idArquivo}`,
                             headers: {
                                 authorization: sessionStorage.getItem('token'),
                             },
-                            data: {
-                                arq_id: null,
-                                arq_nome: arq.name,
-                                pro_id: resultado.data.pro_id,
-                                man_id: resultado.data.man_id,
-                                arq_tipo: arq.type,
-                                arq_doc_id: resultado.data.man_id,
-                                arq_doc_tipo: 'manifestação',
-                                tpd_id: constantes.TPD_DISCORDANCIA_CALCULO,
-                                arq_login: sessionStorage.getItem('usuario'),
-                            },
                         })
-                            .then(res => {
-                                axios({
-                                    method: 'POST',
-                                    url: `/anexo-manifestacao/${res.data.arq_id}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                        'Content-Type': 'multipart/form-data',
-                                    },
-                                    data,
-                                })
-                                    .then(resAnexos => {
-                                        if (resAnexos.status === 204) {
-                                            limpaCampos();
-                                            mensagem.success('Manifestação inserida com sucesso.');
-                                            carregaManifestacaoProcesso();
-                                            setMostraRegra(false);
-                                            setMostraBotaoDiscorda(false);
-                                            setMostraCiencia(false);
-                                            document.getElementById('anexo').value = '';
-                                        }
-                                    })
-                                    .catch(() => {
-                                        const idArquivo = res.data.arq_id;
-                                        axios({
-                                            method: 'DELETE',
-                                            url: `arquivos/${idArquivo}`,
-                                            headers: {
-                                                authorization: sessionStorage.getItem('token'),
-                                            },
-                                        })
-                                            .then(() => {})
-                                            .catch(erroDeleteArquivo => {
-                                                setErro(erroDeleteArquivo.response.data.error);
-                                            });
-                                        setErro('Erro ao criar arquivo anexo.');
-                                    });
-                            })
-                            .catch(() => {
-                                setErro('Erro ao inserir na tabela arquivo.');
+                            .then(() => {})
+                            .catch(erroDeleteArquivo => {
+                                setErro(erroDeleteArquivo.response.data.error);
                             });
-                    })
-                    .catch(() => {
-                        setErro('Erro ao inserir manifestação.');
+                        setErro('Erro ao criar arquivo anexo.');
                     });
-                //
-            } else {
-                setErro('São válidos somente arquivos PDF.');
-            }
-        } else {
-            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
-        }
+            })
+            .catch(() => {
+                setErro('Erro ao inserir manifestação.');
+            });
     }
 
     function insereTramite(prxId, setId) {
@@ -538,10 +498,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                         </LinkProcesso>
                         - {tprNome}
                     </span>
-                    <Form
-                        ref={formRef}
-                        initialData={manifestacao}
-                        onSubmit={criaManifestacaoCienciaCalculo}>
+                    <Form ref={formRef} initialData={manifestacao} onSubmit={criaManifestacao}>
                         <Input name="manId" type="hidden" />
                         <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (
@@ -574,9 +531,6 @@ function CriarManifestacaoCienciaCalculo(props) {
                                         name="file"
                                         onChange={incluiAnexoDiscorda}
                                         id="anexo"
-                                        onClick={() => {
-                                            // verificaArquivo(e);
-                                        }}
                                     />
                                 </>
                             ) : null}

@@ -26,7 +26,6 @@ class Menu extends Component {
     async componentDidMount() {
         const dados = [];
         const data = JSON.parse(sessionStorage.getItem('menu'));
-
         Object.keys(data).forEach(key => {
             dados.push(data[key]);
         });
@@ -70,7 +69,10 @@ class Menu extends Component {
                                 <Link to={subOption.url} style={{ textDecoration: 'none' }}>
                                     <StyledListItem button key={subOption.name}>
                                         <FaCircle color="#fff" size="1em" />
-                                        <ListItemText primary={subOption.name} style={{ marginLeft: 10 }} />
+                                        <ListItemText
+                                            primary={subOption.name}
+                                            style={{ marginLeft: 10 }}
+                                        />
                                     </StyledListItem>
                                 </Link>
                             </Fundo>
@@ -82,7 +84,11 @@ class Menu extends Component {
                 <div key={subOption.name}>
                     <Fundo>
                         <StyledListItem button onClick={() => this.handleClick(subOption.name)}>
-                            {state[subOption.name] ? <FaChevronCircleDown color="#fff" size="1em" /> : <FaChevronCircleRight color="#fff" size="1em" />}
+                            {state[subOption.name] ? (
+                                <FaChevronCircleDown color="#fff" size="1em" />
+                            ) : (
+                                <FaChevronCircleRight color="#fff" size="1em" />
+                            )}
                             <ListItemText style={{ marginLeft: 10 }} primary={subOption.name} />
                         </StyledListItem>
                         <Collapse in={state[subOption.name]} timeout="auto" unmountOnExit>

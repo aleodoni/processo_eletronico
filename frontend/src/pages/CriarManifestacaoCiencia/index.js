@@ -14,9 +14,7 @@ import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
 import Finalizar from '../../components/layout/button/Finalizar';
 import Ciencia from '../../components/layout/button/Ciencia';
-import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
-import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
 import * as constantes from '../../utils/constantes';
 
@@ -45,7 +43,6 @@ function CriarManifestacaoCiencia(props) {
     const [tprNome, setTprNome] = useState('');
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
-    const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
     const [nodId, setNodId] = useState('');
@@ -85,15 +82,6 @@ function CriarManifestacaoCiencia(props) {
 
     function fechaModalTramitaUm() {
         setModalTramitaUm(false);
-    }
-
-    function abreModalTramitaVarios(dados) {
-        setDadosTramite(dados);
-        setModalTramitaVarios(true);
-    }
-
-    function fechaModalTramitaVarios() {
-        setModalTramitaVarios(false);
     }
 
     function limpaCampos() {
@@ -146,68 +134,53 @@ function CriarManifestacaoCiencia(props) {
                 man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 man_ciencia: 'Ciente do processo',
                 nod_id: nodId,
+
+                arq_id: null,
+                arq_nome: `ciencia.pdf`,
+                arq_tipo: 'application/pdf',
+                arq_doc_id: null,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: constantes.TPD_CIENCIA_PROCESSO,
+                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(resultado => {
-                const ARQ_CIENCIA = `ciencia-${resultado.data.man_id}.pdf`;
+                setManId(resultado.data.man_id);
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/arquivo-ciencia`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
                     data: {
-                        arq_id: null,
-                        arq_nome: ARQ_CIENCIA,
-                        pro_id: resultado.data.pro_id,
+                        arq_id: resultado.data.arq_id,
                         man_id: resultado.data.man_id,
-                        arq_tipo: 'application/pdf',
-                        arq_doc_id: resultado.data.man_id,
-                        arq_doc_tipo: 'manifestação',
-                        tpd_id: constantes.TPD_CIENCIA_PROCESSO,
-                        arq_login: sessionStorage.getItem('usuario'),
                     },
                 })
-                    .then(res => {
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Arquivo de ciência inserido com sucesso.');
+                            carregaManifestacaoProcesso();
+                        }
+                    })
+                    .catch(() => {
+                        const idArquivo = resultado.data.arq_id;
                         axios({
-                            method: 'POST',
-                            url: `/arquivo-ciencia`,
+                            method: 'DELETE',
+                            url: `arquivos/${idArquivo}`,
                             headers: {
                                 authorization: sessionStorage.getItem('token'),
                             },
-                            data: {
-                                arq_id: res.data.arq_id,
-                                man_id: resultado.data.man_id,
-                            },
                         })
-                            .then(resAnexos => {
-                                if (resAnexos.status === 204) {
-                                    limpaCampos();
-                                    mensagem.success('Arquivo de ciência inserido com sucesso.');
-                                    carregaManifestacaoProcesso();
-                                }
-                            })
-                            .catch(() => {
-                                const idArquivo = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${idArquivo}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch(erroDeleteArquivo => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
+                            .then(() => {})
+                            .catch(erroDeleteArquivo => {
+                                setErro(erroDeleteArquivo.response.data.error);
                             });
-                    })
-                    .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
+                        setErro('Erro ao criar arquivo anexo.');
                     });
                 limpaCampos();
                 carregaManifestacaoProcesso();
@@ -332,17 +305,10 @@ function CriarManifestacaoCiencia(props) {
                 if (res.data.length === 1) {
                     abreModalTramitaUm(res.data[0]);
                 }
-                if (res.data.length > 1) {
-                    abreModalTramitaVarios(res.data);
-                }
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
             });
-    }
-
-    function consulta() {
-        history.push('/processo-consulta');
     }
 
     function insereTramite(prxId, setId) {
@@ -408,7 +374,6 @@ function CriarManifestacaoCiencia(props) {
                                     )}
                                 </>
                             ) : null}
-                            <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>
                     </Form>
                     <ModalApaga
@@ -420,12 +385,6 @@ function CriarManifestacaoCiencia(props) {
                     <ModalTramitaUm
                         modalTramitaUm={modalTramitaUm}
                         fechaModalTramitaUm={fechaModalTramitaUm}
-                        tramita={insereTramite}
-                        dados={dadosTramite}
-                    />
-                    <ModalTramitaVarios
-                        modalTramitaVarios={modalTramitaVarios}
-                        fechaModalTramitaVarios={fechaModalTramitaVarios}
                         tramita={insereTramite}
                         dados={dadosTramite}
                     />
