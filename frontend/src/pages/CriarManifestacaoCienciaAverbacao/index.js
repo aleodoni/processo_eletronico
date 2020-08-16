@@ -13,7 +13,6 @@ import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
 import CienciaAverbacao from '../../components/system/select/CienciaAverbacao';
-import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import Ciencia from '../../components/layout/button/Ciencia';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
@@ -137,74 +136,56 @@ function CriarManifestacaoCienciaAverbacao(props) {
                 man_id: null,
                 pro_id: proId,
                 tmn_id: constantes.TMN_CIENCIA_AVERBACAO,
-                tpd_id: constantes.TPD_CIENCIA_AVERBACAO,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 nod_id: nodId,
                 man_ciencia_averbacao: manCienciaAverbacao,
+
+                arq_id: null,
+                arq_nome: `ciencia-averbacao.pdf`,
+                arq_tipo: 'application/pdf',
+                arq_doc_id: null,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: constantes.TPD_CIENCIA_AVERBACAO,
+                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(resultado => {
-                const ARQ_CIENCIA_AVERBACAO = `ciencia-averbacao-${resultado.data.man_id}.pdf`;
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/arquivo-ciencia-averbacao`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
                     data: {
-                        arq_id: null,
-                        arq_nome: ARQ_CIENCIA_AVERBACAO,
-                        pro_id: resultado.data.pro_id,
+                        arq_id: resultado.data.arq_id,
                         man_id: resultado.data.man_id,
-                        arq_tipo: 'application/pdf',
-                        arq_doc_id: resultado.data.man_id,
-                        arq_doc_tipo: 'manifestação',
-                        tpd_id: constantes.TPD_CIENCIA_AVERBACAO,
-                        arq_login: sessionStorage.getItem('usuario'),
                     },
                 })
-                    .then(res => {
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Arquivo de ciência inserido com sucesso.');
+                            carregaManifestacaoProcesso();
+                        }
+                    })
+                    .catch(() => {
+                        const idArquivo = resultado.data.arq_id;
                         axios({
-                            method: 'POST',
-                            url: `/arquivo-ciencia-averbacao`,
+                            method: 'DELETE',
+                            url: `arquivos/${idArquivo}`,
                             headers: {
                                 authorization: sessionStorage.getItem('token'),
                             },
-                            data: {
-                                arq_id: res.data.arq_id,
-                                man_id: resultado.data.man_id,
-                            },
                         })
-                            .then(resAnexos => {
-                                if (resAnexos.status === 204) {
-                                    limpaCampos();
-                                    mensagem.success('Arquivo de ciência inserido com sucesso.');
-                                    carregaManifestacaoProcesso();
-                                    document.getElementById('anexo').value = '';
-                                }
-                            })
-                            .catch(() => {
-                                const idArquivo = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${idArquivo}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch(erroDeleteArquivo => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
+                            .then(() => {})
+                            .catch(erroDeleteArquivo => {
+                                setErro(erroDeleteArquivo.response.data.error);
                             });
-                    })
-                    .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
+                        setErro('Erro ao criar arquivo anexo.');
                     });
                 limpaCampos();
                 carregaManifestacaoProcesso();
@@ -313,10 +294,6 @@ function CriarManifestacaoCienciaAverbacao(props) {
         setErro('');
     }
 
-    function consulta() {
-        history.push('/processo-consulta');
-    }
-
     function insereTramite(prxId, setId) {
         axios({
             method: 'POST',
@@ -388,7 +365,6 @@ function CriarManifestacaoCienciaAverbacao(props) {
                             {manifestacaoProcesso.length > 0 ? (
                                 <Tramitar name="btnTramita" clickHandler={tramita} />
                             ) : null}
-                            <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>
                     </Form>
                     <ModalApaga

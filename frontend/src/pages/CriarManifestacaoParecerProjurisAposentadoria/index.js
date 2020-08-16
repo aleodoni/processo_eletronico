@@ -45,6 +45,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
     const [proCodigo, setProCodigo] = useState('');
+    const [tprId, setTprId] = useState(-1);
     const [tprNome, setTprNome] = useState('');
     const [tiposDocumento, setTiposDocumento] = useState([]);
     const [anexos, setAnexos] = useState([]);
@@ -343,6 +344,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                 for (let i = 0; i < processo.length; i++) {
                     setManifestacao({ proId: processo[i].pro_id });
                     setProCodigo(processo[i].pro_codigo);
+                    setTprId(processo[i].tpr_id);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
                     setProcessoModal(processo[i]);
@@ -413,11 +415,19 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
 
     function tramita() {
         const parecer = manifestacaoProcesso[0].man_parecer_projuris_aposentadoria;
+        const PRX_PARECER_LEGALIDADE_APOSENTADORIA = 95;
+        const PRX_PARECER_LEGALIDADE_APOSENTADORIA_ADM = 135;
         if (parecer === 'Pela legalidade e regularidade') {
-            const NODO_PARECER_LEGALIDADE_APOSENTADORIA = 95;
+            let url = '';
+            if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_LEGALIDADE_APOSENTADORIA_ADM}`;
+            } else {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_LEGALIDADE_APOSENTADORIA}`;
+            }
+
             axios({
                 method: 'GET',
-                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_PARECER_LEGALIDADE_APOSENTADORIA}`,
+                url,
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
@@ -435,10 +445,17 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                 });
         }
         if (parecer === 'Correção de informações ou esclarecimentos') {
-            const NODO_PARECER_CORRECAO_APOSENTADORIA = 94;
+            const PRX_PARECER_CORRECAO_APOSENTADORIA = 94;
+            const PRX_PARECER_CORRECAO_APOSENTADORIA_ADM = 134;
+            let url = '';
+            if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_APOSENTADORIA_ADM}`;
+            } else {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_APOSENTADORIA}`;
+            }
             axios({
                 method: 'GET',
-                url: `/proximo-tramite-direcionado/${props.match.params.proId}/${NODO_PARECER_CORRECAO_APOSENTADORIA}`,
+                url,
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },

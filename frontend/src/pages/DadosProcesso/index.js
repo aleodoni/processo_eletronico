@@ -13,7 +13,6 @@ import Juntada from '../../components/layout/button/Juntada';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
 import TabelaManifestacoes from '../../components/TabelaManifestacoes';
 import TabelaTramitacao from '../../components/TabelaTramitacao';
-import TabelaProcessoOrigem from '../../components/TabelaProcessoOrigem';
 import {
     Container,
     Main,
@@ -34,6 +33,7 @@ function DadosProcesso({ match }) {
     const [erro, setErro] = useState('');
     const [processos, setProcessos] = useState([]);
     const [mostraProcesso, setMostraProcesso] = useState(false);
+    const [processosOrigem, setProcessosOrigem] = useState([]);
 
     const formRef = useRef(null);
 
@@ -54,10 +54,37 @@ function DadosProcesso({ match }) {
             });
     }, [proId]);
 
+    const carregaProcessoOrigem = useCallback(() => {
+        if (proId !== undefined) {
+            axios({
+                method: 'GET',
+                url: `/processo-origem/${proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    const processoOrigem = [];
+                    for (let i = 0; i < res.data.length; i++) {
+                        processoOrigem.push({
+                            pro_id_origem: res.data[i].pro_id_origem,
+                            processo_origem: res.data[i].processo_origem,
+                            tpr_nome: res.data[i].tpr_nome,
+                        });
+                    }
+                    setProcessosOrigem(processoOrigem);
+                })
+                .catch(() => {
+                    console.log('Erro ao carregar processo de origem.');
+                });
+        }
+    }, [proId]);
+
     useEffect(() => {
         mensagem.success('Carregando processo...');
         carregaDadosProcesso();
-    }, [carregaDadosProcesso]);
+        carregaProcessoOrigem();
+    }, [carregaDadosProcesso, carregaProcessoOrigem]);
 
     function consulta() {
         history.push('/processo-consulta');
@@ -196,9 +223,18 @@ function DadosProcesso({ match }) {
                                             <br />
                                         </ContainerBotoes>
                                     )}
-                                    <ContainerProcessoOrigem>
-                                        <TabelaProcessoOrigem proId={proId} />
-                                    </ContainerProcessoOrigem>
+                                    {processosOrigem.length > 0 ? (
+                                        <>
+                                            <p>Processo de origem</p>
+                                            <ContainerProcessoOrigem>
+                                                {processosOrigem.map(linha => (
+                                                    <label key={linha.pro_id}>
+                                                        {linha.processo_origem} - {linha.tpr_nome}
+                                                    </label>
+                                                ))}
+                                            </ContainerProcessoOrigem>
+                                        </>
+                                    ) : null}
                                     <ContainerIniciativa>
                                         <p>Iniciativa</p>
                                         <fieldset>

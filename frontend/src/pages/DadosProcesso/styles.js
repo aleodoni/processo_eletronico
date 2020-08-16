@@ -24,6 +24,15 @@ export const Container = styled.div`
     }
 `;
 
+export const ContainerProcessoOrigem = styled.div`
+    background: #fff;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    label {
+        margin: 3px;
+    }
+`;
+
 export const Main = styled.main`
     margin-left: 10px;
     padding: 5px;
@@ -82,13 +91,6 @@ export const ContainerTramitacao = styled.div`
     label {
         font-weight: bold;
     }
-`;
-
-export const ContainerProcessoOrigem = styled.div`
-    display: grid;
-    grid-template-columns: 1253px;
-    grid-column-gap: 10px;
-    margin-bottom: 20px;
 `;
 
 export const ContainerBotoes = styled.div`

@@ -516,9 +516,13 @@ function CriarProcesso() {
             }
         }
         // aqui valida se for pensão alimentícia
-        if (p.tprId === constantes.TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
-            if (p.proCpf.trim() === '') {
-                setErro('Cpf obrigatório.');
+        if (Number(p.tprId) === constantes.TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
+            if (p.proCpf === '' || p.proCpf === undefined) {
+                setErro('CPF é obrigatório.');
+                return;
+            }
+            if (Number(sessionStorage.getItem('areaUsuario')) !== constantes.AREA_DARH) {
+                setErro('Este tipo de processo só pode ser aberto pela área DGRH.');
                 return;
             }
             if (!cpf(p.proCpf.trim().replace(/[^\d]+/g, ''))) {
@@ -539,7 +543,7 @@ function CriarProcesso() {
 
         // aqui valida se é abono de permanência
 
-        if (p.tprId === '17') {
+        if (Number(p.tprId) === constantes.TPR_ABONO_PERMANENCIA) {
             if (p.proComAbono === '-1') {
                 setErro('Selecione se há comunicado eletrônico prévio.');
                 return;
@@ -558,7 +562,7 @@ function CriarProcesso() {
         // aqui valida se é do tipo recurso
         let proRecurso = false;
         let proCodigoRecurso = null;
-        if (p.tprId === constantes.TPR_RECURSO) {
+        if (Number(p.tprId) === constantes.TPR_RECURSO) {
             if (p.proRecurso === '-1') {
                 setErro('Selecione o processo.');
                 return;
@@ -567,6 +571,14 @@ function CriarProcesso() {
             proRecurso = true;
         }
 
+        // aqui valida se se é do tipo auxílio funeral
+        // se for o CPF é obrigatório
+        if (Number(p.tprId) === constantes.TPR_AUXILIO_FUNERAL) {
+            if (p.proCpf === '' || p.proCpf === undefined) {
+                setErro('CPF é obrigatório.');
+                return;
+            }
+        }
         //
         let cpfNumeros;
         let cnpjNumeros;
@@ -576,7 +588,7 @@ function CriarProcesso() {
         if (p.proCnpj !== '' && p.proCnpj !== undefined) {
             cnpjNumeros = p.proCnpj.replace(/[^\d]+/g, '');
         }
-        console.log(p.proComAbono);
+
         axios({
             method: 'POST',
             url: '/processo',
@@ -623,7 +635,13 @@ function CriarProcesso() {
                     erroCria.response.data.error ===
                     'Processo sem fluxo. Cadastre um fluxo primeiro.'
                 ) {
-                    setErro(erroCria.response.data.error);
+                    setErro('Processo sem fluxo. Cadastre um fluxo primeiro.');
+                } else if (
+                    erroCria.response.data.error === 'Erro ao retornar dados de área de pessoa.'
+                ) {
+                    setErro(
+                        'Erro ao retornar dados de área de pessoa. Insira um nome válido de pessoa.'
+                    );
                 } else {
                     setErro('Erro ao inserir processo.');
                 }

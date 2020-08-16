@@ -309,6 +309,7 @@ function CriarManifestacao(props) {
 
     const carregaDadosProcesso = useCallback(() => {
         const NO_IPMC = 276;
+        const NO_IPMC_ADM = 316;
         axios({
             method: 'GET',
             url: `/ver-processo/${props.match.params.proId}`,
@@ -319,12 +320,16 @@ function CriarManifestacao(props) {
             .then((res) => {
                 const processo = res.data;
                 for (let i = 0; i < processo.length; i++) {
+                    const urlInicio = '/processo-eletronico-externo';
                     // se não for o tipo certo e não está no nó certo sai do sistema
                     if (
                         processo[i].tpr_id !== constantes.TPR_APOSENTADORIA &&
-                        processo[i].nod_id !== NO_IPMC
+                        processo[i].tpr_id !== constantes.TPR_APOSENTADORIA_INICIATIVA_ADM
                     ) {
-                        window.location.href = '/processo-eletronico-externo';
+                        window.location.href = urlInicio;
+                    }
+                    if (processo[i].nod_id !== NO_IPMC && processo[i].nod_id !== NO_IPMC_ADM) {
+                        window.location.href = urlInicio;
                     }
                     setManifestacao({ proId: processo[i].pro_id });
                     setProCodigo(processo[i].pro_codigo);
@@ -431,7 +436,6 @@ function CriarManifestacao(props) {
     }
 
     function tramita() {
-        // aqui vai verificar se vai tramitar para um ou para vários
         axios({
             method: 'GET',
             url: `/proximo-tramite/${props.match.params.proId}`,
@@ -440,7 +444,6 @@ function CriarManifestacao(props) {
             },
         })
             .then((res) => {
-                // alert(res.data.length);
                 // se não tiver registros
                 if (res.data.length === 0) {
                     mensagem.info('Sem próximos trâmites.');

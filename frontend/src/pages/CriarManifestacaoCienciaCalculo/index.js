@@ -47,6 +47,7 @@ function CriarManifestacaoCienciaCalculo(props) {
     const [mostraCiencia, setMostraCiencia] = useState(false);
     const [mostraBotaoDiscorda, setMostraBotaoDiscorda] = useState(false);
     const [proCodigo, setProCodigo] = useState('');
+    const [tprId, setTprId] = useState(-1);
     const [tprNome, setTprNome] = useState('');
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
@@ -229,6 +230,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                 for (let i = 0; i < processo.length; i++) {
                     setManifestacao({ proId: processo[i].pro_id });
                     setProCodigo(processo[i].pro_codigo);
+                    setTprId(processo[i].tpr_id);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
                     setProcessoModal(processo[i]);
@@ -282,10 +284,17 @@ function CriarManifestacaoCienciaCalculo(props) {
         // Verifica qual foi a ciência
         const ciencia_calculo = manifestacaoProcesso[0].man_ciencia_calculo;
         if (ciencia_calculo === 'Discordo do cálculo') {
-            const NODO_CALCULO_RH = 91;
+            const PRX_CALCULO_RH = 91;
+            const PRX_CALCULO_RH_ADM = 131;
+            let url = '';
+            if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
+                url = `/proximo-tramite-direcionado/${match.params.proId}/${PRX_CALCULO_RH_ADM}`;
+            } else {
+                url = `/proximo-tramite-direcionado/${match.params.proId}/${PRX_CALCULO_RH}`;
+            }
             axios({
                 method: 'GET',
-                url: `/proximo-tramite-direcionado/${match.params.proId}/${NODO_CALCULO_RH}`,
+                url,
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },
@@ -303,10 +312,17 @@ function CriarManifestacaoCienciaCalculo(props) {
                 });
         }
         if (ciencia_calculo === 'Estou ciente do cálculo') {
-            const NODO_CALCULO_RH = 92;
+            const PRX_CALCULO_RH = 92;
+            const PRX_CALCULO_RH_ADM = 132;
+            let url = '';
+            if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
+                url = `/proximo-tramite-direcionado/${match.params.proId}/${PRX_CALCULO_RH_ADM}`;
+            } else {
+                url = `/proximo-tramite-direcionado/${match.params.proId}/${PRX_CALCULO_RH}`;
+            }
             axios({
                 method: 'GET',
-                url: `/proximo-tramite-direcionado/${match.params.proId}/${NODO_CALCULO_RH}`,
+                url,
                 headers: {
                     authorization: sessionStorage.getItem('token'),
                 },

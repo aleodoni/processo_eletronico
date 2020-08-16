@@ -240,99 +240,82 @@ function CriarManifestacaoAvalHorario(props) {
             });
     }
 
-    function incluiAnexo(e) {
+    function incluiManifestacao(e) {
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
-        if (e.target.files[0].size <= tamanhoAnexo) {
-            if (e.target.files[0].type === 'application/pdf') {
-                // aqui vai gravar na manifestação
+        if (e.target.files[0].size > tamanhoAnexo) {
+            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+            return;
+        }
+        if (e.target.files[0].type !== 'application/pdf') {
+            setErro('São válidos somente arquivos PDF.');
+            return;
+        }
+        axios({
+            method: 'POST',
+            url: '/manifestacoes',
+            data: {
+                man_id: null,
+                pro_id: Number(props.match.params.proId),
+                tmn_id: constantes.TMN_AVAL_HORARIO_ESPECIAL,
+                man_login: sessionStorage.getItem('usuario'),
+                man_id_area: sessionStorage.getItem('areaUsuario'),
+                nod_id: nodId,
+                man_aval_horario: document.getElementById('manAvalHorario').value,
+
+                arq_id: null,
+                arq_nome: arq.name,
+                arq_tipo: arq.type,
+                arq_doc_id: null,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: constantes.TPD_AVAL_HORARIO_ESPECIAL,
+                arq_login: sessionStorage.getItem('usuario'),
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(resultado => {
+                const data = new FormData();
+                data.append('file', arq);
                 axios({
                     method: 'POST',
-                    url: '/manifestacoes',
-                    data: {
-                        man_id: null,
-                        pro_id: Number(props.match.params.proId),
-                        tmn_id: constantes.TMN_AVAL_HORARIO_ESPECIAL,
-                        man_login: sessionStorage.getItem('usuario'),
-                        man_id_area: sessionStorage.getItem('areaUsuario'),
-                        nod_id: nodId,
-                        man_aval_horario: document.getElementById('manAvalHorario').value,
-                    },
+                    url: `/anexo-manifestacao/${resultado.data.arq_id}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
+                        'Content-Type': 'multipart/form-data',
                     },
+                    data,
                 })
-                    .then(resultado => {
-                        const data = new FormData();
-                        data.append('file', arq);
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Manifestação inserida com sucesso.');
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                        }
+                    })
+                    .catch(() => {
+                        const idArquivo = resultado.data.arq_id;
                         axios({
-                            method: 'POST',
-                            url: '/arquivos',
+                            method: 'DELETE',
+                            url: `arquivos/${idArquivo}`,
                             headers: {
                                 authorization: sessionStorage.getItem('token'),
                             },
-                            data: {
-                                arq_id: null,
-                                arq_nome: arq.name,
-                                pro_id: resultado.data.pro_id,
-                                man_id: resultado.data.man_id,
-                                arq_tipo: arq.type,
-                                arq_doc_id: resultado.data.man_id,
-                                arq_doc_tipo: 'manifestação',
-                                tpd_id: constantes.TPD_AVAL_HORARIO_ESPECIAL,
-                                arq_login: sessionStorage.getItem('usuario'),
-                            },
                         })
-                            .then(res => {
-                                axios({
-                                    method: 'POST',
-                                    url: `/anexo-manifestacao/${res.data.arq_id}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                        'Content-Type': 'multipart/form-data',
-                                    },
-                                    data,
-                                })
-                                    .then(resAnexos => {
-                                        if (resAnexos.status === 204) {
-                                            limpaCampos();
-                                            mensagem.success('Manifestação inserida com sucesso.');
-                                            carregaManifestacaoProcesso();
-                                            document.getElementById('anexo').value = '';
-                                        }
-                                    })
-                                    .catch(() => {
-                                        const idArquivo = res.data.arq_id;
-                                        axios({
-                                            method: 'DELETE',
-                                            url: `arquivos/${idArquivo}`,
-                                            headers: {
-                                                authorization: sessionStorage.getItem('token'),
-                                            },
-                                        })
-                                            .then(() => {})
-                                            .catch(erroDeleteArquivo => {
-                                                setErro(erroDeleteArquivo.response.data.error);
-                                            });
-                                        setErro('Erro ao criar arquivo anexo.');
-                                    });
-                            })
-                            .catch(() => {
-                                setErro('Erro ao inserir na tabela arquivo.');
+                            .then(() => {})
+                            .catch(erroDeleteArquivo => {
+                                setErro(erroDeleteArquivo.response.data.error);
                             });
-                    })
-                    .catch(() => {
-                        setErro('Erro ao inserir manifestação.');
+                        setErro('Erro ao criar arquivo anexo.');
                     });
-                //
-            } else {
-                setErro('São válidos somente arquivos PDF.');
-            }
-        } else {
-            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
-        }
+            })
+            .catch(() => {
+                setErro('Erro ao inserir manifestação.');
+            });
     }
 
     const verificaAvalHorario = e => {
@@ -384,7 +367,7 @@ function CriarManifestacaoAvalHorario(props) {
                                     <input
                                         type="file"
                                         name="file"
-                                        onChange={incluiAnexo}
+                                        onChange={incluiManifestacao}
                                         id="anexo"
                                         onClick={e => {
                                             verificaAvalHorario(e);

@@ -439,8 +439,58 @@ function CriarManifestacao(props) {
     }
 
     function tramita() {
+        // REVER AQUI!!!!
+        if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM && nodId === 130) {
+            const prxId = 130;
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-direcionado/${match.params.proId}/${prxId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(resDirecionado => {
+                    // se não tiver registros
+                    if (resDirecionado.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    // alert(JSON.stringify(resDirecionado.data[0], null, 4));
+                    abreModalTramitaUm(resDirecionado.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
         // se o nó for o 291 e o tipo for de aposentadoria voluntária
         if (tprId === constantes.TPR_APOSENTADORIA && nodId === 291) {
+            // verifica qual foi a decisão da comissão executiva,
+            // se foi deferido vai para ciencia e toca o barco
+            // se foi indeferido vai para ciencia e termina
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-decisao-aposentadoria/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    // alert(JSON.stringify(res.data, null, 4));
+                    abreModalTramitaUm(res.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+        // se o nó for o 321 e o tipo for de aposentadoria iniciativa da administração
+        if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM && nodId === 321) {
             // verifica qual foi a decisão da comissão executiva,
             // se foi deferido vai para ciencia e toca o barco
             // se foi indeferido vai para ciencia e termina

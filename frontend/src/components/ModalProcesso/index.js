@@ -77,7 +77,7 @@ const ModalProcesso = props => {
 
     useEffect(() => {
         carregaProcessoOrigem();
-    }, [carregaProcessoOrigem]);
+    }, [carregaProcessoOrigem, processo.pro_id]);
 
     return (
         <>

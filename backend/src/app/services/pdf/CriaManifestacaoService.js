@@ -87,12 +87,12 @@ class CriaManifestacaoService {
         const caminhoArquivo = caminhos.destino + caminhos.finalDoCaminho(arq_id) + caminhos.nomeFisico(arq_id) + 'M' + '.pdf';
         medidas.info.Title = 'SPE - ' + titulo + ' - ' + manifestacao.man_id;
         medidas.info.Author = manifestacao.man_login;
-        medidas.info.Subject = manifestacao.man_averbacao;
+        medidas.info.Subject = manifestacao.man_ciencia_averbacao;
         const doc = new PDFDocument(medidas);
         doc.pipe(fs.createWriteStream(caminhoArquivo));
         doc.image(brasao, 10, 10, { scale: 0.50 });
         doc.fontSize(20).text(titulo, 160, 20);
-        doc.fontSize(16).text('Ciência de Averbação: ' + manifestacao.man_averbacao, 190, 80);
+        doc.fontSize(16).text('Ciência de Averbação: ' + manifestacao.man_ciencia_averbacao, 190, 80);
         doc.fontSize(14).text('Login de usuário: ' + manifestacao.man_login, 10, 150);
         doc.fontSize(14).text('Data / hora: ' + manifestacao.man_data, 10, 170);
         doc.end();
