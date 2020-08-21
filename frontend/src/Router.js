@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import CriarProcesso from './pages/CriarProcesso';
+import ExecucaoDespesa from './pages/ExecucaoDespesa';
 import CriarProcessoPasPad from './pages/CriarProcessoPasPad';
 import CriarProcessoAposentadoriaAdm from './pages/CriarProcessoAposentadoriaAdm';
 import ConsultarProcesso from './pages/ConsultarProcesso';
@@ -62,6 +63,7 @@ const Routes = () => (
         <PrivateRoute exact path="/processo-consulta" component={ConsultarProcesso} />
         <PrivateRoute exact path="/manifestacao-consulta" component={ConsultarManifestacao} />
         <PrivateRoute exact path="/processo-cria" component={CriarProcesso} />
+        <PrivateRoute exact path="/processo-execucao-despesa" component={ExecucaoDespesa} />
         <PrivateRoute
             exact
             path="/processo-cria-aposentadoria-adm"

@@ -262,6 +262,81 @@ class ManifestacaoController {
         return res.json(manifestacao);
     }
 
+    async rubrica(req, res) {
+        try {
+            const ordemAssinatura = Number(req.body.ordem);
+            let jpgUrl = null;
+            let jpgImageBytes = null;
+            let eixoX = null;
+            const caminhoOrdemPagamento = process.env.CAMINHO_ARQUIVOS_ORDEM_PAGAMENTO;
+            if (ordemAssinatura === 1) {
+                jpgUrl = caminhoOrdemPagamento + 'assinaturas/assinatura1.jpg';
+                jpgImageBytes = fs.readFileSync(jpgUrl, null);
+                eixoX = 75;
+            }
+            if (ordemAssinatura === 2) {
+                jpgUrl = caminhoOrdemPagamento + 'assinaturas/assinatura2.jpg';
+                jpgImageBytes = fs.readFileSync(jpgUrl, null);
+                eixoX = 200;
+            }
+            if (ordemAssinatura === 3) {
+                jpgUrl = caminhoOrdemPagamento + 'assinaturas/assinatura3.jpg';
+                jpgImageBytes = fs.readFileSync(jpgUrl, null);
+                eixoX = 330;
+            }
+            if (ordemAssinatura === 4) {
+                jpgUrl = caminhoOrdemPagamento + 'assinaturas/assinatura4.jpg';
+                jpgImageBytes = fs.readFileSync(jpgUrl, null);
+                eixoX = 500;
+            }
+            const caminho = caminhoOrdemPagamento + 'ordemPagamento.pdf';
+            const myArrayBuffer = fs.readFileSync(caminho, null);
+
+            const pdfDoc = await PDFDocument.load(myArrayBuffer);
+
+            // const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0];
+            // const { width, height } = firstPage.getSize();
+            const { height } = firstPage.getSize();
+
+            /*
+        firstPage.drawText('ASS1', {
+            x: 75,
+            y: height - 763,
+            size: 18,
+            font: helveticaFont,
+            color: rgb(0.95, 0.1, 0.1)
+        });
+        */
+
+            const jpgImage = await pdfDoc.embedJpg(jpgImageBytes);
+
+            firstPage.drawImage(jpgImage, {
+                x: eixoX,
+                y: height - 763,
+                width: 40,
+                height: 50
+            });
+
+            const pdfBytes = await pdfDoc.save();
+
+            fs.writeFileSync(caminho, Buffer.from(pdfBytes));
+
+            fs.readFile(caminho, function(_err, data) {
+                if (_err) {
+                    console.log(_err);
+                }
+                res.contentType('application/pdf');
+                return res.send(data);
+            });
+        } catch (e) {
+            console.log(e);
+        }
+
+        // return res.json({ ok: 'ok' });
+    }
+
     async delete(req, res) {
         const manifestacao = await Manifestacao.findByPk(req.params.id, { logging: false });
         if (!manifestacao) {

@@ -30,6 +30,7 @@ export const TPR_APOSENTADORIA_INICIATIVA_ADM = 250;
 // Área
 export const AREA_PRESIDENCIA = 88;
 export const AREA_COMISSAO_EXECUTIVA = 398;
+export const AREA_DPS = 32;
 export const AREA_DARH = 7;
 export const TODA_AREA = 556;
 export const TODO_GABINETE = 557;

@@ -143,13 +143,13 @@ class DadosProcessoController {
         const areaIdIniciativa = req.body.area_id_iniciativa;
 
         if (proMatricula !== '') {
-            wherePesquisa.pro_matricula = proMatricula;
+            wherePesquisa.pro_matricula = proMatricula.trim();
         }
         if (proNome !== '') {
-            wherePesquisa.pro_nome = { [Op.substring]: proNome };
+            wherePesquisa.pro_nome = { [Op.iLike]: '%' + proNome + '%' };
         }
         if (proContatoPj !== '') {
-            wherePesquisa.pro_contato_pj = { [Op.substring]: proContatoPj };
+            wherePesquisa.pro_contato_pj = { [Op.iLike]: '%' + proContatoPj + '%' };
         }
         if (proCpf !== '' && proCpf !== undefined) {
             wherePesquisa.cpf = proCpf;
@@ -210,7 +210,7 @@ class DadosProcessoController {
                 'area_iniciativa_processo',
                 'setor_autuador_processo'
             ],
-            logging: false,
+            logging: true,
             where: wherePesquisa
         });
         return res.json(pesquisaProcesso);
