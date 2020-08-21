@@ -254,6 +254,9 @@ routes.post(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoControl
 routes.put(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.delete);
 
+// rubrica
+routes.post(`${process.env.API_URL}/cria-rubrica`, ManifestacaoController.rubrica);
+
 // rotas do cadastro de setores
 routes.get(`${process.env.API_URL}/setores`, SetorController.index);
 routes.post(`${process.env.API_URL}/setores`, SetorController.store);
