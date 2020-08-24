@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useHistory } from 'react-router';
 import { FaFileAlt } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import Autorizacao from '../../components/Autorizacao';
@@ -12,7 +11,6 @@ import CriaRubrica from '../../components/layout/button/CriaRubrica';
 import DefaultLayout from '../_layouts/default';
 
 function ExecucaoDespesa() {
-    const history = useHistory();
     const [erro, setErro] = useState('');
 
     useEffect(() => {

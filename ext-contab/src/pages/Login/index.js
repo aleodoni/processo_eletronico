@@ -30,13 +30,7 @@ function Login() {
     function limparSessao() {
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('usuario');
-        sessionStorage.removeItem('nomeUsuario');
-        sessionStorage.removeItem('areaUsuario');
-        sessionStorage.removeItem('setorUsuario');
-        sessionStorage.removeItem('nomeSetorUsuario');
-        sessionStorage.removeItem('nomeAreaUsuario');
-        sessionStorage.removeItem('orgao');
-        sessionStorage.removeItem('permissoes');
+        sessionStorage.removeItem('ip');
     }
 
     useEffect(() => {
@@ -70,7 +64,7 @@ function Login() {
             formRef.current.setErrors({});
 
             const schema = Yup.object().shape({
-                login: Yup.string().required('O login é obrigatório'),
+                login: Yup.string().required('O CPF ou CNPJ é obrigatório'),
                 senha: Yup.string().required('A senha é obrigatória'),
             });
 
@@ -79,24 +73,19 @@ function Login() {
             });
 
             try {
-                const { usuario, senha, timeout } = data;
+                /*
+                const { login, senha, timeout } = data;
 
                 const response = await api.post('/autorizacao-externa', {
-                    usuario,
+                    login,
                     senha,
                     timeout,
                 });
 
                 sessionStorage.setItem('token', response.data.token);
                 sessionStorage.setItem('usuario', response.data.usuario);
-                sessionStorage.setItem('nomeUsuario', response.data.nomeUsuario);
-                sessionStorage.setItem('areaUsuario', response.data.areaUsuario);
-                sessionStorage.setItem('setorUsuario', response.data.setorUsuario);
-                sessionStorage.setItem('nomeSetorUsuario', response.data.nomeSetorUsuario);
-                sessionStorage.setItem('nomeAreaUsuario', response.data.nomeAreaUsuario);
-                sessionStorage.setItem('orgao', response.data.orgao);
-                sessionStorage.setItem('permissoes', response.data.permissoes);
-
+                sessionStorage.setItem('ip', response.data.nomeUsuario);
+                */
                 history.push('/home');
             } catch (err) {
                 toast.error(`Falha na autenticação - ${err.response.data.error}`);
@@ -124,7 +113,7 @@ function Login() {
                     <span>Processo eletrônico</span>
                     <div>Acesso externo</div>
 
-                    <Input type="text" name="login" placeholder="Login" />
+                    <Input type="text" name="login" placeholder="CPF ou CNPJ" />
 
                     <Input type="password" name="senha" placeholder="Senha" />
                     <Reaptcha sitekey={chaveCaptcha} onVerify={verifica} />

@@ -22,6 +22,10 @@ class TipoDocumento extends Model {
                 tpd_visivel: {
                     type: Sequelize.BOOLEAN,
                     allowNull: false
+                },
+                tpd_solicitacao_pgto: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
                 }
             },
             {

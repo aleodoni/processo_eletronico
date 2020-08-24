@@ -1,32 +1,37 @@
 import Sequelize, { Model } from 'sequelize';
 
-class VTipoDocumento extends Model {
+class VFornecedores extends Model {
     static init(sequelize) {
         super.init(
             {
-                tpd_id: {
+                for_id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true
                 },
-                tpd_nome: {
+                for_nome: {
                     type: Sequelize.STRING
                 },
-                tpd_visivel: {
-                    type: Sequelize.BOOLEAN
-                },
-                visivel: {
+                for_cpf: {
                     type: Sequelize.STRING
                 },
-                tpd_solicitacao_pgto: {
-                    type: Sequelize.BOOLEAN
+                for_cnpj: {
+                    type: Sequelize.STRING
                 },
-                solicitacao_pgto: {
+                for_fone: {
+                    type: Sequelize.STRING
+                },
+                for_celular: {
+                    type: Sequelize.STRING
+                },
+                for_email: {
+                    type: Sequelize.STRING
+                },
+                for_empenho: {
                     type: Sequelize.STRING
                 }
-
             },
             {
-                tableName: 'v_tipo_documento',
+                tableName: 'v_fornecedores',
                 schema: 'spa2',
                 sequelize,
                 operatorsAliases: false
@@ -37,4 +42,4 @@ class VTipoDocumento extends Model {
     }
 }
 
-export default VTipoDocumento;
+export default VFornecedores;

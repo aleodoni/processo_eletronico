@@ -9,7 +9,8 @@ class Autorizacao extends Component {
     }
 
     verifica = () => {
-        const permissoes = sessionStorage.getItem('permissoes').toString();
+        // fazer -> verificar no banco para maior segurança
+        const permissoes = sessionStorage.getItem('permissao').toString();
         const permissoesUsuario = permissoes.split(',');
         const p = Array.from(permissoesUsuario);
         const dados = [];

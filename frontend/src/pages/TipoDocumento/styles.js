@@ -46,5 +46,5 @@ export const Erro = styled.div`
 
 export const Container1 = styled.div`
     display: grid;
-    grid-template-columns: 525px 160px;
+    grid-template-columns: 525px 160px 250px;
 `;

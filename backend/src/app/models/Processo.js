@@ -100,6 +100,16 @@ class Processo extends Model {
                 },
                 pro_num_com_abono: {
                     type: Sequelize.STRING
+                },
+                pro_processo_pai: {
+                    type: Sequelize.STRING
+                },
+                pro_ip_externo: {
+                    type: Sequelize.STRING
+                },
+                pro_enviado_externo: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
                 }
             },
             {
