@@ -8,7 +8,7 @@ export const Centro = styled.div`
     align-items: center;
 
     form {
-        width: 500px;
+        width: 600px;
         border-radius: 7px;
         margin: 20px;
         padding-bottom: 10px;
@@ -37,6 +37,7 @@ export const Centro = styled.div`
         color: #222;
         font-size: 16px;
         margin-bottom: 15px;
+        width: 280px;
     }
 `;
 

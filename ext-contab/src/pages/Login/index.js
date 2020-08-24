@@ -9,6 +9,7 @@ import Reaptcha from 'reaptcha';
 import Logo from '../../assets/brasao.png';
 import Input from '../../components/layout/Input';
 import Button from '../../components/layout/button/Button';
+import InputMask from '../../components/layout/InputMask';
 
 import api from '../../service/api';
 
@@ -112,10 +113,14 @@ function Login() {
                     <img src={Logo} alt="Câmara Municipal de Curitiba" />
                     <span>Processo eletrônico</span>
                     <div>Acesso externo</div>
-
-                    <Input type="text" name="login" placeholder="CPF ou CNPJ" />
-
+                    <InputMask
+                        name="login"
+                        placeholder="CPF ou CNPJ(somente números)"
+                        mask="99999999999999"
+                        maskChar=" "
+                    />
                     <Input type="password" name="senha" placeholder="Senha" />
+
                     <Reaptcha sitekey={chaveCaptcha} onVerify={verifica} />
                     <Input type="hidden" id="timeout" name="timeout" value="1440" />
                     <Button type="submit">
