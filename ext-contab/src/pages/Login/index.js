@@ -30,7 +30,8 @@ function Login() {
 
     function limparSessao() {
         sessionStorage.removeItem('token');
-        sessionStorage.removeItem('usuario');
+        sessionStorage.removeItem('cnpj');
+        sessionStorage.removeItem('fornecedor');
         sessionStorage.removeItem('ip');
     }
 
@@ -68,25 +69,23 @@ function Login() {
                 login: Yup.string().required('O CPF ou CNPJ é obrigatório'),
                 senha: Yup.string().required('A senha é obrigatória'),
             });
-
             await schema.validate(data, {
                 abortEarly: false,
             });
 
             try {
-                /*
                 const { login, senha, timeout } = data;
-
-                const response = await api.post('/autorizacao-externa', {
+                const response = await api.post('/autorizacao-ext-contab', {
                     login,
                     senha,
                     timeout,
                 });
 
                 sessionStorage.setItem('token', response.data.token);
-                sessionStorage.setItem('usuario', response.data.usuario);
-                sessionStorage.setItem('ip', response.data.nomeUsuario);
-                */
+                sessionStorage.setItem('cnpj', response.data.cnpj);
+                sessionStorage.setItem('fornecedor', response.data.fornecedor);
+                sessionStorage.setItem('ip', response.data.ip);
+
                 history.push('/home');
             } catch (err) {
                 toast.error(`Falha na autenticação - ${err.response.data.error}`);
@@ -115,12 +114,11 @@ function Login() {
                     <div>Acesso externo</div>
                     <InputMask
                         name="login"
-                        placeholder="CPF ou CNPJ(somente números)"
+                        placeholder="CPF ou CNPJ (somente números)"
                         mask="99999999999999"
                         maskChar=" "
                     />
                     <Input type="password" name="senha" placeholder="Senha" />
-
                     <Reaptcha sitekey={chaveCaptcha} onVerify={verifica} />
                     <Input type="hidden" id="timeout" name="timeout" value="1440" />
                     <Button type="submit">

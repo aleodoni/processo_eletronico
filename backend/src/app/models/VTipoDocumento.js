@@ -22,6 +22,12 @@ class VTipoDocumento extends Model {
                 },
                 solicitacao_pgto: {
                     type: Sequelize.STRING
+                },
+                nome_campo_anexo: {
+                    type: Sequelize.STRING
+                },
+                nome_campo_arquivo: {
+                    type: Sequelize.STRING
                 }
 
             },

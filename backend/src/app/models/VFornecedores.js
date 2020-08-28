@@ -26,7 +26,7 @@ class VFornecedores extends Model {
                 for_email: {
                     type: Sequelize.STRING
                 },
-                for_empenho: {
+                for_contato: {
                     type: Sequelize.STRING
                 }
             },
