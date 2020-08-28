@@ -43,6 +43,7 @@ import nodoValidator from './app/validators/nodoValidator';
 import menuValidator from './app/validators/menuValidator';
 import regraAposentacaoValidator from './app/validators/regraAposentacaoValidator';
 import razaoTramiteValidator from './app/validators/razaoTramiteValidator';
+import SolicitacaoController from './app/controllers/SolicitacaoController';
 
 require('dotenv/config');
 
@@ -76,15 +77,31 @@ const storageManifestacao = multer.diskStorage({
     }
 });
 
+const storageDocumento = multer.diskStorage({
+    destination: function(req, file, callback) {
+        const novoCaminho = '/home/casa/testeDummy/';
+        if (!fs.existsSync(novoCaminho)) {
+            fs.mkdirSync(novoCaminho);
+        }
+        callback(null, novoCaminho);
+    },
+    filename: function(req, file, callback) {
+        callback(null, file.originalname);
+    }
+});
+
 const upload = multer({ storage: storage });
 
 const uploadManifestacao = multer({ storage: storageManifestacao });
+
+const uploadDocumento = multer({ storage: storageDocumento });
 
 /**
  * Rotas sem autenticação
  */
 routes.post(`${process.env.API_URL}/autorizacao`, validatorSessionStore, LoginController.index);
 routes.post(`${process.env.API_URL}/autorizacao-externa`, validatorSessionStore, LoginController.indexExterno);
+routes.post(`${process.env.API_URL}/autorizacao-ext-contab`, validatorSessionStore, LoginController.indexExtContab);
 routes.get(`${process.env.API_URL}/bd`, LoginController.getBd);
 routes.get(`${process.env.API_URL}/`, Spa2Controller.index);
 
@@ -247,6 +264,11 @@ routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.
     res.status(204).end();
 });
 
+// teste
+routes.post(`${process.env.API_URL}/anexo-documentos`, uploadDocumento.any(), function(req, res) {
+    res.status(204).end();
+});
+
 // rotas do cadastro de tipos de manifestacao
 routes.get(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoController.index);
 routes.get(`${process.env.API_URL}/tipos-manifestacao-combo`, TipoManifestacaoController.combo);
@@ -336,5 +358,9 @@ routes.post(`${process.env.API_URL}/tramites-calculo-aposentadoria`, TramiteCont
 routes.get(`${process.env.API_URL}/proximo-tramite-aposentadoria-calculo/:id/:decisao`, TramiteController.proximoTramiteAposentadoriaCalculo);
 routes.get(`${process.env.API_URL}/proximo-tramite-direcionado/:proId/:prxId`, TramiteController.proximoTramiteDirecionado);
 routes.get(`${process.env.API_URL}/gera-juntada/:id`, DadosProcessoController.geraJuntada);
+
+// solicitações de fornecedor
+routes.get(`${process.env.API_URL}/solicitacoes/:cnpj`, SolicitacaoController.gridSolicitacao);
+routes.get(`${process.env.API_URL}/lista-documentos`, SolicitacaoController.listaTipoDocumentos);
 
 export default routes;

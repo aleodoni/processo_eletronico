@@ -10,6 +10,7 @@ class Autorizacao extends Component {
 
     verifica = () => {
         // fazer -> verificar no banco para maior segurança
+        /*
         const permissoes = sessionStorage.getItem('permissao').toString();
         const permissoesUsuario = permissoes.split(',');
         const p = Array.from(permissoesUsuario);
@@ -23,6 +24,7 @@ class Autorizacao extends Component {
             mensagem.error(`Não achou a permissão para a tela:${tela}`);
             window.location.href = '/processo-eletronico-externo';
         }
+        */
     };
 
     render() {

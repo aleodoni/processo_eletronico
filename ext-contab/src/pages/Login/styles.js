@@ -2,41 +2,40 @@ import styled from 'styled-components';
 
 export const Centro = styled.div`
     border-radius: 7px;
-    height: 98vh;
     display: flex;
     justify-content: center;
     align-items: center;
 
     form {
-        width: 500px;
         border-radius: 7px;
-        margin: 20px;
+        margin: 5px;
         padding-bottom: 10px;
-        padding-left: 30px;
-        padding-right: 30px;
+        padding-left: 10px;
+        padding-right: 10px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        left: 50%;
         background: ${({ theme }) => theme.text};
     }
 
     img {
-        width: 200px;
-        margin: 10px 0 20px;
+        width: 120px;
+        margin: 10px 0 10px;
     }
 
     span {
         color: #222;
-        font-size: 28px;
+        font-size: 22px;
         font-weight: bold;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
     }
 
     div {
         color: #222;
         font-size: 16px;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
+        width: 300px;
+        text-align: center;
     }
 `;
 
@@ -61,7 +60,7 @@ export const BotaoLogin = styled.button.attrs({
 
 export const Versao = styled.label`
     font-size: 12px;
-    padding-top: 15px;
+    padding-top: 5px;
 `;
 
 export const ErroLogin = styled.label`

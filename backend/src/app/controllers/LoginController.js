@@ -3,6 +3,7 @@
 
 import nJwt from 'njwt';
 import VDadosLogin from '../models/VDadosLogin';
+import VFornecedores from '../models/VFornecedores';
 // import Sequelize from 'sequelize';
 import AreaTela from '../models/AreaTela';
 
@@ -287,6 +288,55 @@ class LoginController {
         }
     }
 
+    async indexExtContab(req, res) {
+        const { login, senha, timeout } = req.body;
+        const loginToken = new LoginController();
+        console.log(senha);
+
+        try {
+            const cnpj = login.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+            // procura o fornecedor na v_fornecedores
+            const dadosFornecedor = await VFornecedores.findOne({
+                where: {
+                    for_cnpj: cnpj.trim()
+                },
+                logging: true,
+                plain: true
+            });
+
+            if (dadosFornecedor !== null) {
+                const nomeFornecedor = dadosFornecedor.dataValues.for_nome;
+
+                if (process.env.NODE_ENV !== 'test') {
+                    console.log(`Fornecedor: ${nomeFornecedor} logado com sucesso no sistema SPA2.`);
+                }
+
+                const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor, timeout);
+
+                const meuIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+                return res.status(201).json({
+                    token: meuToken,
+                    cnpj: login,
+                    fornecedor: nomeFornecedor,
+                    ip: meuIp
+                });
+            } else {
+                return res.status(400).json({ error: 'Fornecedor não cadastrado no sistema.' });
+            }
+        } catch (e) {
+            let retorno = '';
+            console.log(e);
+            if (e.errno === 'ECONNREFUSED') {
+                retorno = 'Conexão recusada, tente novamente mais tarde.';
+            } else {
+                retorno = 'CPF/CNPJ ou senha inválidos.';
+            }
+
+            return res.status(400).json({ error: retorno });
+        }
+    }
+
     async getBd(req, res) {
         return res
             .status(200)
@@ -301,6 +351,25 @@ class LoginController {
             sub: usuario, // login do usuario
             nomeUsuarioLdap: nomeUsuario, // nome do usuario no BD
             matricula: matricula, // matricula no BD
+            iat: new Date().getTime(), // data e hora de criação do token
+            exp: adicionaMinutos(new Date(), timeout) // data e hora de expiração do token
+        };
+        const jwt = nJwt.create(
+            claims,
+            process.env.CHAVE,
+            'HS512'
+        );
+        const token = jwt.compact();
+        return token;
+    }
+
+    geraTokenFornecedor(cnpj, nomeFornecedor, timeout) {
+        const adicionaMinutos = function(dt, minutos) {
+            return new Date(dt.getTime() + minutos * 60000);
+        };
+        const claims = {
+            sub: cnpj, // cnpj do fornecedor
+            nomeFornecedor: nomeFornecedor, // nome do fornecedor
             iat: new Date().getTime(), // data e hora de criação do token
             exp: adicionaMinutos(new Date(), timeout) // data e hora de expiração do token
         };

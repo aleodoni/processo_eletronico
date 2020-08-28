@@ -59,8 +59,6 @@ export const UserData = styled.div`
         align-items: center;
         justify-content: flex-end;
 
-        margin-top: 10px;
-
         svg {
             margin-right: 5px;
         }
