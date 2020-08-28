@@ -9,7 +9,7 @@ const sql = `
     nome_sequence varchar;
   BEGIN
     --> descobre sequence a ser usada
-    nome_sequence:= ''pro_'' || to_char(now(),''YYYY'') || ''_seq'';
+    nome_sequence:= ''spa2.pro_'' || to_char(now(),''YYYY'') || ''_seq'';
     --> verifica se a sequence já existe
     perform relname
     from pg_namespace n inner join pg_class c on (n.oid = c.relnamespace)
