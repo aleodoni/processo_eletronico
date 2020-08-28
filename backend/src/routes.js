@@ -80,7 +80,7 @@ const storageManifestacao = multer.diskStorage({
 
 const storageDocumento = multer.diskStorage({
     destination: function(req, file, callback) {
-        const novoCaminho = '/home/casa/testeDummy/';
+        const novoCaminho = process.env.CAMINHO_ARQUIVOS_ORDEM_PAGAMENTO;
         if (!fs.existsSync(novoCaminho)) {
             fs.mkdirSync(novoCaminho);
         }

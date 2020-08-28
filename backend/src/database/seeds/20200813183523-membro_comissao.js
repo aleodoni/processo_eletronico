@@ -6,6 +6,7 @@ module.exports = {
             { tableName: 'membro_comissao', schema: 'spa2' },
             [
                 {
+                    mco_id: 1,
                     area_id: 2000,
                     mco_matricula: 2209,
                     mco_nome: 'Fábio Derosso Teixeira',
@@ -14,6 +15,7 @@ module.exports = {
                     mco_login: 'fabio.teixeira'
                 },
                 {
+                    mco_id: 2,
                     area_id: 2000,
                     mco_matricula: 2100,
                     mco_nome: 'Ely Marcos de Oliveira',
@@ -22,6 +24,7 @@ module.exports = {
                     mco_login: 'ely.oliveira'
                 },
                 {
+                    mco_id: 3,
                     area_id: 2000,
                     mco_matricula: 2082,
                     mco_nome: 'Adriana Bolzani Bach',

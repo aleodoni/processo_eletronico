@@ -60,7 +60,7 @@ function Login() {
             formRef.current.setErrors({});
 
             const schema = Yup.object().shape({
-                usuario: Yup.string().required('O usuário é obrigatório'),
+                login: Yup.string().required('O usuário é obrigatório'),
                 senha: Yup.string().required('A senha é obrigatória'),
             });
 
@@ -69,10 +69,10 @@ function Login() {
             });
 
             try {
-                const { usuario, senha, timeout } = data;
+                const { login, senha, timeout } = data;
 
                 const response = await api.post('/autorizacao', {
-                    usuario,
+                    login,
                     senha,
                     timeout,
                 });
@@ -114,7 +114,7 @@ function Login() {
                     <span>Processo eletrônico</span>
                     <br />
 
-                    <Input type="text" name="usuario" placeholder="Usuário" />
+                    <Input type="text" name="login" placeholder="Usuário" />
 
                     <Input type="password" name="senha" placeholder="Senha" />
 
