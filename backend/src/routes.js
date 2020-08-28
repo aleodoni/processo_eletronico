@@ -2,6 +2,7 @@ import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
+import crypto from 'crypto';
 
 import LoginController from './app/controllers/LoginController';
 import Spa2Controller from './app/controllers/Spa2Controller';
@@ -85,8 +86,14 @@ const storageDocumento = multer.diskStorage({
         }
         callback(null, novoCaminho);
     },
-    filename: function(req, file, callback) {
-        callback(null, file.originalname);
+    filename: (req, file, callback) => {
+        crypto.randomBytes(16, (err, hash) => {
+            if (err) callback(err);
+
+            const filename = `${hash.toString('hex')}-${file.originalname}`;
+
+            callback(null, filename);
+        });
     }
 });
 
