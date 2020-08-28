@@ -13,7 +13,7 @@ import ConnectionHelper from '../helpers/ConnectionHelper';
 
 class LoginController {
     async index(req, res) {
-        const { usuario, senha, timeout } = req.body;
+        const { login, senha, timeout } = req.body;
 
         let emailLdap;
 
@@ -34,17 +34,18 @@ class LoginController {
         //     }
         // });
 
-        const login = new LoginController();
+        const loginToken = new LoginController();
         // procura o usuario no ldap, se existir ok, senão retorna erro
         try {
             if (process.env.NODE_ENV !== 'development') {
+                console.log('ldap');
                 const client = new LdapClient({ url: process.env.LDAP_URL });
-                await client.bind(`uid=${usuario},${process.env.LDAP_USERS_OU}`, senha);
+                await client.bind(`uid=${login},${process.env.LDAP_USERS_OU}`, senha);
 
                 const options = {
                     filter: (process.env.LDAP_USER_FILTER !== '')
-                        ? `(&(uid=${usuario})(${process.env.LDAP_USER_FILTER}))`
-                        : `(&(uid=${usuario}))`,
+                        ? `(&(uid=${login})(${process.env.LDAP_USER_FILTER}))`
+                        : `(&(uid=${login}))`,
                     scope: 'sub',
                     attributes: ['uid', 'cn', 'mail']
                 };
@@ -70,7 +71,7 @@ class LoginController {
             // procura o usuário na v_dados_login
             const dadosLogin = await VDadosLogin.findOne({
                 where: {
-                    login: usuario
+                    login: login
                 },
                 logging: false,
                 plain: true
@@ -110,7 +111,7 @@ class LoginController {
                 );
 
                 if (process.env.NODE_ENV !== 'test') {
-                    console.log(`Usuário: ${usuario} logado com sucesso no sistema SPA2.`);
+                    console.log(`Usuário: ${login} logado com sucesso no sistema SPA2.`);
                 }
 
                 // monta o array de permissões de tela
@@ -134,11 +135,11 @@ class LoginController {
                 console.log('************************');
                 //
 
-                const meuToken = login.geraToken(usuario, nome, matricula, timeout);
+                const meuToken = loginToken.geraToken(login, nome, matricula, timeout);
 
                 return res.status(201).json({
                     token: meuToken,
-                    usuario: usuario,
+                    usuario: login,
                     email: emailLdap,
                     nomeUsuario: nome,
                     setorUsuario: idSetor,
@@ -165,21 +166,21 @@ class LoginController {
     }
 
     async indexExterno(req, res) {
-        const { usuario, senha, timeout } = req.body;
+        const { login, senha, timeout } = req.body;
 
         let emailLdap;
 
-        const login = new LoginController();
+        const loginToken = new LoginController();
         // procura o usuario no ldap, se existir ok, senão retorna erro
         try {
             if (process.env.NODE_ENV !== 'development') {
                 const client = new LdapClient({ url: process.env.LDAP_URL });
-                await client.bind(`uid=${usuario},${process.env.LDAP_USERS_OU}`, senha);
+                await client.bind(`uid=${login},${process.env.LDAP_USERS_OU}`, senha);
 
                 const options = {
                     filter: (process.env.LDAP_USER_FILTER !== '')
-                        ? `(&(uid=${usuario})(${process.env.LDAP_USER_FILTER}))`
-                        : `(&(uid=${usuario}))`,
+                        ? `(&(uid=${login})(${process.env.LDAP_USER_FILTER}))`
+                        : `(&(uid=${login}))`,
                     scope: 'sub',
                     attributes: ['uid', 'cn', 'mail']
                 };
@@ -205,7 +206,7 @@ class LoginController {
             // procura o usuário na v_dados_login
             const dadosLogin = await VDadosLogin.findOne({
                 where: {
-                    login: usuario
+                    login: login
                 },
                 logging: false,
                 plain: true
@@ -234,7 +235,7 @@ class LoginController {
                 }
 
                 if (process.env.NODE_ENV !== 'test') {
-                    console.log(`Usuário: ${usuario} logado com sucesso no sistema SPA2.`);
+                    console.log(`Usuário: ${login} logado com sucesso no sistema SPA2.`);
                 }
 
                 // monta o array de permissões de tela
@@ -258,11 +259,11 @@ class LoginController {
                 console.log('************************');
                 //
 
-                const meuToken = login.geraToken(usuario, nome, matricula, timeout);
+                const meuToken = loginToken.geraToken(login, nome, matricula, timeout);
 
                 return res.status(201).json({
                     token: meuToken,
-                    usuario: usuario,
+                    usuario: login,
                     email: emailLdap,
                     nomeUsuario: nome,
                     setorUsuario: idSetor,
@@ -343,12 +344,12 @@ class LoginController {
             .json({ bd: process.env.DB_NAME, versao: process.env.VERSAO });
     }
 
-    geraToken(usuario, nomeUsuario, matricula, timeout) {
+    geraToken(login, nomeUsuario, matricula, timeout) {
         const adicionaMinutos = function(dt, minutos) {
             return new Date(dt.getTime() + minutos * 60000);
         };
         const claims = {
-            sub: usuario, // login do usuario
+            sub: login, // login do usuario
             nomeUsuarioLdap: nomeUsuario, // nome do usuario no BD
             matricula: matricula, // matricula no BD
             iat: new Date().getTime(), // data e hora de criação do token
