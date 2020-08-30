@@ -90,6 +90,15 @@ export const Erro = styled.div`
     padding-bottom: 10px;
 `;
 
+export const ContainerTitulo = styled.div`
+    font-size: 16px;
+    color: #fff;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 10px;
+    font-weight: bold;
+`;
+
 export const ContainerBotaoVoltarEnviar = styled.div`
     display: grid;
     grid-template-columns: 100px 200px;
@@ -99,11 +108,9 @@ export const ContainerBotaoVoltarEnviar = styled.div`
 `;
 
 export const ContainerArquivos = styled.div`
-    display: grid;
-    grid-template-columns: 1200px;
-    margin-left: 10px;
-    margin-top: 10px;
     color: #fff;
+    margin-left: 10px;
+    margin-top: 5px;
 
     table,
     tr,
@@ -117,5 +124,35 @@ export const ContainerArquivos = styled.div`
 
     tr {
         height: 40px;
+    }
+`;
+
+export const ContainerUpload = styled.div`
+    input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    label {
+        cursor: pointer;
+        background: ${({ theme }) => theme.primary};
+        border: 0;
+        border-radius: 4px;
+        height: 46px;
+        padding: 7px;
+        color: ${({ theme }) => theme.text};
+        margin: 0 0 10px;
+        font-size: 14px;
+        transition: background 0.2s;
+
+        &:hover {
+            background: ${({ theme }) => theme.hover};
+        }
+
+        svg {
+            margin-right: 10px;
+            margin-left: 5px;
+        }
     }
 `;

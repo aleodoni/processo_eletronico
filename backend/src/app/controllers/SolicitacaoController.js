@@ -1,6 +1,7 @@
 import VFornecedores from '../models/VFornecedores';
 import VAutorizacaoFornecimento from '../models/VAutorizacaoFornecimento';
 import VTipoDocumento from '../models/VTipoDocumento';
+import Sequelize from 'sequelize';
 
 class SolicitacaoController {
     mascaraCnpj(valor) {
@@ -44,12 +45,25 @@ class SolicitacaoController {
     }
 
     async listaTipoDocumentos(req, res) {
-        const tipoDocumento = await VTipoDocumento.findAll({
-            where: {
-                tpd_solicitacao_pgto: true
-            },
-            logging: true
-        });
+        let tipoDocumento = null;
+        if (Number(req.params.tipo) === 1) {
+            const Op = Sequelize.Op;
+            tipoDocumento = await VTipoDocumento.findAll({
+                where: {
+                    tpd_solicitacao_pgto: true,
+                    tpd_id: { [Op.notIn]: [46, 47] }
+                },
+                logging: true
+            });
+        } else {
+            tipoDocumento = await VTipoDocumento.findAll({
+                where: {
+                    tpd_solicitacao_pgto: true
+                },
+                logging: true
+            });
+        }
+
         if (tipoDocumento !== null) {
             return res.json(tipoDocumento);
         } else {

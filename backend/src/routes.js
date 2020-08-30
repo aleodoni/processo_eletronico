@@ -46,6 +46,9 @@ import regraAposentacaoValidator from './app/validators/regraAposentacaoValidato
 import razaoTramiteValidator from './app/validators/razaoTramiteValidator';
 import SolicitacaoController from './app/controllers/SolicitacaoController';
 
+import Arquivo from './app/models/Arquivo';
+import DataHoraAtual from './app/models/DataHoraAtual';
+
 require('dotenv/config');
 
 const routes = new Router();
@@ -226,6 +229,8 @@ routes.get(`${process.env.API_URL}/combo-processos-recurso-pad/:usuario`, CriaPr
 routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 routes.post(`${process.env.API_URL}/processo-pas-pad`, CriaProcessoController.criaPasPad);
 
+routes.post(`${process.env.API_URL}/processo-pagamento`, CriaProcessoController.criaProcessoPagamento);
+
 // rota de pesquisa de processo
 routes.post(`${process.env.API_URL}/pesquisa-processo`, DadosProcessoController.pesquisaProcesso);
 
@@ -272,8 +277,38 @@ routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.
 });
 
 // teste
-routes.post(`${process.env.API_URL}/anexo-documentos`, uploadDocumento.any(), function(req, res) {
-    res.status(204).end();
+routes.post(`${process.env.API_URL}/anexo-documentos`, uploadDocumento.single('file'), async function(req, res) {
+    const nomeArquivo = req.file.filename;
+    const tipoArquivo = req.file.mimetype;
+    const proId = req.body.pro_id;
+    const tpdId = req.body.tpd_id;
+
+    try {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login } = await Arquivo.create({
+            arq_id: null,
+            arq_nome: nomeArquivo,
+            pro_id: proId,
+            man_id: null,
+            arq_tipo: tipoArquivo,
+            arq_doc_id: proId,
+            arq_doc_tipo: 'pagamento',
+            tpd_id: tpdId,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: 'externo'
+        }, {
+            logging: false
+        });
+        res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
+    } catch (erroArquivo) {
+        console.log(erroArquivo);
+        res.status(400).end();
+    }
 });
 
 // rotas do cadastro de tipos de manifestacao
@@ -368,6 +403,6 @@ routes.get(`${process.env.API_URL}/gera-juntada/:id`, DadosProcessoController.ge
 
 // solicitações de fornecedor
 routes.get(`${process.env.API_URL}/solicitacoes/:cnpj`, SolicitacaoController.gridSolicitacao);
-routes.get(`${process.env.API_URL}/lista-documentos`, SolicitacaoController.listaTipoDocumentos);
+routes.get(`${process.env.API_URL}/lista-documentos/:tipo`, SolicitacaoController.listaTipoDocumentos);
 
 export default routes;

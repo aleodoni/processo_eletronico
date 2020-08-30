@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaCheckDouble, FaReply, FaUpload } from 'react-icons/fa';
-import { useHistory } from 'react-router';
+import { FaCheckDouble, FaReply, FaUpload, FaPaperclip } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
+import Check from '../../assets/check.gif';
 import Autorizacao from '../../components/Autorizacao';
+import * as constantes from '../../utils/constantes';
 
 import {
     Container,
@@ -10,6 +12,8 @@ import {
     Erro,
     ContainerBotaoVoltarEnviar,
     ContainerArquivos,
+    ContainerUpload,
+    ContainerTitulo,
 } from './styles';
 import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
@@ -22,7 +26,6 @@ function Home() {
     const [documentos, setDocumentos] = useState([]);
     const [mostraLista, setMostraLista] = useState(true);
     const [requisicao, setRequisicao] = useState('');
-    const history = useHistory();
 
     const carregaSolicitacoes = useCallback(() => {
         const fornecedor = sessionStorage.getItem('cnpj').toString();
@@ -41,14 +44,29 @@ function Home() {
             });
     }, []);
 
-    function verificaArquivo(e) {
-        // hkjhkjh
+    function verificaArquivo(e, id) {
+        const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
+        const labelId = `label_${id}`;
+        const imageId = `img_${id}`;
+        const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
+        if (e.target.files[0].size > tamanhoAnexo) {
+            mensagem.error(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+            document.getElementById(id).value = '';
+            return;
+        }
+        if (e.target.files[0].type !== 'application/pdf') {
+            mensagem.error(`São válidos somente arquivos PDF.`);
+            document.getElementById(id).value = '';
+            return;
+        }
+        document.getElementById(labelId).innerHTML = e.target.files[0].name;
+        document.getElementById(imageId).style.visibility = 'visible';
     }
 
-    function carregaDocumentos() {
+    function carregaDocumentos(tipo) {
         axios({
             method: 'GET',
-            url: `/lista-documentos`,
+            url: `/lista-documentos/${tipo}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -61,11 +79,11 @@ function Home() {
             });
     }
 
-    function requisitaPagamento(id, requisicao) {
+    function requisitaPagamento(id, requisicao, tipo) {
         // alert(id);
         setMostraLista(false);
         setRequisicao(requisicao);
-        carregaDocumentos();
+        carregaDocumentos(tipo);
     }
 
     function voltaLista() {
@@ -73,40 +91,103 @@ function Home() {
     }
 
     function enviaArquivos(e) {
-        const data = new FormData();
-        let contador = 0;
-        const vNomes = [];
-        for (let i = 0; i < document.forms[0].length; i++) {
-            if (document.forms[0].elements[i].type === 'file') {
-                const nomeCampoArquivo = document.forms[0].elements[i].name;
-                const campoArquivo = document.getElementById(nomeCampoArquivo);
-                if (campoArquivo.value !== '') {
-                    data.append(nomeCampoArquivo, campoArquivo.files[0]);
-                    contador += 1;
-                    vNomes.push(campoArquivo.files[0].name);
+        // primeiro tenho que varrer se o usuário deixou de anexar algum arquivo
+        for (let i = 0; i < document.forms.length; i++) {
+            for (let j = 0; j < document.forms[i].elements.length; j++) {
+                if (document.forms[i].elements[j].type === 'file') {
+                    if (document.forms[i].elements[j].value === '') {
+                        mensagem.error(`Todos os campos tem que ser preenchidos.`);
+                        return;
+                    }
                 }
             }
         }
-        if (contador < document.forms[0].length) {
-            alert('Estão faltando documentos');
-        }
+
+        // começa a abrir o processo
         axios({
             method: 'POST',
-            url: `/anexo-documentos`,
+            url: '/processo-pagamento',
+            data: {
+                pro_id: null,
+                pro_nome: sessionStorage.getItem('fornecedor'),
+                pro_matricula: null,
+                pro_cpf: null,
+                pro_cnpj: sessionStorage.getItem('cnpj'),
+                pro_fone: null,
+                pro_celular: null,
+                pro_email: null,
+                pro_encerramento: null,
+                pro_assunto: 'Execução de despesas',
+                usu_autuador: 'externo',
+                pro_ultimo_tramite: null,
+                usu_finalizador: null,
+                nod_id: null,
+                set_id_autuador: `00${constantes.AREA_DCF}`,
+                area_id: constantes.AREA_DCF,
+                set_id_finalizador: null,
+                pro_iniciativa: 'Externa',
+                pro_tipo_iniciativa: 'Pessoa Jurídica',
+                area_id_iniciativa: null,
+                tpr_id: constantes.TPR_EXECUCAO_DESPESAS,
+                pro_contato_pj: null,
+                pro_autuacao: null,
+                pro_recurso: false,
+                pro_com_abono: false,
+                pro_num_com_abono: null,
+                pro_enviado_externo: true,
+                pro_ip_externo: sessionStorage.getItem('ip'),
+            },
             headers: {
                 authorization: sessionStorage.getItem('token'),
-                'Content-Type': 'multipart/form-data',
             },
-            data,
         })
-            .then((resAnexos) => {
-                if (resAnexos.status === 204) {
-                    alert(vNomes);
-                    setMostraLista(true);
+            .then((resProcesso) => {
+                const proId = resProcesso.data.pro_id;
+                for (let i = 0; i < document.forms.length; i++) {
+                    const data = new FormData();
+                    let campoCodigo = '';
+                    let campoArquivo;
+                    for (let j = 0; j < document.forms[i].elements.length; j++) {
+                        if (document.forms[i].elements[j].type === 'hidden') {
+                            campoCodigo = document.forms[i].elements[j].value;
+                        }
+                        if (document.forms[i].elements[j].type === 'file') {
+                            campoArquivo = document.forms[i].elements[j].files[0];
+                        }
+                    }
+                    data.append('pro_id', proId);
+                    data.append('tpd_id', campoCodigo);
+                    data.append('file', campoArquivo);
+                    axios({
+                        method: 'POST',
+                        url: `/anexo-documentos`,
+                        headers: {
+                            authorization: sessionStorage.getItem('token'),
+                            'Content-Type': 'multipart/form-data',
+                        },
+                        data,
+                    })
+                        .then((resAnexos) => {
+                            if (resAnexos.status === 204) {
+                                // alert(contador);
+                            }
+                        })
+                        .catch(() => {
+                            setErro('Erro ao inserir arquivos em anexo.');
+                        });
                 }
+                mensagem.success(`Arquivos enviados com sucesso.`);
+                setMostraLista(true);
             })
-            .catch(() => {
-                setErro('Erro ao criar arquivo anexo.');
+            .catch((erroCriaProcesso) => {
+                if (
+                    erroCriaProcesso.response.data.error ===
+                    'Processo sem fluxo. Cadastre um fluxo primeiro.'
+                ) {
+                    setErro(erroCriaProcesso.response.data.error);
+                } else {
+                    setErro('Erro ao inserir processo.');
+                }
             });
     }
 
@@ -119,13 +200,15 @@ function Home() {
             <Container>
                 <Main>
                     <Erro>{erro}</Erro>
-                    <label>Fornecedor: {sessionStorage.getItem('fornecedor')}</label>
+                    <ContainerTitulo>
+                        Fornecedor: {sessionStorage.getItem('fornecedor')}
+                    </ContainerTitulo>
                     <hr />
                     {mostraLista ? (
                         <ContainerProcessos>
                             {gridSolicitacoes.length > 0 ? (
                                 <div>
-                                    <p>Pedidos</p>
+                                    <ContainerTitulo>Pedidos</ContainerTitulo>
                                     <table>
                                         <thead>
                                             <tr>
@@ -152,7 +235,8 @@ function Home() {
                                                                 onClick={() => {
                                                                     requisitaPagamento(
                                                                         sol.afo_id,
-                                                                        sol.afo_requisicao
+                                                                        sol.afo_requisicao,
+                                                                        sol.afo_tipo_requisicao
                                                                     );
                                                                 }}>
                                                                 <FaCheckDouble />
@@ -169,42 +253,102 @@ function Home() {
                         </ContainerProcessos>
                     ) : (
                         <>
-                            <form>
-                                <ContainerArquivos>
-                                    Requisição: {requisicao}
-                                    <table>
-                                        {documentos.map((doc) => (
-                                            <tr key={doc.tpd_id}>
-                                                <td style={{ width: '70%' }}>{doc.tpd_nome}</td>
-                                                <td>
-                                                    <input
-                                                        type="file"
-                                                        name={doc.nome_campo_anexo}
-                                                        id={doc.nome_campo_anexo}
-                                                        onClick={(e) => {
-                                                            verificaArquivo(e);
-                                                        }}
-                                                    />
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </table>
-                                </ContainerArquivos>
-                                <ContainerBotaoVoltarEnviar>
-                                    <Button
-                                        type="button"
-                                        onClick={() => {
-                                            voltaLista();
-                                        }}>
-                                        <FaReply color="#FFF" />
-                                        Voltar
-                                    </Button>
-                                    <Button type="button" onClick={enviaArquivos}>
-                                        <FaUpload color="#FFF" />
-                                        Enviar arquivos
-                                    </Button>
-                                </ContainerBotaoVoltarEnviar>
-                            </form>
+                            <ContainerTitulo>Requisição: {requisicao}</ContainerTitulo>
+                            <ContainerArquivos>
+                                {documentos.map((doc) => (
+                                    <div key={doc.tpd_id}>
+                                        <form>
+                                            <table>
+                                                <tr>
+                                                    <td
+                                                        style={{
+                                                            width: '500px',
+                                                        }}>
+                                                        {doc.tpd_nome}
+                                                    </td>
+                                                    <td
+                                                        style={{
+                                                            width: '180px',
+                                                            textAlign: 'center',
+                                                            borderRightStyle: 'hidden',
+                                                            borderTopStyle: 'hidden',
+                                                            borderBottomStyle: 'hidden',
+                                                        }}>
+                                                        <input
+                                                            name="manId"
+                                                            value={doc.tpd_id}
+                                                            type="hidden"
+                                                        />
+                                                        <ContainerUpload>
+                                                            <label htmlFor={doc.nome_campo_anexo}>
+                                                                <FaPaperclip />
+                                                                &nbsp;Inserir documento
+                                                            </label>
+
+                                                            <input
+                                                                type="file"
+                                                                name={doc.nome_campo_anexo}
+                                                                id={doc.nome_campo_anexo}
+                                                                onChange={(e) => {
+                                                                    verificaArquivo(
+                                                                        e,
+                                                                        doc.nome_campo_anexo
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </ContainerUpload>
+                                                    </td>
+                                                    <td
+                                                        style={{
+                                                            width: '10px',
+                                                            margin: 0,
+                                                            paddingLeft: 5,
+                                                            borderRightStyle: 'hidden',
+                                                            borderTopStyle: 'hidden',
+                                                            borderBottomStyle: 'hidden',
+                                                        }}>
+                                                        <img
+                                                            src={Check}
+                                                            alt=""
+                                                            style={{ visibility: 'hidden' }}
+                                                            id={`img_${doc.nome_campo_anexo}`}
+                                                            width={20}
+                                                            height={20}
+                                                        />
+                                                    </td>
+                                                    <td
+                                                        style={{
+                                                            width: '350px',
+                                                            margin: 0,
+                                                            paddingLeft: 5,
+                                                            borderRightStyle: 'hidden',
+                                                            borderTopStyle: 'hidden',
+                                                            borderBottomStyle: 'hidden',
+                                                        }}>
+                                                        <label id={`label_${doc.nome_campo_anexo}`}>
+                                                            &nbsp;
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </form>
+                                    </div>
+                                ))}
+                            </ContainerArquivos>
+                            <ContainerBotaoVoltarEnviar>
+                                <Button
+                                    type="button"
+                                    onClick={() => {
+                                        voltaLista();
+                                    }}>
+                                    <FaReply color="#FFF" />
+                                    Voltar
+                                </Button>
+                                <Button type="button" onClick={enviaArquivos}>
+                                    <FaUpload color="#FFF" />
+                                    Enviar arquivos
+                                </Button>
+                            </ContainerBotaoVoltarEnviar>
                         </>
                     )}
                 </Main>

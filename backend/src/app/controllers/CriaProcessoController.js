@@ -618,6 +618,112 @@ class CriaProcessoController {
         }
         return res.json(processo);
     }
+
+    async criaProcessoPagamento(req, res) {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+        req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
+        // com o tpr_id verifico qual é o nó de início do fluxo
+        const tipoProcesso = await TipoProcesso.findAll({
+            attributes: ['tpr_id', 'flu_id', 'tpr_nome'],
+            logging: false,
+            plain: true,
+            where: {
+                tpr_id: req.body.tpr_id
+            }
+        });
+        const nodo = await Nodo.findAll({
+            attributes: ['nod_id', 'flu_id', 'nod_inicio'],
+            logging: false,
+            plain: true,
+            where: {
+                flu_id: tipoProcesso.dataValues.flu_id,
+                nod_inicio: true
+            }
+        });
+
+        if (nodo !== null) {
+            req.body.nod_id = nodo.dataValues.nod_id;
+        } else {
+            return res.status(400).json({ error: 'Processo sem fluxo. Cadastre um fluxo primeiro.' });
+        }
+        try {
+            const {
+                pro_id,
+                tpr_id,
+                pro_iniciativa,
+                pro_nome,
+                pro_matricula,
+                pro_cnpj,
+                pro_fone,
+                pro_celular,
+                pro_email,
+                pro_assunto,
+                usu_autuador,
+                set_id_autuador,
+                area_id,
+                nod_id,
+                pro_tipo_iniciativa,
+                area_id_iniciativa,
+                pro_autuacao,
+                pro_recurso,
+                pro_enviado_externo,
+                pro_ip_externo
+            } = await Processo.create(req.body, {
+                logging: false
+            });
+            // auditoria de inserção
+            // AuditoriaController.audita(req.body, req, 'I', pro_id);
+            //
+
+            // grava na tabela arquivo a capa do processo
+            const arquivo = await Arquivo.create({
+                arq_id: null,
+                arq_nome: 'capa-' + pro_id + '.pdf',
+                pro_id: pro_id,
+                man_id: null,
+                arq_tipo: 'application/pdf',
+                arq_doc_id: pro_id,
+                arq_doc_tipo: 'capa-processo',
+                tpd_id: constantes.TPD_CAPA_PROCESSO,
+                arq_data: dataHoraAtual.dataValues.data_hora_atual,
+                arq_login: usu_autuador
+            }, {
+                logging: false
+            });
+            // cria o arquivo pdf
+            const criaCapa = new CriaCapaService(Processo);
+            await criaCapa.execute(arquivo.arq_id, pro_id, tipoProcesso.dataValues.tpr_nome);
+            return res.json({
+                pro_id,
+                tpr_id,
+                pro_iniciativa,
+                pro_nome,
+                pro_matricula,
+                pro_cnpj,
+                pro_fone,
+                pro_celular,
+                pro_email,
+                pro_assunto,
+                usu_autuador,
+                set_id_autuador,
+                area_id,
+                nod_id,
+                pro_tipo_iniciativa,
+                area_id_iniciativa,
+                pro_autuacao,
+                pro_recurso,
+                pro_enviado_externo,
+                pro_ip_externo
+            });
+        } catch (erroProcesso) {
+            console.log(erroProcesso);
+            return res.status(400).json({ error: 'Erro ao criar processo.' });
+        }
+    }
 }
 
 export default new CriaProcessoController();

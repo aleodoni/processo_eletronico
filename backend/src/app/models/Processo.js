@@ -108,8 +108,7 @@ class Processo extends Model {
                     type: Sequelize.STRING
                 },
                 pro_enviado_externo: {
-                    type: Sequelize.BOOLEAN,
-                    allowNull: false
+                    type: Sequelize.BOOLEAN
                 }
             },
             {
