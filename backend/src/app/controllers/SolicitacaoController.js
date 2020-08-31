@@ -51,7 +51,7 @@ class SolicitacaoController {
             tipoDocumento = await VTipoDocumento.findAll({
                 where: {
                     tpd_solicitacao_pgto: true,
-                    tpd_id: { [Op.notIn]: [46, 47] }
+                    tpd_id: { [Op.notIn]: [50, 51] }
                 },
                 logging: true
             });

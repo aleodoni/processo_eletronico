@@ -264,7 +264,14 @@ function Home() {
                                                         style={{
                                                             width: '500px',
                                                         }}>
-                                                        {doc.tpd_nome}
+                                                        {doc.tpd_nome}&nbsp;<img
+                                                            src={Check}
+                                                            alt=""
+                                                            style={{ visibility: 'hidden' }}
+                                                            id={`img_${doc.nome_campo_anexo}`}
+                                                            width={20}
+                                                            height={20}
+                                                        />
                                                     </td>
                                                     <td
                                                         style={{
@@ -297,24 +304,6 @@ function Home() {
                                                                 }}
                                                             />
                                                         </ContainerUpload>
-                                                    </td>
-                                                    <td
-                                                        style={{
-                                                            width: '10px',
-                                                            margin: 0,
-                                                            paddingLeft: 5,
-                                                            borderRightStyle: 'hidden',
-                                                            borderTopStyle: 'hidden',
-                                                            borderBottomStyle: 'hidden',
-                                                        }}>
-                                                        <img
-                                                            src={Check}
-                                                            alt=""
-                                                            style={{ visibility: 'hidden' }}
-                                                            id={`img_${doc.nome_campo_anexo}`}
-                                                            width={20}
-                                                            height={20}
-                                                        />
                                                     </td>
                                                     <td
                                                         style={{
