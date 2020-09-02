@@ -4,12 +4,14 @@
 import nJwt from 'njwt';
 import VDadosLogin from '../models/VDadosLogin';
 import VFornecedores from '../models/VFornecedores';
-// import Sequelize from 'sequelize';
 import AreaTela from '../models/AreaTela';
+import AcessoFornecedores from '../models/AcessoFornecedores';
 
 import LdapClient from 'ldapjs-client';
 
 import ConnectionHelper from '../helpers/ConnectionHelper';
+
+import { hmac } from '../util/hmac';
 
 class LoginController {
     async index(req, res) {
@@ -18,21 +20,6 @@ class LoginController {
         let emailLdap;
 
         const connection = ConnectionHelper.getConnection();
-
-        // const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-        //     host: process.env.DB_HOST,
-        //     dialect: 'postgres',
-        //     define: {
-        //         timestamps: false,
-        //         underscoredAll: true
-        //     },
-        //     pool: {
-        //         max: 7,
-        //         min: 0,
-        //         acquire: 30000,
-        //         idle: 10000
-        //     }
-        // });
 
         const loginToken = new LoginController();
         // procura o usuario no ldap, se existir ok, senão retorna erro
@@ -292,36 +279,77 @@ class LoginController {
     async indexExtContab(req, res) {
         const { login, senha, timeout } = req.body;
         const loginToken = new LoginController();
-        console.log(senha);
 
         try {
-            const cnpj = login.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
             // procura o fornecedor na v_fornecedores
             const dadosFornecedor = await VFornecedores.findOne({
                 where: {
-                    for_cnpj: cnpj.trim()
+                    for_cnpj_cpf: login.trim()
                 },
                 logging: true,
                 plain: true
             });
 
             if (dadosFornecedor !== null) {
-                const nomeFornecedor = dadosFornecedor.dataValues.for_nome;
-
-                if (process.env.NODE_ENV !== 'test') {
-                    console.log(`Fornecedor: ${nomeFornecedor} logado com sucesso no sistema SPA2.`);
-                }
-
-                const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor, timeout);
-
-                const meuIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-                return res.status(201).json({
-                    token: meuToken,
-                    cnpj: login,
-                    fornecedor: nomeFornecedor,
-                    ip: meuIp
+                // procura na tabela de acesso
+                const acessoFornecedores = await AcessoFornecedores.findOne({
+                    where: {
+                        acf_cpf_cnpj: login.trim(),
+                        acf_ativo: true
+                    },
+                    logging: false
                 });
+                // se não estiver na tabela de acesso e for acesso default vai para a tela de criação de senha
+                if (acessoFornecedores === null && senha === login.trim()) {
+                    const nomeFornecedor = dadosFornecedor.dataValues.for_nome;
+
+                    if (process.env.NODE_ENV !== 'test') {
+                        console.log(`Fornecedor: ${nomeFornecedor} logado com sucesso no sistema SPA2.`);
+                    }
+
+                    const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor, timeout);
+
+                    const meuIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+                    return res.status(201).json({
+                        token: meuToken,
+                        cnpj: login,
+                        fornecedor: nomeFornecedor,
+                        ip: meuIp,
+                        acessoDefault: true
+                    });
+                } else {
+                    const acessoHmac = hmac(senha.trim());
+                    // agora verifica acesso e senha
+                    const acesso = await AcessoFornecedores.findOne({
+                        where: {
+                            acf_cpf_cnpj: login.trim(),
+                            acf_acesso: acessoHmac,
+                            acf_ativo: true
+                        },
+                        logging: false
+                    });
+                    if (acesso === null) {
+                        return res.status(400).json({ error: 'Acesso inválido.' });
+                    } else {
+                        const nomeFornecedor = dadosFornecedor.dataValues.for_nome;
+
+                        if (process.env.NODE_ENV !== 'test') {
+                            console.log(`Fornecedor: ${nomeFornecedor} logado com sucesso no sistema SPA2.`);
+                        }
+
+                        const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor, timeout);
+
+                        const meuIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+                        return res.status(201).json({
+                            token: meuToken,
+                            cnpj: login,
+                            fornecedor: nomeFornecedor,
+                            ip: meuIp,
+                            acessoDefault: false
+                        });
+                    }
+                }
             } else {
                 return res.status(400).json({ error: 'Fornecedor não cadastrado no sistema.' });
             }
@@ -381,6 +409,21 @@ class LoginController {
         );
         const token = jwt.compact();
         return token;
+    }
+
+    async alteraSenha(req, res) {
+        const acesso = req.body.acf_acesso;
+        try {
+            req.body.acf_acesso = hmac(acesso);
+            const { acf_cpf_cnpj, acf_acesso, acf_ativo } = await AcessoFornecedores.create(req.body, {
+                logging: true
+            });
+            return res.json({
+                acf_cpf_cnpj, acf_acesso, acf_ativo
+            });
+        } catch (erro) {
+            console.log(erro);
+        }
     }
 }
 export default new LoginController();

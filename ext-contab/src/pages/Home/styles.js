@@ -116,14 +116,10 @@ export const ContainerArquivos = styled.div`
     tr,
     td {
         border-collapse: collapse;
-        border-spacing: 0;
+        border-spacing: 0px;
         padding: 3px;
         border: 1px solid #fff;
         width: 100%;
-    }
-
-    tr {
-        height: 40px;
     }
 `;
 

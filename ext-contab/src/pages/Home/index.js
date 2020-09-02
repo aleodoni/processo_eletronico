@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FaCheckDouble, FaReply, FaUpload, FaPaperclip } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import Check from '../../assets/check.gif';
-import Autorizacao from '../../components/Autorizacao';
 import * as constantes from '../../utils/constantes';
 
 import {
@@ -79,10 +78,10 @@ function Home() {
             });
     }
 
-    function requisitaPagamento(id, requisicao, tipo) {
+    function requisitaPagamento(id, autorizacao, tipo) {
         // alert(id);
         setMostraLista(false);
-        setRequisicao(requisicao);
+        setRequisicao(autorizacao);
         carregaDocumentos(tipo);
     }
 
@@ -208,26 +207,26 @@ function Home() {
                         <ContainerProcessos>
                             {gridSolicitacoes.length > 0 ? (
                                 <div>
-                                    <ContainerTitulo>Pedidos</ContainerTitulo>
+                                    <ContainerTitulo>Autorizações de fornecimento</ContainerTitulo>
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th>Requisição</th>
+                                                <th>Autorização</th>
                                                 <th>Número NAD</th>
-                                                <th>Empenho</th>
-                                                <th>Data</th>
+                                                <th>Data de emissão</th>
                                                 <th>Valor global</th>
+                                                <th>Data de liquidação</th>
                                                 <th>&nbsp;</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {gridSolicitacoes.map((sol) => (
                                                 <tr key={sol.afo_id}>
-                                                    <td>{sol.afo_requisicao}</td>
+                                                    <td>{sol.afo_autorizacao}</td>
                                                     <td>{sol.afo_numero_nad}</td>
-                                                    <td>{sol.afo_empenho}</td>
                                                     <td>{sol.afo_data}</td>
                                                     <td>{sol.afo_valor_global}</td>
+                                                    <td>{sol.afo_data_liquidacao}</td>
                                                     <td>
                                                         <div>
                                                             <ButtonPagamento
@@ -235,8 +234,8 @@ function Home() {
                                                                 onClick={() => {
                                                                     requisitaPagamento(
                                                                         sol.afo_id,
-                                                                        sol.afo_requisicao,
-                                                                        sol.afo_tipo_requisicao
+                                                                        sol.afo_autorizacao,
+                                                                        sol.afo_tipo_empenho
                                                                     );
                                                                 }}>
                                                                 <FaCheckDouble />
@@ -253,7 +252,7 @@ function Home() {
                         </ContainerProcessos>
                     ) : (
                         <>
-                            <ContainerTitulo>Requisição: {requisicao}</ContainerTitulo>
+                            <ContainerTitulo>Autorização: {requisicao}</ContainerTitulo>
                             <ContainerArquivos>
                                 {documentos.map((doc) => (
                                     <div key={doc.tpd_id}>
@@ -264,7 +263,8 @@ function Home() {
                                                         style={{
                                                             width: '500px',
                                                         }}>
-                                                        {doc.tpd_nome}&nbsp;<img
+                                                        {doc.tpd_nome}&nbsp;
+                                                        <img
                                                             src={Check}
                                                             alt=""
                                                             style={{ visibility: 'hidden' }}

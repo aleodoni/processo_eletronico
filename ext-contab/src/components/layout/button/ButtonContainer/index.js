@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 import { Container } from './styles';
 
-export default function ButtonManifestacao({ children, ...rest }) {
+export default function ButtonContainer({ children, ...rest }) {
     return <Container {...rest}>{children}</Container>;
 }
 
-ButtonManifestacao.propTypes = {
+ButtonContainer.propTypes = {
     children: PropTypes.node.isRequired,
 };

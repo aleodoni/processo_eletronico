@@ -86,7 +86,11 @@ function Login() {
                 sessionStorage.setItem('fornecedor', response.data.fornecedor);
                 sessionStorage.setItem('ip', response.data.ip);
 
-                history.push('/home');
+                if (response.data.acessoDefault) {
+                    history.push('/altera-senha');
+                } else {
+                    history.push('/home');
+                }
             } catch (err) {
                 toast.error(`Falha na autenticação - ${err.response.data.error}`);
             }
@@ -114,7 +118,7 @@ function Login() {
                     <div>Acesso externo</div>
                     <InputMask
                         name="login"
-                        placeholder="CPF ou CNPJ (somente números)"
+                        placeholder="CNPJ ou CPF (somente números)"
                         mask="99999999999999"
                         maskChar=" "
                     />

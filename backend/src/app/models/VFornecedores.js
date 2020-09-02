@@ -11,10 +11,7 @@ class VFornecedores extends Model {
                 for_nome: {
                     type: Sequelize.STRING
                 },
-                for_cpf: {
-                    type: Sequelize.STRING
-                },
-                for_cnpj: {
+                for_cnpj_cpf: {
                     type: Sequelize.STRING
                 },
                 for_fone: {

@@ -9,6 +9,7 @@ export const Centro = styled.div`
     form {
         border-radius: 7px;
         margin: 5px;
+        margin-top: 30px;
         padding-bottom: 10px;
         padding-left: 10px;
         padding-right: 10px;

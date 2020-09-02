@@ -1,19 +1,19 @@
 import React from 'react';
-import { FaTimes } from 'react-icons/fa';
+import { FaCheck } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 
 import Button from '../Button';
 
-export default function Nao({ name, clickHandler }) {
+export default function Ok({ name, clickHandler }) {
     return (
         <Button id={name} name={name} onClick={clickHandler}>
-            <FaTimes />
-            Não
+            <FaCheck />
+            Ok
         </Button>
     );
 }
 
-Nao.propTypes = {
+Ok.propTypes = {
     name: PropTypes.string.isRequired,
     clickHandler: PropTypes.func.isRequired,
 };

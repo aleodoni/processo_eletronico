@@ -41,3 +41,18 @@ export const ContainerTitulo = styled.div`
     padding-left: 10px;
     font-weight: bold;
 `;
+
+export const ContainerCampos = styled.div`
+    display: grid;
+    grid-template-columns: 250px 250px;
+    margin-left: 10px;
+    margin-top: 10px;
+`;
+
+export const ContainerBotoes = styled.div`
+    display: grid;
+    grid-template-columns: 150px;
+    grid-column-gap: 10px;
+    margin-left: 10px;
+    margin-top: 10px;
+`;

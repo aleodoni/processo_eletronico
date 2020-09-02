@@ -11,13 +11,10 @@ class VAutorizacaoFornecimento extends Model {
                 for_id: {
                     type: Sequelize.INTEGER
                 },
-                afo_requisicao: {
+                afo_autorizacao: {
                     type: Sequelize.INTEGER
                 },
                 afo_numero_nad: {
-                    type: Sequelize.INTEGER
-                },
-                afo_empenho: {
                     type: Sequelize.INTEGER
                 },
                 afo_data: {
@@ -26,8 +23,11 @@ class VAutorizacaoFornecimento extends Model {
                 afo_valor_global: {
                     type: Sequelize.DECIMAL(7, 2)
                 },
-                afo_tipo_requisicao: {
+                afo_tipo_empenho: {
                     type: Sequelize.INTEGER
+                },
+                afo_data_liquidacao: {
+                    type: Sequelize.DATEONLY
                 }
             },
             {
