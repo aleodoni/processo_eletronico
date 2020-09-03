@@ -91,12 +91,19 @@ export const Erro = styled.div`
 `;
 
 export const ContainerTitulo = styled.div`
+    display: grid;
+    grid-template-columns: 450px 450px;
+    grid-column-gap: 10px;
     font-size: 16px;
     color: #fff;
     padding-top: 7px;
     padding-bottom: 7px;
     padding-left: 10px;
     font-weight: bold;
+
+    span {
+        font-size: 12px;
+    }
 `;
 
 export const ContainerBotaoVoltarEnviar = styled.div`
@@ -111,19 +118,12 @@ export const ContainerArquivos = styled.div`
     color: #fff;
     margin-left: 10px;
     margin-top: 5px;
-
-    table,
-    tr,
-    td {
-        border-collapse: collapse;
-        border-spacing: 0px;
-        padding: 3px;
-        border: 1px solid #fff;
-        width: 100%;
-    }
 `;
 
 export const ContainerUpload = styled.div`
+    display: table-cell;
+    vertical-align: middle;
+    height: 40px;
     input {
         opacity: 0;
         position: absolute;
@@ -132,23 +132,14 @@ export const ContainerUpload = styled.div`
 
     label {
         cursor: pointer;
-        background: ${({ theme }) => theme.primary};
-        border: 0;
-        border-radius: 4px;
-        height: 46px;
-        padding: 7px;
-        color: ${({ theme }) => theme.text};
-        margin: 0 0 10px;
-        font-size: 14px;
-        transition: background 0.2s;
-
         &:hover {
-            background: ${({ theme }) => theme.hover};
-        }
-
-        svg {
-            margin-right: 10px;
-            margin-left: 5px;
+            text-decoration: underline;
         }
     }
+`;
+
+export const ContainerListaDocumentos = styled.div`
+    display: grid;
+    grid-template-columns: 770px 30px 500px;
+    grid-column-gap: 3px;
 `;

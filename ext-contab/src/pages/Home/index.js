@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaCheckDouble, FaReply, FaUpload, FaPaperclip } from 'react-icons/fa';
+import { FaCheckDouble, FaReply, FaUpload } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import Check from '../../assets/check.gif';
 import * as constantes from '../../utils/constantes';
@@ -13,6 +13,7 @@ import {
     ContainerArquivos,
     ContainerUpload,
     ContainerTitulo,
+    ContainerListaDocumentos,
 } from './styles';
 import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
@@ -252,74 +253,54 @@ function Home() {
                         </ContainerProcessos>
                     ) : (
                         <>
-                            <ContainerTitulo>Autorização: {requisicao}</ContainerTitulo>
+                            <ContainerTitulo>
+                                <p>Autorização: {requisicao}</p>
+                                <span>* Clique na descrição para inserir o documento</span>
+                            </ContainerTitulo>
+
                             <ContainerArquivos>
                                 {documentos.map((doc) => (
                                     <div key={doc.tpd_id}>
                                         <form>
-                                            <table>
-                                                <tr>
-                                                    <td
-                                                        style={{
-                                                            width: '500px',
-                                                        }}>
-                                                        {doc.tpd_nome}&nbsp;
-                                                        <img
-                                                            src={Check}
-                                                            alt=""
-                                                            style={{ visibility: 'hidden' }}
-                                                            id={`img_${doc.nome_campo_anexo}`}
-                                                            width={20}
-                                                            height={20}
-                                                        />
-                                                    </td>
-                                                    <td
-                                                        style={{
-                                                            width: '180px',
-                                                            textAlign: 'center',
-                                                            borderRightStyle: 'hidden',
-                                                            borderTopStyle: 'hidden',
-                                                            borderBottomStyle: 'hidden',
-                                                        }}>
-                                                        <input
-                                                            name="manId"
-                                                            value={doc.tpd_id}
-                                                            type="hidden"
-                                                        />
-                                                        <ContainerUpload>
-                                                            <label htmlFor={doc.nome_campo_anexo}>
-                                                                <FaPaperclip />
-                                                                &nbsp;Inserir documento
-                                                            </label>
-
-                                                            <input
-                                                                type="file"
-                                                                name={doc.nome_campo_anexo}
-                                                                id={doc.nome_campo_anexo}
-                                                                onChange={(e) => {
-                                                                    verificaArquivo(
-                                                                        e,
-                                                                        doc.nome_campo_anexo
-                                                                    );
-                                                                }}
-                                                            />
-                                                        </ContainerUpload>
-                                                    </td>
-                                                    <td
-                                                        style={{
-                                                            width: '350px',
-                                                            margin: 0,
-                                                            paddingLeft: 5,
-                                                            borderRightStyle: 'hidden',
-                                                            borderTopStyle: 'hidden',
-                                                            borderBottomStyle: 'hidden',
-                                                        }}>
-                                                        <label id={`label_${doc.nome_campo_anexo}`}>
-                                                            &nbsp;
+                                            <ContainerListaDocumentos>
+                                                <>
+                                                    <input
+                                                        name="manId"
+                                                        value={doc.tpd_id}
+                                                        type="hidden"
+                                                    />
+                                                    <ContainerUpload>
+                                                        <label htmlFor={doc.nome_campo_anexo}>
+                                                            - {doc.tpd_nome}
                                                         </label>
-                                                    </td>
-                                                </tr>
-                                            </table>
+
+                                                        <input
+                                                            type="file"
+                                                            name={doc.nome_campo_anexo}
+                                                            id={doc.nome_campo_anexo}
+                                                            onChange={(e) => {
+                                                                verificaArquivo(
+                                                                    e,
+                                                                    doc.nome_campo_anexo
+                                                                );
+                                                            }}
+                                                        />
+                                                    </ContainerUpload>
+                                                    <img
+                                                        src={Check}
+                                                        alt=""
+                                                        style={{ visibility: 'hidden' }}
+                                                        id={`img_${doc.nome_campo_anexo}`}
+                                                        width={20}
+                                                        height={20}
+                                                    />
+                                                </>
+                                                <>
+                                                    <span id={`label_${doc.nome_campo_anexo}`}>
+                                                        &nbsp;
+                                                    </span>
+                                                </>
+                                            </ContainerListaDocumentos>
                                         </form>
                                     </div>
                                 ))}
