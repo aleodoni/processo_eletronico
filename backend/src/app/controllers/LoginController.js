@@ -326,7 +326,7 @@ class LoginController {
                             acf_acesso: acessoHmac,
                             acf_ativo: true
                         },
-                        logging: false
+                        logging: true
                     });
                     if (acesso === null) {
                         return res.status(400).json({ error: 'Acesso inválido.' });

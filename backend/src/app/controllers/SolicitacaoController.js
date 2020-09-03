@@ -1,6 +1,7 @@
 import VFornecedores from '../models/VFornecedores';
 import AcessoFornecedores from '../models/AcessoFornecedores';
 import VAutorizacaoFornecimento from '../models/VAutorizacaoFornecimento';
+import VEmpenhoFornecedor from '../models/VEmpenhoFornecedor';
 import VTipoDocumento from '../models/VTipoDocumento';
 import Sequelize from 'sequelize';
 
@@ -34,6 +35,38 @@ class SolicitacaoController {
                 logging: true
             });
             return res.json(solicitacoes);
+        } else {
+            return res.status(400).json({ erro: 'Fornecedor não encontrado' });
+        }
+    }
+
+    async gridEmpenhoFornecedor(req, res) {
+        const { cnpj } = req.params;
+        const fornecedor = await VFornecedores.findOne({
+            where: {
+                for_cnpj_cpf: cnpj
+            },
+            logging: true,
+            plain: true
+        });
+        if (fornecedor !== null) {
+            const idFornecedor = fornecedor.dataValues.for_id;
+            const empenhos = await VEmpenhoFornecedor.findAll({
+                order: ['emf_data_emissao'],
+                attributes: [
+                    'emf_id',
+                    'emf_numero_empenho',
+                    'emf_ano_empenho',
+                    'for_id',
+                    [Sequelize.fn('to_char', Sequelize.col('emf_valor_global'), '999999990D99'), 'emf_valor_global'],
+                    [Sequelize.fn('to_char', Sequelize.col('emf_data_emissao'), 'DD/MM/YYYY'), 'emf_data_emissao']
+                ],
+                where: {
+                    for_id: idFornecedor
+                },
+                logging: true
+            });
+            return res.json(empenhos);
         } else {
             return res.status(400).json({ erro: 'Fornecedor não encontrado' });
         }

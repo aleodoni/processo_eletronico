@@ -22,7 +22,7 @@ import Button from '../../components/layout/button/Button';
 
 function Home() {
     const [erro, setErro] = useState('');
-    const [gridSolicitacoes, setGridSolicitacoes] = useState([]);
+    const [gridEmpenhos, setGridEmpenhos] = useState([]);
     const [documentos, setDocumentos] = useState([]);
     const [mostraLista, setMostraLista] = useState(true);
     const [requisicao, setRequisicao] = useState('');
@@ -31,13 +31,13 @@ function Home() {
         const fornecedor = sessionStorage.getItem('cnpj').toString();
         axios({
             method: 'GET',
-            url: `/solicitacoes/${fornecedor}`,
+            url: `/empenhos/${fornecedor}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then((res) => {
-                setGridSolicitacoes(res.data);
+                setGridEmpenhos(res.data);
             })
             .catch(() => {
                 setErro('Erro ao carregar registros.');
@@ -79,11 +79,10 @@ function Home() {
             });
     }
 
-    function requisitaPagamento(id, autorizacao, tipo) {
+    function requisitaPagamento(id) {
         // alert(id);
         setMostraLista(false);
-        setRequisicao(autorizacao);
-        carregaDocumentos(tipo);
+        carregaDocumentos();
     }
 
     function voltaLista() {
@@ -206,7 +205,7 @@ function Home() {
                     <hr />
                     {mostraLista ? (
                         <ContainerProcessos>
-                            {gridSolicitacoes.length > 0 ? (
+                            {gridEmpenhos.length > 0 ? (
                                 <div>
                                     <ContainerTitulo>Autorizações de fornecimento</ContainerTitulo>
                                     <table>
@@ -221,23 +220,17 @@ function Home() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {gridSolicitacoes.map((sol) => (
-                                                <tr key={sol.afo_id}>
-                                                    <td>{sol.afo_autorizacao}</td>
-                                                    <td>{sol.afo_numero_nad}</td>
-                                                    <td>{sol.afo_data}</td>
-                                                    <td>{sol.afo_valor_global}</td>
-                                                    <td>{sol.afo_data_liquidacao}</td>
+                                            {gridEmpenhos.map((emp) => (
+                                                <tr key={emp.emf_id}>
+                                                    <td>{`${emp.emf_numero_empenho}'/'${emp.emf_ano_empenho}`}</td>
+                                                    <td>{emp.emf_data_emissao}</td>
+                                                    <td>{emp.emf_valor_global}</td>
                                                     <td>
                                                         <div>
                                                             <ButtonPagamento
                                                                 name="btnRequisitarPagamento"
                                                                 onClick={() => {
-                                                                    requisitaPagamento(
-                                                                        sol.afo_id,
-                                                                        sol.afo_autorizacao,
-                                                                        sol.afo_tipo_empenho
-                                                                    );
+                                                                    requisitaPagamento(emp.emf_id);
                                                                 }}>
                                                                 <FaCheckDouble />
                                                                 Requisitar pagamento

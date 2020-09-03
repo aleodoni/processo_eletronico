@@ -403,6 +403,7 @@ routes.get(`${process.env.API_URL}/gera-juntada/:id`, DadosProcessoController.ge
 
 // solicitações de fornecedor
 routes.get(`${process.env.API_URL}/solicitacoes/:cnpj`, SolicitacaoController.gridSolicitacao);
+routes.get(`${process.env.API_URL}/empenhos/:cnpj`, SolicitacaoController.gridEmpenhoFornecedor);
 routes.get(`${process.env.API_URL}/lista-documentos/:tipo`, SolicitacaoController.listaTipoDocumentos);
 routes.post(`${process.env.API_URL}/altera-senha`, LoginController.alteraSenha);
 routes.get(`${process.env.API_URL}/verifica-fornecedor/:cnpj`, SolicitacaoController.verificaFornecedor);
