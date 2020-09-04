@@ -6,6 +6,7 @@ module.exports = {
             { tableName: 'processo', schema: 'spa2' },
             [
                 {
+                    pro_id: 1,
                     pro_codigo: '00132/2020',
                     pro_nome: 'Tarcísio Socher',
                     pro_matricula: 2146,
