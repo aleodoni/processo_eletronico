@@ -65,6 +65,7 @@ import VDadosMembrosComissao from '../app/models/VDadosMembrosComissao';
 import VProcessosSigiloso from '../app/models/VProcessosSigiloso';
 import VFornecedores from '../app/models/VFornecedores';
 import VAutorizacaoFornecimento from '../app/models/VAutorizacaoFornecimento';
+import VEmpenhoFornecedor from '../app/models/VEmpenhoFornecedor';
 import ProcessoEmpenho from '../app/models/ProcessoEmpenho';
 import ProcessoNotaFiscal from '../app/models/ProcessoNotaFiscal';
 import AcessoFornecedores from '../app/models/AcessoFornecedores';
@@ -133,6 +134,7 @@ const models = [
     VSigilo,
     VFornecedores,
     VAutorizacaoFornecimento,
+    VEmpenhoFornecedor,
     ProcessoEmpenho,
     ProcessoNotaFiscal,
     AcessoFornecedores

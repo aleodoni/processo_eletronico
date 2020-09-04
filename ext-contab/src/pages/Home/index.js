@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaCheckDouble, FaReply, FaUpload, FaPaperclip } from 'react-icons/fa';
+import { FaCheckDouble, FaReply, FaUpload } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import Check from '../../assets/check.gif';
-import Autorizacao from '../../components/Autorizacao';
 import * as constantes from '../../utils/constantes';
 
 import {
@@ -14,6 +13,7 @@ import {
     ContainerArquivos,
     ContainerUpload,
     ContainerTitulo,
+    ContainerListaDocumentos,
 } from './styles';
 import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
@@ -22,7 +22,7 @@ import Button from '../../components/layout/button/Button';
 
 function Home() {
     const [erro, setErro] = useState('');
-    const [gridSolicitacoes, setGridSolicitacoes] = useState([]);
+    const [gridEmpenhos, setGridEmpenhos] = useState([]);
     const [documentos, setDocumentos] = useState([]);
     const [mostraLista, setMostraLista] = useState(true);
     const [requisicao, setRequisicao] = useState('');
@@ -31,13 +31,13 @@ function Home() {
         const fornecedor = sessionStorage.getItem('cnpj').toString();
         axios({
             method: 'GET',
-            url: `/solicitacoes/${fornecedor}`,
+            url: `/empenhos/${fornecedor}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then((res) => {
-                setGridSolicitacoes(res.data);
+                setGridEmpenhos(res.data);
             })
             .catch(() => {
                 setErro('Erro ao carregar registros.');
@@ -79,11 +79,10 @@ function Home() {
             });
     }
 
-    function requisitaPagamento(id, requisicao, tipo) {
+    function requisitaPagamento(id) {
         // alert(id);
         setMostraLista(false);
-        setRequisicao(requisicao);
-        carregaDocumentos(tipo);
+        carregaDocumentos();
     }
 
     function voltaLista() {
@@ -206,38 +205,32 @@ function Home() {
                     <hr />
                     {mostraLista ? (
                         <ContainerProcessos>
-                            {gridSolicitacoes.length > 0 ? (
+                            {gridEmpenhos.length > 0 ? (
                                 <div>
-                                    <ContainerTitulo>Pedidos</ContainerTitulo>
+                                    <ContainerTitulo>Autorizações de fornecimento</ContainerTitulo>
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th>Requisição</th>
+                                                <th>Autorização</th>
                                                 <th>Número NAD</th>
-                                                <th>Empenho</th>
-                                                <th>Data</th>
+                                                <th>Data de emissão</th>
                                                 <th>Valor global</th>
+                                                <th>Data de liquidação</th>
                                                 <th>&nbsp;</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {gridSolicitacoes.map((sol) => (
-                                                <tr key={sol.afo_id}>
-                                                    <td>{sol.afo_requisicao}</td>
-                                                    <td>{sol.afo_numero_nad}</td>
-                                                    <td>{sol.afo_empenho}</td>
-                                                    <td>{sol.afo_data}</td>
-                                                    <td>{sol.afo_valor_global}</td>
+                                            {gridEmpenhos.map((emp) => (
+                                                <tr key={emp.emf_id}>
+                                                    <td>{`${emp.emf_numero_empenho}'/'${emp.emf_ano_empenho}`}</td>
+                                                    <td>{emp.emf_data_emissao}</td>
+                                                    <td>{emp.emf_valor_global}</td>
                                                     <td>
                                                         <div>
                                                             <ButtonPagamento
                                                                 name="btnRequisitarPagamento"
                                                                 onClick={() => {
-                                                                    requisitaPagamento(
-                                                                        sol.afo_id,
-                                                                        sol.afo_requisicao,
-                                                                        sol.afo_tipo_requisicao
-                                                                    );
+                                                                    requisitaPagamento(emp.emf_id);
                                                                 }}>
                                                                 <FaCheckDouble />
                                                                 Requisitar pagamento
@@ -253,73 +246,54 @@ function Home() {
                         </ContainerProcessos>
                     ) : (
                         <>
-                            <ContainerTitulo>Requisição: {requisicao}</ContainerTitulo>
+                            <ContainerTitulo>
+                                <p>Autorização: {requisicao}</p>
+                                <span>* Clique na descrição para inserir o documento</span>
+                            </ContainerTitulo>
+
                             <ContainerArquivos>
                                 {documentos.map((doc) => (
                                     <div key={doc.tpd_id}>
                                         <form>
-                                            <table>
-                                                <tr>
-                                                    <td
-                                                        style={{
-                                                            width: '500px',
-                                                        }}>
-                                                        {doc.tpd_nome}&nbsp;<img
-                                                            src={Check}
-                                                            alt=""
-                                                            style={{ visibility: 'hidden' }}
-                                                            id={`img_${doc.nome_campo_anexo}`}
-                                                            width={20}
-                                                            height={20}
-                                                        />
-                                                    </td>
-                                                    <td
-                                                        style={{
-                                                            width: '180px',
-                                                            textAlign: 'center',
-                                                            borderRightStyle: 'hidden',
-                                                            borderTopStyle: 'hidden',
-                                                            borderBottomStyle: 'hidden',
-                                                        }}>
-                                                        <input
-                                                            name="manId"
-                                                            value={doc.tpd_id}
-                                                            type="hidden"
-                                                        />
-                                                        <ContainerUpload>
-                                                            <label htmlFor={doc.nome_campo_anexo}>
-                                                                <FaPaperclip />
-                                                                &nbsp;Inserir documento
-                                                            </label>
-
-                                                            <input
-                                                                type="file"
-                                                                name={doc.nome_campo_anexo}
-                                                                id={doc.nome_campo_anexo}
-                                                                onChange={(e) => {
-                                                                    verificaArquivo(
-                                                                        e,
-                                                                        doc.nome_campo_anexo
-                                                                    );
-                                                                }}
-                                                            />
-                                                        </ContainerUpload>
-                                                    </td>
-                                                    <td
-                                                        style={{
-                                                            width: '350px',
-                                                            margin: 0,
-                                                            paddingLeft: 5,
-                                                            borderRightStyle: 'hidden',
-                                                            borderTopStyle: 'hidden',
-                                                            borderBottomStyle: 'hidden',
-                                                        }}>
-                                                        <label id={`label_${doc.nome_campo_anexo}`}>
-                                                            &nbsp;
+                                            <ContainerListaDocumentos>
+                                                <>
+                                                    <input
+                                                        name="manId"
+                                                        value={doc.tpd_id}
+                                                        type="hidden"
+                                                    />
+                                                    <ContainerUpload>
+                                                        <label htmlFor={doc.nome_campo_anexo}>
+                                                            - {doc.tpd_nome}
                                                         </label>
-                                                    </td>
-                                                </tr>
-                                            </table>
+
+                                                        <input
+                                                            type="file"
+                                                            name={doc.nome_campo_anexo}
+                                                            id={doc.nome_campo_anexo}
+                                                            onChange={(e) => {
+                                                                verificaArquivo(
+                                                                    e,
+                                                                    doc.nome_campo_anexo
+                                                                );
+                                                            }}
+                                                        />
+                                                    </ContainerUpload>
+                                                    <img
+                                                        src={Check}
+                                                        alt=""
+                                                        style={{ visibility: 'hidden' }}
+                                                        id={`img_${doc.nome_campo_anexo}`}
+                                                        width={20}
+                                                        height={20}
+                                                    />
+                                                </>
+                                                <>
+                                                    <span id={`label_${doc.nome_campo_anexo}`}>
+                                                        &nbsp;
+                                                    </span>
+                                                </>
+                                            </ContainerListaDocumentos>
                                         </form>
                                     </div>
                                 ))}

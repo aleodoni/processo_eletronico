@@ -1,37 +1,34 @@
 import Sequelize, { Model } from 'sequelize';
 
-class VAutorizacaoFornecimento extends Model {
+class VEmpenhoFornecedor extends Model {
     static init(sequelize) {
         super.init(
             {
-                afo_id: {
+                emf_id: {
                     type: Sequelize.INTEGER,
                     primaryKey: true
+                },
+                emf_numero_empenho: {
+                    type: Sequelize.INTEGER
+                },
+                emf_ano_empenho: {
+                    type: Sequelize.INTEGER
                 },
                 for_id: {
                     type: Sequelize.INTEGER
                 },
-                afo_autorizacao: {
-                    type: Sequelize.INTEGER
-                },
-                afo_numero_nad: {
-                    type: Sequelize.INTEGER
-                },
-                afo_data: {
-                    type: Sequelize.DATEONLY
-                },
-                afo_valor_global: {
+                emf_valor_global: {
                     type: Sequelize.DECIMAL(7, 2)
-                },
-                afo_tipo_empenho: {
-                    type: Sequelize.INTEGER
                 },
                 afo_data_liquidacao: {
                     type: Sequelize.DATEONLY
+                },
+                emf_data_emissao: {
+                    type: Sequelize.INTEGER
                 }
             },
             {
-                tableName: 'v_autorizacao_fornecimento',
+                tableName: 'v_empenho_fornecedor',
                 schema: 'spa2',
                 sequelize,
                 operatorsAliases: false
@@ -42,4 +39,4 @@ class VAutorizacaoFornecimento extends Model {
     }
 }
 
-export default VAutorizacaoFornecimento;
+export default VEmpenhoFornecedor;
