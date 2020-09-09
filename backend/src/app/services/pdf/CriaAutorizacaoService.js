@@ -5,6 +5,18 @@ import fs from 'fs';
 require('dotenv/config');
 const brasao = path.join(__dirname, '../../../../public/brasao.jpg');
 const titulo = 'Câmara Municipal de Curitiba';
+const metadados = {
+    info: { Title: 'Documento de autorização de pagamento', Author: 'Câmara Municipal de Curitiba' },
+    permissions: {
+        printing: false,
+        modifying: false,
+        copying: false,
+        annotating: false,
+        fillingForms: false,
+        contentAccessibility: false,
+        documentAssembly: false
+    }
+};
 
 class CriaAutorizacaoService {
     constructor(autorizacaoModel, arquivoModel, autorizacaoArquivoModel) {
@@ -47,7 +59,7 @@ class CriaAutorizacaoService {
 
         const arquivo = caminho + '/' + arq_id + 'A.pdf';
         const texto = 'A empresa acima mencionada, por intermédio de seu representante, vem à presença de Vossa Excelência, requerer o pagamento da nota fiscal abaixo especificada.';
-        const doc = new PDFDocument();
+        const doc = new PDFDocument(metadados);
         doc.pipe(fs.createWriteStream(arquivo));
         doc.image(brasao, 10, 10, { scale: 0.50 });
         doc.fontSize(20).font('Helvetica-Bold').text(titulo, 160, 20);

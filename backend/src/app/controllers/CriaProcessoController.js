@@ -4,6 +4,8 @@
 import VDadosPessoa from '../models/VDadosPessoa';
 import VFornecedores from '../models/VFornecedores';
 import Processo from '../models/Processo';
+import ProcessoEmpenho from '../models/ProcessoEmpenho';
+import ProcessoNotaFiscal from '../models/ProcessoNotaFiscal';
 import ComissaoProcessante from '../models/ComissaoProcessante';
 import NomePasPad from '../models/NomePasPad';
 import Lotacao from '../models/Lotacao';
@@ -29,7 +31,7 @@ import Sequelize from 'sequelize';
 import ConnectionHelper from '../helpers/ConnectionHelper';
 import * as constantes from '../../app/constants/constantes';
 import AutorizacaoFornecimento from '../models/AutorizacaoFornecimento';
-import { hash } from '../util/hash';
+import { fileHash } from '../util/hash';
 const fs = require('fs');
 
 // import AuditoriaController from './AuditoriaController';
@@ -723,7 +725,7 @@ class CriaProcessoController {
             const criaCapa = new CriaCapaService(Processo);
             const caminhoArquivoCapa = await criaCapa.capaProcesso(arquivoCapa.arq_id, pro_id, 'Execução de despesas', caminhoProcesso);
             // obtem o hash do arquivo
-            const hashCapa = hash(caminhoArquivoCapa);
+            const hashCapa = await fileHash(caminhoArquivoCapa);
             // atualiza a tabela de arquivo com o hash do arquivo
             await Arquivo.update(
                 { arq_hash: hashCapa },
@@ -772,12 +774,31 @@ class CriaProcessoController {
             const caminhoArquivoAutorizacao = await criaAutorizacao.criaAutorizacao(req.body.aut_id, arquivoAutorizacao.arq_id, caminhoProcesso, req.body.documentos);
 
             // obtem o hash do arquivo
-            const hashAutorizacao = hash(caminhoArquivoAutorizacao);
-            // atualiza a tabela de arquivo com o hash do arquivo
+            const hashAutorizacao = await fileHash(caminhoArquivoAutorizacao);
             await Arquivo.update(
                 { arq_hash: hashAutorizacao },
                 { where: { arq_id: arquivoAutorizacao.arq_id }, logging: false }
             );
+
+            // insere o empenho e o processo na tabela processo_empenho
+            ProcessoEmpenho.create({
+                pen_id: null,
+                pro_id_pai: pro_id,
+                pen_empenho: req.body.empenho
+            }, {
+                logging: false
+            });
+            //
+
+            // insere a nota fiscal e o processo na tabela processo_nota_fiscal
+            ProcessoNotaFiscal.create({
+                pnf_id: null,
+                pro_id_pai: pro_id,
+                pnf_nota_fiscal: req.body.aut_nf
+            }, {
+                logging: false
+            });
+            //
 
             return res.json({
                 pro_id,

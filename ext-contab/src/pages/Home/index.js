@@ -315,6 +315,7 @@ function Home() {
                 aut_ban_conta_corrente: contaCorrente,
                 aut_data_cadastro: null,
                 documentos: vSelecionado,
+                empenho,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),

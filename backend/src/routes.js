@@ -48,7 +48,7 @@ import SolicitacaoController from './app/controllers/SolicitacaoController';
 
 import Arquivo from './app/models/Arquivo';
 import DataHoraAtual from './app/models/DataHoraAtual';
-import { hash } from './app/util/hash';
+import { fileHash } from './app/util/hash';
 
 require('dotenv/config');
 
@@ -309,7 +309,7 @@ routes.post(`${process.env.API_URL}/anexo-documentos`, uploadDocumento.single('f
         });
 
         // obtem o hash do arquivo
-        const hashArquivo = hash(caminhoArquivo);
+        const hashArquivo = await fileHash(caminhoArquivo);
         // atualiza a tabela de arquivo com o hash do arquivo
         await Arquivo.update(
             { arq_hash: hashArquivo },
