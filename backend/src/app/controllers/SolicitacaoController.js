@@ -1,4 +1,5 @@
 import VFornecedores from '../models/VFornecedores';
+import Banco from '../models/Banco';
 import AcessoFornecedores from '../models/AcessoFornecedores';
 import VAutorizacaoFornecimento from '../models/VAutorizacaoFornecimento';
 import VEmpenhoFornecedor from '../models/VEmpenhoFornecedor';
@@ -73,29 +74,30 @@ class SolicitacaoController {
     }
 
     async listaTipoDocumentos(req, res) {
-        let tipoDocumento = null;
-        if (Number(req.params.tipo) === 1) {
-            const Op = Sequelize.Op;
-            tipoDocumento = await VTipoDocumento.findAll({
-                where: {
-                    tpd_solicitacao_pgto: true,
-                    tpd_id: { [Op.notIn]: [50, 51] }
-                },
-                logging: true
-            });
-        } else {
-            tipoDocumento = await VTipoDocumento.findAll({
-                where: {
-                    tpd_solicitacao_pgto: true
-                },
-                logging: true
-            });
-        }
-
+        const tipoDocumento = await VTipoDocumento.findAll({
+            where: {
+                tpd_solicitacao_pgto: true
+            },
+            logging: true
+        });
         if (tipoDocumento !== null) {
             return res.json(tipoDocumento);
         } else {
             return res.status(400).json({ erro: 'Tipo de documento não encontrado' });
+        }
+    }
+
+    async listaBancos(req, res) {
+        const banco = await Banco.findAll({
+            order: ['ban_nome'],
+            attributes: ['ban_id', 'ban_numero', 'ban_nome'],
+            logging: true
+        });
+
+        if (banco !== null) {
+            return res.json(banco);
+        } else {
+            return res.status(400).json({ erro: 'Bancos não encontrados' });
         }
     }
 
@@ -112,6 +114,21 @@ class SolicitacaoController {
             return res.json({ primeiro: false });
         } else {
             return res.json({ primeiro: true });
+        }
+    }
+
+    async dadosFornecedor(req, res) {
+        const { cnpj } = req.params;
+        const fornecedor = await VFornecedores.findAll({
+            where: {
+                for_cnpj_cpf: cnpj
+            },
+            logging: true
+        });
+        if (fornecedor !== null) {
+            return res.json(fornecedor);
+        } else {
+            return res.status(400).json({ erro: 'Fornecedor não encontrado' });
         }
     }
 }

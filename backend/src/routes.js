@@ -48,6 +48,7 @@ import SolicitacaoController from './app/controllers/SolicitacaoController';
 
 import Arquivo from './app/models/Arquivo';
 import DataHoraAtual from './app/models/DataHoraAtual';
+import { hash } from './app/util/hash';
 
 require('dotenv/config');
 
@@ -83,11 +84,11 @@ const storageManifestacao = multer.diskStorage({
 
 const storageDocumento = multer.diskStorage({
     destination: function(req, file, callback) {
-        const novoCaminho = process.env.CAMINHO_ARQUIVOS_ORDEM_PAGAMENTO;
-        if (!fs.existsSync(novoCaminho)) {
-            fs.mkdirSync(novoCaminho);
-        }
-        callback(null, novoCaminho);
+        const caminhoProcesso = process.env.CAMINHO_ARQUIVOS_PROCESSO;
+        const proId = req.body.pro_id;
+        const ano = req.body.ano;
+        const caminhoCompleto = caminhoProcesso + proId + ano + '/';
+        callback(null, caminhoCompleto);
     },
     filename: (req, file, callback) => {
         crypto.randomBytes(16, (err, hash) => {
@@ -276,9 +277,11 @@ routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.
     res.status(204).end();
 });
 
-// teste
+// rota de inserção de arquivos de fornecedores
 routes.post(`${process.env.API_URL}/anexo-documentos`, uploadDocumento.single('file'), async function(req, res) {
     const nomeArquivo = req.file.filename;
+    const destinoArquivo = req.file.destination;
+    const caminhoArquivo = destinoArquivo + nomeArquivo;
     const tipoArquivo = req.file.mimetype;
     const proId = req.body.pro_id;
     const tpdId = req.body.tpd_id;
@@ -297,13 +300,21 @@ routes.post(`${process.env.API_URL}/anexo-documentos`, uploadDocumento.single('f
             man_id: null,
             arq_tipo: tipoArquivo,
             arq_doc_id: proId,
-            arq_doc_tipo: 'pagamento',
+            arq_doc_tipo: 'pgto',
             tpd_id: tpdId,
             arq_data: dataHoraAtual.dataValues.data_hora_atual,
             arq_login: 'externo'
         }, {
             logging: false
         });
+
+        // obtem o hash do arquivo
+        const hashArquivo = hash(caminhoArquivo);
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashArquivo },
+            { where: { arq_id: arq_id }, logging: false }
+        );
         res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
     } catch (erroArquivo) {
         console.log(erroArquivo);
@@ -404,8 +415,10 @@ routes.get(`${process.env.API_URL}/gera-juntada/:id`, DadosProcessoController.ge
 // solicitações de fornecedor
 routes.get(`${process.env.API_URL}/solicitacoes/:cnpj`, SolicitacaoController.gridSolicitacao);
 routes.get(`${process.env.API_URL}/empenhos/:cnpj`, SolicitacaoController.gridEmpenhoFornecedor);
-routes.get(`${process.env.API_URL}/lista-documentos/:tipo`, SolicitacaoController.listaTipoDocumentos);
+routes.get(`${process.env.API_URL}/lista-documentos`, SolicitacaoController.listaTipoDocumentos);
 routes.post(`${process.env.API_URL}/altera-senha`, LoginController.alteraSenha);
 routes.get(`${process.env.API_URL}/verifica-fornecedor/:cnpj`, SolicitacaoController.verificaFornecedor);
+routes.get(`${process.env.API_URL}/bancos`, SolicitacaoController.listaBancos);
+routes.get(`${process.env.API_URL}/fornecedores/:cnpj`, SolicitacaoController.dadosFornecedor);
 
 export default routes;

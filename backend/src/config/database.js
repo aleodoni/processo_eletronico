@@ -12,6 +12,12 @@ module.exports = {
         underscored: true,
         underscoredAll: true
     },
+    pool: {
+        max: 7,
+        min: 0,
+        acquire: 90000,
+        idle: 1000
+    },
     dialectOptions: {
         useUTC: false // for reading from database
     },

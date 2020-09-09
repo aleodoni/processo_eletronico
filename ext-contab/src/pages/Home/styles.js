@@ -27,7 +27,7 @@ export const Main = styled.main`
     }
 `;
 
-export const ContainerProcessos = styled.div`
+export const ContainerEmpenhos = styled.div`
     display: grid;
     grid-template-columns: 1100px;
     margin-left: 10px;
@@ -87,12 +87,14 @@ export const ContainerProcessos = styled.div`
 export const Erro = styled.div`
     font-size: 14px;
     color: red;
+    padding-top: 10px;
     padding-bottom: 10px;
+    padding-left: 10px;
 `;
 
 export const ContainerTitulo = styled.div`
     display: grid;
-    grid-template-columns: 450px 450px;
+    grid-template-columns: 460px 450px;
     grid-column-gap: 10px;
     font-size: 16px;
     color: #fff;
@@ -104,6 +106,25 @@ export const ContainerTitulo = styled.div`
     span {
         font-size: 12px;
     }
+`;
+
+export const ContainerAviso = styled.div`
+    font-size: 12px;
+    color: #fff;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 10px;
+    font-weight: bold;
+
+    span {
+        font-size: 16px;
+        color: #fff;
+    }
+`;
+
+export const ContainerObrigatorio = styled.span`
+    font-size: 16px;
+    color: red;
 `;
 
 export const ContainerBotaoVoltarEnviar = styled.div`
@@ -118,6 +139,10 @@ export const ContainerArquivos = styled.div`
     color: #fff;
     margin-left: 10px;
     margin-top: 5px;
+
+    span {
+        margin-bottom: 15px;
+    }
 `;
 
 export const ContainerUpload = styled.div`
@@ -142,4 +167,24 @@ export const ContainerListaDocumentos = styled.div`
     display: grid;
     grid-template-columns: 770px 30px 500px;
     grid-column-gap: 3px;
+`;
+
+export const ContainerBanco = styled.div`
+    display: grid;
+    grid-template-columns: 450px 200px 250px;
+    grid-column-gap: 3px;
+    padding-left: 5px;
+`;
+
+export const ContainerNota = styled.div`
+    display: grid;
+    grid-template-columns: 200px 170px 200px;
+    grid-column-gap: 3px;
+    padding-left: 5px;
+`;
+
+export const ContainerReferencia = styled.div`
+    display: grid;
+    grid-template-columns: 900px;
+    padding-left: 5px;
 `;

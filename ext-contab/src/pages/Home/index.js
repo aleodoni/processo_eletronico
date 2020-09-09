@@ -1,37 +1,86 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaCheckDouble, FaReply, FaUpload } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
+import { Form } from '@unform/web';
+import api from '../../service/api';
 import Check from '../../assets/check.gif';
 import * as constantes from '../../utils/constantes';
+import { dataValida } from '../../utils/validaCpfCnpj';
 
 import {
     Container,
     Main,
-    ContainerProcessos,
+    ContainerEmpenhos,
     Erro,
     ContainerBotaoVoltarEnviar,
     ContainerArquivos,
     ContainerUpload,
     ContainerTitulo,
     ContainerListaDocumentos,
+    ContainerBanco,
+    ContainerNota,
+    ContainerReferencia,
+    ContainerAviso,
 } from './styles';
 import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import ButtonPagamento from '../../components/layout/button/ButtonPagamento';
 import Button from '../../components/layout/button/Button';
+import Select from '../../components/layout/Select';
+import Input from '../../components/layout/Input';
+import TextArea from '../../components/layout/TextArea';
+import InputMask from '../../components/layout/InputMask';
+import ModalErros from '../../components/ModalErros';
 
 function Home() {
     const [erro, setErro] = useState('');
+    const [vErro, setVErro] = useState([]);
+    const [vSelecionado, setVSelecionado] = useState([]);
     const [gridEmpenhos, setGridEmpenhos] = useState([]);
     const [documentos, setDocumentos] = useState([]);
     const [mostraLista, setMostraLista] = useState(true);
-    const [requisicao, setRequisicao] = useState('');
+    const [empenho, setEmpenho] = useState('');
+    const [valorGlobal, setValorGlobal] = useState('');
+    // eslint-disable-next-line no-unused-vars
+    const [fornecedor, setFornecedor] = useState('');
+    const [banId, setBanId] = useState('-1');
+    const [bancos, setBancos] = useState([]);
+    const [modalErros, setModalErros] = useState(false);
+
+    const selecionado = [];
+
+    const formRef = useRef(null);
+
+    function handleBanId(e) {
+        setBanId(e.target.value);
+    }
+
+    function fechaModalErros() {
+        setModalErros(false);
+    }
+
+    function abreModalErros() {
+        setModalErros(true);
+    }
+
+    function formataMoeda(e) {
+        let v = e.target.value.replace(/\D/g, '');
+        v = `${(v / 100).toFixed(2)}`;
+        v = v.replace('.', ',');
+        v = v.replace(/(\d)(\d{3})(\d{3}),/g, '$1.$2.$3,');
+        v = v.replace(/(\d)(\d{3}),/g, '$1.$2,');
+        e.target.value = v;
+    }
+
+    function posiciona() {
+        window.scrollTo(0, 0);
+    }
 
     const carregaSolicitacoes = useCallback(() => {
-        const fornecedor = sessionStorage.getItem('cnpj').toString();
+        const cnpj = sessionStorage.getItem('cnpj').toString();
         axios({
             method: 'GET',
-            url: `/empenhos/${fornecedor}`,
+            url: `/empenhos/${cnpj}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -44,7 +93,7 @@ function Home() {
             });
     }, []);
 
-    function verificaArquivo(e, id) {
+    function verificaArquivo(e, id, documento) {
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const labelId = `label_${id}`;
         const imageId = `img_${id}`;
@@ -61,12 +110,49 @@ function Home() {
         }
         document.getElementById(labelId).innerHTML = e.target.files[0].name;
         document.getElementById(imageId).style.visibility = 'visible';
+        selecionado.push(documento);
+        setVSelecionado((oldArray) => [...oldArray, documento]);
     }
 
-    function carregaDocumentos(tipo) {
+    function carregaDadosFornecedor() {
+        const cnpj = sessionStorage.getItem('cnpj').toString();
         axios({
             method: 'GET',
-            url: `/lista-documentos/${tipo}`,
+            url: `/fornecedores/${cnpj}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then((res) => {
+                setFornecedor(res.data);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }
+
+    async function carregaBancos() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/bancos');
+
+            const data = response.data.map((b) => {
+                return {
+                    label: b.ban_nome,
+                    value: b.ban_id,
+                };
+            });
+            setBancos(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    function carregaDocumentos() {
+        axios({
+            method: 'GET',
+            url: `/lista-documentos`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -79,27 +165,109 @@ function Home() {
             });
     }
 
-    function requisitaPagamento(id) {
-        // alert(id);
+    function requisitaPagamento(numEmpenho, valor) {
         setMostraLista(false);
+        setEmpenho(numEmpenho);
+        setValorGlobal(valor);
+        carregaDadosFornecedor();
         carregaDocumentos();
+        carregaBancos();
     }
 
     function voltaLista() {
         setMostraLista(true);
     }
 
+    // eslint-disable-next-line no-unused-vars
     function enviaArquivos(e) {
-        // primeiro tenho que varrer se o usuário deixou de anexar algum arquivo
-        for (let i = 0; i < document.forms.length; i++) {
-            for (let j = 0; j < document.forms[i].elements.length; j++) {
-                if (document.forms[i].elements[j].type === 'file') {
-                    if (document.forms[i].elements[j].value === '') {
-                        mensagem.error(`Todos os campos tem que ser preenchidos.`);
-                        return;
-                    }
-                }
+        setErro('');
+        const vErros = [];
+        const referencia = formRef.current.getFieldValue('referencia');
+        const banco = formRef.current.getFieldValue('banId');
+        const agencia = formRef.current.getFieldValue('agencia');
+        const contaCorrente = formRef.current.getFieldValue('contaCorrente');
+        const valor = formRef.current.getFieldValue('valor');
+        const dataExpedicao = formRef.current.getFieldValue('dataExpedicao');
+        const notaFiscal = formRef.current.getFieldValue('notaFiscal');
+        const valorAPI = parseFloat(
+            valor
+                .replace(/[^0-9,.]/g, '')
+                .replace(/[.]/g, '')
+                .replace(',', '.')
+        );
+
+        const valorGlobalAPI = parseFloat(
+            valorGlobal
+                .replace(/[^0-9,.]/g, '')
+                .replace(/[.]/g, '')
+                .replace(',', '.')
+        );
+
+        if (valorAPI > valorGlobalAPI) {
+            vErros.push('Valor da nota fiscal maior que valor global.');
+        }
+
+        if (referencia.trim() === '') {
+            vErros.push('Referência.');
+        }
+        if (banco.trim() === '-1') {
+            vErros.push('Nome do banco.');
+        }
+        if (agencia.trim() === '') {
+            vErros.push('Número da agência.');
+        }
+        if (contaCorrente.trim() === '') {
+            vErros.push('Número da conta corrente.');
+        }
+        if (notaFiscal.trim() === '') {
+            vErros.push('Número da nota fiscal.');
+        }
+        if (dataExpedicao !== '' && dataExpedicao !== undefined) {
+            if (!dataValida(dataExpedicao)) {
+                vErros.push('Data de expedição da nota fiscal inválida.');
             }
+        }
+        if (valor.trim() === '') {
+            vErros.push('Valor da nota fiscal.');
+        }
+
+        if (document.getElementById('anexo42').value === '') {
+            vErros.push('Nota fiscal / fatura discriminativa original.');
+        }
+
+        if (document.getElementById('anexo44').value === '') {
+            vErros.push('Prova de regularidade para com a Fazenda Estadual da sede da empresa.');
+        }
+
+        if (document.getElementById('anexo43').value === '') {
+            vErros.push('Prova de regularidade para com a Fazenda Municipal da sede da empresa.');
+        }
+
+        if (document.getElementById('anexo45').value === '') {
+            vErros.push(
+                'Prova de regularidade conjunta, relativa a Tributos Federais e à Dívida Ativa da União.'
+            );
+        }
+
+        if (document.getElementById('anexo46').value === '') {
+            vErros.push('Comprovante de regularidade do FGTS.');
+        }
+
+        if (document.getElementById('anexo51').value === '') {
+            vErros.push(
+                'Cópia da autorização do Fornecimento ou de execução de serviços expedida pela Câmara.'
+            );
+        }
+
+        if (document.getElementById('anexo52').value === '') {
+            vErros.push('Cópia da Nota de Empenho.');
+        }
+
+        if (vErros.length > 0) {
+            setVErro(vErros);
+            abreModalErros();
+            posiciona();
+            return;
         }
 
         // começa a abrir o processo
@@ -135,6 +303,18 @@ function Home() {
                 pro_num_com_abono: null,
                 pro_enviado_externo: true,
                 pro_ip_externo: sessionStorage.getItem('ip'),
+                // aqui são os campos da autorização do fornecedor
+                aut_id: null,
+                for_id: null,
+                aut_referencia: referencia,
+                aut_nf: notaFiscal,
+                aut_data_expedicao_nf: dataExpedicao,
+                aut_valor: valorAPI,
+                ban_id: banId,
+                aut_ban_agencia: agencia,
+                aut_ban_conta_corrente: contaCorrente,
+                aut_data_cadastro: null,
+                documentos: vSelecionado,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -142,6 +322,7 @@ function Home() {
         })
             .then((resProcesso) => {
                 const proId = resProcesso.data.pro_id;
+                const { ano } = resProcesso.data;
                 for (let i = 0; i < document.forms.length; i++) {
                     const data = new FormData();
                     let campoCodigo = '';
@@ -156,26 +337,30 @@ function Home() {
                     }
                     data.append('pro_id', proId);
                     data.append('tpd_id', campoCodigo);
+                    data.append('ano', ano);
                     data.append('file', campoArquivo);
-                    axios({
-                        method: 'POST',
-                        url: `/anexo-documentos`,
-                        headers: {
-                            authorization: sessionStorage.getItem('token'),
-                            'Content-Type': 'multipart/form-data',
-                        },
-                        data,
-                    })
-                        .then((resAnexos) => {
-                            if (resAnexos.status === 204) {
-                                // alert(contador);
-                            }
+                    if (campoArquivo !== undefined) {
+                        axios({
+                            method: 'POST',
+                            url: `/anexo-documentos`,
+                            headers: {
+                                authorization: sessionStorage.getItem('token'),
+                                'Content-Type': 'multipart/form-data',
+                            },
+                            data,
                         })
-                        .catch(() => {
-                            setErro('Erro ao inserir arquivos em anexo.');
-                        });
+                            .then((resAnexos) => {
+                                if (resAnexos.status === 204) {
+                                    // alert(contador);
+                                }
+                            })
+                            .catch(() => {
+                                setErro('Erro ao inserir arquivos em anexo.');
+                            });
+                    }
                 }
                 mensagem.success(`Arquivos enviados com sucesso.`);
+                setVSelecionado([]);
                 setMostraLista(true);
             })
             .catch((erroCriaProcesso) => {
@@ -198,31 +383,29 @@ function Home() {
         <DefaultLayout>
             <Container>
                 <Main>
-                    <Erro>{erro}</Erro>
                     <ContainerTitulo>
                         Fornecedor: {sessionStorage.getItem('fornecedor')}
                     </ContainerTitulo>
                     <hr />
+                    <Erro dangerouslySetInnerHTML={{ __html: erro }} />
                     {mostraLista ? (
-                        <ContainerProcessos>
+                        <ContainerEmpenhos>
                             {gridEmpenhos.length > 0 ? (
                                 <div>
-                                    <ContainerTitulo>Autorizações de fornecimento</ContainerTitulo>
+                                    <ContainerTitulo>Empenhos</ContainerTitulo>
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th>Autorização</th>
-                                                <th>Número NAD</th>
+                                                <th>Empenho</th>
                                                 <th>Data de emissão</th>
                                                 <th>Valor global</th>
-                                                <th>Data de liquidação</th>
                                                 <th>&nbsp;</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {gridEmpenhos.map((emp) => (
                                                 <tr key={emp.emf_id}>
-                                                    <td>{`${emp.emf_numero_empenho}'/'${emp.emf_ano_empenho}`}</td>
+                                                    <td>{`${emp.emf_numero_empenho}/${emp.emf_ano_empenho}`}</td>
                                                     <td>{emp.emf_data_emissao}</td>
                                                     <td>{emp.emf_valor_global}</td>
                                                     <td>
@@ -230,7 +413,10 @@ function Home() {
                                                             <ButtonPagamento
                                                                 name="btnRequisitarPagamento"
                                                                 onClick={() => {
-                                                                    requisitaPagamento(emp.emf_id);
+                                                                    requisitaPagamento(
+                                                                        `${emp.emf_numero_empenho}/${emp.emf_ano_empenho}`,
+                                                                        emp.emf_valor_global
+                                                                    );
                                                                 }}>
                                                                 <FaCheckDouble />
                                                                 Requisitar pagamento
@@ -243,18 +429,76 @@ function Home() {
                                     </table>
                                 </div>
                             ) : null}
-                        </ContainerProcessos>
+                        </ContainerEmpenhos>
                     ) : (
                         <>
                             <ContainerTitulo>
-                                <p>Autorização: {requisicao}</p>
-                                <span>* Clique na descrição para inserir o documento</span>
+                                <p>Empenho: {empenho}</p>
                             </ContainerTitulo>
+                            <ContainerAviso>
+                                Todos os campos com <span> * </span> são obrigatórios
+                            </ContainerAviso>
+                            <Form ref={formRef} id="frmAutorizacao">
+                                <ContainerReferencia>
+                                    <TextArea
+                                        name="referencia"
+                                        label="Referente*"
+                                        type="text"
+                                        rows={3}
+                                        cols={100}
+                                    />
+                                </ContainerReferencia>
+                                <ContainerNota>
+                                    <Input
+                                        name="notaFiscal"
+                                        label="Nota fiscal*"
+                                        type="text"
+                                        maxLength="30"
+                                    />
+                                    <InputMask
+                                        name="dataExpedicao"
+                                        label="Data de expedição*"
+                                        mask="99/99/9999"
+                                        maskChar=" "
+                                    />
 
+                                    <Input
+                                        name="valor"
+                                        label="Valor*"
+                                        type="text"
+                                        maxLength="10"
+                                        onKeyUp={formataMoeda}
+                                    />
+                                </ContainerNota>
+                                <ContainerBanco>
+                                    <Select
+                                        name="banId"
+                                        label="Banco*"
+                                        options={bancos}
+                                        onChange={handleBanId}
+                                    />
+                                    <Input
+                                        name="agencia"
+                                        label="Agência*"
+                                        type="text"
+                                        maxLength="10"
+                                    />
+                                    <Input
+                                        name="contaCorrente"
+                                        label="Conta corrente*"
+                                        type="text"
+                                        maxLength="20"
+                                    />
+                                </ContainerBanco>
+                            </Form>
+                            <ContainerTitulo>
+                                * Clique na descrição para inserir ou substituir o documento
+                            </ContainerTitulo>
                             <ContainerArquivos>
                                 {documentos.map((doc) => (
                                     <div key={doc.tpd_id}>
                                         <form>
+                                            <input name="selecionado" value="" type="hidden" />
                                             <ContainerListaDocumentos>
                                                 <>
                                                     <input
@@ -274,7 +518,8 @@ function Home() {
                                                             onChange={(e) => {
                                                                 verificaArquivo(
                                                                     e,
-                                                                    doc.nome_campo_anexo
+                                                                    doc.nome_campo_anexo,
+                                                                    doc.tpd_nome
                                                                 );
                                                             }}
                                                         />
@@ -315,6 +560,11 @@ function Home() {
                         </>
                     )}
                 </Main>
+                <ModalErros
+                    modalErros={modalErros}
+                    fechaModalErros={fechaModalErros}
+                    mensagem={vErro}
+                />
             </Container>
         </DefaultLayout>
     );

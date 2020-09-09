@@ -2,6 +2,7 @@ import Sequelize from 'sequelize';
 import Autorizacao from '../app/models/Autorizacao';
 import Area from '../app/models/Area';
 import AreaCombo from '../app/models/AreaCombo';
+import Banco from '../app/models/Banco';
 import Setor from '../app/models/Setor';
 import Lotacao from '../app/models/Lotacao';
 import Tela from '../app/models/Tela';
@@ -65,10 +66,12 @@ import VDadosMembrosComissao from '../app/models/VDadosMembrosComissao';
 import VProcessosSigiloso from '../app/models/VProcessosSigiloso';
 import VFornecedores from '../app/models/VFornecedores';
 import VAutorizacaoFornecimento from '../app/models/VAutorizacaoFornecimento';
+import AutorizacaoFornecimento from '../app/models/AutorizacaoFornecimento';
 import VEmpenhoFornecedor from '../app/models/VEmpenhoFornecedor';
 import ProcessoEmpenho from '../app/models/ProcessoEmpenho';
 import ProcessoNotaFiscal from '../app/models/ProcessoNotaFiscal';
 import AcessoFornecedores from '../app/models/AcessoFornecedores';
+import VAutorizacaoArquivo from '../app/models/VAutorizacaoArquivo';
 
 const models = [
     Autorizacao,
@@ -137,7 +140,10 @@ const models = [
     VEmpenhoFornecedor,
     ProcessoEmpenho,
     ProcessoNotaFiscal,
-    AcessoFornecedores
+    AcessoFornecedores,
+    Banco,
+    AutorizacaoFornecimento,
+    VAutorizacaoArquivo
 ];
 
 class Database {

@@ -23,13 +23,36 @@ class CriaCapaService {
         const doc = new PDFDocument();
         doc.pipe(fs.createWriteStream(arquivo));
         doc.image(brasao, 10, 10, { scale: 0.50 });
-        doc.fontSize(20).text(titulo, 160, 20);
-        doc.fontSize(16).text('PROCESSO ADMINISTRATIVO Nº ' + processo.pro_codigo, 190, 60);
-        doc.fontSize(16).text('INICIATIVA: ' + processo.pro_nome, 10, 150);
+        doc.fontSize(20).font('Helvetica-Bold').text(titulo, 160, 20);
+        doc.fontSize(14).font('Helvetica-Bold').text('PROCESSO ADMINISTRATIVO Nº ' + processo.pro_codigo, 190, 60);
+        doc.fontSize(14).font('Helvetica-Bold').text('INICIATIVA: ', 12, 150, { lineBreak: false }).font('Helvetica').text(processo.pro_nome);
+        doc.fontSize(14).font('Helvetica-Bold').text('ASSUNTO: ', 12, 170, { lineBreak: false }).font('Helvetica').text(tpr_nome);
         doc.rect(doc.x, 160, 450, doc.y).stroke();
-        doc.fontSize(14).text('ASSUNTO: ' + tpr_nome, 10, 170);
+        doc.rect(10, 130, 550, 680).stroke();
 
         doc.end();
+        return arquivo;
+    }
+
+    async capaProcesso(arq_id, pro_id, tpr_nome, caminho) {
+        const processo = await this.processoModel.findByPk(pro_id, { logging: false });
+
+        if (!processo) {
+            throw new AppError('Processo não encontrado.');
+        }
+
+        const arquivo = caminho + '/' + arq_id + 'C.pdf';
+        const doc = new PDFDocument();
+        doc.pipe(fs.createWriteStream(arquivo));
+        doc.image(brasao, 10, 10, { scale: 0.50 });
+        doc.fontSize(20).font('Helvetica-Bold').text(titulo, 160, 20);
+        doc.fontSize(14).font('Helvetica-Bold').text('PROCESSO ADMINISTRATIVO Nº ' + processo.pro_codigo, 170, 60);
+        doc.fontSize(14).font('Helvetica-Bold').text('INICIATIVA: ', 12, 150, { lineBreak: false }).font('Helvetica').text(processo.pro_nome);
+        doc.fontSize(14).font('Helvetica-Bold').text('ASSUNTO: ', 12, 170, { lineBreak: false }).font('Helvetica').text(tpr_nome);
+        doc.rect(10, 130, 550, 380).stroke();
+
+        doc.end();
+        return arquivo;
     }
 }
 
