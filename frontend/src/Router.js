@@ -41,6 +41,7 @@ import CriarManifestacaoCienciaCalculo from './pages/CriarManifestacaoCienciaCal
 import CriarManifestacaoParecerProjurisAposentadoria from './pages/CriarManifestacaoParecerProjurisAposentadoria';
 import TipoDocumento from './pages/TipoDocumento';
 import Tramite from './pages/Tramite';
+import EditaProcessoPagamento from './pages/EditaProcessoPagamento';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route
@@ -88,6 +89,11 @@ const Routes = () => (
         <PrivateRoute exact path="/dados-processo/:id" component={DadosProcesso} />
         <PrivateRoute exact path="/dados-processo-pas-pad/:id" component={DadosProcessoPasPad} />
         <PrivateRoute exact path="/manifestacao-cria/:proId" component={CriarManifestacao} />
+        <PrivateRoute
+            exact
+            path="/edita-processo-pagamento/:proId"
+            component={EditaProcessoPagamento}
+        />
         <PrivateRoute
             exact
             path="/manifestacao-cria-executiva/:proId"

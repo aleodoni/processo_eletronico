@@ -72,6 +72,8 @@ import ProcessoEmpenho from '../app/models/ProcessoEmpenho';
 import ProcessoNotaFiscal from '../app/models/ProcessoNotaFiscal';
 import AcessoFornecedores from '../app/models/AcessoFornecedores';
 import VAutorizacaoArquivo from '../app/models/VAutorizacaoArquivo';
+import ArquivoProcessoPgto from '../app/models/ArquivoProcessoPgto';
+import VAutorizacaoProcesso from '../app/models/VAutorizacaoProcesso';
 
 const models = [
     Autorizacao,
@@ -143,7 +145,9 @@ const models = [
     AcessoFornecedores,
     Banco,
     AutorizacaoFornecimento,
-    VAutorizacaoArquivo
+    VAutorizacaoArquivo,
+    ArquivoProcessoPgto,
+    VAutorizacaoProcesso
 ];
 
 class Database {

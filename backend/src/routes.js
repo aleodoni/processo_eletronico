@@ -237,6 +237,7 @@ routes.post(`${process.env.API_URL}/pesquisa-processo`, DadosProcessoController.
 
 // rotas de dados do processo
 routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.dadosProcesso);
+routes.get(`${process.env.API_URL}/ver-processo-pagamento/:id`, DadosProcessoController.dadosProcessoPagamento);
 routes.get(`${process.env.API_URL}/dados-membros-comissao/:id`, DadosProcessoController.membrosComissao);
 routes.get(`${process.env.API_URL}/dados-nome-pas-pad/:id`, DadosProcessoController.nomePasPad);
 routes.get(`${process.env.API_URL}/ver-processo-pas-pad/:id`, DadosProcessoController.dadosProcessoPasPad);
@@ -420,5 +421,7 @@ routes.post(`${process.env.API_URL}/altera-senha`, LoginController.alteraSenha);
 routes.get(`${process.env.API_URL}/verifica-fornecedor/:cnpj`, SolicitacaoController.verificaFornecedor);
 routes.get(`${process.env.API_URL}/bancos`, SolicitacaoController.listaBancos);
 routes.get(`${process.env.API_URL}/fornecedores/:cnpj`, SolicitacaoController.dadosFornecedor);
+
+routes.get(`${process.env.API_URL}/processos-fornecedores/`, DadosProcessoController.processosPagamento);
 
 export default routes;

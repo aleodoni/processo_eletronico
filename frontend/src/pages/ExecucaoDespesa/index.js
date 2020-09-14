@@ -1,60 +1,81 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import { FaFileAlt } from 'react-icons/fa';
-import { toast as mensagem } from 'react-toastify';
 import Autorizacao from '../../components/Autorizacao';
+import ModalProcesso from '../../components/ModalProcessoPagamento';
 import axios from '../../configs/axiosConfig';
 
-import { Container, Main, ContainerBotoes, Erro } from './styles';
+import {
+    Container,
+    Main,
+    ContainerProcessos,
+    ContainerBotoes,
+    BotaoComoLink,
+    LinkFornecedor,
+    Erro,
+} from './styles';
 import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapido';
-import CriaRubrica from '../../components/layout/button/CriaRubrica';
 import DefaultLayout from '../_layouts/default';
 
 function ExecucaoDespesa() {
+    const history = useHistory();
     const [erro, setErro] = useState('');
+    const [gridProcessos, setGridProcessos] = useState([]);
+    const [processoModal, setProcessoModal] = useState([]);
+    const [modalProcesso, setModalProcesso] = useState(false);
 
-    useEffect(() => {
-        // zzzzz
-    }, []);
+    const colunaCodigoProcesso = {
+        width: '50px',
+    };
+    const colunaFornecedor = {
+        textAlign: 'left',
+    };
 
-    function criaRubrica() {
-        const ordem = document.getElementById('ordemAssinatura').value;
+    function abreModalProcesso(id) {
         axios({
-            method: 'POST',
-            url: '/cria-rubrica',
-            data: {
-                ordem,
-            },
+            method: 'GET',
+            url: `/ver-processo-pagamento/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
-                Accept: 'application/pdf',
             },
-            responseType: 'blob',
         })
             .then(res => {
-                const blob = new Blob([res.data], { type: res.data.type });
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                const contentDisposition = res.headers['content-disposition'];
-                let fileName = 'documento-teste.pdf';
-                if (contentDisposition) {
-                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                    if (fileNameMatch.length === 2) {
-                        fileName = fileNameMatch[1];
-                    }
-                }
-                link.setAttribute('download', fileName);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.URL.revokeObjectURL(url);
-                mensagem.success('Assinado com sucesso.');
+                setProcessoModal(res.data);
+                setModalProcesso(true);
             })
-            .catch(e => {
-                setErro(e);
+            .catch(() => {
+                setErro('Erro ao retornar dados do processo de pagamento.');
             });
     }
+
+    function fechaModalProcesso() {
+        setModalProcesso(false);
+    }
+
+    function editaProcesso(id) {
+        history.push(`/edita-processo-pagamento/${id}`);
+    }
+
+    const carregaGridProcessos = useCallback(() => {
+        axios({
+            method: 'GET',
+            url: `/processos-fornecedores/`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setGridProcessos(res.data);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }, []);
+
+    useEffect(() => {
+        carregaGridProcessos();
+    }, [carregaGridProcessos]);
 
     return (
         <DefaultLayout>
@@ -69,17 +90,52 @@ function ExecucaoDespesa() {
                                 Criar processo de pagamento
                             </Link>
                         </ButtonAcessoRapido>
-                        <CriaRubrica name="btnCriaRubrica" clickHandler={criaRubrica} />
-                        <input
-                            id="ordemAssinatura"
-                            name="ordemAssinatura"
-                            label="Ordem"
-                            type="text"
-                            size="1"
-                            maxLength="1"
-                        />
                     </ContainerBotoes>
                     <hr />
+                    <h3>Processos abertos por fornecedores</h3>
+                    <ContainerProcessos>
+                        {gridProcessos.length > 0 ? (
+                            <div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th style={colunaFornecedor}>Fornecedor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {gridProcessos.map(proc => (
+                                            <tr key={proc.pro_id}>
+                                                <td style={colunaCodigoProcesso}>
+                                                    <BotaoComoLink
+                                                        type="button"
+                                                        onClick={() =>
+                                                            abreModalProcesso(proc.pro_id)
+                                                        }>
+                                                        {proc.pro_codigo}
+                                                    </BotaoComoLink>
+                                                </td>
+                                                <td>
+                                                    <LinkFornecedor
+                                                        name="btnEdita"
+                                                        onClick={() => {
+                                                            editaProcesso(proc.pro_id);
+                                                        }}>
+                                                        {proc.pro_nome}
+                                                    </LinkFornecedor>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : null}
+                    </ContainerProcessos>
+                    <ModalProcesso
+                        fechaModalProcesso={fechaModalProcesso}
+                        modalProcesso={modalProcesso}
+                        processo={processoModal}
+                    />
                 </Main>
             </Container>
         </DefaultLayout>

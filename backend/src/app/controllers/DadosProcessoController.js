@@ -1,10 +1,16 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
+import Processo from '../models/Processo';
+import ProcessoNotaFiscal from '../models/ProcessoNotaFiscal';
+import ArquivoProcessoPgto from '../models/ArquivoProcessoPgto';
+import ProcessoEmpenho from '../models/ProcessoEmpenho';
+import VAutorizacaoProcesso from '../models/VAutorizacaoProcesso';
 import VDadosProcesso from '../models/VDadosProcesso';
 import MembroComissao from '../models/MembroComissao';
 import VDadosProcessoPasPad from '../models/VDadosProcessoPasPad';
 import * as caminhos from '../../config/arquivos';
+import * as constantes from '../../app/constants/constantes';
 import Arquivo from '../models/Arquivo';
 import VProcessosPessoais from '../models/VProcessosPessoais';
 import VProcessosArea from '../models/VProcessosArea';
@@ -15,6 +21,7 @@ import NomePasPad from '../models/NomePasPad';
 import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
 import ConnectionHelper from '../helpers/ConnectionHelper';
+import Sequelize from 'sequelize';
 
 class DadosProcessoController {
     async dadosProcesso(req, res) {
@@ -454,6 +461,127 @@ class DadosProcessoController {
             res.contentType('application/pdf');
             return res.send(data);
         });
+    }
+
+    async processosPagamento(req, res) {
+        const processos = await Processo.findAll({
+            attributes: [
+                'pro_id',
+                'tpr_id',
+                'pro_codigo',
+                'pro_nome',
+                'area_id',
+                'pro_encerramento',
+                'pro_autuacao'
+            ],
+            logging: false,
+            where: {
+                area_id: constantes.AREA_DCF.toString(),
+                tpr_id: constantes.TPR_EXECUCAO_DESPESAS,
+                pro_encerramento: null
+
+            },
+            order: ['pro_autuacao']
+        });
+        return res.json(processos);
+    }
+
+    async dadosProcessoPagamento(req, res) {
+        const processo = await Processo.findAll({
+            attributes: [
+                'pro_id',
+                'pro_codigo',
+                'pro_nome',
+                'pro_cnpj',
+                'pro_assunto',
+                [Sequelize.fn('to_char', Sequelize.col('pro_autuacao'), 'DD/MM/YYYY - HH24:MI'), 'pro_autuacao'],
+                'pro_processo_pai'
+            ],
+            logging: true,
+            plain: true,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+
+        if (processo === null) {
+            return res.status(400).json({ error: 'Processo de pagamento não encontrado.' });
+        }
+
+        const autorizacao = await VAutorizacaoProcesso.findAll({
+            attributes: [
+                'aut_id',
+                'aut_referencia',
+                'aut_valor',
+                'ban_nome',
+                'aut_ban_agencia',
+                'aut_ban_conta_corrente',
+                'pro_id'
+            ],
+            logging: true,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+
+        const notasFiscais = await ProcessoNotaFiscal.findAll({
+            attributes: [
+                'pnf_id',
+                'pro_id_pai',
+                'pnf_nota_fiscal'
+            ],
+            logging: true,
+            where: {
+                pro_id_pai: req.params.id
+            }
+        });
+
+        const empenhos = await ProcessoEmpenho.findAll({
+            attributes: [
+                'pen_id',
+                'pro_id_pai',
+                'pen_empenho'
+            ],
+            logging: true,
+            where: {
+                pro_id_pai: req.params.id
+            }
+        });
+
+        const arquivos = await ArquivoProcessoPgto.findAll({
+            attributes: [
+                'arq_id',
+                'arq_nome',
+                'arq_nome_visivel',
+                'pro_id',
+                'arq_tipo',
+                'arq_doc_id',
+                'arq_data',
+                'arq_login',
+                'arq_hash',
+                'tpd_id',
+                'tpd_nome'
+            ],
+            logging: true,
+            where: {
+                pro_id: req.params.id
+            }
+        });
+
+        return res.json(
+            {
+                pro_id: processo.dataValues.pro_id,
+                pro_codigo: processo.dataValues.pro_codigo,
+                pro_nome: processo.dataValues.pro_nome,
+                pro_autuacao: processo.dataValues.pro_autuacao,
+                pro_assunto: processo.dataValues.pro_assunto,
+                pro_processo_pai: processo.dataValues.pro_processo_pai,
+                notas_fiscais: notasFiscais,
+                empenhos: empenhos,
+                autorizacao: autorizacao,
+                arquivos: arquivos
+            }
+        );
     }
 }
 export default new DadosProcessoController();
