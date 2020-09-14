@@ -5,6 +5,7 @@ import Processo from '../models/Processo';
 import ProcessoNotaFiscal from '../models/ProcessoNotaFiscal';
 import ArquivoProcessoPgto from '../models/ArquivoProcessoPgto';
 import ProcessoEmpenho from '../models/ProcessoEmpenho';
+import ProcessoNAD from '../models/ProcessoNAD';
 import VAutorizacaoProcesso from '../models/VAutorizacaoProcesso';
 import VDadosProcesso from '../models/VDadosProcesso';
 import MembroComissao from '../models/MembroComissao';
@@ -548,6 +549,18 @@ class DadosProcessoController {
             }
         });
 
+        const nads = await ProcessoNAD.findAll({
+            attributes: [
+                'pna_id',
+                'pro_id_pai',
+                'pna_nad'
+            ],
+            logging: true,
+            where: {
+                pro_id_pai: req.params.id
+            }
+        });
+
         const arquivos = await ArquivoProcessoPgto.findAll({
             attributes: [
                 'arq_id',
@@ -578,6 +591,7 @@ class DadosProcessoController {
                 pro_processo_pai: processo.dataValues.pro_processo_pai,
                 notas_fiscais: notasFiscais,
                 empenhos: empenhos,
+                nads: nads,
                 autorizacao: autorizacao,
                 arquivos: arquivos
             }

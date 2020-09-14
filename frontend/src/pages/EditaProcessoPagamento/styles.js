@@ -194,8 +194,8 @@ export const ContainerEmpenhosNotasFiscais = styled.div`
     margin-top: 10px;
     margin-bottom: 10px;
     display: grid;
-    grid-template-columns: 500px 500px;
-    grid-column-gap: 210px;
+    grid-template-columns: 400px 400px 390px;
+    grid-column-gap: 10px;
 `;
 
 export const ContainerEmpenhos = styled.fieldset`
@@ -219,17 +219,41 @@ export const ContainerEmpenhos = styled.fieldset`
 
 export const ContainerInsereEmpenhos = styled.div`
     display: grid;
-    grid-template-columns: 180px 200px;
-    grid-column-gap: 50px;
+    grid-template-columns: 180px 160px;
+    grid-column-gap: 30px;
 `;
 
 export const ContainerInsereNotasFiscais = styled.div`
     display: grid;
-    grid-template-columns: 180px 200px;
-    grid-column-gap: 50px;
+    grid-template-columns: 180px 170px;
+    grid-column-gap: 20px;
+`;
+
+export const ContainerInsereNads = styled.div`
+    display: grid;
+    grid-template-columns: 150px 200px;
+    grid-column-gap: 10px;
 `;
 
 export const ContainerNotasFiscais = styled.fieldset`
+    margin-left: 10px;
+    padding-top: 10px;
+    border-radius: 7px;
+    border-color: #fff;
+
+    legend {
+        color: #fff;
+        margin-left: 10px;
+    }
+
+    ul {
+        list-style-type: square;
+        color: #fff;
+        margin-left: 25px;
+    }
+`;
+
+export const ContainerNADs = styled.fieldset`
     margin-left: 10px;
     padding-top: 10px;
     border-radius: 7px;

@@ -458,7 +458,7 @@ function Home() {
                                     />
                                     <InputMask
                                         name="dataExpedicao"
-                                        label="Data de expedição*"
+                                        label="Data de emissão*"
                                         mask="99/99/9999"
                                         maskChar=" "
                                     />

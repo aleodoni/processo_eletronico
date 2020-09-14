@@ -74,6 +74,7 @@ import AcessoFornecedores from '../app/models/AcessoFornecedores';
 import VAutorizacaoArquivo from '../app/models/VAutorizacaoArquivo';
 import ArquivoProcessoPgto from '../app/models/ArquivoProcessoPgto';
 import VAutorizacaoProcesso from '../app/models/VAutorizacaoProcesso';
+import ProcessoNAD from '../app/models/ProcessoNAD';
 
 const models = [
     Autorizacao,
@@ -147,7 +148,8 @@ const models = [
     AutorizacaoFornecimento,
     VAutorizacaoArquivo,
     ArquivoProcessoPgto,
-    VAutorizacaoProcesso
+    VAutorizacaoProcesso,
+    ProcessoNAD
 ];
 
 class Database {

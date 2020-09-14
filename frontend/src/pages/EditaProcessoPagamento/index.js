@@ -7,6 +7,7 @@ import { FaFileAlt, FaTimes } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import ModalApagaEmpenho from '../../components/ModalExcluirEmpenho';
 import ModalApagaNotaFiscal from '../../components/ModalExcluirNotaFiscal';
+import ModalApagaNAD from '../../components/ModalExcluirNAD';
 import Autorizacao from '../../components/Autorizacao';
 import Input from '../../components/layout/Input';
 import Button from '../../components/layout/button/Button';
@@ -26,7 +27,9 @@ import {
     ContainerEmpenhos,
     ContainerInsereEmpenhos,
     ContainerInsereNotasFiscais,
+    ContainerInsereNads,
     ContainerNotasFiscais,
+    ContainerNADs,
     LinkExcluir,
     Erro,
 } from './styles';
@@ -39,10 +42,12 @@ function EditaProcessoPagamento({ match }) {
     const [erro, setErro] = useState('');
     const [idEmpenho, setIdEmpenho] = useState('');
     const [idNotaFiscal, setIdNotaFiscal] = useState('');
+    const [idNAD, setIdNAD] = useState('');
     const [processo, setProcesso] = useState([]);
     const formRef = useRef(null);
     const [modalExcluirEmpenho, setModalExcluirEmpenho] = useState(false);
     const [modalExcluirNotaFiscal, setModalExcluirNotaFiscal] = useState(false);
+    const [modalExcluirNAD, setModalExcluirNAD] = useState(false);
 
     function abreModalExcluirEmpenho(id) {
         setIdEmpenho(id);
@@ -60,6 +65,15 @@ function EditaProcessoPagamento({ match }) {
 
     function fechaModalExcluirNotaFiscal() {
         setModalExcluirNotaFiscal(false);
+    }
+
+    function abreModalExcluirNAD(id) {
+        setIdNAD(id);
+        setModalExcluirNAD(true);
+    }
+
+    function fechaModalExcluirNAD() {
+        setModalExcluirNAD(false);
     }
 
     const carregaDadosProcesso = useCallback(() => {
@@ -116,12 +130,31 @@ function EditaProcessoPagamento({ match }) {
     }
 
     function insereEmpenho() {
-        // kjlkj
+        if (document.getElementById('editNovoEmpenho').value === '') {
+            mensagem.error('Número do empenho em branco.');
+            return;
+        }
+        // const novoArrayEmpenhos = processo.empenhos;
+        // alert(JSON.stringify(novoArrayEmpenhos,null,4));
+        const objEmpenho = {};
+        objEmpenho.pen_id = null;
+        objEmpenho.pro_id_pai = processo.pro_id;
+        objEmpenho.pen_empenho = document.getElementById('editNovoEmpenho').value;
+        // novoArrayEmpenhos.push(objEmpenho);
+        processo.empenhos = [...processo.empenhos, objEmpenho];
+        // processo.empenhos.splice(0, novoArrayEmpenhos);
+        alert(JSON.stringify(processo.empenhos,null,4));
     }
 
     function apagaNotaFiscal(id) {
         processo.notas_fiscais = processo.notas_fiscais.filter(lista => {
             return lista.pnf_id !== id;
+        });
+    }
+
+    function apagaNAD(id) {
+        processo.nads = processo.nads.filter(lista => {
+            return lista.pna_id !== id;
         });
     }
 
@@ -227,6 +260,33 @@ function EditaProcessoPagamento({ match }) {
                                     ) : null}
                                 </>
                             </ContainerNotasFiscais>
+                            <ContainerNADs>
+                                <legend>Autorizações de fornecimento</legend>
+                                <ContainerInsereNads>
+                                    <InputSemLabel name="editNovaNAD" type="text" maxLength="15"/>
+                                    <Button type="button" name="btnNovaNAD">
+                                        <FaFileAlt color="#FFF" />
+                                        Nova autorização de fornecimento
+                                    </Button>
+                                </ContainerInsereNads>
+                                <>
+                                    {processo.nads ? (
+                                        <ul>
+                                            {processo.nads.map(nad => (
+                                                <li key={nad.pna_id}>
+                                                    {nad.pna_nad}{' '}
+                                                    <LinkExcluir
+                                                        onClick={() => {
+                                                            abreModalExcluirNAD(nad.pna_id);
+                                                        }}>
+                                                        <FaTimes color="#FFF" />
+                                                    </LinkExcluir>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : null}
+                                </>
+                            </ContainerNADs>
                         </ContainerEmpenhosNotasFiscais>
                     </Form>
 
@@ -249,6 +309,12 @@ function EditaProcessoPagamento({ match }) {
                         fechaModalExcluir={fechaModalExcluirNotaFiscal}
                         apagaNotaFiscal={apagaNotaFiscal}
                         id={idNotaFiscal}
+                    />
+                    <ModalApagaNAD
+                        modalExcluir={modalExcluirNAD}
+                        fechaModalExcluir={fechaModalExcluirNAD}
+                        apagaNAD={apagaNAD}
+                        id={idNAD}
                     />
                 </Main>
             </Container>
