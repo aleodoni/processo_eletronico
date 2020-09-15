@@ -103,7 +103,7 @@ export const ContainerBanco = styled.div`
 `;
 
 export const ContainerAutorizacao = styled.fieldset`
-    width: 1200px;
+    width: 1090px;
     margin-left: 10px;
     padding-top: 10px;
     border-radius: 7px;
@@ -194,7 +194,7 @@ export const ContainerEmpenhosNotasFiscais = styled.div`
     margin-top: 10px;
     margin-bottom: 10px;
     display: grid;
-    grid-template-columns: 400px 400px 390px;
+    grid-template-columns: 340px 350px 390px;
     grid-column-gap: 10px;
 `;
 
@@ -219,19 +219,19 @@ export const ContainerEmpenhos = styled.fieldset`
 
 export const ContainerInsereEmpenhos = styled.div`
     display: grid;
-    grid-template-columns: 180px 160px;
-    grid-column-gap: 30px;
+    grid-template-columns: 130px 160px;
+    grid-column-gap: 10px;
 `;
 
 export const ContainerInsereNotasFiscais = styled.div`
     display: grid;
-    grid-template-columns: 180px 170px;
-    grid-column-gap: 20px;
+    grid-template-columns: 130px 170px;
+    grid-column-gap: 10px;
 `;
 
 export const ContainerInsereNads = styled.div`
     display: grid;
-    grid-template-columns: 150px 200px;
+    grid-template-columns: 130px 200px;
     grid-column-gap: 10px;
 `;
 

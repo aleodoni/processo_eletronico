@@ -45,6 +45,7 @@ import menuValidator from './app/validators/menuValidator';
 import regraAposentacaoValidator from './app/validators/regraAposentacaoValidator';
 import razaoTramiteValidator from './app/validators/razaoTramiteValidator';
 import SolicitacaoController from './app/controllers/SolicitacaoController';
+import EditaProcessoController from './app/controllers/EditaProcessoController';
 
 import Arquivo from './app/models/Arquivo';
 import DataHoraAtual from './app/models/DataHoraAtual';
@@ -423,5 +424,8 @@ routes.get(`${process.env.API_URL}/bancos`, SolicitacaoController.listaBancos);
 routes.get(`${process.env.API_URL}/fornecedores/:cnpj`, SolicitacaoController.dadosFornecedor);
 
 routes.get(`${process.env.API_URL}/processos-fornecedores/`, DadosProcessoController.processosPagamento);
+
+// Edição de processo de pagamento
+routes.put(`${process.env.API_URL}/edita-processo-pagamento/:id`, EditaProcessoController.update);
 
 export default routes;
