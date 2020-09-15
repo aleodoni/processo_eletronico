@@ -286,7 +286,7 @@ class LoginController {
                 where: {
                     for_cnpj_cpf: login.trim()
                 },
-                logging: true,
+                logging: false,
                 plain: true
             });
 
@@ -326,7 +326,7 @@ class LoginController {
                             acf_acesso: acessoHmac,
                             acf_ativo: true
                         },
-                        logging: true
+                        logging: false
                     });
                     if (acesso === null) {
                         return res.status(400).json({ error: 'Acesso inválido.' });
@@ -416,7 +416,7 @@ class LoginController {
         try {
             req.body.acf_acesso = hmac(acesso);
             const { acf_cpf_cnpj, acf_acesso, acf_ativo } = await AcessoFornecedores.create(req.body, {
-                logging: true
+                logging: false
             });
             return res.json({
                 acf_cpf_cnpj, acf_acesso, acf_ativo

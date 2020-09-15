@@ -84,7 +84,14 @@ function Login() {
                 sessionStorage.setItem('token', response.data.token);
                 sessionStorage.setItem('cnpj', response.data.cnpj);
                 sessionStorage.setItem('fornecedor', response.data.fornecedor);
-                sessionStorage.setItem('ip', response.data.ip);
+
+                let meuIp = response.data.ip;
+
+                if (meuIp.substr(0, 7) === '::ffff:') {
+                    meuIp = meuIp.substr(7);
+                }
+
+                sessionStorage.setItem('ip', meuIp);
 
                 if (response.data.acessoDefault) {
                     history.push('/altera-senha');

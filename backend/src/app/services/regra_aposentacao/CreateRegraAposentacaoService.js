@@ -5,7 +5,7 @@ class CreateRegraAposentacaoService {
 
     async execute({ reg_id, reg_nome }) {
         const regraAposentacao = await this.regraAposentacaoModel.create({ reg_id, reg_nome }, {
-            logging: true
+            logging: false
         });
 
         return regraAposentacao.toJSON();

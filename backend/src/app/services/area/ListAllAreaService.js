@@ -11,7 +11,7 @@ class ListAllAreaService {
             Sequelize.where(Sequelize.col('set_id'), Sequelize.col('set_id_area')),
             order: ['set_nome'],
             attributes: ['set_id', 'set_nome'],
-            logging: true
+            logging: false
         });
 
         return areas;

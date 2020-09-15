@@ -69,7 +69,7 @@ class DadosProcessoController {
                 'com_abono',
                 'num_abono'
             ],
-            logging: true,
+            logging: false,
             where: {
                 pro_id: req.params.id
             }
@@ -218,7 +218,7 @@ class DadosProcessoController {
                 'area_iniciativa_processo',
                 'setor_autuador_processo'
             ],
-            logging: true,
+            logging: false,
             where: wherePesquisa
         });
         return res.json(pesquisaProcesso);
@@ -498,7 +498,7 @@ class DadosProcessoController {
                 [Sequelize.fn('to_char', Sequelize.col('pro_autuacao'), 'DD/MM/YYYY - HH24:MI'), 'pro_autuacao'],
                 'pro_processo_pai'
             ],
-            logging: true,
+            logging: false,
             plain: true,
             where: {
                 pro_id: req.params.id
@@ -519,7 +519,7 @@ class DadosProcessoController {
                 'aut_ban_conta_corrente',
                 'pro_id'
             ],
-            logging: true,
+            logging: false,
             where: {
                 pro_id: req.params.id
             }
@@ -531,7 +531,7 @@ class DadosProcessoController {
                 'pro_id_pai',
                 'pnf_nota_fiscal'
             ],
-            logging: true,
+            logging: false,
             where: {
                 pro_id_pai: req.params.id
             }
@@ -543,7 +543,7 @@ class DadosProcessoController {
                 'pro_id_pai',
                 'pen_empenho'
             ],
-            logging: true,
+            logging: false,
             where: {
                 pro_id_pai: req.params.id
             }
@@ -555,7 +555,7 @@ class DadosProcessoController {
                 'pro_id_pai',
                 'pna_nad'
             ],
-            logging: true,
+            logging: false,
             where: {
                 pro_id_pai: req.params.id
             }
@@ -575,7 +575,7 @@ class DadosProcessoController {
                 'tpd_id',
                 'tpd_nome'
             ],
-            logging: true,
+            logging: false,
             where: {
                 pro_id: req.params.id
             }

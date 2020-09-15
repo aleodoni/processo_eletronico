@@ -13,7 +13,7 @@ class SolicitacaoController {
             where: {
                 for_cnpj_cpf: cnpj
             },
-            logging: true,
+            logging: false,
             plain: true
         });
         if (fornecedor !== null) {
@@ -33,7 +33,7 @@ class SolicitacaoController {
                 where: {
                     for_id: idFornecedor
                 },
-                logging: true
+                logging: false
             });
             return res.json(solicitacoes);
         } else {
@@ -47,7 +47,7 @@ class SolicitacaoController {
             where: {
                 for_cnpj_cpf: cnpj
             },
-            logging: true,
+            logging: false,
             plain: true
         });
         if (fornecedor !== null) {
@@ -65,7 +65,7 @@ class SolicitacaoController {
                 where: {
                     for_id: idFornecedor
                 },
-                logging: true
+                logging: false
             });
             return res.json(empenhos);
         } else {
@@ -78,7 +78,7 @@ class SolicitacaoController {
             where: {
                 tpd_solicitacao_pgto: true
             },
-            logging: true
+            logging: false
         });
         if (tipoDocumento !== null) {
             return res.json(tipoDocumento);
@@ -91,7 +91,7 @@ class SolicitacaoController {
         const banco = await Banco.findAll({
             order: ['ban_nome'],
             attributes: ['ban_id', 'ban_numero', 'ban_nome'],
-            logging: true
+            logging: false
         });
 
         if (banco !== null) {
@@ -107,7 +107,7 @@ class SolicitacaoController {
             where: {
                 acf_cpf_cnpj: cnpj
             },
-            logging: true,
+            logging: false,
             plain: true
         });
         if (acessoFornecedor !== null) {
@@ -123,7 +123,7 @@ class SolicitacaoController {
             where: {
                 for_cnpj_cpf: cnpj
             },
-            logging: true
+            logging: false
         });
         if (fornecedor !== null) {
             return res.json(fornecedor);

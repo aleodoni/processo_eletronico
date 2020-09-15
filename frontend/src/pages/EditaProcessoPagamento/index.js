@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router';
-import { FaFileAlt, FaTimes } from 'react-icons/fa';
+import { FaFileAlt, FaUndoAlt, FaCheck, FaTimes, FaFilePdf } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import ModalApagaEmpenho from '../../components/ModalExcluirEmpenho';
 import ModalApagaNotaFiscal from '../../components/ModalExcluirNotaFiscal';
@@ -13,7 +12,7 @@ import Input from '../../components/layout/Input';
 import Button from '../../components/layout/button/Button';
 import InputSemLabel from '../../components/layout/InputSemLabel';
 import axios from '../../configs/axiosConfig';
-
+import DefaultLayout from '../_layouts/default';
 import {
     Container,
     Main,
@@ -29,12 +28,12 @@ import {
     ContainerInsereNotasFiscais,
     ContainerInsereNads,
     ContainerNotasFiscais,
+    ContainerArquivos,
     ContainerNADs,
     LinkExcluir,
     Erro,
 } from './styles';
-import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapido';
-import DefaultLayout from '../_layouts/default';
+
 
 function EditaProcessoPagamento({ match }) {
     const { proId } = match.params;
@@ -92,6 +91,7 @@ function EditaProcessoPagamento({ match }) {
         })
             .then(res => {
                 formRef.current.setFieldValue('proNome', res.data.pro_nome);
+                formRef.current.setFieldValue('proProcessoPai', res.data.pro_processo_pai);
                 for (let i = 0; i < res.data.autorizacao.length; i++) {
                     document.getElementById(
                         'lblAutId'
@@ -230,6 +230,14 @@ function EditaProcessoPagamento({ match }) {
         );
     }
 
+    function voltar() {
+        history.push(`/processo-execucao-despesa`);
+    }
+
+    function inserirArquivo() {
+        alert('ok');
+    }
+
     return (
         <DefaultLayout>
             <Container>
@@ -345,7 +353,7 @@ function EditaProcessoPagamento({ match }) {
                                     <InputSemLabel name="editNovaNAD" type="text" maxLength="15" />
                                     <Button type="button" name="btnNovaNAD" onClick={insereNAD}>
                                         <FaFileAlt color="#FFF" />
-                                        Nova autorização de fornecimento
+                                        Nova autorização
                                     </Button>
                                 </ContainerInsereNads>
                                 <>
@@ -369,10 +377,21 @@ function EditaProcessoPagamento({ match }) {
                         </ContainerEmpenhosNotasFiscais>
                         <ContainerBotoes>
                             <Button type="submit" name="btnSalva">
-                                <FaFileAlt color="#FFF" />
+                                <FaCheck color="#FFF" />
                                 Salvar alterações
                             </Button>
+                            <Button type="button" name="btnVolta" onClick={voltar}>
+                                <FaUndoAlt color="#FFF" />
+                                Voltar
+                            </Button>
+                            <Button type="button" name="btnInsereArquivo" onClick={inserirArquivo}>
+                                <FaFilePdf color="#FFF" />
+                                Inserir arquivo
+                            </Button>
                         </ContainerBotoes>
+                        <ContainerArquivos>
+                        <legend>Arquivos</legend>
+                        </ContainerArquivos>
                     </Form>
 
                     <ModalApagaEmpenho

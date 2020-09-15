@@ -6,13 +6,13 @@ class UpdateRegraAposentacaoService {
     }
 
     async execute({ id, reg_nome }) {
-        const regraAposentacao = await this.regraAposentacaoModel.findByPk(id, { logging: true });
+        const regraAposentacao = await this.regraAposentacaoModel.findByPk(id, { logging: false });
 
         if (!regraAposentacao) {
             throw new AppError('Regra aposentação não encontrada.');
         }
 
-        const updateRegraAposentacao = await regraAposentacao.update({ reg_nome }, { logging: true });
+        const updateRegraAposentacao = await regraAposentacao.update({ reg_nome }, { logging: false });
         return updateRegraAposentacao;
     }
 }

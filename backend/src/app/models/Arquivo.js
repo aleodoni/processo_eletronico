@@ -50,6 +50,9 @@ class Arquivo extends Model {
                 },
                 arq_hash: {
                     type: Sequelize.STRING
+                },
+                arq_cancelado: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

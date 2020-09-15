@@ -10,7 +10,7 @@ class ListAllAreaTelaService {
             where: {
                 set_id: Number(setId)
             },
-            logging: true
+            logging: false
         });
 
         if (!setor || setor.length === 0) {

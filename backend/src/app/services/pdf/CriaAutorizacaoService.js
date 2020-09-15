@@ -44,7 +44,7 @@ class CriaAutorizacaoService {
                 'pro_id',
                 'banco'
             ],
-            logging: true,
+            logging: false,
             plain: true,
             where: {
                 aut_id: autId

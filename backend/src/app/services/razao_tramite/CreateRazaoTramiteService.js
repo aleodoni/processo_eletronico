@@ -5,7 +5,7 @@ class CreateRazaoTramiteService {
 
     async execute({ raz_id, raz_nome }) {
         const razaoTramite = await this.razaoTramiteModel.create({ raz_id, raz_nome }, {
-            logging: true
+            logging: false
         });
 
         return razaoTramite.toJSON();

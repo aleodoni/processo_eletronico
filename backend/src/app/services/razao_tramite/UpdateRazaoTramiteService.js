@@ -6,13 +6,13 @@ class UpdateRazaoTramiteService {
     }
 
     async execute({ id, raz_nome }) {
-        const razaoTramite = await this.razaoTramiteModel.findByPk(id, { logging: true });
+        const razaoTramite = await this.razaoTramiteModel.findByPk(id, { logging: false });
 
         if (!razaoTramite) {
             throw new AppError('Razão trâmite não encontrado.');
         }
 
-        const updateRazaoTramite = await razaoTramite.update({ raz_nome }, { logging: true });
+        const updateRazaoTramite = await razaoTramite.update({ raz_nome }, { logging: false });
         return updateRazaoTramite;
     }
 }

@@ -180,8 +180,9 @@ export const LinkFornecedor = styled.button`
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 300px;
-    margin-bottom: 10px;
+    grid-template-columns: 180px 100px 180px;
+    margin-left: 10px;
+    grid-column-gap: 10px;
 `;
 
 export const Erro = styled.div`
@@ -194,8 +195,8 @@ export const ContainerEmpenhosNotasFiscais = styled.div`
     margin-top: 10px;
     margin-bottom: 10px;
     display: grid;
-    grid-template-columns: 340px 350px 390px;
-    grid-column-gap: 10px;
+    grid-template-columns: 340px 350px 365px;
+    grid-column-gap: 23px;
 `;
 
 export const ContainerEmpenhos = styled.fieldset`
@@ -231,7 +232,7 @@ export const ContainerInsereNotasFiscais = styled.div`
 
 export const ContainerInsereNads = styled.div`
     display: grid;
-    grid-template-columns: 130px 200px;
+    grid-template-columns: 130px 180px;
     grid-column-gap: 10px;
 `;
 
@@ -250,6 +251,19 @@ export const ContainerNotasFiscais = styled.fieldset`
         list-style-type: square;
         color: #fff;
         margin-left: 25px;
+    }
+`;
+
+export const ContainerArquivos = styled.fieldset`
+    width: 1090px;
+    margin-left: 10px;
+    padding-top: 10px;
+    border-radius: 7px;
+    border-color: #fff;
+
+    legend {
+        color: #fff;
+        margin-left: 10px;
     }
 `;
 
