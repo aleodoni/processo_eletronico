@@ -26,6 +26,9 @@ class TipoDocumento extends Model {
                 tpd_solicitacao_pgto: {
                     type: Sequelize.BOOLEAN,
                     allowNull: false
+                },
+                tpd_ordem: {
+                    type: Sequelize.INTEGER
                 }
             },
             {
