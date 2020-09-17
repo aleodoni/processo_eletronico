@@ -56,8 +56,8 @@ class CriaAutorizacaoService {
         }
         const cnpj = autorizacaoArquivo.dataValues.cnpj_cpf.substring(0, 2) + '.' + autorizacaoArquivo.dataValues.cnpj_cpf.substring(2, 5) + '.' + autorizacaoArquivo.dataValues.cnpj_cpf.substring(5, 8) + '/' + autorizacaoArquivo.dataValues.cnpj_cpf.substring(8, 12) + '-' + autorizacaoArquivo.dataValues.cnpj_cpf.substring(12, 14);
         const valorFormatado = Number(autorizacaoArquivo.dataValues.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-        const arquivo = caminho + '/' + arq_id + 'A.pdf';
+        const arquivo = caminho + '/' + 'autorizacao-' + autId + '.pdf';
+        // const arquivo = caminho + '/' + arq_id + 'A.pdf';
         const texto = 'A empresa acima mencionada, por intermédio de seu representante, vem à presença de Vossa Excelência, requerer o pagamento da nota fiscal abaixo especificada.';
         const doc = new PDFDocument(metadados);
         doc.pipe(fs.createWriteStream(arquivo));

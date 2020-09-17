@@ -98,6 +98,7 @@ export const TPD_CAPA_PROCESSO = 38;
 export const TPD_PARECER_PROJURIS_APOSENTADORIA = 39;
 export const TPD_CORRECAO_INFORMACOES_ESCLARECIMENTOS = 40;
 export const TPD_DECISAO_PAD = 41;
+export const TPD_EXECUCAO_DESPESA = 54;
 
 // Razões de trâmite
 export const RAZ_ENCAMINHAMENTO = 82;

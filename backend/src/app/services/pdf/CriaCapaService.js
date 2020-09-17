@@ -40,8 +40,8 @@ class CriaCapaService {
         if (!processo) {
             throw new AppError('Processo não encontrado.');
         }
-
-        const arquivo = caminho + '/' + arq_id + 'C.pdf';
+        const arquivo = caminho + '/' + 'capa-' + pro_id + '.pdf';
+        // const arquivo = caminho + '/' + arq_id + 'C.pdf';
         const doc = new PDFDocument();
         doc.pipe(fs.createWriteStream(arquivo));
         doc.image(brasao, 10, 10, { scale: 0.50 });

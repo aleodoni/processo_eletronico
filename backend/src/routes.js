@@ -266,6 +266,7 @@ routes.put(`${process.env.API_URL}/arquivos/:id`, ArquivoController.update);
 routes.delete(`${process.env.API_URL}/arquivos/:id`, ArquivoController.delete);
 routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.index);
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
+routes.get(`${process.env.API_URL}/download-arquivo-processo/:proId/:ano/:nomeArquivo`, ArquivoController.downloadArquivoProcesso);
 routes.get(`${process.env.API_URL}/arquivos-manifestacao/:manId`, ArquivoController.indexManifestacao);
 routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
 
@@ -427,5 +428,7 @@ routes.get(`${process.env.API_URL}/processos-fornecedores/`, DadosProcessoContro
 
 // Edição de processo de pagamento
 routes.put(`${process.env.API_URL}/edita-processo-pagamento/:id`, EditaProcessoController.update);
+routes.get(`${process.env.API_URL}/ver-arquivos-processo-pgto/:proId`, EditaProcessoController.listaArquivos);
+routes.put(`${process.env.API_URL}/cancela-arquivo-processo-pagamento/:id`, EditaProcessoController.cancelaArquivo);
 
 export default routes;

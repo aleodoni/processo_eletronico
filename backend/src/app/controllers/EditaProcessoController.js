@@ -1,8 +1,11 @@
 import Processo from '../models/Processo';
+import Arquivo from '../models/Arquivo';
+import ArquivoProcessoPgto from '../models/ArquivoProcessoPgto';
 import ProcessoEmpenho from '../models/ProcessoEmpenho';
 import ProcessoNotaFiscal from '../models/ProcessoNotaFiscal';
 import ProcessoNAD from '../models/ProcessoNAD';
 import ConnectionHelper from '../helpers/ConnectionHelper';
+import Sequelize from 'sequelize';
 
 class EditaProcessoController {
     async update(req, res) {
@@ -69,6 +72,42 @@ class EditaProcessoController {
             await transaction.rollback();
             console.log(error);
         }
+    }
+
+    async listaArquivos(req, res) {
+        const arquivos = await ArquivoProcessoPgto.findAll({
+            attributes: [
+                'arq_id',
+                'arq_nome',
+                'arq_nome_visivel',
+                'pro_id',
+                'pro_ano',
+                'arq_tipo',
+                'arq_doc_id',
+                [Sequelize.fn('to_char', Sequelize.col('arq_data'), 'DD/MM/YYYY - HH24:MI'), 'arq_data'],
+                'arq_login',
+                'arq_hash',
+                'arq_cancelado',
+                'tpd_id',
+                'tpd_nome'
+            ],
+            logging: true,
+            where: {
+                pro_id: req.params.proId
+
+            },
+            order: ['arq_id']
+        });
+        return res.json(arquivos);
+    }
+
+    async cancelaArquivo(req, res) {
+        const arquivo = await Arquivo.findByPk(req.params.id, { logging: false });
+        if (!arquivo) {
+            return res.status(400).json({ error: 'Arquivo não encontrado' });
+        }
+        await arquivo.update({ arq_cancelado: true }, { logging: false });
+        return res.json(arquivo);
     }
 }
 export default new EditaProcessoController();

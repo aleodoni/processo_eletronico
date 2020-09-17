@@ -23,6 +23,9 @@ class ArquivoProcessoPgto extends Model {
                 arq_doc_id: {
                     type: Sequelize.INTEGER
                 },
+                pro_ano: {
+                    type: Sequelize.INTEGER
+                },
                 arq_data: {
                     type: Sequelize.STRING
                 },
@@ -31,6 +34,9 @@ class ArquivoProcessoPgto extends Model {
                 },
                 arq_hash: {
                     type: Sequelize.STRING
+                },
+                arq_cancelado: {
+                    type: Sequelize.BOOLEAN
                 },
                 tpd_id: {
                     type: Sequelize.INTEGER

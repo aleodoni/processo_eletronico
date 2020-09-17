@@ -39,7 +39,11 @@ const ModalTramitar = props => {
 
     return (
         <>
-            <Modal isOpen={modalTramitar} onRequestClose={fechaHandler} style={dialogs} ariaHideApp={false}>
+            <Modal
+                isOpen={modalTramitar}
+                onRequestClose={fechaHandler}
+                style={dialogs}
+                ariaHideApp={false}>
                 <ContainerModal>
                     <p>
                         <FaRegQuestionCircle color="#303f9f" size="3em" />
