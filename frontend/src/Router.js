@@ -42,6 +42,7 @@ import CriarManifestacaoParecerProjurisAposentadoria from './pages/CriarManifest
 import TipoDocumento from './pages/TipoDocumento';
 import Tramite from './pages/Tramite';
 import EditaProcessoPagamento from './pages/EditaProcessoPagamento';
+import CriarProcessoPagamento from './pages/CriarProcessoPagamento';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route
@@ -152,6 +153,8 @@ const Routes = () => (
         <PrivateRoute exact path="/tramita/:id" component={Tramite} />
         <PrivateRoute exact path="/tipos-documento" component={TipoDocumento} />
         <PrivateRoute exact path="/regras-aposentacao" component={RegraAposentacao} />
+        <PrivateRoute exact path="/processo-cria-pagamento" component={CriarProcessoPagamento} />
+
         <Route path="*" component={Login} />
     </Switch>
 );

@@ -1,4 +1,14 @@
 import styled from 'styled-components';
+import { lighten } from 'polished';
+
+const handleColorBackground = corBackground => {
+    switch (corBackground) {
+        case true:
+            return 'background: #A9A9A9;';
+        default:
+            return lighten(0.25, '#303f9f');
+    }
+};
 
 export const Container = styled.div`
     display: flex;
@@ -12,8 +22,7 @@ export const Container = styled.div`
     input {
         display: flex;
 
-        /* width: 100%; */
-        background: ${({ theme }) => theme.inputBackground};
+        ${({ corBackground }) => handleColorBackground(corBackground)};
         border: 0;
         border-radius: 4px;
         height: 28px;
