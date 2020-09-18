@@ -99,6 +99,27 @@ export const TPD_CAPA_PROCESSO = 38;
 export const TPD_PARECER_PROJURIS_APOSENTADORIA = 39;
 export const TPD_CORRECAO_INFORMACOES_ESCLARECIMENTOS = 40;
 export const TPD_DECISAO_PAD = 41;
+// Documentos de pagamento
+export const TPD_AUTORIZACAO_PAGAMENTO = 53;
+export const TPD_ARQUIVO_EXECUCAO_DESPESA = 54;
+// Documentos de fornecedores
+export const TPD_AUTORIZACAO_FORNECIMENTO = 51;
+export const TPD_NOTA_FISCAL = 42;
+export const TPD_EXTRATO_SIMPLES = 55;
+export const TPD_REGULARIDADE_TRIBUTOS_UNIAO = 45;
+export const TPD_REGULARIDADE_FGTS = 46;
+export const TPD_REGULARIDADE_FAZENDA_ESTADUAL = 44;
+export const TPD_REGULARIDADE_FAZENDA_MUNICIPAL = 43;
+export const TPD_REGULARIDADE_CNDT = 47;
+// Documentos de fornecedores mão de obra
+export const TPD_FUNCIONARIOS_CEDIDOS = 56;
+export const TPD_EMPREGADOR_QUITACAO_DIREITOS = 49;
+export const TPD_COPIA_FOLHA_PGTO = 48;
+export const TPD_COPIA_FOLHA_FREQUENCIA = 57;
+export const TPD_RECOLHIMENTO_INSS = 50;
+export const TPD_RECOLHIMENTO_FGTS = 58;
+export const TPD_SEFIP = 59;
+
 
 // Razões de trâmite
 export const RAZ_ENCAMINHAMENTO = 82;

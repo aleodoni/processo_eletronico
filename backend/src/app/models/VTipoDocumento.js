@@ -28,6 +28,9 @@ class VTipoDocumento extends Model {
                 },
                 nome_campo_arquivo: {
                     type: Sequelize.STRING
+                },
+                tpd_ordem: {
+                    type: Sequelize.INTEGER
                 }
 
             },

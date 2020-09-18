@@ -20,6 +20,7 @@ import {
     ContainerBanco,
     ContainerNota,
     ContainerReferencia,
+    ContainerListaArquivos,
     ContainerAviso,
 } from './styles';
 import axios from '../../configs/axiosConfig';
@@ -230,17 +231,15 @@ function Home() {
         if (valor.trim() === '') {
             vErros.push('Valor da nota fiscal.');
         }
+        // -----
+        if (document.getElementById('anexo51').value === '') {
+            vErros.push(
+                'Cópia da autorização do Fornecimento ou de execução de serviços expedida pela Câmara'
+            );
+        }
 
         if (document.getElementById('anexo42').value === '') {
             vErros.push('Nota fiscal / fatura discriminativa original.');
-        }
-
-        if (document.getElementById('anexo44').value === '') {
-            vErros.push('Prova de regularidade para com a Fazenda Estadual da sede da empresa.');
-        }
-
-        if (document.getElementById('anexo43').value === '') {
-            vErros.push('Prova de regularidade para com a Fazenda Municipal da sede da empresa.');
         }
 
         if (document.getElementById('anexo45').value === '') {
@@ -253,14 +252,18 @@ function Home() {
             vErros.push('Comprovante de regularidade do FGTS.');
         }
 
-        if (document.getElementById('anexo51').value === '') {
-            vErros.push(
-                'Cópia da autorização do Fornecimento ou de execução de serviços expedida pela Câmara.'
-            );
+        if (document.getElementById('anexo44').value === '') {
+            vErros.push('Prova de regularidade para com a Fazenda Estadual da sede da empresa.');
         }
 
-        if (document.getElementById('anexo52').value === '') {
-            vErros.push('Cópia da Nota de Empenho.');
+        if (document.getElementById('anexo43').value === '') {
+            vErros.push('Prova de regularidade para com a Fazenda Municipal da sede da empresa.');
+        }
+
+        if (document.getElementById('anexo47').value === '') {
+            vErros.push(
+                'Prova de inexistência de débitos inadimplidos perante a Justiça do Trabalho (CNDT).'
+            );
         }
 
         if (vErros.length > 0) {
@@ -492,58 +495,141 @@ function Home() {
                                     />
                                 </ContainerBanco>
                             </Form>
-                            <ContainerTitulo>
-                                * Clique na descrição para inserir ou substituir o documento
-                            </ContainerTitulo>
-                            <ContainerArquivos>
-                                {documentos.map((doc) => (
-                                    <div key={doc.tpd_id}>
-                                        <form>
-                                            <input name="selecionado" value="" type="hidden" />
-                                            <ContainerListaDocumentos>
+                            <ContainerListaArquivos>
+                                <legend>
+                                    &nbsp; * Clique na descrição para inserir ou substituir o
+                                    documento&nbsp;
+                                </legend>
+                                <ContainerArquivos>
+                                    {documentos.map((doc) => (
+                                        <>
+                                            {doc.tpd_ordem === 9 ? (
                                                 <>
-                                                    <input
-                                                        name="manId"
-                                                        value={doc.tpd_id}
-                                                        type="hidden"
-                                                    />
-                                                    <ContainerUpload>
-                                                        <label htmlFor={doc.nome_campo_anexo}>
-                                                            - {doc.tpd_nome}
-                                                        </label>
+                                                    <hr />
+                                                    <ContainerTitulo>
+                                                        * Os documentos abaixo são somente para
+                                                        empresas de locação de mão de obra
+                                                    </ContainerTitulo>
+                                                    <br />
+                                                    <div key={doc.tpd_id}>
+                                                        <form>
+                                                            <input
+                                                                name="selecionado"
+                                                                value=""
+                                                                type="hidden"
+                                                            />
+                                                            <ContainerListaDocumentos>
+                                                                <>
+                                                                    <input
+                                                                        name="manId"
+                                                                        value={doc.tpd_id}
+                                                                        type="hidden"
+                                                                    />
+                                                                    <ContainerUpload>
+                                                                        <label
+                                                                            htmlFor={
+                                                                                doc.nome_campo_anexo
+                                                                            }>
+                                                                            - {doc.tpd_nome}
+                                                                        </label>
 
+                                                                        <input
+                                                                            type="file"
+                                                                            name={
+                                                                                doc.nome_campo_anexo
+                                                                            }
+                                                                            id={
+                                                                                doc.nome_campo_anexo
+                                                                            }
+                                                                            onChange={(e) => {
+                                                                                verificaArquivo(
+                                                                                    e,
+                                                                                    doc.nome_campo_anexo,
+                                                                                    doc.tpd_nome
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </ContainerUpload>
+                                                                    <img
+                                                                        src={Check}
+                                                                        alt=""
+                                                                        style={{
+                                                                            visibility: 'hidden',
+                                                                        }}
+                                                                        id={`img_${doc.nome_campo_anexo}`}
+                                                                        width={20}
+                                                                        height={20}
+                                                                    />
+                                                                </>
+                                                                <>
+                                                                    <span
+                                                                        id={`label_${doc.nome_campo_anexo}`}>
+                                                                        &nbsp;
+                                                                    </span>
+                                                                </>
+                                                            </ContainerListaDocumentos>
+                                                        </form>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div key={doc.tpd_id}>
+                                                    <form>
                                                         <input
-                                                            type="file"
-                                                            name={doc.nome_campo_anexo}
-                                                            id={doc.nome_campo_anexo}
-                                                            onChange={(e) => {
-                                                                verificaArquivo(
-                                                                    e,
-                                                                    doc.nome_campo_anexo,
-                                                                    doc.tpd_nome
-                                                                );
-                                                            }}
+                                                            name="selecionado"
+                                                            value=""
+                                                            type="hidden"
                                                         />
-                                                    </ContainerUpload>
-                                                    <img
-                                                        src={Check}
-                                                        alt=""
-                                                        style={{ visibility: 'hidden' }}
-                                                        id={`img_${doc.nome_campo_anexo}`}
-                                                        width={20}
-                                                        height={20}
-                                                    />
-                                                </>
-                                                <>
-                                                    <span id={`label_${doc.nome_campo_anexo}`}>
-                                                        &nbsp;
-                                                    </span>
-                                                </>
-                                            </ContainerListaDocumentos>
-                                        </form>
-                                    </div>
-                                ))}
-                            </ContainerArquivos>
+                                                        <ContainerListaDocumentos>
+                                                            <>
+                                                                <input
+                                                                    name="manId"
+                                                                    value={doc.tpd_id}
+                                                                    type="hidden"
+                                                                />
+                                                                <ContainerUpload>
+                                                                    <label
+                                                                        htmlFor={
+                                                                            doc.nome_campo_anexo
+                                                                        }>
+                                                                        - {doc.tpd_nome}
+                                                                    </label>
+
+                                                                    <input
+                                                                        type="file"
+                                                                        name={doc.nome_campo_anexo}
+                                                                        id={doc.nome_campo_anexo}
+                                                                        onChange={(e) => {
+                                                                            verificaArquivo(
+                                                                                e,
+                                                                                doc.nome_campo_anexo,
+                                                                                doc.tpd_nome
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </ContainerUpload>
+                                                                <img
+                                                                    src={Check}
+                                                                    alt=""
+                                                                    style={{ visibility: 'hidden' }}
+                                                                    id={`img_${doc.nome_campo_anexo}`}
+                                                                    width={20}
+                                                                    height={20}
+                                                                />
+                                                            </>
+                                                            <>
+                                                                <span
+                                                                    id={`label_${doc.nome_campo_anexo}`}>
+                                                                    &nbsp;
+                                                                </span>
+                                                            </>
+                                                        </ContainerListaDocumentos>
+                                                    </form>
+                                                </div>
+                                            )}
+                                        </>
+                                    ))}
+                                </ContainerArquivos>
+                            </ContainerListaArquivos>
                             <ContainerBotaoVoltarEnviar>
                                 <Button
                                     type="button"

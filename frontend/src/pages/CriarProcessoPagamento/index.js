@@ -183,6 +183,7 @@ function CriarProcessoPagamento() {
     function criaProcesso() {
         const p = formRef.current.getData();
         setErro('');
+        setDesabilitaNovoEmpenho(false);
     }
 
     function apagaEmpenho(id) {
@@ -381,7 +382,7 @@ function CriarProcessoPagamento() {
                                     name="referencia"
                                     label="Referente*"
                                     type="text"
-                                    rows={3}
+                                    rows={2}
                                     cols={120}
                                 />
                             </ContainerReferencia>
@@ -425,138 +426,139 @@ function CriarProcessoPagamento() {
                                 />
                             </ContainerBanco>
                         </ContainerDadosBanco>
-
-                        <ContainerEmpenhosNotasFiscais>
-                            <ContainerEmpenhos
-                                cor={desabilitaNovoEmpenho}
-                                corBorda={desabilitaNovoEmpenho}>
-                                <legend>Empenhos</legend>
-                                <ContainerInsereEmpenhos>
-                                    <InputSemLabel
-                                        name="editNovoEmpenho"
-                                        type="text"
-                                        maxLength="15"
-                                        disabled={desabilitaNovoEmpenho}
-                                        corBackground={desabilitaNovoEmpenho}
-                                    />
-                                    <ButtonNovoItemProcessoPagamento
-                                        type="button"
-                                        name="btnNovoEmpenho"
-                                        onClick={insereEmpenho}
-                                        cor={desabilitaNovoEmpenho}
-                                        corHover={desabilitaNovoEmpenho}
-                                        disabled={desabilitaNovoEmpenho}>
-                                        <FaFileAlt cor={desabilitaNovoEmpenho} />
-                                        Novo empenho
-                                    </ButtonNovoItemProcessoPagamento>
-                                </ContainerInsereEmpenhos>
-                                <>
-                                    {vEmpenhos ? (
-                                        <ul>
-                                            {vEmpenhos.map(empenho => (
-                                                <li key={empenho.pen_empenho}>
-                                                    {empenho.pen_empenho}{' '}
-                                                    <LinkExcluir
-                                                        onClick={e =>
-                                                            abreModalExcluirEmpenho(
-                                                                e,
-                                                                empenho.pen_empenho
-                                                            )
-                                                        }>
-                                                        <FaTimes color="#FFF" />
-                                                    </LinkExcluir>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : null}
-                                </>
-                            </ContainerEmpenhos>
-                            <ContainerNotasFiscais
-                                cor={desabilitaNovoEmpenho}
-                                corBorda={desabilitaNovoEmpenho}>
-                                <legend>Notas fiscais</legend>
-                                <ContainerInsereNotasFiscais>
-                                    <InputSemLabel
-                                        name="editNovaNotaFiscal"
-                                        type="text"
-                                        maxLength="15"
-                                        disabled={desabilitaNovoEmpenho}
-                                        corBackground={desabilitaNovoEmpenho}
-                                    />
-                                    <ButtonNovoItemProcessoPagamento
-                                        type="button"
-                                        name="btnNovaNotaFiscal"
-                                        onClick={insereNotaFiscal}
-                                        cor={desabilitaNovoEmpenho}
-                                        corHover={desabilitaNovoEmpenho}
-                                        disabled={desabilitaNovoEmpenho}>
-                                        <FaFileAlt cor={desabilitaNovoEmpenho} />
-                                        Nova nota fiscal
-                                    </ButtonNovoItemProcessoPagamento>
-                                </ContainerInsereNotasFiscais>
-                                <>
-                                    {vNotasFiscais ? (
-                                        <ul>
-                                            {vNotasFiscais.map(notaFiscal => (
-                                                <li key={notaFiscal.pnf_nota_fiscal}>
-                                                    {notaFiscal.pnf_nota_fiscal}{' '}
-                                                    <LinkExcluir
-                                                        onClick={e => {
-                                                            abreModalExcluirNotaFiscal(
-                                                                e,
-                                                                notaFiscal.pnf_nota_fiscal
-                                                            );
-                                                        }}>
-                                                        <FaTimes color="#FFF" />
-                                                    </LinkExcluir>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : null}
-                                </>
-                            </ContainerNotasFiscais>
-                            <ContainerNADs
-                                cor={desabilitaNovoEmpenho}
-                                corBorda={desabilitaNovoEmpenho}>
-                                <legend>Autorizações de fornecimento</legend>
-                                <ContainerInsereNads>
-                                    <InputSemLabel
-                                        name="editNovaNAD"
-                                        type="text"
-                                        maxLength="15"
-                                        disabled={desabilitaNovoEmpenho}
-                                        corBackground={desabilitaNovoEmpenho}
-                                    />
-                                    <ButtonNovoItemProcessoPagamento
-                                        type="button"
-                                        name="btnNovaNAD"
-                                        onClick={insereNAD}
-                                        cor={desabilitaNovoEmpenho}
-                                        corHover={desabilitaNovoEmpenho}
-                                        disabled={desabilitaNovoEmpenho}>
-                                        <FaFileAlt cor={desabilitaNovoEmpenho} />
-                                        Nova autorização
-                                    </ButtonNovoItemProcessoPagamento>
-                                </ContainerInsereNads>
-                                <>
-                                    {vNADs ? (
-                                        <ul>
-                                            {vNADs.map(nad => (
-                                                <li key={nad.pna_nad}>
-                                                    {nad.pna_nad}{' '}
-                                                    <LinkExcluir
-                                                        onClick={e => {
-                                                            abreModalExcluirNAD(e, nad.pna_nad);
-                                                        }}>
-                                                        <FaTimes color="#FFF" />
-                                                    </LinkExcluir>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : null}
-                                </>
-                            </ContainerNADs>
-                        </ContainerEmpenhosNotasFiscais>
+                        {!desabilitaNovoEmpenho ? (
+                            <ContainerEmpenhosNotasFiscais>
+                                <ContainerEmpenhos
+                                    cor={desabilitaNovoEmpenho}
+                                    corBorda={desabilitaNovoEmpenho}>
+                                    <legend>Empenhos</legend>
+                                    <ContainerInsereEmpenhos>
+                                        <InputSemLabel
+                                            name="editNovoEmpenho"
+                                            type="text"
+                                            maxLength="15"
+                                            corBackground={desabilitaNovoEmpenho}
+                                            disabled={desabilitaNovoEmpenho}
+                                        />
+                                        <ButtonNovoItemProcessoPagamento
+                                            type="button"
+                                            name="btnNovoEmpenho"
+                                            onClick={insereEmpenho}
+                                            cor={desabilitaNovoEmpenho}
+                                            corHover={desabilitaNovoEmpenho}
+                                            disabled={desabilitaNovoEmpenho}>
+                                            <FaFileAlt cor={desabilitaNovoEmpenho} />
+                                            Novo empenho
+                                        </ButtonNovoItemProcessoPagamento>
+                                    </ContainerInsereEmpenhos>
+                                    <>
+                                        {vEmpenhos ? (
+                                            <ul>
+                                                {vEmpenhos.map(empenho => (
+                                                    <li key={empenho.pen_empenho}>
+                                                        {empenho.pen_empenho}{' '}
+                                                        <LinkExcluir
+                                                            onClick={e =>
+                                                                abreModalExcluirEmpenho(
+                                                                    e,
+                                                                    empenho.pen_empenho
+                                                                )
+                                                            }>
+                                                            <FaTimes color="#FFF" />
+                                                        </LinkExcluir>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : null}
+                                    </>
+                                </ContainerEmpenhos>
+                                <ContainerNotasFiscais
+                                    cor={desabilitaNovoEmpenho}
+                                    corBorda={desabilitaNovoEmpenho}>
+                                    <legend>Notas fiscais</legend>
+                                    <ContainerInsereNotasFiscais>
+                                        <InputSemLabel
+                                            name="editNovaNotaFiscal"
+                                            type="text"
+                                            maxLength="15"
+                                            disabled={desabilitaNovoEmpenho}
+                                            corBackground={desabilitaNovoEmpenho}
+                                        />
+                                        <ButtonNovoItemProcessoPagamento
+                                            type="button"
+                                            name="btnNovaNotaFiscal"
+                                            onClick={insereNotaFiscal}
+                                            cor={desabilitaNovoEmpenho}
+                                            corHover={desabilitaNovoEmpenho}
+                                            disabled={desabilitaNovoEmpenho}>
+                                            <FaFileAlt cor={desabilitaNovoEmpenho} />
+                                            Nova nota fiscal
+                                        </ButtonNovoItemProcessoPagamento>
+                                    </ContainerInsereNotasFiscais>
+                                    <>
+                                        {vNotasFiscais ? (
+                                            <ul>
+                                                {vNotasFiscais.map(notaFiscal => (
+                                                    <li key={notaFiscal.pnf_nota_fiscal}>
+                                                        {notaFiscal.pnf_nota_fiscal}{' '}
+                                                        <LinkExcluir
+                                                            onClick={e => {
+                                                                abreModalExcluirNotaFiscal(
+                                                                    e,
+                                                                    notaFiscal.pnf_nota_fiscal
+                                                                );
+                                                            }}>
+                                                            <FaTimes color="#FFF" />
+                                                        </LinkExcluir>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : null}
+                                    </>
+                                </ContainerNotasFiscais>
+                                <ContainerNADs
+                                    cor={desabilitaNovoEmpenho}
+                                    corBorda={desabilitaNovoEmpenho}>
+                                    <legend>Autorizações de fornecimento</legend>
+                                    <ContainerInsereNads>
+                                        <InputSemLabel
+                                            name="editNovaNAD"
+                                            type="text"
+                                            maxLength="15"
+                                            disabled={desabilitaNovoEmpenho}
+                                            corBackground={desabilitaNovoEmpenho}
+                                        />
+                                        <ButtonNovoItemProcessoPagamento
+                                            type="button"
+                                            name="btnNovaNAD"
+                                            onClick={insereNAD}
+                                            cor={desabilitaNovoEmpenho}
+                                            corHover={desabilitaNovoEmpenho}
+                                            disabled={desabilitaNovoEmpenho}>
+                                            <FaFileAlt cor={desabilitaNovoEmpenho} />
+                                            Nova autorização
+                                        </ButtonNovoItemProcessoPagamento>
+                                    </ContainerInsereNads>
+                                    <>
+                                        {vNADs ? (
+                                            <ul>
+                                                {vNADs.map(nad => (
+                                                    <li key={nad.pna_nad}>
+                                                        {nad.pna_nad}{' '}
+                                                        <LinkExcluir
+                                                            onClick={e => {
+                                                                abreModalExcluirNAD(e, nad.pna_nad);
+                                                            }}>
+                                                            <FaTimes color="#FFF" />
+                                                        </LinkExcluir>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : null}
+                                    </>
+                                </ContainerNADs>
+                            </ContainerEmpenhosNotasFiscais>
+                        ) : null}
                         <ContainerBotoes>
                             <Button type="submit" name="btnSalva">
                                 <FaCheck color="#FFF" />
@@ -566,86 +568,94 @@ function CriarProcessoPagamento() {
                                 <FaUndoAlt color="#FFF" />
                                 Voltar
                             </Button>
-                            <>
-                                <label htmlFor="anexo">
-                                    <FaFilePdf />
-                                    &nbsp;Inserir documento
-                                </label>
+                            {!desabilitaNovoEmpenho ? (
+                                <>
+                                    <>
+                                        <label htmlFor="anexo">
+                                            <FaFilePdf />
+                                            &nbsp;Inserir documento
+                                        </label>
 
-                                <input
-                                    type="file"
-                                    name="file"
-                                    onChange={inserirArquivo}
-                                    id="anexo"
-                                />
-                            </>
-                            <Tramitar name="btnTramita" clickHandler={tramita} />
+                                        <input
+                                            type="file"
+                                            name="file"
+                                            onChange={inserirArquivo}
+                                            disabled={desabilitaNovoEmpenho}
+                                            id="anexo"
+                                        />
+                                    </>
+
+                                    <Tramitar name="btnTramita" clickHandler={tramita} />
+                                </>
+                            ) : null}
                         </ContainerBotoes>
-                        <ContainerArquivos>
-                            <legend>Arquivos</legend>
-                            <ContainerListaArquivos>
-                                {vArquivos.length > 0 ? (
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Arquivo</th>
-                                                <th>Tipo de documento</th>
-                                                <th>Data</th>
-                                                <th>Cancelado</th>
-                                                <th>&nbsp;</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {vArquivos.map(arq => (
-                                                <tr key={arq.arq_id}>
-                                                    <td>
-                                                        <BotaoComoLink
-                                                            type="button"
-                                                            onClick={e =>
-                                                                download(
-                                                                    e,
-                                                                    arq.pro_id,
-                                                                    arq.pro_ano,
-                                                                    arq.arq_nome_visivel,
-                                                                    arq.arq_nome
-                                                                )
-                                                            }>
-                                                            {arq.arq_nome_visivel}
-                                                        </BotaoComoLink>
-                                                    </td>
-                                                    <td>{arq.tpd_nome}</td>
-                                                    <td>{arq.arq_data}</td>
-                                                    <td style={colunaCancelado}>
-                                                        {arq.arq_cancelado ? (
-                                                            <span style={arquivoCancelado}>
-                                                                Sim
-                                                            </span>
-                                                        ) : (
-                                                            'Não'
-                                                        )}
-                                                    </td>
-                                                    <td>
-                                                        {arq.arq_cancelado ? null : (
-                                                            <ButtonCancelaArquivo
-                                                                type="button"
-                                                                name="btnCancela"
-                                                                onClick={e => {
-                                                                    abreModalCancelar(
-                                                                        e,
-                                                                        arq.arq_id
-                                                                    );
-                                                                }}>
-                                                                <FaTimes color="#FFF" />
-                                                            </ButtonCancelaArquivo>
-                                                        )}
-                                                    </td>
+                        {!desabilitaNovoEmpenho ? (
+                            <ContainerArquivos>
+                                <legend>Arquivos</legend>
+                                <ContainerListaArquivos>
+                                    {vArquivos.length > 0 ? (
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Arquivo</th>
+                                                    <th>Tipo de documento</th>
+                                                    <th>Data</th>
+                                                    <th>Cancelado</th>
+                                                    <th>&nbsp;</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                ) : null}
-                            </ContainerListaArquivos>
-                        </ContainerArquivos>
+                                            </thead>
+                                            <tbody>
+                                                {vArquivos.map(arq => (
+                                                    <tr key={arq.arq_id}>
+                                                        <td>
+                                                            <BotaoComoLink
+                                                                type="button"
+                                                                onClick={e =>
+                                                                    download(
+                                                                        e,
+                                                                        arq.pro_id,
+                                                                        arq.pro_ano,
+                                                                        arq.arq_nome_visivel,
+                                                                        arq.arq_nome
+                                                                    )
+                                                                }>
+                                                                {arq.arq_nome_visivel}
+                                                            </BotaoComoLink>
+                                                        </td>
+                                                        <td>{arq.tpd_nome}</td>
+                                                        <td>{arq.arq_data}</td>
+                                                        <td style={colunaCancelado}>
+                                                            {arq.arq_cancelado ? (
+                                                                <span style={arquivoCancelado}>
+                                                                    Sim
+                                                                </span>
+                                                            ) : (
+                                                                'Não'
+                                                            )}
+                                                        </td>
+                                                        <td>
+                                                            {arq.arq_cancelado ? null : (
+                                                                <ButtonCancelaArquivo
+                                                                    type="button"
+                                                                    name="btnCancela"
+                                                                    onClick={e => {
+                                                                        abreModalCancelar(
+                                                                            e,
+                                                                            arq.arq_id
+                                                                        );
+                                                                    }}>
+                                                                    <FaTimes color="#FFF" />
+                                                                </ButtonCancelaArquivo>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    ) : null}
+                                </ContainerListaArquivos>
+                            </ContainerArquivos>
+                        ) : null}
                     </Form>
 
                     <ModalApagaEmpenho

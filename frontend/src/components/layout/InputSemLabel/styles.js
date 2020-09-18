@@ -4,9 +4,10 @@ import { lighten } from 'polished';
 const handleColorBackground = corBackground => {
     switch (corBackground) {
         case true:
-            return 'background: #A9A9A9;';
+            // return 'background: #A9A9A9;';
+            return `background: ${lighten(0.25, '#A9A9A9')}`;
         default:
-            return lighten(0.25, '#303f9f');
+            return `background: ${lighten(0.25, '#303f9f')}`;
     }
 };
 

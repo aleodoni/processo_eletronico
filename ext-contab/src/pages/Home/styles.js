@@ -94,7 +94,7 @@ export const Erro = styled.div`
 
 export const ContainerTitulo = styled.div`
     display: grid;
-    grid-template-columns: 460px 450px;
+    grid-template-columns: 600px;
     grid-column-gap: 10px;
     font-size: 16px;
     color: #fff;
@@ -143,6 +143,10 @@ export const ContainerArquivos = styled.div`
     span {
         margin-bottom: 15px;
     }
+
+    hr {
+        width: 890px;
+    }
 `;
 
 export const ContainerUpload = styled.div`
@@ -187,4 +191,19 @@ export const ContainerReferencia = styled.div`
     display: grid;
     grid-template-columns: 900px;
     padding-left: 5px;
+`;
+
+export const ContainerListaArquivos = styled.fieldset`
+    width: 90px !important;
+    margin-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 7px;
+    border-color: #fff;
+
+    legend {
+        color: #fff;
+        margin-left: 10px;
+        font-weight: bold;
+    }
 `;
