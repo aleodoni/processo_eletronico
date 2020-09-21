@@ -365,6 +365,22 @@ function CriarProcessoPagamento() {
     }
 
     function apagaEmpenho(id) {
+        axios({
+            method: 'DELETE',
+            url: `processo-empenho/${proId}`,
+            data: {
+                pen_empenho: id,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Empenho excluído com sucesso.');
+            })
+            .catch(err => {
+                setErro(err.response.data.error);
+            });
         setVEmpenhos(
             vEmpenhos.filter(lista => {
                 return lista.pen_empenho !== id;
@@ -381,6 +397,26 @@ function CriarProcessoPagamento() {
         objEmpenho.pen_id = null;
         objEmpenho.pro_id_pai = proId;
         objEmpenho.pen_empenho = document.getElementById('editNovoEmpenho').value;
+        // aqui grava o empenho na tabela
+        axios({
+            method: 'POST',
+            url: '/processo-empenho',
+            data: {
+                pen_id: null,
+                pro_id_pai: proId,
+                pen_empenho: document.getElementById('editNovoEmpenho').value,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Empenho inserido com sucesso.');
+            })
+            .catch(() => {
+                setErro('Erro ao inserir registro.');
+            });
+        //
         setVEmpenhos([...vEmpenhos, objEmpenho]);
         document.getElementById('editNovoEmpenho').value = '';
     }
@@ -394,11 +430,47 @@ function CriarProcessoPagamento() {
         objNotaFiscal.pnf_id = null;
         objNotaFiscal.pro_id_pai = proId;
         objNotaFiscal.pnf_nota_fiscal = document.getElementById('editNovaNotaFiscal').value;
+        // aqui grava a nota fiscal na tabela
+        axios({
+            method: 'POST',
+            url: '/processo-nota-fiscal',
+            data: {
+                pnf_id: null,
+                pro_id_pai: proId,
+                pnf_nota_fiscal: document.getElementById('editNovaNotaFiscal').value,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Nota fiscal inserida com sucesso.');
+            })
+            .catch(() => {
+                setErro('Erro ao inserir registro.');
+            });
+        //
         setVNotasFiscais([...vNotasFiscais, objNotaFiscal]);
         document.getElementById('editNovaNotaFiscal').value = '';
     }
 
     function apagaNotaFiscal(id) {
+        axios({
+            method: 'DELETE',
+            url: `processo-nota-fiscal/${proId}`,
+            data: {
+                pnf_nota_fiscal: id,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Nota fiscal excluída com sucesso.');
+            })
+            .catch(err => {
+                setErro(err.response.data.error);
+            });
         setVNotasFiscais(
             vNotasFiscais.filter(lista => {
                 return lista.pnf_nota_fiscal !== id;
@@ -415,11 +487,47 @@ function CriarProcessoPagamento() {
         objNAD.pna_id = null;
         objNAD.pro_id_pai = proId;
         objNAD.pna_nad = document.getElementById('editNovaNAD').value;
+        // aqui grava a autorização na tabela
+        axios({
+            method: 'POST',
+            url: '/processo-nad',
+            data: {
+                pna_id: null,
+                pro_id_pai: proId,
+                pna_nad: document.getElementById('editNovaNAD').value,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Autorização inserida com sucesso.');
+            })
+            .catch(() => {
+                setErro('Erro ao inserir registro.');
+            });
+        //
         setVNADs([...vNADs, objNAD]);
         document.getElementById('editNovaNAD').value = '';
     }
 
     function apagaNAD(id) {
+        axios({
+            method: 'DELETE',
+            url: `processo-nad/${proId}`,
+            data: {
+                pna_nad: id,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                mensagem.success('Autorização excluída com sucesso.');
+            })
+            .catch(err => {
+                setErro(err.response.data.error);
+            });
         setVNADs(
             vNADs.filter(lista => {
                 return lista.pna_nad !== id;
@@ -461,7 +569,7 @@ function CriarProcessoPagamento() {
             .then(resAnexos => {
                 if (resAnexos.status === 204) {
                     mensagem.success('Arquivo inserido com sucesso.');
-                    carregaArquivosProcesso();
+                    carregaArquivosProcesso(proId);
                 }
             })
             .catch(() => {

@@ -109,5 +109,53 @@ class EditaProcessoController {
         await arquivo.update({ arq_cancelado: true }, { logging: false });
         return res.json(arquivo);
     }
+
+    async insereEmpenho(req, res) {
+        const processoEmpenho = await ProcessoEmpenho.create({
+            pen_id: null,
+            pro_id_pai: req.body.pro_id_pai,
+            pen_empenho: req.body.pen_empenho
+        }, {
+            logging: false
+        });
+        return res.json(processoEmpenho);
+    }
+
+    async insereNotaFiscal(req, res) {
+        const processoNotaFiscal = await ProcessoNotaFiscal.create({
+            pnf_id: null,
+            pro_id_pai: req.body.pro_id_pai,
+            pnf_nota_fiscal: req.body.pnf_nota_fiscal
+        }, {
+            logging: false
+        });
+        return res.json(processoNotaFiscal);
+    }
+
+    async insereNAD(req, res) {
+        const processoNAD = await ProcessoNAD.create({
+            pna_id: null,
+            pro_id_pai: req.body.pro_id_pai,
+            pna_nad: req.body.pna_nad
+        }, {
+            logging: false
+        });
+        return res.json(processoNAD);
+    }
+
+    async apagaEmpenho(req, res) {
+        await ProcessoEmpenho.destroy({ where: { pro_id_pai: req.params.id, pen_empenho: req.body.pen_empenho } }, { logging: false });
+        return res.send();
+    }
+
+    async apagaNotaFiscal(req, res) {
+        await ProcessoNotaFiscal.destroy({ where: { pro_id_pai: req.params.id, pnf_nota_fiscal: req.body.pnf_nota_fiscal } }, { logging: false });
+        return res.send();
+    }
+
+    async apagaNAD(req, res) {
+        await ProcessoNAD.destroy({ where: { pro_id_pai: req.params.id, pna_nad: req.body.pna_nad } }, { logging: false });
+        return res.send();
+    }
 }
 export default new EditaProcessoController();

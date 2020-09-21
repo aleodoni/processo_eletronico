@@ -433,5 +433,10 @@ routes.get(`${process.env.API_URL}/processos-fornecedores/`, DadosProcessoContro
 routes.put(`${process.env.API_URL}/edita-processo-pagamento/:id`, EditaProcessoController.update);
 routes.get(`${process.env.API_URL}/ver-arquivos-processo-pgto/:proId`, EditaProcessoController.listaArquivos);
 routes.put(`${process.env.API_URL}/cancela-arquivo-processo-pagamento/:id`, EditaProcessoController.cancelaArquivo);
-
+routes.post(`${process.env.API_URL}/processo-empenho`, EditaProcessoController.insereEmpenho);
+routes.post(`${process.env.API_URL}/processo-nota-fiscal`, EditaProcessoController.insereNotaFiscal);
+routes.post(`${process.env.API_URL}/processo-nad`, EditaProcessoController.insereNAD);
+routes.delete(`${process.env.API_URL}/processo-empenho/:id`, EditaProcessoController.apagaEmpenho);
+routes.delete(`${process.env.API_URL}/processo-nota-fiscal/:id`, EditaProcessoController.apagaNotaFiscal);
+routes.delete(`${process.env.API_URL}/processo-nad/:id`, EditaProcessoController.apagaNAD);
 export default routes;

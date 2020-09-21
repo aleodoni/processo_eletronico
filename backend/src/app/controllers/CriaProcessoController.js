@@ -968,7 +968,7 @@ class CriaProcessoController {
                 arq_doc_tipo: 'aut-pgto',
                 tpd_id: constantes.TPD_AUTORIZACAO_PAGAMENTO,
                 arq_data: dataHoraAtual.dataValues.data_hora_atual,
-                arq_login: 'externo'
+                arq_login: usu_autuador
             }, {
                 logging: false
             });
@@ -1042,12 +1042,20 @@ class CriaProcessoController {
 
     async editaProcessoPagamentoInterno(req, res) {
         const transaction = await ConnectionHelper.getTransaction();
-
         try {
-            const processo = await Processo.findByPk(req.params.id, { logging: false });
+            const processo = await Processo.findAll({
+                attributes: ['pro_id', 'pro_ano'],
+                logging: false,
+                plain: true,
+                where: {
+                    pro_id: req.params.id
+                }
+            });
             if (!processo) {
                 return res.status(400).json({ error: 'Processo não encontrado' });
             }
+
+            const caminhoProcesso = process.env.CAMINHO_ARQUIVOS_PROCESSO + processo.dataValues.pro_id + processo.dataValues.pro_ano;
 
             await processo.update({
                 pro_processo_pai: req.body.pro_processo_pai
@@ -1072,6 +1080,27 @@ class CriaProcessoController {
                 aut_ban_agencia: req.body.aut_ban_agencia,
                 aut_ban_conta_corrente: req.body.aut_ban_conta_corrente
             }, { logging: false }, { transaction: transaction });
+
+            // seleciona o arquivo da autorização(bd)
+            const arquivoAutorizacao = await Arquivo.findAll({
+                attributes: ['arq_id', 'pro_id', 'tpd_id'],
+                logging: false,
+                plain: true,
+                where: {
+                    tpd_id: constantes.TPD_AUTORIZACAO_PAGAMENTO,
+                    pro_id: req.params.id
+                }
+            });
+            // atualiza o arquivo pdf da autorização
+            const criaAutorizacao = new CriaAutorizacaoService(Autorizacao, Arquivo, VAutorizacaoArquivo);
+            const caminhoArquivoAutorizacao = await criaAutorizacao.criaAutorizacao(req.body.aut_id, arquivoAutorizacao.dataValues.arq_id, caminhoProcesso, req.body.documentos);
+
+            // obtem o hash do arquivo
+            const hashAutorizacao = await fileHash(caminhoArquivoAutorizacao);
+            await Arquivo.update(
+                { arq_hash: hashAutorizacao },
+                { where: { arq_id: arquivoAutorizacao.dataValues.arq_id }, logging: false }
+            );
 
             await transaction.commit();
             return res.json(processo);
