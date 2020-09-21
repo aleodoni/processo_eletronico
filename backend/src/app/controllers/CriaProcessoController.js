@@ -828,6 +828,258 @@ class CriaProcessoController {
             return res.status(400).json({ error: 'Erro ao criar processo.' });
         }
     }
+
+    async criaProcessoPagamentoInterno(req, res) {
+        const dia = req.body.aut_data_expedicao_nf.split('/')[0];
+        const mes = req.body.aut_data_expedicao_nf.split('/')[1];
+        const ano = req.body.aut_data_expedicao_nf.split('/')[2];
+        const dataNF = ano + '-' + ('0' + mes).slice(-2) + '-' + ('0' + dia).slice(-2);
+
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const anoAtual = dataHoraAtual.dataValues.data_hora_atual.substring(6, 10);
+
+        const fornecedor = await VFornecedores.findAll({
+            where: {
+                for_id: req.body.for_id
+            },
+            logging: false,
+            plain: true
+        });
+
+        if (fornecedor === null) {
+            return res.status(400).json({ erro: 'Fornecedor não encontrado' });
+        }
+
+        req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
+        req.body.pro_nome = fornecedor.dataValues.for_nome;
+        req.body.pro_cnpj = fornecedor.dataValues.for_cnpj_cpf;
+
+        const nodo = await Nodo.findAll({
+            attributes: ['nod_id', 'flu_id', 'nod_inicio'],
+            logging: false,
+            plain: true,
+            where: {
+                flu_id: constantes.FLU_EXECUCAO_DESPESAS,
+                nod_inicio: true
+            }
+        });
+
+        if (nodo !== null) {
+            req.body.nod_id = nodo.dataValues.nod_id;
+        } else {
+            return res.status(400).json({ error: 'Processo sem fluxo. Cadastre um fluxo primeiro.' });
+        }
+        try {
+            const {
+                pro_id,
+                pro_codigo,
+                tpr_id,
+                pro_iniciativa,
+                pro_nome,
+                pro_matricula,
+                pro_cnpj,
+                pro_fone,
+                pro_celular,
+                pro_email,
+                pro_assunto,
+                usu_autuador,
+                set_id_autuador,
+                area_id,
+                nod_id,
+                pro_tipo_iniciativa,
+                area_id_iniciativa,
+                pro_autuacao,
+                pro_recurso,
+                pro_enviado_externo,
+                pro_ip_externo,
+                pro_processo_pai
+            } = await Processo.create(req.body, {
+                logging: false
+            });
+            // auditoria de inserção
+            // AuditoriaController.audita(req.body, req, 'I', pro_id);
+            //
+
+            // cria a pasta com o id do processo(id+ano)
+            fs.mkdirSync(process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual);
+            const caminhoProcesso = process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual;
+
+            // grava na tabela arquivo a capa do processo
+            const arquivoCapa = await Arquivo.create({
+                arq_id: null,
+                arq_nome: 'capa-' + pro_id + '.pdf',
+                pro_id: pro_id,
+                man_id: null,
+                arq_tipo: 'application/pdf',
+                arq_doc_id: pro_id,
+                arq_doc_tipo: 'capa-processo',
+                tpd_id: constantes.TPD_CAPA_PROCESSO,
+                arq_data: dataHoraAtual.dataValues.data_hora_atual,
+                arq_login: usu_autuador
+            }, {
+                logging: false
+            });
+
+            // cria o arquivo pdf da capa
+            const criaCapa = new CriaCapaService(Processo);
+            const caminhoArquivoCapa = await criaCapa.capaProcesso(arquivoCapa.arq_id, pro_id, 'Execução de despesas', caminhoProcesso);
+            // obtem o hash do arquivo
+            const hashCapa = await fileHash(caminhoArquivoCapa);
+            // atualiza a tabela de arquivo com o hash do arquivo
+            await Arquivo.update(
+                { arq_hash: hashCapa },
+                { where: { arq_id: arquivoCapa.arq_id }, logging: false }
+            );
+
+            // cria a autorização
+            const autorizacao = await AutorizacaoFornecimento.create({
+                aut_id: null,
+                for_id: req.body.for_id,
+                aut_referencia: req.body.aut_referencia,
+                aut_nf: req.body.aut_nf,
+                aut_data_expedicao_nf: dataNF,
+                aut_valor: req.body.aut_valor,
+                ban_id: req.body.ban_id,
+                aut_ban_agencia: req.body.aut_ban_agencia,
+                aut_ban_conta_corrente: req.body.aut_ban_conta_corrente,
+                aut_data_cadastro: dataHoraAtual.dataValues.data_hora_atual,
+                pro_id: pro_id
+            }, {
+                logging: false
+            });
+
+            if (autorizacao === null) {
+                return res.status(400).json({ erro: 'Não foi possível criar a autorização' });
+            }
+            req.body.aut_id = autorizacao.aut_id;
+            // grava na tabela arquivo a autorização
+            const arquivoAutorizacao = await Arquivo.create({
+                arq_id: null,
+                arq_nome: 'autorizacao-' + autorizacao.aut_id + '.pdf',
+                pro_id: pro_id,
+                man_id: null,
+                arq_tipo: 'application/pdf',
+                arq_doc_id: autorizacao.aut_id,
+                arq_doc_tipo: 'aut-pgto',
+                tpd_id: constantes.TPD_AUTORIZACAO_PAGAMENTO,
+                arq_data: dataHoraAtual.dataValues.data_hora_atual,
+                arq_login: 'externo'
+            }, {
+                logging: false
+            });
+
+            // cria o arquivo pdf da autorização
+            const criaAutorizacao = new CriaAutorizacaoService(Autorizacao, Arquivo, VAutorizacaoArquivo);
+            const caminhoArquivoAutorizacao = await criaAutorizacao.criaAutorizacao(req.body.aut_id, arquivoAutorizacao.arq_id, caminhoProcesso, req.body.documentos);
+
+            // obtem o hash do arquivo
+            const hashAutorizacao = await fileHash(caminhoArquivoAutorizacao);
+            await Arquivo.update(
+                { arq_hash: hashAutorizacao },
+                { where: { arq_id: arquivoAutorizacao.arq_id }, logging: false }
+            );
+
+            // insere o empenho e o processo na tabela processo_empenho
+            /*
+            ProcessoEmpenho.create({
+                pen_id: null,
+                pro_id_pai: pro_id,
+                pen_empenho: req.body.empenho
+            }, {
+                logging: false
+            });
+            */
+            //
+
+            // insere a nota fiscal e o processo na tabela processo_nota_fiscal
+            /*
+            ProcessoNotaFiscal.create({
+                pnf_id: null,
+                pro_id_pai: pro_id,
+                pnf_nota_fiscal: req.body.aut_nf
+            }, {
+                logging: false
+            });
+            */
+            //
+
+            return res.json({
+                pro_id,
+                pro_codigo,
+                tpr_id,
+                pro_iniciativa,
+                pro_nome,
+                pro_matricula,
+                pro_cnpj,
+                pro_fone,
+                pro_celular,
+                pro_email,
+                pro_assunto,
+                usu_autuador,
+                set_id_autuador,
+                area_id,
+                nod_id,
+                pro_tipo_iniciativa,
+                area_id_iniciativa,
+                pro_autuacao,
+                pro_recurso,
+                pro_enviado_externo,
+                pro_ip_externo,
+                pro_processo_pai,
+                ano: anoAtual,
+                aut_id: req.body.aut_id
+            });
+        } catch (erroProcesso) {
+            console.log(erroProcesso);
+            return res.status(400).json({ error: 'Erro ao criar processo.' });
+        }
+    }
+
+    async editaProcessoPagamentoInterno(req, res) {
+        const transaction = await ConnectionHelper.getTransaction();
+
+        try {
+            const processo = await Processo.findByPk(req.params.id, { logging: false });
+            if (!processo) {
+                return res.status(400).json({ error: 'Processo não encontrado' });
+            }
+
+            await processo.update({
+                pro_processo_pai: req.body.pro_processo_pai
+            }, { logging: false }, { transaction: transaction });
+
+            const autorizacao = await AutorizacaoFornecimento.findByPk(req.body.aut_id, { logging: false });
+            if (!autorizacao) {
+                return res.status(400).json({ error: 'Autorizacao não encontrada' });
+            }
+
+            const dia = req.body.aut_data_expedicao_nf.split('/')[0];
+            const mes = req.body.aut_data_expedicao_nf.split('/')[1];
+            const ano = req.body.aut_data_expedicao_nf.split('/')[2];
+            const dataNF = ano + '-' + ('0' + mes).slice(-2) + '-' + ('0' + dia).slice(-2);
+
+            await autorizacao.update({
+                aut_referencia: req.body.aut_referencia,
+                aut_nf: req.body.aut_nf,
+                aut_data_expedicao_nf: dataNF,
+                aut_valor: req.body.aut_valor,
+                ban_id: req.body.ban_id,
+                aut_ban_agencia: req.body.aut_ban_agencia,
+                aut_ban_conta_corrente: req.body.aut_ban_conta_corrente
+            }, { logging: false }, { transaction: transaction });
+
+            await transaction.commit();
+            return res.json(processo);
+        } catch (error) {
+            await transaction.rollback();
+            console.log(error);
+        }
+    }
 }
 
 export default new CriaProcessoController();

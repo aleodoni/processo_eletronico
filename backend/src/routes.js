@@ -232,6 +232,8 @@ routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 routes.post(`${process.env.API_URL}/processo-pas-pad`, CriaProcessoController.criaPasPad);
 
 routes.post(`${process.env.API_URL}/processo-pagamento`, CriaProcessoController.criaProcessoPagamento);
+routes.post(`${process.env.API_URL}/processo-pagamento-interno`, CriaProcessoController.criaProcessoPagamentoInterno);
+routes.put(`${process.env.API_URL}/processo-pagamento-interno/:id`, CriaProcessoController.editaProcessoPagamentoInterno);
 
 // rota de pesquisa de processo
 routes.post(`${process.env.API_URL}/pesquisa-processo`, DadosProcessoController.pesquisaProcesso);
@@ -423,6 +425,7 @@ routes.post(`${process.env.API_URL}/altera-senha`, LoginController.alteraSenha);
 routes.get(`${process.env.API_URL}/verifica-fornecedor/:cnpj`, SolicitacaoController.verificaFornecedor);
 routes.get(`${process.env.API_URL}/bancos`, SolicitacaoController.listaBancos);
 routes.get(`${process.env.API_URL}/fornecedores/:cnpj`, SolicitacaoController.dadosFornecedor);
+routes.get(`${process.env.API_URL}/combo-fornecedores`, SolicitacaoController.comboFornecedor);
 
 routes.get(`${process.env.API_URL}/processos-fornecedores/`, DadosProcessoController.processosPagamento);
 

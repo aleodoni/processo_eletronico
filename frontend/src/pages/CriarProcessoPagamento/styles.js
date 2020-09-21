@@ -236,6 +236,7 @@ export const Erro = styled.div`
     font-size: 14px;
     color: red;
     padding-bottom: 10px;
+    padding-left: 10px;
 `;
 
 export const ContainerEmpenhosNotasFiscais = styled.div`

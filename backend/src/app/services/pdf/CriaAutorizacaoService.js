@@ -79,8 +79,10 @@ class CriaAutorizacaoService {
         doc.fontSize(14).font('Helvetica-Bold').text('Agência: ', 12, 250, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.agencia);
         doc.fontSize(14).font('Helvetica-Bold').text('Conta corrente: ', 180, 250, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.conta_corrente);
         doc.fontSize(14).font('Helvetica-Bold').text('Referente: ', 12, 270, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.referencia);
-        doc.fontSize(14).font('Helvetica-Bold').text('Documentos anexos:', 12, 290);
-        doc.fontSize(12).font('Helvetica').list(documentos, 12, 310);
+        if (documentos !== undefined) {
+            doc.fontSize(14).font('Helvetica-Bold').text('Documentos anexos:', 12, 290);
+            doc.fontSize(12).font('Helvetica').list(documentos, 12, 310);
+        }
         doc.rect(10, 90, 550, 680).stroke();
         doc.end();
         return arquivo;

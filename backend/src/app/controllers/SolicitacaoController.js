@@ -131,5 +131,17 @@ class SolicitacaoController {
             return res.status(400).json({ erro: 'Fornecedor não encontrado' });
         }
     }
+
+    async comboFornecedor(req, res) {
+        const fornecedor = await VFornecedores.findAll({
+            order: ['for_nome'],
+            logging: false
+        });
+        if (fornecedor !== null) {
+            return res.json(fornecedor);
+        } else {
+            return res.status(400).json({ erro: 'Fornecedores não encontrado' });
+        }
+    }
 }
 export default new SolicitacaoController();
