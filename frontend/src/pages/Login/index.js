@@ -69,7 +69,7 @@ function Login() {
             });
 
             try {
-                const { login, senha, timeout } = data;
+                const { login, senha } = data;
 
                 const response = await api.post('/autorizacao', {
                     login,

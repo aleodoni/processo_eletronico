@@ -2,6 +2,7 @@ import { lighten } from 'polished';
 
 export const defaultTheme = {
     primary: '#009688',
+    primaryEnvia: '#00963d',
     error: '#d44059',
     input: '#009688',
     placeholder: 'rgba(255, 255, 255, 1)',

@@ -176,9 +176,12 @@ export const ContainerListaDocumentos = styled.div`
 
 export const ContainerBanco = styled.div`
     display: grid;
-    grid-template-columns: 450px 200px 250px;
+    grid-template-columns: 450px 130px 150px 100px 245px 155px;
     grid-column-gap: 3px;
     padding-left: 5px;
+    span {
+        padding-top: 30px;
+    }
 `;
 
 export const ContainerNota = styled.div`
@@ -197,6 +200,22 @@ export const ContainerReferencia = styled.div`
 export const ContainerListaArquivos = styled.fieldset`
     width: 90px !important;
     margin-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 7px;
+    border-color: #fff;
+
+    legend {
+        color: #fff;
+        margin-left: 10px;
+        font-weight: bold;
+    }
+`;
+
+export const ContainerListaArquivosComplementares = styled.fieldset`
+    width: 890px !important;
+    margin-left: 10px;
+    margin-top: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
     border-radius: 7px;

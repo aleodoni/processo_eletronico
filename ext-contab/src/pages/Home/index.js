@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { FaCheckDouble, FaReply, FaUpload } from 'react-icons/fa';
+import { FaCheckDouble, FaReply, FaUpload, FaPaperclip } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import api from '../../service/api';
@@ -12,7 +12,7 @@ import {
     Main,
     ContainerEmpenhos,
     Erro,
-    ContainerBotaoVoltarEnviar,
+    ContainerListaArquivosComplementares,
     ContainerArquivos,
     ContainerUpload,
     ContainerTitulo,
@@ -27,6 +27,7 @@ import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import ButtonPagamento from '../../components/layout/button/ButtonPagamento';
 import Button from '../../components/layout/button/Button';
+import ButtonEnviaArquivos from '../../components/layout/button/ButtonEnviaArquivos';
 import Select from '../../components/layout/Select';
 import Input from '../../components/layout/Input';
 import TextArea from '../../components/layout/TextArea';
@@ -386,6 +387,17 @@ function Home() {
         carregaSolicitacoes();
     }, [carregaSolicitacoes]);
 
+    function insereArquivoComplementar() {
+        const elemento = document.createElement('input');
+        const elementoBR = document.createElement('br');
+        elemento.setAttribute('type', 'file');
+        elemento.setAttribute('value', 'valor');
+        elemento.setAttribute('name', 'nome');
+        document.getElementById('frmComplementares').appendChild(elemento);
+        document.getElementById('frmComplementares').appendChild(elementoBR);
+        alert('ok');
+    }
+
     return (
         <DefaultLayout>
             <Container>
@@ -496,6 +508,28 @@ function Home() {
                                         type="text"
                                         maxLength="20"
                                     />
+                                    <span>
+                                        <Button
+                                            type="button"
+                                            onClick={() => {
+                                                voltaLista();
+                                            }}>
+                                            <FaReply color="#FFF" />
+                                            Voltar
+                                        </Button>
+                                    </span>
+                                    <span>
+                                        <Button type="button" onClick={insereArquivoComplementar}>
+                                            <FaPaperclip color="#FFF" />
+                                            Inserir arquivo complementar
+                                        </Button>
+                                    </span>
+                                    <span>
+                                        <ButtonEnviaArquivos type="button" onClick={enviaArquivos}>
+                                            <FaUpload color="#FFF" />
+                                            Enviar arquivos
+                                        </ButtonEnviaArquivos>
+                                    </span>
                                 </ContainerBanco>
                             </Form>
                             <ContainerListaArquivos>
@@ -633,20 +667,33 @@ function Home() {
                                     ))}
                                 </ContainerArquivos>
                             </ContainerListaArquivos>
-                            <ContainerBotaoVoltarEnviar>
-                                <Button
-                                    type="button"
-                                    onClick={() => {
-                                        voltaLista();
-                                    }}>
-                                    <FaReply color="#FFF" />
-                                    Voltar
-                                </Button>
-                                <Button type="button" onClick={enviaArquivos}>
-                                    <FaUpload color="#FFF" />
-                                    Enviar arquivos
-                                </Button>
-                            </ContainerBotaoVoltarEnviar>
+                            <ContainerListaArquivosComplementares>
+                                <legend>&nbsp;Arquivos complementares&nbsp;</legend>
+                                <form id="frmComplementares">
+                                    <ContainerUpload>
+                                        <label htmlFor="meuDocumento">- nome_documento</label>
+
+                                        <input
+                                            type="file"
+                                            name="meuDocumento"
+                                            id="meuDocumento"
+                                            onChange={(e) => {
+                                                verificaArquivo(e, 'meuDocumento', 'meuTipo');
+                                            }}
+                                        />
+                                        <label htmlFor="meuDocumento1">- nome_documento</label>
+
+                                        <input
+                                            type="file"
+                                            name="meuDocumento1"
+                                            id="meuDocumento1"
+                                            onChange={(e) => {
+                                                verificaArquivo(e, 'meuDocumento1', 'meuTipo');
+                                            }}
+                                        />
+                                    </ContainerUpload>
+                                </form>
+                            </ContainerListaArquivosComplementares>
                         </>
                     )}
                 </Main>
