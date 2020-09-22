@@ -94,7 +94,7 @@ export const Erro = styled.div`
 
 export const ContainerTitulo = styled.div`
     display: grid;
-    grid-template-columns: 600px;
+    grid-template-columns: 620px;
     grid-column-gap: 10px;
     font-size: 16px;
     color: #fff;
@@ -146,6 +146,7 @@ export const ContainerArquivos = styled.div`
 
     hr {
         width: 890px;
+        margin-bottom: 10px;
     }
 `;
 

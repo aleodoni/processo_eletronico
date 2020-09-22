@@ -74,11 +74,10 @@ function Login() {
             });
 
             try {
-                const { login, senha, timeout } = data;
+                const { login, senha } = data;
                 const response = await api.post('/autorizacao-ext-contab', {
                     login,
                     senha,
-                    timeout,
                 });
 
                 sessionStorage.setItem('token', response.data.token);
@@ -131,7 +130,6 @@ function Login() {
                     />
                     <Input type="password" name="senha" placeholder="Senha" />
                     <Reaptcha sitekey={chaveCaptcha} onVerify={verifica} />
-                    <Input type="hidden" id="timeout" name="timeout" value="1440" />
                     <Button type="submit">
                         <FaKey color="#FFF" />
                         Acessar

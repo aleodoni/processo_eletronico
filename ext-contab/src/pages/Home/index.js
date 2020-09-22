@@ -34,6 +34,9 @@ import InputMask from '../../components/layout/InputMask';
 import ModalErros from '../../components/ModalErros';
 
 function Home() {
+    const colunaRequisitarPagamento = {
+        width: '220px',
+    };
     const [erro, setErro] = useState('');
     const [vErro, setVErro] = useState([]);
     const [vSelecionado, setVSelecionado] = useState([]);
@@ -412,7 +415,7 @@ function Home() {
                                                     <td>{`${emp.emf_numero_empenho}/${emp.emf_ano_empenho}`}</td>
                                                     <td>{emp.emf_data_emissao}</td>
                                                     <td>{emp.emf_valor_global}</td>
-                                                    <td>
+                                                    <td style={colunaRequisitarPagamento}>
                                                         <div>
                                                             <ButtonPagamento
                                                                 name="btnRequisitarPagamento"

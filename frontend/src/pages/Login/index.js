@@ -74,7 +74,6 @@ function Login() {
                 const response = await api.post('/autorizacao', {
                     login,
                     senha,
-                    timeout,
                 });
 
                 sessionStorage.setItem('token', response.data.token);
@@ -113,17 +112,12 @@ function Login() {
                     <img src={Logo} alt="Câmara Municipal de Curitiba" />
                     <span>Processo eletrônico</span>
                     <br />
-
                     <Input type="text" name="login" placeholder="Usuário" />
-
                     <Input type="password" name="senha" placeholder="Senha" />
-
-                    <Input type="hidden" id="timeout" name="timeout" value="1440" />
                     <Button type="submit">
                         <FaKey color="#FFF" />
                         Acessar
                     </Button>
-
                     <Versao>{bd}</Versao>
                 </Form>
             </Centro>

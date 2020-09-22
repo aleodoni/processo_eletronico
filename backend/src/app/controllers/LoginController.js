@@ -15,7 +15,7 @@ import { hmac } from '../util/hmac';
 
 class LoginController {
     async index(req, res) {
-        const { login, senha, timeout } = req.body;
+        const { login, senha } = req.body;
 
         let emailLdap;
 
@@ -122,7 +122,7 @@ class LoginController {
                 console.log('************************');
                 //
 
-                const meuToken = loginToken.geraToken(login, nome, matricula, timeout);
+                const meuToken = loginToken.geraToken(login, nome, matricula);
 
                 return res.status(201).json({
                     token: meuToken,
@@ -153,7 +153,7 @@ class LoginController {
     }
 
     async indexExterno(req, res) {
-        const { login, senha, timeout } = req.body;
+        const { login, senha } = req.body;
 
         let emailLdap;
 
@@ -246,7 +246,7 @@ class LoginController {
                 console.log('************************');
                 //
 
-                const meuToken = loginToken.geraToken(login, nome, matricula, timeout);
+                const meuToken = loginToken.geraToken(login, nome, matricula);
 
                 return res.status(201).json({
                     token: meuToken,
@@ -277,7 +277,7 @@ class LoginController {
     }
 
     async indexExtContab(req, res) {
-        const { login, senha, timeout } = req.body;
+        const { login, senha } = req.body;
         const loginToken = new LoginController();
 
         try {
@@ -307,7 +307,7 @@ class LoginController {
                         console.log(`Fornecedor: ${nomeFornecedor} logado com sucesso no sistema SPA2.`);
                     }
 
-                    const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor, timeout);
+                    const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor);
 
                     const meuIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
                     return res.status(201).json({
@@ -337,7 +337,7 @@ class LoginController {
                             console.log(`Fornecedor: ${nomeFornecedor} logado com sucesso no sistema SPA2.`);
                         }
 
-                        const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor, timeout);
+                        const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor);
 
                         const meuIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
@@ -372,7 +372,7 @@ class LoginController {
             .json({ bd: process.env.DB_NAME, versao: process.env.VERSAO });
     }
 
-    geraToken(login, nomeUsuario, matricula, timeout) {
+    geraToken(login, nomeUsuario, matricula) {
         const adicionaMinutos = function(dt, minutos) {
             return new Date(dt.getTime() + minutos * 60000);
         };
@@ -381,7 +381,7 @@ class LoginController {
             nomeUsuarioLdap: nomeUsuario, // nome do usuario no BD
             matricula: matricula, // matricula no BD
             iat: new Date().getTime(), // data e hora de criação do token
-            exp: adicionaMinutos(new Date(), timeout) // data e hora de expiração do token
+            exp: adicionaMinutos(new Date(), process.env.TIMEOUT) // data e hora de expiração do token
         };
         const jwt = nJwt.create(
             claims,
@@ -392,7 +392,7 @@ class LoginController {
         return token;
     }
 
-    geraTokenFornecedor(cnpj, nomeFornecedor, timeout) {
+    geraTokenFornecedor(cnpj, nomeFornecedor) {
         const adicionaMinutos = function(dt, minutos) {
             return new Date(dt.getTime() + minutos * 60000);
         };
@@ -400,7 +400,7 @@ class LoginController {
             sub: cnpj, // cnpj do fornecedor
             nomeFornecedor: nomeFornecedor, // nome do fornecedor
             iat: new Date().getTime(), // data e hora de criação do token
-            exp: adicionaMinutos(new Date(), timeout) // data e hora de expiração do token
+            exp: adicionaMinutos(new Date(), process.env.TIMEOUT) // data e hora de expiração do token
         };
         const jwt = nJwt.create(
             claims,
