@@ -176,11 +176,42 @@ export const ContainerListaDocumentos = styled.div`
 
 export const ContainerBanco = styled.div`
     display: grid;
-    grid-template-columns: 450px 130px 150px 100px 245px 155px;
+    grid-template-columns: 450px 130px 150px 585px;
     grid-column-gap: 3px;
     padding-left: 5px;
     span {
         padding-top: 30px;
+    }
+`;
+
+export const UploadArquivoComplementar = styled.div`
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding-top: 9px;
+    input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    label {
+        cursor: pointer;
+        padding: 10px;
+        background: ${({ theme }) => theme.primary};
+        border: 0;
+        border-radius: 4px;
+        color: ${({ theme }) => theme.text};
+        font-size: 14px;
+        transition: background 0.2s;
+
+        &:hover {
+            background: ${({ theme }) => theme.hover};
+        }
+
+        svg {
+            margin-right: 10px;
+            margin-left: 5px;
+        }
     }
 `;
 
@@ -198,7 +229,7 @@ export const ContainerReferencia = styled.div`
 `;
 
 export const ContainerListaArquivos = styled.fieldset`
-    width: 90px !important;
+    width: 50px !important;
     margin-left: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -226,4 +257,25 @@ export const ContainerListaArquivosComplementares = styled.fieldset`
         margin-left: 10px;
         font-weight: bold;
     }
+
+    ul {
+        color: #fff;
+        margin-top: 5px;
+        margin-left: 20px;
+    }
+`;
+
+export const ContainerBotoes = styled.fieldset`
+    margin-left: 10px;
+    padding-top: 10px;
+    padding-left: 10px;
+    border-radius: 7px;
+    border-color: #fff;
+    height: 60px;
+`;
+
+export const ContainerGridBotoes = styled.div`
+    display: grid;
+    grid-template-columns: 120px 170px;
+    grid-column-gap: 10px;
 `;

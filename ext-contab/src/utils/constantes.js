@@ -119,7 +119,8 @@ export const TPD_COPIA_FOLHA_FREQUENCIA = 57;
 export const TPD_RECOLHIMENTO_INSS = 50;
 export const TPD_RECOLHIMENTO_FGTS = 58;
 export const TPD_SEFIP = 59;
-
+// Documento de arquivo complementar
+export const TPD_ARQUIVO_COMPLEMENTAR = 60;
 
 // Razões de trâmite
 export const RAZ_ENCAMINHAMENTO = 82;

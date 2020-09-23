@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { FaCheckDouble, FaReply, FaUpload, FaPaperclip } from 'react-icons/fa';
+import { FaCheckDouble, FaReply, FaUpload } from 'react-icons/fa';
 import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import api from '../../service/api';
@@ -12,10 +13,11 @@ import {
     Main,
     ContainerEmpenhos,
     Erro,
-    ContainerListaArquivosComplementares,
     ContainerArquivos,
+    ContainerBotoes,
     ContainerUpload,
     ContainerTitulo,
+    ContainerGridBotoes,
     ContainerListaDocumentos,
     ContainerBanco,
     ContainerNota,
@@ -367,6 +369,7 @@ function Home() {
                             });
                     }
                 }
+
                 mensagem.success(`Arquivos enviados com sucesso.`);
                 setVSelecionado([]);
                 setMostraLista(true);
@@ -386,17 +389,6 @@ function Home() {
     useEffect(() => {
         carregaSolicitacoes();
     }, [carregaSolicitacoes]);
-
-    function insereArquivoComplementar() {
-        const elemento = document.createElement('input');
-        const elementoBR = document.createElement('br');
-        elemento.setAttribute('type', 'file');
-        elemento.setAttribute('value', 'valor');
-        elemento.setAttribute('name', 'nome');
-        document.getElementById('frmComplementares').appendChild(elemento);
-        document.getElementById('frmComplementares').appendChild(elementoBR);
-        alert('ok');
-    }
 
     return (
         <DefaultLayout>
@@ -508,28 +500,24 @@ function Home() {
                                         type="text"
                                         maxLength="20"
                                     />
-                                    <span>
-                                        <Button
-                                            type="button"
-                                            onClick={() => {
-                                                voltaLista();
-                                            }}>
-                                            <FaReply color="#FFF" />
-                                            Voltar
-                                        </Button>
-                                    </span>
-                                    <span>
-                                        <Button type="button" onClick={insereArquivoComplementar}>
-                                            <FaPaperclip color="#FFF" />
-                                            Inserir arquivo complementar
-                                        </Button>
-                                    </span>
-                                    <span>
-                                        <ButtonEnviaArquivos type="button" onClick={enviaArquivos}>
-                                            <FaUpload color="#FFF" />
-                                            Enviar arquivos
-                                        </ButtonEnviaArquivos>
-                                    </span>
+                                    <ContainerBotoes>
+                                        <ContainerGridBotoes>
+                                            <Button
+                                                type="button"
+                                                onClick={() => {
+                                                    voltaLista();
+                                                }}>
+                                                <FaReply color="#FFF" />
+                                                Voltar
+                                            </Button>
+                                            <ButtonEnviaArquivos
+                                                type="button"
+                                                onClick={enviaArquivos}>
+                                                <FaUpload color="#FFF" />
+                                                Enviar arquivos
+                                            </ButtonEnviaArquivos>
+                                        </ContainerGridBotoes>
+                                    </ContainerBotoes>
                                 </ContainerBanco>
                             </Form>
                             <ContainerListaArquivos>
@@ -546,6 +534,73 @@ function Home() {
                                                     <ContainerTitulo>
                                                         * Os documentos abaixo são somente para
                                                         empresas de locação de mão de obra
+                                                    </ContainerTitulo>
+                                                    <br />
+                                                    <div key={doc.tpd_id}>
+                                                        <form>
+                                                            <input
+                                                                name="selecionado"
+                                                                value=""
+                                                                type="hidden"
+                                                            />
+                                                            <ContainerListaDocumentos>
+                                                                <>
+                                                                    <input
+                                                                        name="manId"
+                                                                        value={doc.tpd_id}
+                                                                        type="hidden"
+                                                                    />
+                                                                    <ContainerUpload>
+                                                                        <label
+                                                                            htmlFor={
+                                                                                doc.nome_campo_anexo
+                                                                            }>
+                                                                            - {doc.tpd_nome}
+                                                                        </label>
+
+                                                                        <input
+                                                                            type="file"
+                                                                            name={
+                                                                                doc.nome_campo_anexo
+                                                                            }
+                                                                            id={
+                                                                                doc.nome_campo_anexo
+                                                                            }
+                                                                            onChange={(e) => {
+                                                                                verificaArquivo(
+                                                                                    e,
+                                                                                    doc.nome_campo_anexo,
+                                                                                    doc.tpd_nome
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </ContainerUpload>
+                                                                    <img
+                                                                        src={Check}
+                                                                        alt=""
+                                                                        style={{
+                                                                            visibility: 'hidden',
+                                                                        }}
+                                                                        id={`img_${doc.nome_campo_anexo}`}
+                                                                        width={20}
+                                                                        height={20}
+                                                                    />
+                                                                </>
+                                                                <>
+                                                                    <span
+                                                                        id={`label_${doc.nome_campo_anexo}`}>
+                                                                        &nbsp;
+                                                                    </span>
+                                                                </>
+                                                            </ContainerListaDocumentos>
+                                                        </form>
+                                                    </div>
+                                                </>
+                                            ) : doc.tpd_ordem === 16 ? (
+                                                <>
+                                                    <hr />
+                                                    <ContainerTitulo>
+                                                        * Documento complementar
                                                     </ContainerTitulo>
                                                     <br />
                                                     <div key={doc.tpd_id}>
@@ -667,33 +722,6 @@ function Home() {
                                     ))}
                                 </ContainerArquivos>
                             </ContainerListaArquivos>
-                            <ContainerListaArquivosComplementares>
-                                <legend>&nbsp;Arquivos complementares&nbsp;</legend>
-                                <form id="frmComplementares">
-                                    <ContainerUpload>
-                                        <label htmlFor="meuDocumento">- nome_documento</label>
-
-                                        <input
-                                            type="file"
-                                            name="meuDocumento"
-                                            id="meuDocumento"
-                                            onChange={(e) => {
-                                                verificaArquivo(e, 'meuDocumento', 'meuTipo');
-                                            }}
-                                        />
-                                        <label htmlFor="meuDocumento1">- nome_documento</label>
-
-                                        <input
-                                            type="file"
-                                            name="meuDocumento1"
-                                            id="meuDocumento1"
-                                            onChange={(e) => {
-                                                verificaArquivo(e, 'meuDocumento1', 'meuTipo');
-                                            }}
-                                        />
-                                    </ContainerUpload>
-                                </form>
-                            </ContainerListaArquivosComplementares>
                         </>
                     )}
                 </Main>
