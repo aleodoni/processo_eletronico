@@ -176,7 +176,7 @@ export const ContainerListaDocumentos = styled.div`
 
 export const ContainerBanco = styled.div`
     display: grid;
-    grid-template-columns: 450px 130px 150px 585px;
+    grid-template-columns: 450px 130px 150px 335px;
     grid-column-gap: 3px;
     padding-left: 5px;
     span {

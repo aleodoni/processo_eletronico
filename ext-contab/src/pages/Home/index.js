@@ -598,6 +598,7 @@ function Home() {
                                                 </>
                                             ) : doc.tpd_ordem === 16 ? (
                                                 <>
+                                                    <br />
                                                     <hr />
                                                     <ContainerTitulo>
                                                         * Documento complementar
