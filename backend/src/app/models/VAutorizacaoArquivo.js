@@ -46,6 +46,9 @@ class VAutorizacaoArquivo extends Model {
                 },
                 contato: {
                     type: Sequelize.STRING
+                },
+                aut_fatura_boleto: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

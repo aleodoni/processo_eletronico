@@ -141,7 +141,7 @@ export const ContainerDadosBanco = styled.fieldset`
 
 export const ContainerDadosAutorizacao = styled.div`
     display: grid;
-    grid-template-columns: 200px 165px 200px;
+    grid-template-columns: 200px 165px 200px 200px;
     grid-template-rows: 75px;
     grid-column-gap: 10px;
     margin-left: 7px;

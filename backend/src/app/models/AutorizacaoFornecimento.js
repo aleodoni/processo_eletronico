@@ -15,8 +15,7 @@ class AutorizacaoFornecimento extends Model {
                     allowNull: false
                 },
                 ban_id: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false
+                    type: Sequelize.INTEGER
                 },
                 aut_data_expedicao_nf: {
                     type: Sequelize.DATEONLY,
@@ -34,12 +33,10 @@ class AutorizacaoFornecimento extends Model {
                     allowNull: false
                 },
                 aut_ban_agencia: {
-                    type: Sequelize.STRING,
-                    allowNull: false
+                    type: Sequelize.STRING
                 },
                 aut_ban_conta_corrente: {
-                    type: Sequelize.STRING,
-                    allowNull: false
+                    type: Sequelize.STRING
                 },
                 aut_data_cadastro: {
                     type: Sequelize.NOW
@@ -47,6 +44,9 @@ class AutorizacaoFornecimento extends Model {
                 pro_id: {
                     type: Sequelize.INTEGER,
                     allowNull: false
+                },
+                aut_fatura_boleto: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

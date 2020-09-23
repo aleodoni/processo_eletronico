@@ -42,9 +42,10 @@ class CriaAutorizacaoService {
                 'conta_corrente',
                 'data_cadastro',
                 'pro_id',
-                'banco'
+                'banco',
+                'aut_fatura_boleto'
             ],
-            logging: false,
+            logging: true,
             plain: true,
             where: {
                 aut_id: autId
@@ -56,14 +57,14 @@ class CriaAutorizacaoService {
         }
         const cnpj = autorizacaoArquivo.dataValues.cnpj_cpf.substring(0, 2) + '.' + autorizacaoArquivo.dataValues.cnpj_cpf.substring(2, 5) + '.' + autorizacaoArquivo.dataValues.cnpj_cpf.substring(5, 8) + '/' + autorizacaoArquivo.dataValues.cnpj_cpf.substring(8, 12) + '-' + autorizacaoArquivo.dataValues.cnpj_cpf.substring(12, 14);
         const valorFormatado = Number(autorizacaoArquivo.dataValues.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        const arquivo = caminho + '/' + 'autorizacao-' + autId + '.pdf';
+        const arquivo = caminho + '/' + 'requerimento-' + autId + '.pdf';
         // const arquivo = caminho + '/' + arq_id + 'A.pdf';
         const texto = 'A empresa acima mencionada, por intermédio de seu representante, vem à presença de Vossa Excelência, requerer o pagamento da nota fiscal abaixo especificada.';
         const doc = new PDFDocument(metadados);
         doc.pipe(fs.createWriteStream(arquivo));
         doc.image(brasao, 10, 10, { scale: 0.50 });
         doc.fontSize(20).font('Helvetica-Bold').text(titulo, 160, 20);
-        doc.fontSize(14).font('Helvetica-Bold').text('AUTORIZAÇÃO Nº ' + autId, 190, 60);
+        doc.fontSize(14).font('Helvetica-Bold').text('REQUERIMENTO Nº ' + autId, 190, 60);
         doc.fontSize(14).font('Helvetica-Bold').text('Fornecedor: ', 12, 100, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.fornecedor);
         doc.fontSize(14).font('Helvetica-Bold').text('CNPJ: ', 12, 120, { lineBreak: false }).font('Helvetica').text(cnpj);
         doc.fontSize(14).font('Helvetica-Bold').text('Telefone: ', 190, 120, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.telefone);
@@ -75,9 +76,11 @@ class CriaAutorizacaoService {
         doc.fontSize(14).font('Helvetica-Bold').text('Nota fiscal: ', 12, 210, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.nota_fiscal);
         doc.fontSize(14).font('Helvetica-Bold').text('Data de expedição: ', 180, 210, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.data_expedicao_nf);
         doc.fontSize(14).font('Helvetica-Bold').text('Valor: ', 385, 210, { lineBreak: false }).font('Helvetica').text(valorFormatado);
-        doc.fontSize(14).font('Helvetica-Bold').text('Banco: ', 12, 230, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.banco);
-        doc.fontSize(14).font('Helvetica-Bold').text('Agência: ', 12, 250, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.agencia);
-        doc.fontSize(14).font('Helvetica-Bold').text('Conta corrente: ', 180, 250, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.conta_corrente);
+        if (!autorizacaoArquivo.dataValues.aut_fatura_boleto) {
+            doc.fontSize(14).font('Helvetica-Bold').text('Banco: ', 12, 230, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.banco);
+            doc.fontSize(14).font('Helvetica-Bold').text('Agência: ', 12, 250, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.agencia);
+            doc.fontSize(14).font('Helvetica-Bold').text('Conta corrente: ', 180, 250, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.conta_corrente);
+        }
         doc.fontSize(14).font('Helvetica-Bold').text('Referente: ', 12, 270, { lineBreak: false }).font('Helvetica').text(autorizacaoArquivo.dataValues.referencia);
         if (documentos !== undefined) {
             doc.fontSize(14).font('Helvetica-Bold').text('Documentos anexos:', 12, 290);

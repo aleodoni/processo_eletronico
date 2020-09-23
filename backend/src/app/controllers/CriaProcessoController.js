@@ -936,6 +936,12 @@ class CriaProcessoController {
                 { where: { arq_id: arquivoCapa.arq_id }, logging: false }
             );
 
+            if (req.body.aut_fatura_boleto === 'true') {
+                req.body.ban_id = null;
+                req.body.aut_ban_agencia = null;
+                req.body.aut_ban_conta_corrente = null;
+            }
+
             // cria a autorização
             const autorizacao = await AutorizacaoFornecimento.create({
                 aut_id: null,
@@ -948,7 +954,8 @@ class CriaProcessoController {
                 aut_ban_agencia: req.body.aut_ban_agencia,
                 aut_ban_conta_corrente: req.body.aut_ban_conta_corrente,
                 aut_data_cadastro: dataHoraAtual.dataValues.data_hora_atual,
-                pro_id: pro_id
+                pro_id: pro_id,
+                aut_fatura_boleto: req.body.aut_fatura_boleto
             }, {
                 logging: false
             });
@@ -960,7 +967,7 @@ class CriaProcessoController {
             // grava na tabela arquivo a autorização
             const arquivoAutorizacao = await Arquivo.create({
                 arq_id: null,
-                arq_nome: 'autorizacao-' + autorizacao.aut_id + '.pdf',
+                arq_nome: 'requerimento-' + autorizacao.aut_id + '.pdf',
                 pro_id: pro_id,
                 man_id: null,
                 arq_tipo: 'application/pdf',
@@ -1078,7 +1085,8 @@ class CriaProcessoController {
                 aut_valor: req.body.aut_valor,
                 ban_id: req.body.ban_id,
                 aut_ban_agencia: req.body.aut_ban_agencia,
-                aut_ban_conta_corrente: req.body.aut_ban_conta_corrente
+                aut_ban_conta_corrente: req.body.aut_ban_conta_corrente,
+                aut_fatura_boleto: req.body.aut_fatura_boleto
             }, { logging: false }, { transaction: transaction });
 
             // seleciona o arquivo da autorização(bd)

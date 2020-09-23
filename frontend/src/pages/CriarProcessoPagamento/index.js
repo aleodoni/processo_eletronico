@@ -22,6 +22,7 @@ import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import { download } from '../../utils/downloadArquivoProcesso';
 import Tramitar from '../../components/layout/button/Tramitar';
+import FaturaBoleto from '../../components/system/select/FaturaBoleto';
 import * as constantes from '../../utils/constantes';
 import { dataValida } from '../../utils/validaCpfCnpj';
 import {
@@ -210,6 +211,7 @@ function CriarProcessoPagamento() {
 
     function criaProcesso() {
         const p = formRef.current.getData();
+        alert(p.autFaturaBoleto);
         setErro('');
         const erros = [];
         if (p.forId === '-1') {
@@ -235,14 +237,19 @@ function CriarProcessoPagamento() {
         if (p.valor.trim() === '') {
             erros.push('Valor em branco.');
         }
-        if (p.banId === '-1') {
-            erros.push('Selecione o banco.');
+        if (p.autFaturaBoleto === '-1') {
+            erros.push('Selecione se é fatura ou boleto.');
         }
-        if (p.agencia.trim() === '') {
-            erros.push('Agência em branco.');
-        }
-        if (p.contaCorrente.trim() === '') {
-            erros.push('Conta corrente em branco.');
+        if (p.autFaturaBoleto === 'false' || p.autFaturaBoleto === '-1') {
+            if (p.banId === '-1') {
+                erros.push('Selecione o banco.');
+            }
+            if (p.agencia.trim() === '') {
+                erros.push('Agência em branco.');
+            }
+            if (p.contaCorrente.trim() === '') {
+                erros.push('Conta corrente em branco.');
+            }
         }
 
         const valorAPI = parseFloat(
@@ -308,6 +315,7 @@ function CriarProcessoPagamento() {
                     aut_ban_agencia: p.agencia,
                     aut_ban_conta_corrente: p.contaCorrente,
                     aut_data_cadastro: null,
+                    aut_fatura_boleto: p.autFaturaBoleto,
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
@@ -698,6 +706,7 @@ function CriarProcessoPagamento() {
                                     maxLength="10"
                                     onKeyUp={formataMoeda}
                                 />
+                                <FaturaBoleto name="autFaturaBoleto" />
                             </ContainerDadosAutorizacao>
                         </ContainerAutorizacao>
                         <ContainerDadosBanco>
