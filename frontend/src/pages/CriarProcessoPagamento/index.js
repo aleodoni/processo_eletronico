@@ -357,6 +357,7 @@ function CriarProcessoPagamento() {
                     ban_id: formRef.current.getFieldValue('banId'),
                     aut_ban_agencia: formRef.current.getFieldValue('agencia'),
                     aut_ban_conta_corrente: formRef.current.getFieldValue('contaCorrente'),
+                    aut_fatura_boleto: formRef.current.getFieldValue('autFaturaBoleto'),
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),

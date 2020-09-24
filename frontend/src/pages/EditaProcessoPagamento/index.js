@@ -8,7 +8,7 @@ import ModalApagaEmpenho from '../../components/ModalExcluirEmpenho';
 import ModalCancelar from '../../components/ModalCancelar';
 import ModalApagaNotaFiscal from '../../components/ModalExcluirNotaFiscal';
 import ModalApagaNAD from '../../components/ModalExcluirNAD';
-import ModalTramitaUm from '../../components/ModalTramitaUm';
+import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import Autorizacao from '../../components/Autorizacao';
 import Input from '../../components/layout/Input';
 import Button from '../../components/layout/button/Button';
@@ -61,7 +61,7 @@ function EditaProcessoPagamento({ match }) {
     const [modalCancelar, setModalCancelar] = useState(false);
     const [modalExcluirNotaFiscal, setModalExcluirNotaFiscal] = useState(false);
     const [modalExcluirNAD, setModalExcluirNAD] = useState(false);
-    const [modalTramitaUm, setModalTramitaUm] = useState(false);
+    const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
 
     const colunaCancelado = {
         textAlign: 'center',
@@ -111,13 +111,13 @@ function EditaProcessoPagamento({ match }) {
         setModalExcluirNAD(false);
     }
 
-    function abreModalTramitaUm(dados) {
+    function abreModalTramitaVarios(dados) {
         setDadosTramite(dados);
-        setModalTramitaUm(true);
+        setModalTramitaVarios(true);
     }
 
-    function fechaModalTramitaUm() {
-        setModalTramitaUm(false);
+    function fechaModalTramitaVarios() {
+        setModalTramitaVarios(false);
     }
 
     const carregaDadosProcesso = useCallback(() => {
@@ -342,7 +342,8 @@ function EditaProcessoPagamento({ match }) {
                     mensagem.info('Sem próximos trâmites.');
                     return;
                 }
-                abreModalTramitaUm(res.data[0]);
+                console.log(res.data);
+                abreModalTramitaVarios(res.data);
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
@@ -645,9 +646,9 @@ function EditaProcessoPagamento({ match }) {
                         cancela={cancelarArquivo}
                         id={idArquivo}
                     />
-                    <ModalTramitaUm
-                        modalTramitaUm={modalTramitaUm}
-                        fechaModalTramitaUm={fechaModalTramitaUm}
+                    <ModalTramitaVarios
+                        modalTramitaVarios={modalTramitaVarios}
+                        fechaModalTramitaVarios={fechaModalTramitaVarios}
                         tramita={insereTramite}
                         dados={dadosTramite}
                     />

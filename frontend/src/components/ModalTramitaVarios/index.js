@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { Form } from '@unform/web';
 import { FaRegQuestionCircle } from 'react-icons/fa';
 import Modal from 'react-modal';
 import Sim from '../layout/button/Sim';
 import Nao from '../layout/button/Nao';
+import TextArea from '../layout/TextArea';
 import { ContainerModal, Erro, BasicSelect, ContainerCampos, ContainerBotoes } from './styles';
 
 const ModalTramitaVarios = props => {
@@ -28,9 +30,11 @@ const ModalTramitaVarios = props => {
         },
     };
 
+    const formRef = useRef(null);
     const [erro, setErro] = useState('');
     const [prxId, setPrxId] = useState('');
     const [setId, setSetId] = useState('');
+    const [observacao, setObservacao] = useState('');
     const [comboTramite, setComboTramite] = useState('');
     const [proximosTramites, setProximosTramites] = useState([]);
     const { fechaModalTramitaVarios, modalTramitaVarios, tramita, dados } = props;
@@ -102,6 +106,15 @@ const ModalTramitaVarios = props => {
                             value={comboTramite}>
                             {proximosTramites}
                         </BasicSelect>
+                        <Form ref={formRef} onSubmit={null}>
+                            <TextArea
+                                name="obs"
+                                label="Observação"
+                                type="text"
+                                rows={3}
+                                cols={120}
+                            />
+                        </Form>
                     </ContainerCampos>
                     <hr />
                     <ContainerBotoes>
