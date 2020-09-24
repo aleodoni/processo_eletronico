@@ -8,7 +8,7 @@ import Nao from '../layout/button/Nao';
 import TextArea from '../layout/TextArea';
 import { ContainerModal, Erro, BasicSelect, ContainerCampos, ContainerBotoes } from './styles';
 
-const ModalTramitaVarios = props => {
+const ModalTramitaFiscal = props => {
     const dialogs = {
         overlay: {
             position: 'fixed',
@@ -36,7 +36,7 @@ const ModalTramitaVarios = props => {
     const [setId, setSetId] = useState('');
     const [comboTramite, setComboTramite] = useState('');
     const [proximosTramites, setProximosTramites] = useState([]);
-    const { fechaModalTramitaVarios, modalTramitaVarios, tramita, dados } = props;
+    const { fechaModalTramitaFiscal, modalTramitaFiscal, tramita, dados, razao } = props;
 
     useEffect(() => {
         const comboProximoTramite = [];
@@ -51,19 +51,22 @@ const ModalTramitaVarios = props => {
                     key={`${dados[i].set_id}|${dados[i].prx_id}`}
                     data-key={`${dados[i].set_id}|${dados[i].prx_id}`}
                     value={`${dados[i].set_id}|${dados[i].prx_id}`}>
-                    {dados[i].set_nome} - {dados[i].raz_nome}
+                    {dados[i].set_nome}
                 </option>
             );
         }
         setProximosTramites(comboProximoTramite);
     }, [dados]);
 
-    function tramitaVariosHandler(e) {
+    function tramitaFiscalHandler(e) {
         if (comboTramite === '') {
             setErro('Selecione uma área para tramitar.');
+            return;
         }
-        tramita(prxId, setId);
-        fechaModalTramitaVarios(e.target.value);
+        const p = formRef.current.getData();
+
+        tramita(prxId, setId, p.obs);
+        fechaModalTramitaFiscal(e.target.value);
     }
 
     function handleComboTramite(e) {
@@ -77,24 +80,16 @@ const ModalTramitaVarios = props => {
         setComboTramite(e.target.value);
     }
 
-    function fechaHandler(e) {
-        if (typeof onClick === 'function') {
-            fechaModalTramitaVarios(e.target.value);
-        }
-    }
+
 
     return (
         <>
-            <Modal
-                isOpen={modalTramitaVarios}
-                onRequestClose={fechaHandler}
-                style={dialogs}
-                ariaHideApp={false}>
+            <Modal isOpen={modalTramitaFiscal} style={dialogs} ariaHideApp={false}>
                 <ContainerModal>
                     <p>
                         <FaRegQuestionCircle color="#fff" size="3em" />
                     </p>
-                    <h1>Deseja tramitar?</h1>
+                    <h1>Deseja tramitar para o fiscal?</h1>
                     <br />
                     <Erro>{erro}</Erro>
                     <ContainerCampos>
@@ -105,20 +100,15 @@ const ModalTramitaVarios = props => {
                             value={comboTramite}>
                             {proximosTramites}
                         </BasicSelect>
+                        <label>Razão de trâmite: {razao}</label>
                         <Form ref={formRef} onSubmit={null}>
-                            <TextArea
-                                name="obs"
-                                label="Observação"
-                                type="text"
-                                rows={3}
-                                cols={120}
-                            />
+                            <TextArea name="obs" label="Observação" type="text" rows={3} />
                         </Form>
                     </ContainerCampos>
                     <hr />
                     <ContainerBotoes>
-                        <Sim name="btnSim" clickHandler={tramitaVariosHandler} />
-                        <Nao name="btnNao" clickHandler={fechaModalTramitaVarios} />
+                        <Sim name="btnSim" clickHandler={tramitaFiscalHandler} />
+                        <Nao name="btnNao" clickHandler={fechaModalTramitaFiscal} />
                     </ContainerBotoes>
                 </ContainerModal>
             </Modal>
@@ -126,10 +116,10 @@ const ModalTramitaVarios = props => {
     );
 };
 
-ModalTramitaVarios.propTypes = {
+ModalTramitaFiscal.propTypes = {
     tramita: PropTypes.func.isRequired,
-    fechaModalTramitaVarios: PropTypes.func.isRequired,
-    modalTramitaVarios: PropTypes.bool.isRequired,
+    fechaModalTramitaFiscal: PropTypes.func.isRequired,
+    modalTramitaFiscal: PropTypes.bool.isRequired,
     dados: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.number,
@@ -139,9 +129,10 @@ ModalTramitaVarios.propTypes = {
             raz_nome: PropTypes.string,
         })
     ),
+    razao: PropTypes.string,
 };
 
-ModalTramitaVarios.defaultProps = {
+ModalTramitaFiscal.defaultProps = {
     dados: {
         id: null,
         prx_id: null,
@@ -149,6 +140,7 @@ ModalTramitaVarios.defaultProps = {
         set_nome: '',
         raz_nome: '',
     },
+    razao: null,
 };
 
-export default ModalTramitaVarios;
+export default ModalTramitaFiscal;

@@ -373,6 +373,7 @@ routes.get(`${process.env.API_URL}/grid-tramites/:id`, TramiteController.gridTra
 routes.post(`${process.env.API_URL}/tramites`, TramiteController.store);
 routes.post(`${process.env.API_URL}/tramites-averbacao`, TramiteController.criaTramiteAverbacao);
 routes.post(`${process.env.API_URL}/tramites-direcionado`, TramiteController.criaTramiteDirecionado);
+routes.post(`${process.env.API_URL}/tramites-fiscal`, TramiteController.criaTramiteFiscal);
 // rota de envio de processo
 routes.get(`${process.env.API_URL}/processo-envia/:id`, TramiteController.processosEnvio);
 // rotas de recebimento de processo
@@ -380,6 +381,8 @@ routes.get(`${process.env.API_URL}/processo-recebe/:id`, TramiteController.proce
 routes.post(`${process.env.API_URL}/tramite-recebe-ou-nega`, TramiteController.recebeOuNega);
 // rota de retorno de próximo trâmite
 routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proximoTramite);
+// rota de retorno de proximo tramite de fiscal
+routes.get(`${process.env.API_URL}/proximo-tramite-fiscal/:id`, TramiteController.proximoTramiteFiscal);
 // rota de retorno de próximo trâmite de decisão de aposentadoria
 routes.get(`${process.env.API_URL}/proximo-tramite-decisao-aposentadoria/:id`, TramiteController.proximoTramiteAposentadoriaDecisao);
 

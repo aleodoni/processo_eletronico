@@ -57,6 +57,7 @@ export const TMN_PARECER_LEGALIDADE_REGULARIDADE = 17;
 export const TMN_CORRECAO_OU_ESCLARECIMENTOS = 18;
 export const TMN_MANIFESTACAO_ORGAO_EXTERNO = 19;
 export const TMN_DECISAO_PAD = 20;
+export const TMN_DESPACHO = 21;
 
 // Tipo documento
 export const TPD_DECISAO_TCE_LEGAL_ADMISSAO = 2;

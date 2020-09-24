@@ -8,7 +8,7 @@ import ModalApagaEmpenho from '../../components/ModalExcluirEmpenho';
 import ModalCancelar from '../../components/ModalCancelar';
 import ModalApagaNotaFiscal from '../../components/ModalExcluirNotaFiscal';
 import ModalApagaNAD from '../../components/ModalExcluirNAD';
-import ModalTramitaVarios from '../../components/ModalTramitaVarios';
+import ModalTramitaFiscal from '../../components/ModalTramitaFiscal';
 import Autorizacao from '../../components/Autorizacao';
 import Input from '../../components/layout/Input';
 import Button from '../../components/layout/button/Button';
@@ -56,12 +56,13 @@ function EditaProcessoPagamento({ match }) {
     const [vArquivos, setVArquivos] = useState([]);
     const [vNADs, setVNADs] = useState([]);
     const [dadosTramite, setDadosTramite] = useState([]);
+    const [razaoTramite, setRazaoTramite] = useState('');
     const formRef = useRef(null);
     const [modalExcluirEmpenho, setModalExcluirEmpenho] = useState(false);
     const [modalCancelar, setModalCancelar] = useState(false);
     const [modalExcluirNotaFiscal, setModalExcluirNotaFiscal] = useState(false);
     const [modalExcluirNAD, setModalExcluirNAD] = useState(false);
-    const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
+    const [modalTramitaFiscal, setModalTramitaFiscal] = useState(false);
 
     const colunaCancelado = {
         textAlign: 'center',
@@ -111,13 +112,16 @@ function EditaProcessoPagamento({ match }) {
         setModalExcluirNAD(false);
     }
 
-    function abreModalTramitaVarios(dados) {
+    function abreModalTramitaFiscal(dados, razao) {
+        setErro('');
         setDadosTramite(dados);
-        setModalTramitaVarios(true);
+        setRazaoTramite(razao);
+        setModalTramitaFiscal(true);
     }
 
-    function fechaModalTramitaVarios() {
-        setModalTramitaVarios(false);
+    function fechaModalTramitaFiscal() {
+        setErro('');
+        setModalTramitaFiscal(false);
     }
 
     const carregaDadosProcesso = useCallback(() => {
@@ -331,7 +335,7 @@ function EditaProcessoPagamento({ match }) {
     function tramita() {
         axios({
             method: 'GET',
-            url: `/proximo-tramite/${processo.pro_id}`,
+            url: `/proximo-tramite-fiscal/${processo.pro_id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -343,7 +347,7 @@ function EditaProcessoPagamento({ match }) {
                     return;
                 }
                 console.log(res.data);
-                abreModalTramitaVarios(res.data);
+                abreModalTramitaFiscal(res.data.combo, res.data.razao);
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
@@ -368,10 +372,10 @@ function EditaProcessoPagamento({ match }) {
             });
     }
 
-    function insereTramite(prxId, setId) {
+    function insereTramite(prxId, setId, observacao) {
         axios({
             method: 'POST',
-            url: '/tramites',
+            url: '/tramites-fiscal',
             data: {
                 tra_id: null,
                 prx_id: prxId,
@@ -379,7 +383,7 @@ function EditaProcessoPagamento({ match }) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
-                man_id: document.getElementById('manId').value,
+                tra_observacao: observacao,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -646,11 +650,12 @@ function EditaProcessoPagamento({ match }) {
                         cancela={cancelarArquivo}
                         id={idArquivo}
                     />
-                    <ModalTramitaVarios
-                        modalTramitaVarios={modalTramitaVarios}
-                        fechaModalTramitaVarios={fechaModalTramitaVarios}
+                    <ModalTramitaFiscal
+                        modalTramitaFiscal={modalTramitaFiscal}
+                        fechaModalTramitaFiscal={fechaModalTramitaFiscal}
                         tramita={insereTramite}
                         dados={dadosTramite}
+                        razao={razaoTramite}
                     />
                 </Main>
             </Container>
