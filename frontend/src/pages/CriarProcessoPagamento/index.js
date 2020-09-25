@@ -211,7 +211,6 @@ function CriarProcessoPagamento() {
 
     function criaProcesso() {
         const p = formRef.current.getData();
-        alert(p.autFaturaBoleto);
         setErro('');
         const erros = [];
         if (p.forId === '-1') {

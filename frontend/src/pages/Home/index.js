@@ -4,7 +4,6 @@ import { useHistory } from 'react-router';
 import { FaFileAlt, FaSistrix } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
 import * as constantes from '../../utils/constantes';
-import Table from '../../components/layout/Table';
 
 import {
     Container,
@@ -104,23 +103,29 @@ function Home() {
         })
             .then(res => {
                 setGridProcessosArea(res.data);
-            })
-            .catch(() => {
-                setErro('Erro ao carregar registros.');
-            });
-    }, []);
-
-    const carregaGridSetorUsuario = useCallback(() => {
-        const setId = Number(sessionStorage.getItem('setorUsuario'));
-        axios({
-            method: 'GET',
-            url: `/processos-area/${setId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                setGridProcessosSetor(res.data);
+                const setId = Number(sessionStorage.getItem('setorUsuario'));
+                axios({
+                    method: 'GET',
+                    url: `/processos-area/${setId}`,
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
+                })
+                    .then(resSetor => {
+                        const vArea = res.data;
+                        const vSetor = resSetor.data;
+                        const vSetorNovo = [];
+                        for (let i = 0; i < vSetor.length; i++) {
+                            const obj = vArea.find(o => o.pro_codigo === vSetor[i].pro_codigo);
+                            if (obj === undefined) {
+                                vSetorNovo.push(vSetor[i]);
+                            }
+                        }
+                        setGridProcessosSetor(vSetorNovo);
+                    })
+                    .catch(() => {
+                        setErro('Erro ao carregar registros.');
+                    });
             })
             .catch(() => {
                 setErro('Erro ao carregar registros.');
@@ -161,9 +166,8 @@ function Home() {
         verificaPadPas(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         verificaAposentadoriaAdm(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         carregaGridArea();
-        carregaGridSetorUsuario();
         carregaGridSigiloso();
-    }, [carregaGridArea, carregaGridSetorUsuario, carregaGridSigiloso]);
+    }, [carregaGridArea, carregaGridSigiloso]);
 
     function criaManifestacaoPasPad(id, noDecisaoPad) {
         if (noDecisaoPad) {
@@ -216,10 +220,6 @@ function Home() {
         } else {
             history.push(`/manifestacao-cria/${id}`);
         }
-    }
-
-    function preencheCampos(linha) {
-        alert(linha);
     }
 
     return (
@@ -505,15 +505,146 @@ function Home() {
                         ) : null}
                     </ContainerProcessos>
                     <ContainerProcessos>
-                        <Table
-                            columns={[
-                                { title: 'Matrícula', field: 'matricula' },
-                                { title: 'Nome', field: 'pes_nome' },
-                                { title: 'Login', field: 'pes_login' },
-                            ]}
-                            data={gridProcessosSetor}
-                            fillData={preencheCampos}
-                        />
+                        {gridProcessosSetor.length > 0 ? (
+                            <div>
+                                <p>
+                                    Processo(s) no(a) {sessionStorage.getItem('nomeSetorUsuario')}
+                                </p>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Tipo</th>
+                                            <th>Assunto</th>
+                                            <th>Pessoal</th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {gridProcessosSetor.map(procSetor => (
+                                            <tr key={procSetor.pro_id}>
+                                                <td style={colunaCodigoProcesso}>
+                                                    <BotaoComoLink
+                                                        type="button"
+                                                        onClick={() =>
+                                                            abreModalProcesso(procSetor.pro_id)
+                                                        }>
+                                                        {procSetor.pro_codigo}
+                                                    </BotaoComoLink>
+                                                </td>
+                                                <td>{procSetor.tpr_nome}</td>
+                                                <td>{procSetor.pro_nome}</td>
+                                                <td style={colunaPessoal}>{procSetor.pessoal}</td>
+                                                <td style={colunaManifestacao}>
+                                                    <>
+                                                        {(() => {
+                                                            switch (procSetor.alerta) {
+                                                                case 1:
+                                                                    return (
+                                                                        <BotaoCriaManifestacao
+                                                                            name="btnCriaManifestacao"
+                                                                            cor="vermelho"
+                                                                            corHover="vermelho-claro"
+                                                                            onClick={() => {
+                                                                                criaManifestacao(
+                                                                                    procSetor.pro_id,
+                                                                                    procSetor.nod_aval_executiva,
+                                                                                    procSetor.nod_decisao,
+                                                                                    procSetor.nod_ciencia,
+                                                                                    procSetor.nod_averbacao,
+                                                                                    procSetor.nod_ciencia_averbacao,
+                                                                                    procSetor.nod_aval_horario,
+                                                                                    procSetor.nod_contagem_tempo,
+                                                                                    procSetor.nod_ciencia_calculo,
+                                                                                    procSetor.nod_parecer_projuris_aposentadoria
+                                                                                );
+                                                                            }}>
+                                                                            <FaFileAlt />
+                                                                            Manifestação
+                                                                        </BotaoCriaManifestacao>
+                                                                    );
+                                                                case 2:
+                                                                    return (
+                                                                        <BotaoCriaManifestacao
+                                                                            name="btnCriaManifestacao"
+                                                                            cor="laranja"
+                                                                            corHover="laranja-claro"
+                                                                            onClick={() => {
+                                                                                criaManifestacao(
+                                                                                    procSetor.pro_id,
+                                                                                    procSetor.nod_aval_executiva,
+                                                                                    procSetor.nod_decisao,
+                                                                                    procSetor.nod_ciencia,
+                                                                                    procSetor.nod_averbacao,
+                                                                                    procSetor.nod_ciencia_averbacao,
+                                                                                    procSetor.nod_aval_horario,
+                                                                                    procSetor.nod_contagem_tempo,
+                                                                                    procSetor.nod_ciencia_calculo,
+                                                                                    procSetor.nod_parecer_projuris_aposentadoria
+                                                                                );
+                                                                            }}>
+                                                                            <FaFileAlt />
+                                                                            Manifestação
+                                                                        </BotaoCriaManifestacao>
+                                                                    );
+                                                                case 3:
+                                                                    return (
+                                                                        <BotaoCriaManifestacao
+                                                                            name="btnCriaManifestacao"
+                                                                            cor="azul"
+                                                                            corHover="azul-claro"
+                                                                            onClick={() => {
+                                                                                criaManifestacao(
+                                                                                    procSetor.pro_id,
+                                                                                    procSetor.nod_aval_executiva,
+                                                                                    procSetor.nod_decisao,
+                                                                                    procSetor.nod_ciencia,
+                                                                                    procSetor.nod_averbacao,
+                                                                                    procSetor.nod_ciencia_averbacao,
+                                                                                    procSetor.nod_aval_horario,
+                                                                                    procSetor.nod_contagem_tempo,
+                                                                                    procSetor.nod_ciencia_calculo,
+                                                                                    procSetor.nod_parecer_projuris_aposentadoria
+                                                                                );
+                                                                            }}>
+                                                                            <FaFileAlt />
+                                                                            Manifestação
+                                                                        </BotaoCriaManifestacao>
+                                                                    );
+                                                                default:
+                                                                    return (
+                                                                        <BotaoCriaManifestacao
+                                                                            name="btnCriaManifestacao"
+                                                                            cor="azul"
+                                                                            corHover="azul-claro"
+                                                                            onClick={() => {
+                                                                                criaManifestacao(
+                                                                                    procSetor.pro_id,
+                                                                                    procSetor.nod_aval_executiva,
+                                                                                    procSetor.nod_decisao,
+                                                                                    procSetor.nod_ciencia,
+                                                                                    procSetor.nod_averbacao,
+                                                                                    procSetor.nod_ciencia_averbacao,
+                                                                                    procSetor.nod_aval_horario,
+                                                                                    procSetor.nod_contagem_tempo,
+                                                                                    procSetor.nod_ciencia_calculo,
+                                                                                    procSetor.nod_parecer_projuris_aposentadoria
+                                                                                );
+                                                                            }}>
+                                                                            <FaFileAlt />
+                                                                            Manifestação
+                                                                        </BotaoCriaManifestacao>
+                                                                    );
+                                                            }
+                                                        })()}
+                                                    </>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : null}
                     </ContainerProcessos>
                     <ModalProcesso
                         fechaModalProcesso={fechaModalProcesso}
