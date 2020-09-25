@@ -4,6 +4,7 @@ import { useHistory } from 'react-router';
 import { FaFileAlt, FaSistrix } from 'react-icons/fa';
 import Autorizacao from '../../components/Autorizacao';
 import * as constantes from '../../utils/constantes';
+import Table from '../../components/layout/Table';
 
 import {
     Container,
@@ -34,6 +35,7 @@ function Home() {
 
     const history = useHistory();
     const [gridProcessosArea, setGridProcessosArea] = useState([]);
+    const [gridProcessosSetor, setGridProcessosSetor] = useState([]);
     const [gridProcessosSigiloso, setGridProcessosSigiloso] = useState([]);
     const [erro, setErro] = useState('');
     const [modalProcesso, setModalProcesso] = useState(false);
@@ -108,6 +110,23 @@ function Home() {
             });
     }, []);
 
+    const carregaGridSetorUsuario = useCallback(() => {
+        const setId = Number(sessionStorage.getItem('setorUsuario'));
+        axios({
+            method: 'GET',
+            url: `/processos-area/${setId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setGridProcessosSetor(res.data);
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }, []);
+
     const carregaGridSigiloso = useCallback(() => {
         const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
         const login = sessionStorage.getItem('usuario');
@@ -142,8 +161,9 @@ function Home() {
         verificaPadPas(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         verificaAposentadoriaAdm(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         carregaGridArea();
+        carregaGridSetorUsuario();
         carregaGridSigiloso();
-    }, [carregaGridArea, carregaGridSigiloso]);
+    }, [carregaGridArea, carregaGridSetorUsuario, carregaGridSigiloso]);
 
     function criaManifestacaoPasPad(id, noDecisaoPad) {
         if (noDecisaoPad) {
@@ -198,6 +218,10 @@ function Home() {
         }
     }
 
+    function preencheCampos(linha) {
+        alert(linha);
+    }
+
     return (
         <DefaultLayout>
             <Container>
@@ -244,7 +268,7 @@ function Home() {
                                         <tr>
                                             <th>Código</th>
                                             <th>Tipo</th>
-                                            <th />
+                                            <th>&nbsp;</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -352,7 +376,7 @@ function Home() {
                                             <th>Código</th>
                                             <th>Tipo</th>
                                             <th>Pessoal</th>
-                                            <th />
+                                            <th>&nbsp;</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -479,6 +503,17 @@ function Home() {
                                 </table>
                             </div>
                         ) : null}
+                    </ContainerProcessos>
+                    <ContainerProcessos>
+                        <Table
+                            columns={[
+                                { title: 'Matrícula', field: 'matricula' },
+                                { title: 'Nome', field: 'pes_nome' },
+                                { title: 'Login', field: 'pes_login' },
+                            ]}
+                            data={gridProcessosSetor}
+                            fillData={preencheCampos}
+                        />
                     </ContainerProcessos>
                     <ModalProcesso
                         fechaModalProcesso={fechaModalProcesso}
