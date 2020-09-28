@@ -8,6 +8,12 @@ class VProcessosArea extends Model {
                     type: Sequelize.INTEGER,
                     primaryKey: true
                 },
+                nod_id: {
+                    type: Sequelize.INTEGER
+                },
+                ind_observacao: {
+                    type: Sequelize.BOOLEAN
+                },
                 pro_codigo: {
                     type: Sequelize.STRING
                 },

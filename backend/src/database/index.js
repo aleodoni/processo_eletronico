@@ -76,6 +76,7 @@ import ArquivoProcessoPgto from '../app/models/ArquivoProcessoPgto';
 import VAutorizacaoProcesso from '../app/models/VAutorizacaoProcesso';
 import VSetor from '../app/models/VSetor';
 import ProcessoNAD from '../app/models/ProcessoNAD';
+import VObservacaoTramite from '../app/models/VObservacaoTramite';
 
 const models = [
     Autorizacao,
@@ -151,7 +152,8 @@ const models = [
     ArquivoProcessoPgto,
     VAutorizacaoProcesso,
     ProcessoNAD,
-    VSetor
+    VSetor,
+    VObservacaoTramite
 ];
 
 class Database {

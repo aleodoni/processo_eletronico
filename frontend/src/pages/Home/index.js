@@ -1,7 +1,11 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import { FaFileAlt, FaSistrix } from 'react-icons/fa';
+import ReactTooltip from 'react-tooltip';
+import Observacao from '../../assets/observacao.gif';
 import Autorizacao from '../../components/Autorizacao';
 import * as constantes from '../../utils/constantes';
 
@@ -20,6 +24,7 @@ import DefaultLayout from '../_layouts/default';
 import axios from '../../configs/axiosConfig';
 import ModalProcesso from '../../components/ModalProcesso';
 import ModalProcessoPasPad from '../../components/ModalProcessoPasPad';
+import ModalObservacao from '../../components/ModalObservacao';
 
 function Home() {
     const colunaCodigoProcesso = {
@@ -38,11 +43,13 @@ function Home() {
     const [gridProcessosSigiloso, setGridProcessosSigiloso] = useState([]);
     const [erro, setErro] = useState('');
     const [modalProcesso, setModalProcesso] = useState(false);
+    const [modalObservacao, setModalObservacao] = useState(false);
     const [modalProcessoPasPad, setModalProcessoPasPad] = useState(false);
     const [botaoPasPadVisivel, setBotaoPasPadVisivel] = useState(false);
     const [botaoAposentadoriaAdmVisivel, setBotaoAposentadoriaAdmVisivel] = useState(false);
     const [processoModal, setProcessoModal] = useState([]);
     const [processoModalPasPad, setProcessoModalPasPad] = useState([]);
+    const [observacaoModal, setObservacaoModal] = useState([]);
 
     function abreModalProcesso(id) {
         axios({
@@ -66,6 +73,30 @@ function Home() {
 
     function fechaModalProcesso() {
         setModalProcesso(false);
+    }
+
+    function abreModalObservacao(proId, nodId) {
+        axios({
+            method: 'GET',
+            url: `/ver-observacao/${proId}/${nodId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const observacao = res.data;
+                for (let i = 0; i < observacao.length; i++) {
+                    setObservacaoModal(observacao[i]); //
+                    setModalObservacao(true);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao retornar dados da observação.');
+            });
+    }
+
+    function fechaModalObservacao() {
+        setModalObservacao(false);
     }
 
     function abreModalProcessoPasPad(id) {
@@ -269,6 +300,7 @@ function Home() {
                                             <th>Código</th>
                                             <th>Tipo</th>
                                             <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -356,6 +388,33 @@ function Home() {
                                                         })()}
                                                     </>
                                                 </td>
+                                                <td>
+                                                    <>
+                                                        {proc.ind_observacao ? (
+                                                            <div data-tip data-for="obs1">
+                                                                <img
+                                                                    src={Observacao}
+                                                                    alt="Existe uma observação de tramitação"
+                                                                    width={40}
+                                                                    height={40}
+                                                                    onClick={() =>
+                                                                        abreModalObservacao(
+                                                                            proc.pro_id,
+                                                                            proc.nod_id
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <ReactTooltip
+                                                                    id="obs1"
+                                                                    effect="float"
+                                                                    backgroundColor="#293689">
+                                                                    Existe uma observação de
+                                                                    tramitação
+                                                                </ReactTooltip>
+                                                            </div>
+                                                        ) : null}
+                                                    </>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -376,6 +435,7 @@ function Home() {
                                             <th>Código</th>
                                             <th>Tipo</th>
                                             <th>Pessoal</th>
+                                            <th>&nbsp;</th>
                                             <th>&nbsp;</th>
                                         </tr>
                                     </thead>
@@ -497,6 +557,33 @@ function Home() {
                                                         })()}
                                                     </>
                                                 </td>
+                                                <td>
+                                                    <>
+                                                        {proc.ind_observacao ? (
+                                                            <div data-tip data-for="obs2">
+                                                                <img
+                                                                    src={Observacao}
+                                                                    alt="Existe uma observação de tramitação"
+                                                                    width={40}
+                                                                    height={40}
+                                                                    onClick={() =>
+                                                                        abreModalObservacao(
+                                                                            proc.pro_id,
+                                                                            proc.nod_id
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <ReactTooltip
+                                                                    id="obs2"
+                                                                    effect="float"
+                                                                    backgroundColor="#293689">
+                                                                    Existe uma observação de
+                                                                    tramitação
+                                                                </ReactTooltip>
+                                                            </div>
+                                                        ) : null}
+                                                    </>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -517,6 +604,7 @@ function Home() {
                                             <th>Tipo</th>
                                             <th>Assunto</th>
                                             <th>Pessoal</th>
+                                            <th>&nbsp;</th>
                                             <th>&nbsp;</th>
                                         </tr>
                                     </thead>
@@ -639,6 +727,33 @@ function Home() {
                                                         })()}
                                                     </>
                                                 </td>
+                                                <td>
+                                                    <>
+                                                        {procSetor.ind_observacao ? (
+                                                            <div data-tip data-for="obs1">
+                                                                <img
+                                                                    src={Observacao}
+                                                                    alt="Existe uma observação de tramitação"
+                                                                    width={40}
+                                                                    height={40}
+                                                                    onClick={() =>
+                                                                        abreModalObservacao(
+                                                                            procSetor.pro_id,
+                                                                            procSetor.nod_id
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <ReactTooltip
+                                                                    id="obsSetor"
+                                                                    effect="float"
+                                                                    backgroundColor="#293689">
+                                                                    Existe uma observação de
+                                                                    tramitação
+                                                                </ReactTooltip>
+                                                            </div>
+                                                        ) : null}
+                                                    </>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -655,6 +770,11 @@ function Home() {
                         fechaModalProcessoPasPad={fechaModalProcessoPasPad}
                         modalProcessoPasPad={modalProcessoPasPad}
                         processoPasPad={processoModalPasPad}
+                    />
+                    <ModalObservacao
+                        fechaModalObservacao={fechaModalObservacao}
+                        modalObservacao={modalObservacao}
+                        observacao={observacaoModal}
                     />
                 </Main>
             </Container>

@@ -240,6 +240,7 @@ routes.post(`${process.env.API_URL}/pesquisa-processo`, DadosProcessoController.
 
 // rotas de dados do processo
 routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.dadosProcesso);
+routes.get(`${process.env.API_URL}/ver-observacao/:proId/:nodId`, DadosProcessoController.dadosObservacao);
 routes.get(`${process.env.API_URL}/ver-processo-pagamento/:id`, DadosProcessoController.dadosProcessoPagamento);
 routes.get(`${process.env.API_URL}/dados-membros-comissao/:id`, DadosProcessoController.membrosComissao);
 routes.get(`${process.env.API_URL}/dados-nome-pas-pad/:id`, DadosProcessoController.nomePasPad);

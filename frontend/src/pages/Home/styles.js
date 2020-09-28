@@ -90,6 +90,14 @@ export const ContainerProcessos = styled.div`
             td {
                 border: solid 1px #fff;
                 padding: 1px;
+
+                label {
+                    background: transparent;
+                }
+
+                img {
+                    cursor: pointer;
+                }
             }
         }
     }
@@ -112,6 +120,7 @@ export const Erro = styled.div`
     font-size: 14px;
     color: red;
     padding-bottom: 10px;
+    padding-left: 10px;
 `;
 
 export const BotaoCriaManifestacao = styled.button`

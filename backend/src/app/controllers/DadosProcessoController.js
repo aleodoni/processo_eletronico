@@ -18,6 +18,7 @@ import VProcessosArea from '../models/VProcessosArea';
 import VProcessosSigiloso from '../models/VProcessosSigiloso';
 import VDecisaoPessoal from '../models/VDecisaoPessoal';
 import VDadosMembrosComissao from '../models/VDadosMembrosComissao';
+import VObservacaoTramite from '../models/VObservacaoTramite';
 import NomePasPad from '../models/NomePasPad';
 import { PDFDocument } from 'pdf-lib';
 import fs from 'fs';
@@ -286,6 +287,8 @@ class DadosProcessoController {
         const dadosProcessoArea = await VProcessosArea.findAll({
             attributes: [
                 'pro_id',
+                'nod_id',
+                'ind_observacao',
                 'pro_codigo',
                 'pro_nome',
                 'tpr_nome',
@@ -598,6 +601,28 @@ class DadosProcessoController {
                 arquivos: arquivos
             }
         );
+    }
+
+    async dadosObservacao(req, res) {
+        const dadosObservacao = await VObservacaoTramite.findAll({
+            attributes: [
+                'tra_id',
+                'pro_id',
+                'nod_id_recebe',
+                'nod_id_envia',
+                'login_envia',
+                'data_hora',
+                'tra_observacao',
+                'area_id_envia',
+                'set_nome'
+            ],
+            logging: false,
+            where: {
+                pro_id: req.params.proId,
+                nod_id_recebe: req.params.nodId
+            }
+        });
+        return res.json(dadosObservacao);
     }
 }
 export default new DadosProcessoController();
