@@ -142,15 +142,32 @@ function EditaProcessoPagamento({ match }) {
                     document.getElementById(
                         'lblReferencia'
                     ).innerHTML = `Referente: ${res.data.autorizacao[i].aut_referencia}`;
-                    document.getElementById(
-                        'lblBanco'
-                    ).innerHTML = `Banco: ${res.data.autorizacao[i].ban_nome}`;
-                    document.getElementById(
-                        'lblAgencia'
-                    ).innerHTML = `Agência: ${res.data.autorizacao[i].aut_ban_agencia}`;
-                    document.getElementById(
-                        'lblContaCorrente'
-                    ).innerHTML = `Conta corrente: ${res.data.autorizacao[i].aut_ban_conta_corrente}`;
+                    if (res.data.autorizacao[i].aut_ban_agencia !== null) {
+                        document.getElementById(
+                            'lblBanco'
+                        ).innerHTML = `Banco: ${res.data.autorizacao[i].ban_nome}`;
+                    } else {
+                        document.getElementById('lblBanco').innerHTML = `Banco: Não necessário`;
+                    }
+
+                    if (res.data.autorizacao[i].aut_ban_agencia !== null) {
+                        document.getElementById(
+                            'lblAgencia'
+                        ).innerHTML = `Agência: ${res.data.autorizacao[i].aut_ban_agencia}`;
+                    } else {
+                        document.getElementById('lblAgencia').innerHTML = `Agência: Não necessária`;
+                    }
+
+                    if (res.data.autorizacao[i].aut_ban_conta_corrente !== null) {
+                        document.getElementById(
+                            'lblContaCorrente'
+                        ).innerHTML = `Conta corrente: ${res.data.autorizacao[i].aut_ban_conta_corrente}`;
+                    } else {
+                        document.getElementById(
+                            'lblContaCorrente'
+                        ).innerHTML = `Conta corrente: Não necessária`;
+                    }
+
                     document.getElementById(
                         'lblValor'
                     ).innerHTML = `Valor: ${res.data.autorizacao[i].aut_valor}`;
