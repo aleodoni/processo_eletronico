@@ -467,6 +467,46 @@ class DadosProcessoController {
         });
     }
 
+    async geraJuntadaPagamento(req, res) {
+        const arquivos = await Arquivo.findAll({
+            attributes: [
+                'arq_id',
+                'pro_id',
+                'man_id',
+                'arq_nome'
+            ],
+            logging: false,
+            where: {
+                pro_id: req.params.id
+            },
+            order: ['arq_id']
+        });
+        const arquivosDisco = [];
+        for (let i = 0; i < arquivos.length; i++) {
+            const caminhoProcesso = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano;
+            const nome = arquivos[i].arq_nome;
+            arquivosDisco.push(caminhoProcesso + '/' + nome);
+        }
+        const arquivoJuntada = caminhos.destino + 'Juntada/' + caminhos.nomeFisico(req.params.id) + 'J' + '.pdf';
+        const mergedPdf = await PDFDocument.create();
+        for (const pdfCopyDoc of arquivosDisco) {
+            const pdfBytes = fs.readFileSync(pdfCopyDoc);
+            const pdf = await PDFDocument.load(pdfBytes);
+            const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+            copiedPages.forEach((page) => {
+                mergedPdf.addPage(page);
+            });
+        }
+        fs.writeFileSync(arquivoJuntada, await mergedPdf.save());
+        fs.readFile(arquivoJuntada, function(_err, data) {
+            if (_err) {
+                console.log(_err);
+            }
+            res.contentType('application/pdf');
+            return res.send(data);
+        });
+    }
+
     async processosPagamento(req, res) {
         const processos = await Processo.findAll({
             attributes: [

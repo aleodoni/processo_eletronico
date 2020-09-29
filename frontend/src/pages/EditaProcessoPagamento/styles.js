@@ -179,9 +179,23 @@ export const LinkFornecedor = styled.button`
     }
 `;
 
+export const LinkJuntada = styled.button`
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    text-decoration: underline;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+        background: transparent;
+        text-decoration: none;
+    }
+`;
+
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 180px 100px 160px 140px;
+    grid-template-columns: 180px 100px 160px 140px 200px;
     margin-left: 10px;
     grid-column-gap: 10px;
 
@@ -219,6 +233,7 @@ export const Erro = styled.div`
     font-size: 14px;
     color: red;
     padding-bottom: 10px;
+    padding-left: 10px;
 `;
 
 export const ContainerEmpenhosNotasFiscais = styled.div`

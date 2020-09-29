@@ -26,6 +26,7 @@ import {
     ContainerDadosProcesso,
     ContainerReferencia,
     ContainerBanco,
+    LinkJuntada,
     ContainerAutorizacao,
     ContainerDadosAutorizacao,
     ContainerEmpenhosNotasFiscais,
@@ -415,6 +416,41 @@ function EditaProcessoPagamento({ match }) {
             });
     }
 
+    function geraJuntada() {
+        axios({
+            method: 'GET',
+            url: `/gera-juntada-pagamento/${processo.pro_id}/${processo.pro_ano}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+                Accept: 'application/pdf',
+            },
+            responseType: 'blob',
+        })
+            .then(res => {
+                const blob = new Blob([res.data], { type: res.data.type });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const contentDisposition = res.headers['content-disposition'];
+                let fileName = `juntada${Number(match.params.proId)}.pdf`;
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (fileNameMatch.length === 2) {
+                        fileName = fileNameMatch[1];
+                    }
+                }
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(url);
+                mensagem.success('Juntada gerada com sucesso.');
+            })
+            .catch(() => {
+                setErro('Erro ao gerar juntada.');
+            });
+    }
+
     return (
         <DefaultLayout>
             <Container>
@@ -575,6 +611,9 @@ function EditaProcessoPagamento({ match }) {
                                 />
                             </>
                             <Tramitar name="btnTramita" clickHandler={tramita} />
+                            <LinkJuntada type="button" onClick={geraJuntada}>
+                                Ver juntada do processo
+                            </LinkJuntada>
                         </ContainerBotoes>
                         <ContainerArquivos>
                             <legend>Arquivos</legend>

@@ -420,6 +420,7 @@ routes.post(`${process.env.API_URL}/tramites-calculo-aposentadoria`, TramiteCont
 routes.get(`${process.env.API_URL}/proximo-tramite-aposentadoria-calculo/:id/:decisao`, TramiteController.proximoTramiteAposentadoriaCalculo);
 routes.get(`${process.env.API_URL}/proximo-tramite-direcionado/:proId/:prxId`, TramiteController.proximoTramiteDirecionado);
 routes.get(`${process.env.API_URL}/gera-juntada/:id`, DadosProcessoController.geraJuntada);
+routes.get(`${process.env.API_URL}/gera-juntada-pagamento/:id/:ano`, DadosProcessoController.geraJuntadaPagamento);
 
 // solicitações de fornecedor
 routes.get(`${process.env.API_URL}/solicitacoes/:cnpj`, SolicitacaoController.gridSolicitacao);
