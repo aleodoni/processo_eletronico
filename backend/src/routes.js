@@ -71,15 +71,20 @@ const storage = multer.diskStorage({
 
 const storageManifestacao = multer.diskStorage({
     destination: function(req, file, callback) {
-        const novoCaminho = funcoesArquivo.destino + funcoesArquivo.finalDoCaminho(req.params.id);
-        if (!fs.existsSync(novoCaminho)) {
-            fs.mkdirSync(novoCaminho);
-        }
-        callback(null, novoCaminho);
+        const proId = req.body.proId;
+        const ano = req.body.ano;
+        const caminhoManifestacao = process.env.CAMINHO_ARQUIVOS_PROCESSO + proId + ano + '/';
+        callback(null, caminhoManifestacao);
     },
     filename: function(req, file, callback) {
-        console.log('Id do arquivo: ' + req.params.id);
-        callback(null, funcoesArquivo.nomeFisico(req.params.id) + 'M' + path.extname(file.originalname));
+        // callback(null, 'manifestacao' + req.params.id + path.extname(file.originalname));
+        crypto.randomBytes(16, (err, hash) => {
+            if (err) callback(err);
+
+            const filename = `${hash.toString('hex')}-${file.originalname}`;
+
+            callback(null, filename);
+        });
     }
 });
 
@@ -419,7 +424,7 @@ routes.post(`${process.env.API_URL}/tramites-calculo-aposentadoria`, TramiteCont
 
 routes.get(`${process.env.API_URL}/proximo-tramite-aposentadoria-calculo/:id/:decisao`, TramiteController.proximoTramiteAposentadoriaCalculo);
 routes.get(`${process.env.API_URL}/proximo-tramite-direcionado/:proId/:prxId`, TramiteController.proximoTramiteDirecionado);
-routes.get(`${process.env.API_URL}/gera-juntada/:id`, DadosProcessoController.geraJuntada);
+routes.get(`${process.env.API_URL}/gera-juntada/:id/:ano`, DadosProcessoController.geraJuntada);
 routes.get(`${process.env.API_URL}/gera-juntada-pagamento/:id/:ano`, DadosProcessoController.geraJuntadaPagamento);
 
 // solicitações de fornecedor

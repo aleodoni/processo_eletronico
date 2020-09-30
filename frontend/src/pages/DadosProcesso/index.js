@@ -132,10 +132,10 @@ function DadosProcesso({ match }) {
         }
     }
 
-    function geraJuntada(proIdJuntada) {
+    function geraJuntada(proIdJuntada, proAnoJuntada) {
         axios({
             method: 'GET',
-            url: `/gera-juntada/${proIdJuntada}`,
+            url: `/gera-juntada/${proIdJuntada}/${proAnoJuntada}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
                 Accept: 'application/pdf',
@@ -148,7 +148,7 @@ function DadosProcesso({ match }) {
                 const link = document.createElement('a');
                 link.href = url;
                 const contentDisposition = res.headers['content-disposition'];
-                let fileName = `juntada${proIdJuntada}.pdf`;
+                let fileName = `juntada${proIdJuntada}${proAnoJuntada}.pdf`;
                 if (contentDisposition) {
                     const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
                     if (fileNameMatch.length === 2) {
@@ -160,6 +160,7 @@ function DadosProcesso({ match }) {
                 link.click();
                 link.remove();
                 window.URL.revokeObjectURL(url);
+                mensagem.success('Juntada gerada com sucesso.');
             })
             .catch(() => {
                 setErro('Erro ao gerar juntada.');
@@ -202,7 +203,7 @@ function DadosProcesso({ match }) {
                                             />
                                             <Juntada
                                                 name="btnJuntada"
-                                                clickHandler={() => geraJuntada(pro.pro_id)}
+                                                clickHandler={() => geraJuntada(pro.pro_id, pro.pro_ano)}
                                             />
                                             <br />
                                         </ContainerBotoes>

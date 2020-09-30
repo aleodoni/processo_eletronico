@@ -207,6 +207,8 @@ function CriarManifestacao(props) {
                 setManifestacao({ manId: res.data.man_id });
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('proId', res.data.pro_id);
+                data.append('ano', proCodigo.substr(proCodigo.length - 5));
                 axios({
                     method: 'POST',
                     url: `/anexo-manifestacao/${res.data.arq_id}`,

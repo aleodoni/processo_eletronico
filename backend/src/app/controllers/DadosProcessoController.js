@@ -418,36 +418,11 @@ class DadosProcessoController {
         });
         const arquivosDisco = [];
         for (let i = 0; i < arquivos.length; i++) {
-            const caminho = caminhos.destino + caminhos.finalDoCaminho(arquivos[i].arq_id);
-            let nome = arquivos[i].arq_id.toString();
-            let extensao = '';
-            // o primeiro sempre vai ser a capa
-            if (i === 0) {
-                extensao = 'C.pdf';
-            } else {
-                extensao = 'M.pdf';
-            }
-            if (nome.length === 1) {
-                nome = '000000' + nome + extensao;
-            }
-            if (nome.length === 2) {
-                nome = '00000' + nome + extensao;
-            }
-            if (nome.length === 3) {
-                nome = '0000' + nome + extensao;
-            }
-            if (nome.length === 4) {
-                nome = '000' + nome + extensao;
-            }
-            if (nome.length === 5) {
-                nome = '00' + nome + extensao;
-            }
-            if (nome.length === 6) {
-                nome = '0' + nome + extensao;
-            }
-            arquivosDisco.push(caminho + nome);
+            const caminhoProcesso = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano;
+            const nome = arquivos[i].arq_nome;
+            arquivosDisco.push(caminhoProcesso + '/' + nome);
         }
-        const arquivoJuntada = caminhos.destino + 'Juntada/' + caminhos.nomeFisico(req.params.id) + 'J' + '.pdf';
+        const arquivoJuntada = process.env.CAMINHO_ARQUIVOS_JUNTADA + 'juntada' + req.params.id + req.params.ano + '.pdf';
         const mergedPdf = await PDFDocument.create();
         for (const pdfCopyDoc of arquivosDisco) {
             const pdfBytes = fs.readFileSync(pdfCopyDoc);

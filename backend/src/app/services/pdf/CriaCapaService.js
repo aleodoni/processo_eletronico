@@ -3,6 +3,7 @@ import path from 'path';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import AppError from '../../error/AppError';
+import DataHoraAtual from '../../models/DataHoraAtual';
 require('dotenv/config');
 const brasao = path.join(__dirname, '../../../../public/brasao.jpg');
 const titulo = 'Câmara Municipal de Curitiba';
@@ -34,14 +35,19 @@ class CriaCapaService {
         return arquivo;
     }
 
-    async capaProcesso(arq_id, pro_id, tpr_nome, caminho) {
+    async capaProcesso(arq_id, pro_id, pro_ano, tpr_nome, caminho) {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
         const processo = await this.processoModel.findByPk(pro_id, { logging: false });
 
         if (!processo) {
             throw new AppError('Processo não encontrado.');
         }
-        const arquivo = caminho + '/' + 'capa-' + pro_id + '.pdf';
-        // const arquivo = caminho + '/' + arq_id + 'C.pdf';
+        const arquivo = caminho + '/' + 'capa-' + pro_id + pro_ano + '.pdf';
         const doc = new PDFDocument();
         doc.pipe(fs.createWriteStream(arquivo));
         doc.image(brasao, 10, 10, { scale: 0.50 });
@@ -50,6 +56,7 @@ class CriaCapaService {
         doc.fontSize(14).font('Helvetica-Bold').text('INICIATIVA: ', 12, 150, { lineBreak: false }).font('Helvetica').text(processo.pro_nome);
         doc.fontSize(14).font('Helvetica-Bold').text('ASSUNTO: ', 12, 170, { lineBreak: false }).font('Helvetica').text(tpr_nome);
         doc.rect(10, 130, 550, 380).stroke();
+        doc.fontSize(6).font('Helvetica-Bold').text('* Arquivo gerado automaticamente pelo sistema em ' + dataHoraAtual.dataValues.data_hora_atual, 10, 515);
 
         doc.end();
         return arquivo;
