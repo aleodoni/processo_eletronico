@@ -222,22 +222,14 @@ function CriarManifestacao(props) {
                             mensagem.success('Manifestação inserida com sucesso.');
                             carregaManifestacaoProcesso();
                             document.getElementById('anexo').value = '';
+                            setTpdId('-1');
                         }
                     })
                     .catch(() => {
-                        const idArquivo = res.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
+                        limpaCampos();
                         setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
                     });
             })
             .catch(() => {
@@ -254,61 +246,36 @@ function CriarManifestacao(props) {
             if (e.target.files[0].type === 'application/pdf') {
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', document.getElementById('proId').value);
+                data.append('man_id', manId);
+                data.append('tpd_id', tpdId);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
-                    data: {
-                        arq_id: null,
-                        arq_nome: arq.name,
-                        pro_id: document.getElementById('proId').value,
-                        man_id: manId,
-                        arq_tipo: arq.type,
-                        arq_doc_id: manId,
-                        arq_doc_tipo: 'manifestação',
-                        tpd_id: tpdId,
-                        arq_login: sessionStorage.getItem('usuario'),
-                    },
+                    data,
                 })
-                    .then(res => {
-                        axios({
-                            method: 'POST',
-                            url: `/anexo-manifestacao/${res.data.arq_id}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                                'Content-Type': 'multipart/form-data',
-                            },
-                            data,
-                        })
-                            .then(resAnexos => {
-                                if (resAnexos.status === 204) {
-                                    limpaCampos();
-                                    mensagem.success('Documento inserido com sucesso.');
-                                    carregaAnexos(manId);
-                                    carregaManifestacaoProcesso();
-                                    document.getElementById('anexo').value = '';
-                                }
-                            })
-                            .catch(() => {
-                                const idArquivo = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${idArquivo}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch(erroDeleteArquivo => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
-                            });
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Documento inserido com sucesso.');
+                            carregaAnexos(manId);
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                            setTpdId('-1');
+                        }
                     })
                     .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
+                        limpaCampos();
+                        setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
                     });
             } else {
                 setErro('São válidos somente arquivos PDF.');
@@ -455,7 +422,6 @@ function CriarManifestacao(props) {
                         mensagem.info('Sem próximos trâmites.');
                         return;
                     }
-                    // alert(JSON.stringify(resDirecionado.data[0], null, 4));
                     abreModalTramitaUm(resDirecionado.data[0]);
                 })
                 .catch(() => {
@@ -481,7 +447,6 @@ function CriarManifestacao(props) {
                         mensagem.info('Sem próximos trâmites.');
                         return;
                     }
-                    // alert(JSON.stringify(res.data, null, 4));
                     abreModalTramitaUm(res.data[0]);
                 })
                 .catch(() => {
@@ -507,7 +472,6 @@ function CriarManifestacao(props) {
                         mensagem.info('Sem próximos trâmites.');
                         return;
                     }
-                    // alert(JSON.stringify(res.data, null, 4));
                     abreModalTramitaUm(res.data[0]);
                 })
                 .catch(() => {
@@ -548,7 +512,6 @@ function CriarManifestacao(props) {
                                     mensagem.info('Sem próximos trâmites.');
                                     return;
                                 }
-                                // alert(JSON.stringify(resDirecionado.data[0], null, 4));
                                 abreModalTramitaUm(resDirecionado.data[0]);
                             })
                             .catch(() => {

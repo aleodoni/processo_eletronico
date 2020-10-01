@@ -93,18 +93,6 @@ function CriarManifestacaoContagemTempo(props) {
         setModalTramitaUm(false);
     }
 
-    function limpaCampos() {
-        setManId(null);
-        formRef.current.setFieldValue('tpdId', '-1');
-        setManifestacao({
-            ...manifestacao,
-            manAvalHorario: '-1',
-        });
-        setErro('');
-
-        formRef.current.setErrors({});
-    }
-
     async function carregaAnexos(id) {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
@@ -290,7 +278,7 @@ function CriarManifestacaoContagemTempo(props) {
             });
     }
 
-    function criaManifestacao(e) {
+    function incluiManifestacao(e) {
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
@@ -314,25 +302,25 @@ function CriarManifestacaoContagemTempo(props) {
                 man_id_area: sessionStorage.getItem('areaUsuario'),
                 nod_id: nodId,
                 man_contagem_tempo: document.getElementById('manContagemTempo').value,
-
-                arq_id: null,
-                arq_nome: arq.name,
-                arq_tipo: arq.type,
-                arq_doc_id: null,
-                arq_doc_tipo: 'manifestação',
-                tpd_id: constantes.TPD_CONTAGEM_TEMPO_SERVICO,
-                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resultado => {
+            .then(res => {
+                setManifestacao({ manId: res.data.man_id });
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', res.data.man_id);
+                data.append('tpd_id', constantes.TPD_CONTAGEM_TEMPO_SERVICO);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: `/anexo-manifestacao/${resultado.data.arq_id}`,
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                         'Content-Type': 'multipart/form-data',
@@ -341,26 +329,27 @@ function CriarManifestacaoContagemTempo(props) {
                 })
                     .then(resAnexos => {
                         if (resAnexos.status === 204) {
-                            limpaCampos();
+                            setErro('');
                             mensagem.success('Manifestação inserida com sucesso.');
                             carregaManifestacaoProcesso();
                             document.getElementById('anexo').value = '';
+                            document.getElementById('tpdId').value = '-1';
+                            setTpdId('-1');
+                            setManifestacao({
+                                ...manifestacao,
+                                manAvalHorario: '-1',
+                            });
                         }
                     })
                     .catch(() => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
                         setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
+                        setTpdId('-1');
+                        setManifestacao({
+                            ...manifestacao,
+                            manAvalHorario: '-1',
+                        });
                     });
             })
             .catch(() => {
@@ -391,60 +380,46 @@ function CriarManifestacaoContagemTempo(props) {
             if (e.target.files[0].type === 'application/pdf') {
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', manId);
+                data.append('tpd_id', tpdId);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
-                    data: {
-                        arq_id: null,
-                        arq_nome: arq.name,
-                        pro_id: Number(match.params.proId),
-                        man_id: document.getElementById('manId').value,
-                        arq_tipo: arq.type,
-                        arq_doc_id: document.getElementById('manId').value,
-                        arq_doc_tipo: 'manifestação',
-                        tpd_id: tpdId,
-                        arq_login: sessionStorage.getItem('usuario'),
-                    },
+                    data,
                 })
-                    .then(res => {
-                        axios({
-                            method: 'POST',
-                            url: `/anexo-manifestacao/${res.data.arq_id}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                                'Content-Type': 'multipart/form-data',
-                            },
-                            data,
-                        })
-                            .then(resAnexos => {
-                                if (resAnexos.status === 204) {
-                                    limpaCampos();
-                                    mensagem.success('Documento inserido com sucesso.');
-                                    carregaAnexos(manId);
-                                    carregaManifestacaoProcesso();
-                                }
-                            })
-                            .catch(() => {
-                                const idArquivo = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${idArquivo}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch(erroDeleteArquivo => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            setErro('');
+                            mensagem.success('Documento inserido com sucesso.');
+                            carregaAnexos(manId);
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                            document.getElementById('tpdId').value = '-1';
+                            setTpdId('-1');
+                            setManifestacao({
+                                ...manifestacao,
+                                manAvalHorario: '-1',
                             });
+                            setTpdId('-1');
+                        }
                     })
                     .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
+                        setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
+                        setTpdId('-1');
+                        setManifestacao({
+                            ...manifestacao,
+                            manAvalHorario: '-1',
+                        });
                     });
             } else {
                 setErro('São válidos somente arquivos PDF.');
@@ -506,7 +481,7 @@ function CriarManifestacaoContagemTempo(props) {
                                     <input
                                         type="file"
                                         name="file"
-                                        onChange={criaManifestacao}
+                                        onChange={incluiManifestacao}
                                         id="anexo"
                                         onClick={e => {
                                             verificaContagemTempo(e);
@@ -577,12 +552,17 @@ function CriarManifestacaoContagemTempo(props) {
                                                         onClick={e =>
                                                             download(
                                                                 e,
-                                                                anexo.arq_id,
-                                                                anexo.man_id,
+                                                                Number(match.params.proId),
+                                                                proCodigo.substr(
+                                                                    proCodigo.length - 4
+                                                                ),
                                                                 anexo.arq_nome
                                                             )
                                                         }>
-                                                        {anexo.arq_nome}
+                                                        {anexo.arq_nome.substr(
+                                                            33,
+                                                            anexo.arq_nome.length
+                                                        )}
                                                     </BotaoComoLink>
                                                 </td>
                                                 <td>{anexo.data}</td>

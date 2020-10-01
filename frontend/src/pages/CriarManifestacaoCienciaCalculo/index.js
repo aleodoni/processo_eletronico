@@ -460,9 +460,11 @@ function CriarManifestacaoCienciaCalculo(props) {
     }
 
     function geraJuntada() {
+        const proId = Number(match.params.proId);
+        const ano = proCodigo.substr(proCodigo.length - 4);
         axios({
             method: 'GET',
-            url: `/gera-juntada/${Number(match.params.proId)}`,
+            url: `/gera-juntada/${proId}/${ano}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
                 Accept: 'application/pdf',
@@ -475,7 +477,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                 const link = document.createElement('a');
                 link.href = url;
                 const contentDisposition = res.headers['content-disposition'];
-                let fileName = `juntada${Number(match.params.proId)}.pdf`;
+                let fileName = `juntada${proId}${ano}.pdf`;
                 if (contentDisposition) {
                     const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
                     if (fileNameMatch.length === 2) {
@@ -487,9 +489,11 @@ function CriarManifestacaoCienciaCalculo(props) {
                 link.click();
                 link.remove();
                 window.URL.revokeObjectURL(url);
+                mensagem.success('Juntada gerada com sucesso.');
             })
-            .catch(() => {
-                setErro('Erro ao gerar juntada.');
+            .catch(e => {
+                setErro('Erro ao executar juntada.');
+                console.log(JSON.stringify(e.response, null, 4));
             });
     }
 

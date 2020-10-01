@@ -158,7 +158,9 @@ class DadosProcessoController {
             wherePesquisa.pro_nome = { [Op.iLike]: '%' + proNome + '%' };
         }
         if (proContatoPj !== '') {
-            wherePesquisa.pro_contato_pj = { [Op.iLike]: '%' + proContatoPj + '%' };
+            wherePesquisa.pro_contato_pj = {
+                [Op.iLike]: '%' + proContatoPj + '%'
+            };
         }
         if (proCpf !== '' && proCpf !== undefined) {
             wherePesquisa.cpf = proCpf;
@@ -166,14 +168,28 @@ class DadosProcessoController {
         if (proCnpj !== '' && proCnpj !== undefined) {
             wherePesquisa.cnpj = proCnpj;
         }
-        if (proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined && (proDataFimAutuacao === '' || proDataFimAutuacao === undefined)) {
+        if (
+            proDataIniAutuacao !== '' &&
+            proDataIniAutuacao !== undefined &&
+            (proDataFimAutuacao === '' || proDataFimAutuacao === undefined)
+        ) {
             wherePesquisa.pro_autuacao_data = { [Op.gte]: proDataIniAutuacao };
         }
-        if (proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined && (proDataIniAutuacao === '' || proDataIniAutuacao === undefined)) {
+        if (
+            proDataFimAutuacao !== '' &&
+            proDataFimAutuacao !== undefined &&
+            (proDataIniAutuacao === '' || proDataIniAutuacao === undefined)
+        ) {
             wherePesquisa.pro_autuacao_data = { [Op.lte]: proDataFimAutuacao };
         }
-        if ((proDataIniAutuacao !== '' && proDataIniAutuacao !== undefined) && (proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined)) {
-            wherePesquisa.pro_autuacao_data = { [Op.between]: [proDataIniAutuacao, proDataFimAutuacao] };
+        if (
+            proDataIniAutuacao !== '' &&
+            proDataIniAutuacao !== undefined &&
+            proDataFimAutuacao !== '' && proDataFimAutuacao !== undefined
+        ) {
+            wherePesquisa.pro_autuacao_data = {
+                [Op.between]: [proDataIniAutuacao, proDataFimAutuacao]
+            };
         }
         if (proNumero !== '') {
             wherePesquisa.pro_numero = parseInt(proNumero, 10);
@@ -192,7 +208,11 @@ class DadosProcessoController {
         }
 
         if (Object.entries(wherePesquisa).length === 0) {
-            return res.status(412).json({ error: 'Selecione pelo menos um campo para pesquisa.' });
+            return res
+                .status(412)
+                .json({
+                    error: 'Selecione pelo menos um campo para pesquisa.'
+                });
         }
 
         const pesquisaProcesso = await VDadosProcesso.findAll({
@@ -227,10 +247,7 @@ class DadosProcessoController {
 
     async processoPorCodigo(req, res) {
         const dadosProcesso = await VDadosProcesso.findAll({
-            attributes: [
-                'pro_id',
-                'pro_codigo'
-            ],
+            attributes: ['pro_id', 'pro_codigo'],
             logging: false,
             plain: true,
             where: {
@@ -322,20 +339,15 @@ class DadosProcessoController {
         const login = req.params.login;
         const connection = ConnectionHelper.getConnection();
         const sql = "select spa2.verifica_sigilo('" + login + "')";
-        const verificaSigilo = await connection.query(sql,
-            {
-                logging: false,
-                plain: true,
-                raw: true
-            }
-        );
+        const verificaSigilo = await connection.query(sql, {
+            logging: false,
+            plain: true,
+            raw: true
+        });
         if (verificaSigilo.verifica_sigilo) {
             // se é membro da comissão processante abre como esta "área"
             const membroComissao = await MembroComissao.findOne({
-                attributes: [
-                    'mco_login',
-                    'area_id'
-                ],
+                attributes: ['mco_login', 'area_id'],
                 logging: false,
                 where: {
                     mco_login: login
@@ -399,17 +411,16 @@ class DadosProcessoController {
                 pro_id: req.params.id
             }
         });
-        return res.send({ visto: decisao.dataValues.man_visto_executiva, prazo: decisao.dataValues.tpr_prazo_recurso, tpr_id: decisao.dataValues.tpr_id });
+        return res.send({
+            visto: decisao.dataValues.man_visto_executiva,
+            prazo: decisao.dataValues.tpr_prazo_recurso,
+            tpr_id: decisao.dataValues.tpr_id
+        });
     }
 
     async geraJuntada(req, res) {
         const arquivos = await Arquivo.findAll({
-            attributes: [
-                'arq_id',
-                'pro_id',
-                'man_id',
-                'arq_nome'
-            ],
+            attributes: ['arq_id', 'pro_id', 'man_id', 'arq_nome'],
             logging: false,
             where: {
                 pro_id: req.params.id
@@ -418,19 +429,38 @@ class DadosProcessoController {
         });
         const arquivosDisco = [];
         for (let i = 0; i < arquivos.length; i++) {
-            const caminhoProcesso = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano;
+            const caminhoProcesso =
+                process.env.CAMINHO_ARQUIVOS_PROCESSO +
+                req.params.id +
+                req.params.ano;
             const nome = arquivos[i].arq_nome;
             arquivosDisco.push(caminhoProcesso + '/' + nome);
         }
-        const arquivoJuntada = process.env.CAMINHO_ARQUIVOS_JUNTADA + 'juntada' + req.params.id + req.params.ano + '.pdf';
+        const arquivoJuntada =
+            process.env.CAMINHO_ARQUIVOS_JUNTADA +
+            'juntada' +
+            req.params.id +
+            req.params.ano +
+            '.pdf';
         const mergedPdf = await PDFDocument.create();
         for (const pdfCopyDoc of arquivosDisco) {
             const pdfBytes = fs.readFileSync(pdfCopyDoc);
-            const pdf = await PDFDocument.load(pdfBytes);
-            const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-            copiedPages.forEach((page) => {
-                mergedPdf.addPage(page);
-            });
+            try {
+                const pdf = await PDFDocument.load(pdfBytes);
+                const copiedPages = await mergedPdf.copyPages(
+                    pdf,
+                    pdf.getPageIndices()
+                );
+                copiedPages.forEach(page => {
+                    mergedPdf.addPage(page);
+                });
+            } catch (e) {
+                if (e.stack.match('EncryptedPDFError' !== null)) {
+                    return res.status(400).json({ message: 'Erro ao executar juntada - Arquivo com proteção por senha.' });
+                } else {
+                    return res.status(400).json({ message: 'Erro ao executar juntada!' });
+                }
+            }
         }
         fs.writeFileSync(arquivoJuntada, await mergedPdf.save());
         fs.readFile(arquivoJuntada, function(_err, data) {
@@ -444,12 +474,7 @@ class DadosProcessoController {
 
     async geraJuntadaPagamento(req, res) {
         const arquivos = await Arquivo.findAll({
-            attributes: [
-                'arq_id',
-                'pro_id',
-                'man_id',
-                'arq_nome'
-            ],
+            attributes: ['arq_id', 'pro_id', 'man_id', 'arq_nome'],
             logging: false,
             where: {
                 pro_id: req.params.id
@@ -458,17 +483,28 @@ class DadosProcessoController {
         });
         const arquivosDisco = [];
         for (let i = 0; i < arquivos.length; i++) {
-            const caminhoProcesso = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano;
+            const caminhoProcesso =
+                process.env.CAMINHO_ARQUIVOS_PROCESSO +
+                req.params.id +
+                req.params.ano;
             const nome = arquivos[i].arq_nome;
             arquivosDisco.push(caminhoProcesso + '/' + nome);
         }
-        const arquivoJuntada = caminhos.destino + 'Juntada/' + caminhos.nomeFisico(req.params.id) + 'J' + '.pdf';
+        const arquivoJuntada =
+            caminhos.destino +
+            'Juntada/' +
+            caminhos.nomeFisico(req.params.id) +
+            'J' +
+            '.pdf';
         const mergedPdf = await PDFDocument.create();
         for (const pdfCopyDoc of arquivosDisco) {
             const pdfBytes = fs.readFileSync(pdfCopyDoc);
             const pdf = await PDFDocument.load(pdfBytes);
-            const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-            copiedPages.forEach((page) => {
+            const copiedPages = await mergedPdf.copyPages(
+                pdf,
+                pdf.getPageIndices()
+            );
+            copiedPages.forEach(page => {
                 mergedPdf.addPage(page);
             });
         }
@@ -498,7 +534,6 @@ class DadosProcessoController {
                 area_id: constantes.AREA_DCF.toString(),
                 tpr_id: constantes.TPR_EXECUCAO_DESPESAS,
                 pro_encerramento: null
-
             },
             order: ['pro_autuacao']
         });
@@ -514,7 +549,14 @@ class DadosProcessoController {
                 'pro_ano',
                 'pro_cnpj',
                 'pro_assunto',
-                [Sequelize.fn('to_char', Sequelize.col('pro_autuacao'), 'DD/MM/YYYY - HH24:MI'), 'pro_autuacao'],
+                [
+                    Sequelize.fn(
+                        'to_char',
+                        Sequelize.col('pro_autuacao'),
+                        'DD/MM/YYYY - HH24:MI'
+                    ),
+                    'pro_autuacao'
+                ],
                 'pro_processo_pai'
             ],
             logging: false,
@@ -525,7 +567,9 @@ class DadosProcessoController {
         });
 
         if (processo === null) {
-            return res.status(400).json({ error: 'Processo de pagamento não encontrado.' });
+            return res
+                .status(400)
+                .json({ error: 'Processo de pagamento não encontrado.' });
         }
 
         const autorizacao = await VAutorizacaoProcesso.findAll({
@@ -545,11 +589,7 @@ class DadosProcessoController {
         });
 
         const notasFiscais = await ProcessoNotaFiscal.findAll({
-            attributes: [
-                'pnf_id',
-                'pro_id_pai',
-                'pnf_nota_fiscal'
-            ],
+            attributes: ['pnf_id', 'pro_id_pai', 'pnf_nota_fiscal'],
             logging: false,
             where: {
                 pro_id_pai: req.params.id
@@ -557,11 +597,7 @@ class DadosProcessoController {
         });
 
         const empenhos = await ProcessoEmpenho.findAll({
-            attributes: [
-                'pen_id',
-                'pro_id_pai',
-                'pen_empenho'
-            ],
+            attributes: ['pen_id', 'pro_id_pai', 'pen_empenho'],
             logging: false,
             where: {
                 pro_id_pai: req.params.id
@@ -569,11 +605,7 @@ class DadosProcessoController {
         });
 
         const nads = await ProcessoNAD.findAll({
-            attributes: [
-                'pna_id',
-                'pro_id_pai',
-                'pna_nad'
-            ],
+            attributes: ['pna_id', 'pro_id_pai', 'pna_nad'],
             logging: false,
             where: {
                 pro_id_pai: req.params.id
@@ -600,22 +632,20 @@ class DadosProcessoController {
             }
         });
 
-        return res.json(
-            {
-                pro_id: processo.dataValues.pro_id,
-                pro_codigo: processo.dataValues.pro_codigo,
-                pro_nome: processo.dataValues.pro_nome,
-                pro_ano: processo.dataValues.pro_ano,
-                pro_autuacao: processo.dataValues.pro_autuacao,
-                pro_assunto: processo.dataValues.pro_assunto,
-                pro_processo_pai: processo.dataValues.pro_processo_pai,
-                notas_fiscais: notasFiscais,
-                empenhos: empenhos,
-                nads: nads,
-                autorizacao: autorizacao,
-                arquivos: arquivos
-            }
-        );
+        return res.json({
+            pro_id: processo.dataValues.pro_id,
+            pro_codigo: processo.dataValues.pro_codigo,
+            pro_nome: processo.dataValues.pro_nome,
+            pro_ano: processo.dataValues.pro_ano,
+            pro_autuacao: processo.dataValues.pro_autuacao,
+            pro_assunto: processo.dataValues.pro_assunto,
+            pro_processo_pai: processo.dataValues.pro_processo_pai,
+            notas_fiscais: notasFiscais,
+            empenhos: empenhos,
+            nads: nads,
+            autorizacao: autorizacao,
+            arquivos: arquivos
+        });
     }
 
     async dadosObservacao(req, res) {
