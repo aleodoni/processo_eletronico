@@ -167,7 +167,7 @@ class ArquivoController {
     }
 
     downloadManifestacao(req, res) {
-        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.params.arqId) + caminhos.nomeFisico(req.params.arqId) + 'M' + '.pdf';
+        const caminho = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.proId + req.params.ano + '/' + req.params.nomeArquivo;
         fs.readFile(caminho, function(_err, data) {
             if (_err) {
                 console.log(_err);

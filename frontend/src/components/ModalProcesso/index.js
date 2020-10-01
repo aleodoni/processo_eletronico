@@ -77,7 +77,7 @@ const ModalProcesso = props => {
 
     useEffect(() => {
         carregaProcessoOrigem();
-    }, [carregaProcessoOrigem, processo.pro_id]);
+    }, [carregaProcessoOrigem, processo, processo.pro_id]);
 
     return (
         <>
@@ -254,7 +254,10 @@ const ModalProcesso = props => {
                     </ContainerDados>
                     <ContainerComponente>
                         <p>Manifestações</p>
-                        <TabelaManifestacoes proId={processo.pro_id} />
+                        <TabelaManifestacoes
+                            proId={processo.pro_id}
+                            anoProcesso={processo.pro_codigo}
+                        />
                     </ContainerComponente>
                     <ContainerComponente>
                         <p>Trâmites</p>

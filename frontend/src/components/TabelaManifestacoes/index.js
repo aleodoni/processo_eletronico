@@ -57,11 +57,11 @@ const useRowStyles = makeStyles({
     },
 });
 
-function downloadAnexoManifestacao(e, arqId, id, arqNome) {
+function downloadAnexoManifestacao(e, proId, ano, arqNome) {
     e.preventDefault();
     axios({
         method: 'GET',
-        url: `/download-manifestacao/${id}/${arqId}`,
+        url: `/download-arquivo-manifestacao/${proId}/${ano}/${arqNome}`,
         headers: {
             authorization: sessionStorage.getItem('token'),
             Accept: 'application/pdf',
@@ -74,7 +74,7 @@ function downloadAnexoManifestacao(e, arqId, id, arqNome) {
             const link = document.createElement('a');
             link.href = url;
             const contentDisposition = res.headers['content-disposition'];
-            let fileName = arqNome;
+            let fileName = arqNome.substr(33, arqNome.length);
             if (contentDisposition) {
                 const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
                 if (fileNameMatch.length === 2) {
@@ -144,12 +144,15 @@ function Row(props) {
                                                         onClick={e =>
                                                             downloadAnexoManifestacao(
                                                                 e,
-                                                                linhaArquivo.arq_id,
-                                                                linhaArquivo.man_Id,
+                                                                linha.pro_id,
+                                                                linha.ano,
                                                                 linhaArquivo.arq_nome
                                                             )
                                                         }>
-                                                        {linhaArquivo.arq_nome}
+                                                        {linhaArquivo.arq_nome.substr(
+                                                            33,
+                                                            linhaArquivo.arq_nome.length
+                                                        )}
                                                     </BotaoComoLink>
                                                 </TableCell>
                                             </StyledTableRow>
@@ -183,7 +186,7 @@ Row.propTypes = {
     }).isRequired,
 };
 
-function TabelaManifestacao({ proId }) {
+function TabelaManifestacao({ proId, anoProcesso }) {
     const [rows, setRows] = useState([]);
 
     const carregaManifestacoes = useCallback(() => {
@@ -199,6 +202,8 @@ function TabelaManifestacao({ proId }) {
                 for (let i = 0; i < res.data.length; i++) {
                     manifestacoes.push({
                         seq: i + 1,
+                        pro_id: proId,
+                        ano: anoProcesso.substr(anoProcesso.length - 4),
                         set_nome: res.data[i].set_nome,
                         man_login: res.data[i].man_login,
                         tmn_nome: res.data[i].tmn_nome,
@@ -210,7 +215,7 @@ function TabelaManifestacao({ proId }) {
             .catch(() => {
                 console.log('Erro ao retornar manifestações.');
             });
-    }, [proId]);
+    }, [anoProcesso, proId]);
 
     useEffect(() => {
         carregaManifestacoes();
@@ -249,4 +254,5 @@ export default memo(TabelaManifestacao);
 
 TabelaManifestacao.propTypes = {
     proId: PropTypes.string.isRequired,
+    anoProcesso: PropTypes.string.isRequired,
 };

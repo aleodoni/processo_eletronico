@@ -69,39 +69,17 @@ const storage = multer.diskStorage({
     }
 });
 
-const storageManifestacao = multer.diskStorage({
+const storageArquivo = multer.diskStorage({
     destination: function(req, file, callback) {
-        const proId = req.body.proId;
-        const ano = req.body.ano;
+        const proId = req.params.proId;
+        const ano = req.params.ano;
         const caminhoManifestacao = process.env.CAMINHO_ARQUIVOS_PROCESSO + proId + ano + '/';
         callback(null, caminhoManifestacao);
     },
     filename: function(req, file, callback) {
-        // callback(null, 'manifestacao' + req.params.id + path.extname(file.originalname));
         crypto.randomBytes(16, (err, hash) => {
             if (err) callback(err);
-
             const filename = `${hash.toString('hex')}-${file.originalname}`;
-
-            callback(null, filename);
-        });
-    }
-});
-
-const storageDocumento = multer.diskStorage({
-    destination: function(req, file, callback) {
-        const caminhoProcesso = process.env.CAMINHO_ARQUIVOS_PROCESSO;
-        const proId = req.body.pro_id;
-        const ano = req.body.ano;
-        const caminhoCompleto = caminhoProcesso + proId + ano + '/';
-        callback(null, caminhoCompleto);
-    },
-    filename: (req, file, callback) => {
-        crypto.randomBytes(16, (err, hash) => {
-            if (err) callback(err);
-
-            const filename = `${hash.toString('hex')}-${file.originalname}`;
-
             callback(null, filename);
         });
     }
@@ -109,9 +87,7 @@ const storageDocumento = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const uploadManifestacao = multer({ storage: storageManifestacao });
-
-const uploadDocumento = multer({ storage: storageDocumento });
+const uploadArquivo = multer({ storage: storageArquivo });
 
 /**
  * Rotas sem autenticação
@@ -276,7 +252,7 @@ routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
 routes.get(`${process.env.API_URL}/download-arquivo-processo/:proId/:ano/:nomeArquivo`, ArquivoController.downloadArquivoProcesso);
 routes.get(`${process.env.API_URL}/arquivos-manifestacao/:manId`, ArquivoController.indexManifestacao);
-routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
+routes.get(`${process.env.API_URL}/download-arquivo-manifestacao/:proId/:ano/:nomeArquivo`, ArquivoController.downloadManifestacao);
 
 // rota de inserção de anexo em processo
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {
@@ -284,12 +260,56 @@ routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), 
 });
 
 // rota de inserção de anexo em manifestação
-routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.single('file'), function(req, res) {
-    res.status(204).end();
+routes.post(`${process.env.API_URL}/anexo-manifestacao/:proId/:ano`, uploadArquivo.single('file'), async function(req, res) {
+    const nomeArquivo = req.file.filename;
+    const destinoArquivo = req.file.destination;
+    const caminhoArquivo = destinoArquivo + nomeArquivo;
+    const tipoArquivo = req.file.mimetype;
+    const proId = req.body.pro_id;
+    const manId = req.body.man_id;
+    const tpdId = req.body.tpd_id;
+    const arqLogin = req.body.arq_login;
+    const arqDocTipo = req.body.arq_doc_tipo;
+
+    try {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login } = await Arquivo.create({
+            arq_id: null,
+            arq_nome: nomeArquivo,
+            pro_id: proId,
+            man_id: manId,
+            arq_tipo: tipoArquivo,
+            arq_doc_id: proId,
+            arq_doc_tipo: arqDocTipo,
+            tpd_id: tpdId,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: arqLogin
+        }, {
+            logging: false
+        });
+
+        // obtem o hash do arquivo
+        const hashArquivo = await fileHash(caminhoArquivo);
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashArquivo },
+            { where: { arq_id: arq_id }, logging: false }
+        );
+        res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
+    } catch (erroArquivo) {
+        console.log(erroArquivo);
+        res.status(400).end();
+    }
+    // res.status(204).end();
 });
 
 // rota de inserção de arquivos de fornecedores
-routes.post(`${process.env.API_URL}/anexo-documentos`, uploadDocumento.single('file'), async function(req, res) {
+routes.post(`${process.env.API_URL}/anexo-documentos`, uploadArquivo.single('file'), async function(req, res) {
     const nomeArquivo = req.file.filename;
     const destinoArquivo = req.file.destination;
     const caminhoArquivo = destinoArquivo + nomeArquivo;

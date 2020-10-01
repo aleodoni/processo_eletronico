@@ -1,11 +1,11 @@
 import axios from '../configs/axiosConfig';
 
 function downloadArquivo() {
-    function downloadAnexo(e, idArquivo, id, arqNome) {
+    function downloadAnexo(e, proId, ano, arqNome) {
         e.preventDefault();
         axios({
             method: 'GET',
-            url: `/download-manifestacao/${id}/${idArquivo}`,
+            url: `/download-arquivo-manifestacao/${proId}/${ano}/${arqNome}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
                 Accept: 'application/pdf',
@@ -18,7 +18,7 @@ function downloadArquivo() {
                 const link = document.createElement('a');
                 link.href = url;
                 const contentDisposition = res.headers['content-disposition'];
-                let fileName = arqNome;
+                let fileName = arqNome.substr(33, arqNome.length);
                 if (contentDisposition) {
                     const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
                     if (fileNameMatch.length === 2) {

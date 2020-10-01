@@ -2,7 +2,6 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Manifestacao from '../models/Manifestacao';
-import Arquivo from '../models/Arquivo';
 import VManifestacao from '../models/VManifestacao';
 import VManifestacaoProcesso from '../models/VManifestacaoProcesso';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
@@ -149,7 +148,7 @@ class ManifestacaoController {
     }
 
     async store(req, res) {
-        const createManifestacao = new CreateManifestacaoService(Manifestacao, DataHoraAtual, Arquivo);
+        const createManifestacao = new CreateManifestacaoService(Manifestacao, DataHoraAtual);
         const manifestacao = await createManifestacao.criaManifestacao({
             man_id: req.body.man_id,
             pro_id: req.body.pro_id,
@@ -166,15 +165,7 @@ class ManifestacaoController {
             man_contagem_tempo: req.body.man_contagem_tempo,
             man_ciencia_calculo: req.body.man_ciencia_calculo,
             man_parecer_projuris_aposentadoria: req.body.man_parecer_projuris_aposentadoria,
-            man_decisao_pad: req.body.man_decisao_pad,
-            arq_id: req.body.arq_id,
-            arq_nome: req.body.arq_nome,
-            arq_tipo: req.body.arq_tipo,
-            arq_doc_id: null,
-            arq_doc_tipo: req.body.arq_doc_tipo,
-            tpd_id: req.body.tpd_id,
-            arq_data: null,
-            arq_login: req.body.arq_login
+            man_decisao_pad: req.body.man_decisao_pad
         });
 
         return res.json(manifestacao);
