@@ -212,6 +212,7 @@ function CriarManifestacaoContagemTempo(props) {
                     mensagem.success('Documento apagado com sucesso.');
                     carregaAnexos(manId);
                     carregaManifestacaoProcesso();
+                    setErro('');
                 })
                 .catch(erroDeleteArquivo => {
                     setErro(erroDeleteArquivo.response.data.error);
@@ -333,7 +334,6 @@ function CriarManifestacaoContagemTempo(props) {
                             mensagem.success('Manifestação inserida com sucesso.');
                             carregaManifestacaoProcesso();
                             document.getElementById('anexo').value = '';
-                            document.getElementById('tpdId').value = '-1';
                             setTpdId('-1');
                             setManifestacao({
                                 ...manifestacao,
@@ -341,8 +341,8 @@ function CriarManifestacaoContagemTempo(props) {
                             });
                         }
                     })
-                    .catch(() => {
-                        setErro('Erro ao criar arquivo anexo.');
+                    .catch(e => {
+                        setErro(`Erro ao criar arquivo anexo.${e}`);
                         carregaManifestacaoProcesso();
                         document.getElementById('anexo').value = '';
                         setTpdId('-1');

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
 import { FaRegTimesCircle } from 'react-icons/fa';
@@ -276,12 +277,7 @@ const ModalProcesso = props => {
 ModalProcesso.propTypes = {
     fechaModalProcesso: PropTypes.func.isRequired,
     modalProcesso: PropTypes.bool.isRequired,
-    processo: PropTypes.arrayOf(
-        PropTypes.shape({
-            pro_codigo: PropTypes.string,
-            pro_id: PropTypes.number,
-        })
-    ).isRequired,
+    // processo: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default memo(ModalProcesso);

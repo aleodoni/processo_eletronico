@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FaRegQuestionCircle } from 'react-icons/fa';
@@ -82,26 +83,6 @@ ModalTramitaUm.propTypes = {
     tramita: PropTypes.func.isRequired,
     fechaModalTramitaUm: PropTypes.func.isRequired,
     modalTramitaUm: PropTypes.bool.isRequired,
-    dados: PropTypes.objectOf(
-        PropTypes.shape({
-            id: PropTypes.number,
-            prx_id: PropTypes.number,
-            set_id: PropTypes.number,
-            set_nome: PropTypes.string,
-            raz_nome: PropTypes.string,
-        })
-    ),
-};
-
-ModalTramitaUm.defaultProps = {
-    id: null,
-    dados: {
-        id: null,
-        prx_id: null,
-        set_id: null,
-        set_nome: '',
-        raz_nome: '',
-    },
 };
 
 export default ModalTramitaUm;
