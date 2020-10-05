@@ -158,29 +158,19 @@ function CriarManifestacaoCienciaCalculo(props) {
                 man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 nod_id: nodId,
                 man_ciencia_calculo: manCienciaCalculo,
-
-                arq_id: null,
-                arq_nome: `ciencia-cálculo.pdf`,
-                arq_tipo: 'application/pdf',
-                arq_doc_id: null,
-                arq_doc_tipo: 'manifestação',
-                tpd_id: constantes.TPD_CIENCIA_CALCULO_APOSENTADORIA,
-                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resultado => {
+            .then(res => {
                 axios({
                     method: 'POST',
-                    url: `/arquivo-ciencia-calculo`,
+                    url: `/arquivo-ciencia-calculo/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}/${sessionStorage.getItem('usuario')}/${res.data.man_id}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
-                    },
-                    data: {
-                        arq_id: resultado.data.arq_id,
-                        man_id: resultado.data.man_id,
                     },
                 })
                     .then(resAnexos => {
@@ -194,18 +184,8 @@ function CriarManifestacaoCienciaCalculo(props) {
                         }
                     })
                     .catch(() => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
+                        setErro('');
+                        carregaManifestacaoProcesso();
                         setErro('Erro ao criar arquivo anexo.');
                     });
                 limpaCampos();
@@ -378,13 +358,20 @@ function CriarManifestacaoCienciaCalculo(props) {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resultado => {
-                setManifestacao({ manId: resultado.data.man_id });
+            .then(res => {
+                setManifestacao({ manId: res.data.man_id });
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', res.data.man_id);
+                data.append('tpd_id', constantes.TPD_DISCORDANCIA_CALCULO);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: `/anexo-manifestacao/${resultado.data.arq_id}`,
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                         'Content-Type': 'multipart/form-data',
@@ -393,6 +380,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                 })
                     .then(resAnexos => {
                         if (resAnexos.status === 204) {
+                            setErro('');
                             limpaCampos();
                             mensagem.success('Manifestação inserida com sucesso.');
                             carregaManifestacaoProcesso();
@@ -401,20 +389,9 @@ function CriarManifestacaoCienciaCalculo(props) {
                             setMostraCiencia(false);
                         }
                     })
-                    .catch(err => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
-                        setErro('Erro ao criar arquivo anexo.');
+                    .catch(() => {
+                        setErro(`Erro ao criar arquivo anexo.`);
+                        carregaManifestacaoProcesso();
                     });
             })
             .catch(() => {
@@ -459,12 +436,10 @@ function CriarManifestacaoCienciaCalculo(props) {
             });
     }
 
-    function geraJuntada() {
-        const proId = Number(match.params.proId);
-        const ano = proCodigo.substr(proCodigo.length - 4);
+    function geraJuntada(proIdJuntada, proAnoJuntada) {
         axios({
             method: 'GET',
-            url: `/gera-juntada/${proId}/${ano}`,
+            url: `/gera-juntada/${proIdJuntada}/${proAnoJuntada}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
                 Accept: 'application/pdf',
@@ -477,7 +452,7 @@ function CriarManifestacaoCienciaCalculo(props) {
                 const link = document.createElement('a');
                 link.href = url;
                 const contentDisposition = res.headers['content-disposition'];
-                let fileName = `juntada${proId}${ano}.pdf`;
+                let fileName = `juntada${proIdJuntada}${proAnoJuntada}.pdf`;
                 if (contentDisposition) {
                     const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
                     if (fileNameMatch.length === 2) {
@@ -491,9 +466,8 @@ function CriarManifestacaoCienciaCalculo(props) {
                 window.URL.revokeObjectURL(url);
                 mensagem.success('Juntada gerada com sucesso.');
             })
-            .catch(e => {
-                setErro('Erro ao executar juntada.');
-                console.log(JSON.stringify(e.response, null, 4));
+            .catch(() => {
+                setErro('Erro ao gerar juntada.');
             });
     }
 
@@ -527,7 +501,14 @@ function CriarManifestacaoCienciaCalculo(props) {
                                     name="manCienciaCalculo"
                                     changeHandler={selecionaCiencia}
                                 />
-                                <LinkJuntada type="button" onClick={geraJuntada}>
+                                <LinkJuntada
+                                    type="button"
+                                    onClick={() =>
+                                        geraJuntada(
+                                            Number(match.params.proId),
+                                            proCodigo.substr(proCodigo.length - 4)
+                                        )
+                                    }>
                                     Ver juntada do processo
                                 </LinkJuntada>
                             </Container2>
@@ -597,12 +578,21 @@ function CriarManifestacaoCienciaCalculo(props) {
                                                         onClick={e =>
                                                             download(
                                                                 e,
-                                                                anexo.arq_id,
-                                                                anexo.man_id,
+                                                                Number(match.params.proId),
+                                                                proCodigo.substr(
+                                                                    proCodigo.length - 4
+                                                                ),
                                                                 anexo.arq_nome
                                                             )
                                                         }>
-                                                        {anexo.arq_nome}
+                                                        {manifestacaoProcesso[0]
+                                                            .man_ciencia_calculo ===
+                                                        'Estou ciente do cálculo'
+                                                            ? `${anexo.arq_nome}`
+                                                            : `${anexo.arq_nome.substr(
+                                                                  33,
+                                                                  anexo.arq_nome.length
+                                                              )}`}
                                                     </BotaoComoLink>
                                                 </td>
                                                 <td>{anexo.data}</td>

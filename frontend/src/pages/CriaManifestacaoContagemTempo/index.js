@@ -341,8 +341,8 @@ function CriarManifestacaoContagemTempo(props) {
                             });
                         }
                     })
-                    .catch(e => {
-                        setErro(`Erro ao criar arquivo anexo.${e}`);
+                    .catch(() => {
+                        setErro(`Erro ao criar arquivo anexo.`);
                         carregaManifestacaoProcesso();
                         document.getElementById('anexo').value = '';
                         setTpdId('-1');

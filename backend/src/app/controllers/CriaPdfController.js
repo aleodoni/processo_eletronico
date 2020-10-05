@@ -21,7 +21,7 @@ class CriaPdfController {
     }
 
     async criaPdfCienciaCalculo(req, res) {
-        await criaManifestacao.criaManifestacaoCienciaCalculo(req.body.arq_id, req.body.man_id);
+        await criaManifestacao.criaManifestacaoCienciaCalculo(req.params.ano, req.body.pro_id, req.body.man_id, req.body.tpd_id, req.body.arq_login, req.body.arq_doc_tipo);
         return res.status(204).end();
     }
 }
