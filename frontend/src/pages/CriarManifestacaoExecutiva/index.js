@@ -274,33 +274,32 @@ function CriarManifestacaoExecutiva(props) {
             url: '/manifestacoes',
             data: {
                 man_id: null,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 tmn_id: constantes.TMN_MANIFESTACAO_PRESIDENCIA,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: sessionStorage.getItem('areaUsuario'),
                 nod_id: nodId,
                 man_visto_executiva: document.getElementById('manVistoExecutiva').value,
-
-                arq_id: null,
-                arq_nome: arq.name,
-                arq_tipo: arq.type,
-                arq_doc_id: null,
-                arq_doc_tipo: 'manifestação',
-                tpd_id: constantes.TPD_DECISAO_EXECUTIVA,
-                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resultado => {
-                setManifestacao({ manId: resultado.data.man_id });
+            .then(res => {
+                setManifestacao({ manId: res.data.man_id });
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', res.data.man_id);
+                data.append('tpd_id', constantes.TPD_DECISAO_EXECUTIVA);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
 
                 axios({
                     method: 'POST',
-                    url: `/anexo-manifestacao/${resultado.data.arq_id}`,
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                         'Content-Type': 'multipart/form-data',
@@ -316,19 +315,10 @@ function CriarManifestacaoExecutiva(props) {
                         }
                     })
                     .catch(() => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
+                        limpaCampos();
                         setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
                     });
             })
             .catch(() => {
@@ -446,12 +436,17 @@ function CriarManifestacaoExecutiva(props) {
                                                         onClick={e =>
                                                             download(
                                                                 e,
-                                                                anexo.arq_id,
-                                                                anexo.man_id,
+                                                                Number(match.params.proId),
+                                                                proCodigo.substr(
+                                                                    proCodigo.length - 4
+                                                                ),
                                                                 anexo.arq_nome
                                                             )
                                                         }>
-                                                        {anexo.arq_nome}
+                                                        {anexo.arq_nome.substr(
+                                                            33,
+                                                            anexo.arq_nome.length
+                                                        )}
                                                     </BotaoComoLink>
                                                 </td>
                                                 <td>{anexo.data}</td>

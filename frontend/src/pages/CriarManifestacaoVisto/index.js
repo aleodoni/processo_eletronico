@@ -155,17 +155,22 @@ function CriarManifestacaoVisto(props) {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resultado => {
-                setManId(resultado.data.man_id);
+            .then(res => {
+                setManId(res.data.man_id);
+                let secretaria = '';
+                if (sessionStorage.getItem('nomeSetorUsuario') === 'Gabinete da 1ª Secretaria') {
+                    secretaria = 1;
+                }
+                if (sessionStorage.getItem('nomeSetorUsuario') === 'Gabinete da 2ª Secretaria') {
+                    secretaria = 2;
+                }
                 axios({
                     method: 'POST',
-                    url: `/arquivo-visto-executiva`,
+                    url: `/arquivo-visto-executiva/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}/${sessionStorage.getItem('usuario')}/${res.data.man_id}/${secretaria}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
-                    },
-                    data: {
-                        arq_id: resultado.data.arq_id,
-                        man_id: resultado.data.man_id,
                     },
                 })
                     .then(resAnexos => {
@@ -176,18 +181,9 @@ function CriarManifestacaoVisto(props) {
                         }
                     })
                     .catch(() => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
+                        setErro('');
+                        limpaCampos();
+                        carregaManifestacaoProcesso();
                         setErro('Erro ao criar arquivo anexo.');
                     });
                 limpaCampos();
@@ -396,8 +392,10 @@ function CriarManifestacaoVisto(props) {
                                                         onClick={e =>
                                                             download(
                                                                 e,
-                                                                anexo.arq_id,
-                                                                anexo.man_id,
+                                                                Number(match.params.proId),
+                                                                proCodigo.substr(
+                                                                    proCodigo.length - 4
+                                                                ),
                                                                 anexo.arq_nome
                                                             )
                                                         }>
