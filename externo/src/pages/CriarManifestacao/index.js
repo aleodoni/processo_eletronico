@@ -17,6 +17,7 @@ import Tramitar from '../../components/layout/button/Tramitar';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalProcesso from '../../components/ModalProcesso';
 import * as constantes from '../../utils/constantes';
+import { download } from '../../utils/downloadArquivo';
 import {
     Container,
     Container3,
@@ -156,31 +157,30 @@ function CriarManifestacao(props) {
             url: '/manifestacoes',
             data: {
                 man_id: null,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 tmn_id: constantes.TMN_MANIFESTACAO_ORGAO_EXTERNO,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: sessionStorage.getItem('areaUsuario'),
                 nod_id: nodId,
-
-                arq_id: null,
-                arq_nome: arq.name,
-                arq_tipo: arq.type,
-                arq_doc_id: null,
-                arq_doc_tipo: 'manifestação',
-                tpd_id: constantes.TPD_MANIFESTACAO,
-                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then((resultado) => {
-                setManifestacao({ manId: resultado.data.man_id });
+            .then((res) => {
+                setManifestacao({ manId: res.data.man_id });
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', res.data.man_id);
+                data.append('tpd_id', constantes.TPD_MANIFESTACAO);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: `/anexo-manifestacao/${resultado.data.arq_id}`,
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                         'Content-Type': 'multipart/form-data',
@@ -196,19 +196,10 @@ function CriarManifestacao(props) {
                         }
                     })
                     .catch(() => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch((erroDeleteArquivo) => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
+                        limpaCampos();
                         setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
                     });
             })
             .catch(() => {
@@ -225,61 +216,35 @@ function CriarManifestacao(props) {
             if (e.target.files[0].type === 'application/pdf') {
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', document.getElementById('proId').value);
+                data.append('man_id', manId);
+                data.append('tpd_id', tpdId);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
-                    data: {
-                        arq_id: null,
-                        arq_nome: arq.name,
-                        pro_id: document.getElementById('proId').value,
-                        man_id: manId,
-                        arq_tipo: arq.type,
-                        arq_doc_id: manId,
-                        arq_doc_tipo: 'manifestação',
-                        tpd_id: tpdId,
-                        arq_login: sessionStorage.getItem('usuario'),
-                    },
+                    data,
                 })
                     .then((res) => {
-                        axios({
-                            method: 'POST',
-                            url: `/anexo-manifestacao/${res.data.arq_id}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                                'Content-Type': 'multipart/form-data',
-                            },
-                            data,
-                        })
-                            .then((resAnexos) => {
-                                if (resAnexos.status === 204) {
-                                    limpaCampos();
-                                    mensagem.success('Documento inserido com sucesso.');
-                                    carregaAnexos(manId);
-                                    carregaManifestacaoProcesso();
-                                    document.getElementById('anexo').value = '';
-                                }
-                            })
-                            .catch(() => {
-                                const idArquivo = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${idArquivo}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch((erroDeleteArquivo) => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
-                            });
+                        if (res.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Documento inserido com sucesso.');
+                            carregaAnexos(manId);
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                        }
                     })
                     .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
+                        limpaCampos();
+                        setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
                     });
             } else {
                 setErro('São válidos somente arquivos PDF.');
@@ -341,41 +306,6 @@ function CriarManifestacao(props) {
                 setErro('Erro ao retornar dados do processo.');
             });
     }, [manifestacao.proId]);
-
-    function downloadAnexo(e, idArquivo, id, arqNome) {
-        e.preventDefault();
-        axios({
-            method: 'GET',
-            url: `/download-manifestacao/${id}/${idArquivo}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-                Accept: 'application/pdf',
-            },
-            responseType: 'blob',
-        })
-            .then((res) => {
-                const blob = new Blob([res.data], { type: res.data.type });
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                const contentDisposition = res.headers['content-disposition'];
-                let fileName = arqNome;
-                if (contentDisposition) {
-                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                    if (fileNameMatch.length === 2) {
-                        fileName = fileNameMatch[1];
-                    }
-                }
-                link.setAttribute('download', fileName);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(() => {
-                console.log('Erro ao efetuar o download do anexo.');
-            });
-    }
 
     useEffect(() => {
         async function carrega() {
@@ -599,14 +529,17 @@ function CriarManifestacao(props) {
                                                 <BotaoComoLink
                                                     type="button"
                                                     onClick={(e) =>
-                                                        downloadAnexo(
+                                                        download(
                                                             e,
-                                                            anexo.arq_id,
-                                                            anexo.manId,
+                                                            Number(match.params.proId),
+                                                            proCodigo.substr(proCodigo.length - 4),
                                                             anexo.arq_nome
                                                         )
                                                     }>
-                                                    {anexo.arq_nome}
+                                                    {anexo.arq_nome.substr(
+                                                        33,
+                                                        anexo.arq_nome.length
+                                                    )}
                                                 </BotaoComoLink>
                                             </td>
                                             <td>{anexo.data}</td>
