@@ -179,32 +179,31 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
             url: '/manifestacoes',
             data: {
                 man_id: null,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 tmn_id: tipoManifestacao,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: sessionStorage.getItem('areaUsuario'),
                 nod_id: nodId,
                 man_parecer_projuris_aposentadoria: manParecerProjurisAposentadoria,
-
-                arq_id: null,
-                arq_nome: arq.name,
-                arq_tipo: arq.type,
-                arq_doc_id: null,
-                arq_doc_tipo: 'manifestação',
-                tpd_id: tipoDocumento,
-                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resultado => {
-                setManifestacao({ manId: resultado.data.man_id });
+            .then(res => {
+                setManifestacao({ manId: res.data.man_id });
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', res.data.man_id);
+                data.append('tpd_id', tipoDocumento);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: `/anexo-manifestacao/${resultado.data.arq_id}`,
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                         'Content-Type': 'multipart/form-data',
@@ -217,22 +216,14 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                             mensagem.success('Manifestação inserida com sucesso.');
                             carregaManifestacaoProcesso();
                             document.getElementById('anexo').value = '';
+                            setTpdId('-1');
                         }
                     })
                     .catch(() => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
+                        limpaCampos();
                         setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
                     });
             })
             .catch(() => {
@@ -255,61 +246,36 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         }
         const data = new FormData();
         data.append('file', arq);
+        data.append('pro_id', document.getElementById('proId').value);
+        data.append('man_id', manId);
+        data.append('tpd_id', tpdId);
+        data.append('arq_login', sessionStorage.getItem('usuario'));
+        data.append('arq_doc_tipo', 'manifestação');
         axios({
             method: 'POST',
-            url: '/arquivos',
+            url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                proCodigo.length - 4
+            )}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
-            data: {
-                arq_id: null,
-                arq_nome: arq.name,
-                pro_id: document.getElementById('proId').value,
-                man_id: manId,
-                arq_tipo: arq.type,
-                arq_doc_id: manId,
-                arq_doc_tipo: 'manifestação',
-                tpd_id: tpdId,
-                arq_login: sessionStorage.getItem('usuario'),
-            },
+            data,
         })
-            .then(res => {
-                axios({
-                    method: 'POST',
-                    url: `/anexo-manifestacao/${res.data.arq_id}`,
-                    headers: {
-                        authorization: sessionStorage.getItem('token'),
-                        'Content-Type': 'multipart/form-data',
-                    },
-                    data,
-                })
-                    .then(resAnexos => {
-                        if (resAnexos.status === 204) {
-                            limpaCampos();
-                            mensagem.success('Documento inserido com sucesso.');
-                            carregaAnexos(manId);
-                            carregaManifestacaoProcesso();
-                            document.getElementById('anexo').value = '';
-                        }
-                    })
-                    .catch(() => {
-                        const idArquivo = res.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
-                        setErro('Erro ao criar arquivo anexo.');
-                    });
+            .then(resAnexos => {
+                if (resAnexos.status === 204) {
+                    limpaCampos();
+                    mensagem.success('Documento inserido com sucesso.');
+                    carregaAnexos(manId);
+                    carregaManifestacaoProcesso();
+                    document.getElementById('anexo').value = '';
+                    setTpdId('-1');
+                }
             })
             .catch(() => {
-                setErro('Erro ao inserir na tabela arquivo.');
+                limpaCampos();
+                setErro('Erro ao criar arquivo anexo.');
+                carregaManifestacaoProcesso();
+                document.getElementById('anexo').value = '';
             });
     }
 
@@ -500,10 +466,10 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
             });
     }
 
-    function geraJuntada() {
+    function geraJuntada(proIdJuntada, proAnoJuntada) {
         axios({
             method: 'GET',
-            url: `/gera-juntada/${Number(props.match.params.proId)}`,
+            url: `/gera-juntada/${proIdJuntada}/${proAnoJuntada}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
                 Accept: 'application/pdf',
@@ -516,7 +482,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                 const link = document.createElement('a');
                 link.href = url;
                 const contentDisposition = res.headers['content-disposition'];
-                let fileName = `juntada${Number(props.match.params.proId)}.pdf`;
+                let fileName = `juntada${proIdJuntada}${proAnoJuntada}.pdf`;
                 if (contentDisposition) {
                     const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
                     if (fileNameMatch.length === 2) {
@@ -528,6 +494,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                 link.click();
                 link.remove();
                 window.URL.revokeObjectURL(url);
+                mensagem.success('Juntada gerada com sucesso.');
             })
             .catch(() => {
                 setErro('Erro ao gerar juntada.');
@@ -570,7 +537,14 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                                     name="manParecerProjurisAposentadoria"
                                     changeHandler={selecionaParecer}
                                 />
-                                <LinkJuntada type="button" onClick={geraJuntada}>
+                                <LinkJuntada
+                                    type="button"
+                                    onClick={() =>
+                                        geraJuntada(
+                                            Number(match.params.proId),
+                                            proCodigo.substr(proCodigo.length - 4)
+                                        )
+                                    }>
                                     Ver juntada do processo
                                 </LinkJuntada>
                             </Container2>
@@ -673,12 +647,15 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                                                     onClick={e =>
                                                         download(
                                                             e,
-                                                            anexo.arq_id,
-                                                            anexo.manId,
+                                                            Number(match.params.proId),
+                                                            proCodigo.substr(proCodigo.length - 4),
                                                             anexo.arq_nome
                                                         )
                                                     }>
-                                                    {anexo.arq_nome}
+                                                    {anexo.arq_nome.substr(
+                                                        33,
+                                                        anexo.arq_nome.length
+                                                    )}
                                                 </BotaoComoLink>
                                             </td>
                                             <td>{anexo.data}</td>

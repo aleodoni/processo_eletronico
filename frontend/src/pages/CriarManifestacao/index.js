@@ -406,7 +406,6 @@ function CriarManifestacao(props) {
     }
 
     function tramita() {
-        // REVER AQUI!!!!
         if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM && nodId === 130) {
             const prxId = 130;
             axios({
