@@ -134,14 +134,6 @@ function CriarManifestacaoCiencia(props) {
                 man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
                 man_ciencia: 'Ciente do processo',
                 nod_id: nodId,
-
-                arq_id: null,
-                arq_nome: `ciencia.pdf`,
-                arq_tipo: 'application/pdf',
-                arq_doc_id: null,
-                arq_doc_tipo: 'manifestação',
-                tpd_id: constantes.TPD_CIENCIA_PROCESSO,
-                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),

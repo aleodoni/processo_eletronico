@@ -483,7 +483,6 @@ routes.post(`${process.env.API_URL}/arquivo-visto-executiva/:id/:ano/:login/:man
         res.status(400).end();
     }
 });
-// routes.post(`${process.env.API_URL}/arquivo-ciencia`, CriaPdfController.criaPdfCiencia);
 routes.post(`${process.env.API_URL}/arquivo-ciencia/:id/:ano/:login/:manId`, async function(req, res) {
     const nomeArquivo = 'ciencia-' + req.params.id + req.params.ano + '.pdf';
     const destinoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano + '/';
