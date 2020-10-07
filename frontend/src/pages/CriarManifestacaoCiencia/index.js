@@ -147,18 +147,22 @@ function CriarManifestacaoCiencia(props) {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resultado => {
-                setManId(resultado.data.man_id);
+            .then(res => {
+                setManId(res.data.man_id);
+                const data = new FormData();
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', res.data.man_id);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: `/arquivo-ciencia`,
+                    url: `/arquivo-ciencia/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}/${sessionStorage.getItem('usuario')}/${res.data.man_id}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
-                    data: {
-                        arq_id: resultado.data.arq_id,
-                        man_id: resultado.data.man_id,
-                    },
+                    data,
                 })
                     .then(resAnexos => {
                         if (resAnexos.status === 204) {
@@ -168,18 +172,8 @@ function CriarManifestacaoCiencia(props) {
                         }
                     })
                     .catch(() => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
+                        setErro('');
+                        carregaManifestacaoProcesso();
                         setErro('Erro ao criar arquivo anexo.');
                     });
                 limpaCampos();
@@ -416,8 +410,10 @@ function CriarManifestacaoCiencia(props) {
                                                         onClick={e =>
                                                             download(
                                                                 e,
-                                                                anexo.arq_id,
-                                                                anexo.man_id,
+                                                                Number(match.params.proId),
+                                                                proCodigo.substr(
+                                                                    proCodigo.length - 4
+                                                                ),
                                                                 anexo.arq_nome
                                                             )
                                                         }>
