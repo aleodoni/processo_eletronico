@@ -428,6 +428,30 @@ function CriarManifestacao(props) {
                 });
             return;
         }
+
+        // se o tipo de processo for de recurso e o nó for
+        if (tprId === constantes.TPR_RECURSO && nodId === 281) {
+            const prxId = 103;
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-direcionado/${match.params.proId}/${prxId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(resDirecionado => {
+                    // se não tiver registros
+                    if (resDirecionado.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaUm(resDirecionado.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
         // se o nó for o 291 e o tipo for de aposentadoria voluntária
         if (tprId === constantes.TPR_APOSENTADORIA && nodId === 291) {
             // verifica qual foi a decisão da comissão executiva,
