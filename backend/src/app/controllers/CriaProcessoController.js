@@ -150,7 +150,7 @@ class CriaProcessoController {
                 'tpr_id',
                 'tpr_nome'
             ],
-            logging: false,
+            logging: true,
             where: {
                 usu_autuador: req.params.usuario,
                 tpr_id: {
@@ -158,7 +158,7 @@ class CriaProcessoController {
                         constantes.TPR_BAIXA_BENS,
                         constantes.TPR_PAD,
                         constantes.TPR_PAS,
-                        constantes.TPR_EXECUCAO_DEESPESAS,
+                        constantes.TPR_EXECUCAO_DESPESAS,
                         constantes.TPR_RECURSO
                     ]
                 },
