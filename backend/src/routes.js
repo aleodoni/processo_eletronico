@@ -433,7 +433,8 @@ routes.delete(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoControl
 
 // rotas de criação de pdf
 routes.post(`${process.env.API_URL}/arquivo-visto-executiva/:id/:ano/:login/:manId/:secretaria`, async function(req, res) {
-    const nomeArquivo = 'visto-' + req.params.secretaria + '-secretaria-' + req.params.id + req.params.ano + '.pdf';
+    const nomeArquivo = crypto.randomBytes(16).toString('hex') + '-visto-' + req.params.secretaria + '-secretaria-' + req.params.id + req.params.ano + '.pdf';
+    // const nomeArquivo = hash.toString('hex')+'-visto-' + req.params.secretaria + '-secretaria-' + req.params.id + req.params.ano + '.pdf';
     const destinoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano + '/';
     const caminhoArquivo = destinoArquivo + nomeArquivo;
     const tipoArquivo = 'application/pdf';

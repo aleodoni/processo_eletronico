@@ -506,7 +506,6 @@ class TramiteController {
                 'nod_id',
                 'nod_id_proximo',
                 'raz_id',
-                'raz_nome',
                 'set_id',
                 'set_nome',
                 'set_sigla'

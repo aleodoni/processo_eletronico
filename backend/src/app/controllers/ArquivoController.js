@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Arquivo from '../models/Arquivo';
+import Processo from '../models/Processo';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
 import DataHoraAtual from '../models/DataHoraAtual';
 // import AuditoriaController from './AuditoriaController';
@@ -123,6 +124,15 @@ class ArquivoController {
         const arquivo = await Arquivo.findByPk(req.params.id, { logging: false });
         if (!arquivo) {
             return res.status(400).json({ error: 'Arquivo não encontrado' });
+        }
+        const processo = await Processo.findByPk(arquivo.pro_id, { logging: false });
+        // aqui apaga o arquivo no disco
+        const caminhoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + arquivo.pro_id + processo.pro_ano + '/' + arquivo.arq_nome;
+        try {
+            fs.unlinkSync(caminhoArquivo);
+        } catch (err) {
+            console.error(err);
+            return res.status(400).json({ error: 'Erro ao apagar arquivo em disco.' });
         }
         await arquivo
             .destroy({ logging: false })

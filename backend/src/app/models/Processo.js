@@ -86,6 +86,9 @@ class Processo extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false
                 },
+                pro_ano: {
+                    type: Sequelize.INTEGER
+                },
                 pro_autuacao: {
                     type: Sequelize.NOW,
                     allowNull: false

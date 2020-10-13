@@ -245,6 +245,7 @@ function CriarManifestacaoVisto(props) {
                     .then(() => {
                         mensagem.success('Decisão apagada com sucesso.');
                         carregaAnexos(manId);
+                        document.getElementById('manId').value = manId;
                         carregaManifestacaoProcesso();
                     })
                     .catch(err => {
@@ -387,7 +388,7 @@ function CriarManifestacaoVisto(props) {
                                             <tr key={anexo.arq_id}>
                                                 <td>{anexo.tpd_nome}</td>
                                                 <td>
-                                                    <BotaoComoLink
+                                                <BotaoComoLink
                                                         type="button"
                                                         onClick={e =>
                                                             download(
@@ -399,7 +400,10 @@ function CriarManifestacaoVisto(props) {
                                                                 anexo.arq_nome
                                                             )
                                                         }>
-                                                        {anexo.arq_nome}
+                                                        {anexo.arq_nome.substr(
+                                                            33,
+                                                            anexo.arq_nome.length
+                                                        )}
                                                     </BotaoComoLink>
                                                 </td>
                                                 <td>{anexo.data}</td>
