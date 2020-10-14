@@ -485,7 +485,8 @@ routes.post(`${process.env.API_URL}/arquivo-visto-executiva/:id/:ano/:login/:man
     }
 });
 routes.post(`${process.env.API_URL}/arquivo-ciencia/:id/:ano/:login/:manId`, async function(req, res) {
-    const nomeArquivo = 'ciencia-' + req.params.id + req.params.ano + '.pdf';
+    const strHexa = crypto.randomBytes(16).toString('hex');
+    const nomeArquivo = strHexa + '-ciencia-' + req.params.id + req.params.ano + '.pdf';
     const destinoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano + '/';
     const caminhoArquivo = destinoArquivo + nomeArquivo;
     const tipoArquivo = 'application/pdf';
@@ -539,7 +540,8 @@ routes.post(`${process.env.API_URL}/arquivo-ciencia/:id/:ano/:login/:manId`, asy
 routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao`, CriaPdfController.criaPdfCienciaAverbacao);
 
 routes.post(`${process.env.API_URL}/arquivo-ciencia-calculo/:id/:ano/:login/:manId`, async function(req, res) {
-    const nomeArquivo = 'ciencia-calculo-' + req.params.id + req.params.ano + '.pdf';
+    const strHexa = crypto.randomBytes(16).toString('hex');
+    const nomeArquivo = strHexa + '-ciencia-calculo-' + req.params.id + req.params.ano + '.pdf';
     const destinoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano + '/';
     const caminhoArquivo = destinoArquivo + nomeArquivo;
     const tipoArquivo = 'application/pdf';

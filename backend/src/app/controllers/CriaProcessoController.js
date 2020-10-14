@@ -32,6 +32,7 @@ import ConnectionHelper from '../helpers/ConnectionHelper';
 import * as constantes from '../../app/constants/constantes';
 import AutorizacaoFornecimento from '../models/AutorizacaoFornecimento';
 import { fileHash } from '../util/hash';
+import crypto from 'crypto';
 const fs = require('fs');
 
 // import AuditoriaController from './AuditoriaController';
@@ -435,10 +436,13 @@ class CriaProcessoController {
             console.log(JSON.stringify(processoOrigem, null, 4));
         }
         // grava na tabela arquivo a capa do processo
+        const strHexa = crypto.randomBytes(16).toString('hex');
+        const nomeArquivo = strHexa + '-capa-' + pro_id + anoAtual + '.pdf';
+
         const arquivo = await Arquivo.create(
             {
                 arq_id: null,
-                arq_nome: 'capa-' + pro_id + anoAtual + '.pdf',
+                arq_nome: nomeArquivo,
                 pro_id: pro_id,
                 man_id: null,
                 arq_tipo: 'application/pdf',
@@ -460,7 +464,8 @@ class CriaProcessoController {
             pro_id,
             anoAtual,
             tipoProcesso.dataValues.tpr_nome,
-            caminhoProcesso
+            caminhoProcesso,
+            nomeArquivo
         );
         // obtem o hash do arquivo
         const hashCapa = await fileHash(caminhoArquivoCapa);

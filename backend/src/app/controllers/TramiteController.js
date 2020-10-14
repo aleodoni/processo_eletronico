@@ -115,7 +115,7 @@ class TramiteController {
                 tpr_id: tprId
             },
             attributes: ['tpr_id', 'tpr_pessoal'],
-            logging: false,
+            logging: true,
             plain: true
         });
 
@@ -134,7 +134,7 @@ class TramiteController {
             where: {
                 pro_id: req.params.id
             },
-            logging: false
+            logging: true
         });
         // console.log(JSON.stringify(proximo, null, 4));
         const Op = Sequelize.Op;

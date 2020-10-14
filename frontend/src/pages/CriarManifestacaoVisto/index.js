@@ -117,6 +117,7 @@ function CriarManifestacaoVisto(props) {
                 carregaAnexos(response.data[0].man_id);
                 setManId(response.data[0].man_id);
                 setManifestacao({ manId: response.data[0].man_id });
+                document.getElementById('manId').value = response.data[0].man_id;
             }
         } catch (err) {
             mensagem.error(`Falha na autenticação - ${err}`);

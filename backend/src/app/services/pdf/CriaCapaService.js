@@ -35,7 +35,7 @@ class CriaCapaService {
         return arquivo;
     }
 
-    async capaProcesso(arq_id, pro_id, pro_ano, tpr_nome, caminho) {
+    async capaProcesso(arq_id, pro_id, pro_ano, tpr_nome, caminho, nomeArquivo) {
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
             logging: false,
@@ -47,7 +47,7 @@ class CriaCapaService {
         if (!processo) {
             throw new AppError('Processo não encontrado.');
         }
-        const arquivo = caminho + '/' + 'capa-' + pro_id + pro_ano + '.pdf';
+        const arquivo = caminho + '/' + nomeArquivo;
         const doc = new PDFDocument();
         doc.pipe(fs.createWriteStream(arquivo));
         doc.image(brasao, 10, 10, { scale: 0.50 });

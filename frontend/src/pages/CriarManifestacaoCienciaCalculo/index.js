@@ -585,14 +585,10 @@ function CriarManifestacaoCienciaCalculo(props) {
                                                                 anexo.arq_nome
                                                             )
                                                         }>
-                                                        {manifestacaoProcesso[0]
-                                                            .man_ciencia_calculo ===
-                                                        'Estou ciente do cálculo'
-                                                            ? `${anexo.arq_nome}`
-                                                            : `${anexo.arq_nome.substr(
-                                                                  33,
-                                                                  anexo.arq_nome.length
-                                                              )}`}
+                                                        {anexo.arq_nome.substr(
+                                                            33,
+                                                            anexo.arq_nome.length
+                                                        )}
                                                     </BotaoComoLink>
                                                 </td>
                                                 <td>{anexo.data}</td>
