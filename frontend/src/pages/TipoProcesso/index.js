@@ -6,12 +6,13 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Container1, Container2, Main, Erro, Titulo } from './styles';
+import { Container, Container1, Container2, Container3, Main, Erro, Titulo } from './styles';
 import api from '../../service/api';
 import Input from '../../components/layout/Input';
 import Select from '../../components/layout/Select';
 import Pessoal from '../../components/system/select/Pessoal';
 import TipoProcessoVisivel from '../../components/system/select/TipoProcessoVisivel';
+import TramitacaoAberta from '../../components/system/select/TramitacaoAberta';
 import Visualizacao from '../../components/system/select/Visualizacao';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
@@ -31,6 +32,7 @@ function TipoProcesso() {
         tprPessoal: -1,
         tprPrazoRecurso: 0,
         tprVisivel: -1,
+        tprTramitacaoAberta: -1,
     });
 
     const [tiposProcesso, setTiposProcesso] = useState([]);
@@ -65,6 +67,7 @@ function TipoProcesso() {
             tprPessoal: -1,
             tprPrazoRecurso: 0,
             tprVisivel: -1,
+            tprTramitacaoAberta: -1,
         });
         setErro('');
 
@@ -77,7 +80,6 @@ function TipoProcesso() {
 
     function preencheCampos(linha) {
         formRef.current.setErrors({});
-
         setTipoProcesso({
             ...tipoProcesso,
             tprId: linha.tpr_id,
@@ -88,6 +90,7 @@ function TipoProcesso() {
             tprPessoal: linha.tpr_pessoal,
             tprPrazoRecurso: linha.tpr_prazo_recurso,
             tprVisivel: linha.tpr_visivel,
+            tprTramitacaoAberta: linha.tpr_tramitacao_aberta,
         });
         posiciona();
     }
@@ -96,7 +99,7 @@ function TipoProcesso() {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get('/generos');
+            const response = await api.get('/generos-total');
 
             const data = response.data.map(genero => {
                 return {
@@ -165,6 +168,7 @@ function TipoProcesso() {
         tprPessoal,
         tprPrazoRecurso,
         tprVisivel,
+        tprTramitacaoAberta,
     }) {
         try {
             const schema = Yup.object().shape({
@@ -178,6 +182,10 @@ function TipoProcesso() {
                 tprPessoal: Yup.boolean().oneOf([true, false], 'Selecione se é pessoal'),
                 tprPrazoRecurso: Yup.number().positive('Prazo de recurso é obrigatório'),
                 tprVisivel: Yup.boolean().oneOf([true, false], 'Selecione se é visível'),
+                tprTramitacaoAberta: Yup.boolean().oneOf(
+                    [true, false],
+                    'Selecione se é tramitação aberta'
+                ),
             });
 
             await schema.validate(
@@ -190,6 +198,7 @@ function TipoProcesso() {
                     tprPessoal,
                     tprPrazoRecurso,
                     tprVisivel,
+                    tprTramitacaoAberta,
                 },
                 { abortEarly: false }
             );
@@ -207,6 +216,7 @@ function TipoProcesso() {
                         tpr_pessoal: tprPessoal,
                         tpr_prazo_recurso: tprPrazoRecurso,
                         tpr_visivel: tprVisivel,
+                        tpr_tramitacao_aberta: tprTramitacaoAberta,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -233,6 +243,7 @@ function TipoProcesso() {
                         tpr_pessoal: tprPessoal,
                         tpr_prazo_recurso: tprPrazoRecurso,
                         tpr_visivel: tprVisivel,
+                        tpr_tramitacao_aberta: tprTramitacaoAberta,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -306,6 +317,8 @@ function TipoProcesso() {
                         <Container2>
                             <Select name="genId" label="Gênero" size={3} options={generos} />
                             <Select name="fluId" label="Fluxo" size={3} options={fluxos} />
+                        </Container2>
+                        <Container3>
                             <Pessoal name="tprPessoal" />
                             <Input
                                 name="tprPrazoRecurso"
@@ -314,7 +327,8 @@ function TipoProcesso() {
                                 maxLength="2"
                             />
                             <TipoProcessoVisivel name="tprVisivel" />
-                        </Container2>
+                            <TramitacaoAberta name="tprTramitacaoAberta" />
+                        </Container3>
                         <ButtonContainer>
                             <Salvar name="btnSalva" clickHandler={grava} />
 
@@ -338,6 +352,11 @@ function TipoProcesso() {
                                 width: '170px',
                             },
                             { title: 'Visível', field: 'visivel', width: '70px' },
+                            {
+                                title: 'Tramitação aberta',
+                                field: 'tramitacao_aberta',
+                                width: '100px',
+                            },
                         ]}
                         data={tiposProcesso}
                         fillData={preencheCampos}

@@ -35,7 +35,16 @@ class VTipoProcesso extends Model {
                 pessoal: {
                     type: Sequelize.STRING
                 },
+                tpr_visivel: {
+                    type: Sequelize.INTEGER
+                },
                 visivel: {
+                    type: Sequelize.STRING
+                },
+                tpr_tramitacao_aberta: {
+                    type: Sequelize.INTEGER
+                },
+                tramitacao_aberta: {
                     type: Sequelize.STRING
                 }
             },

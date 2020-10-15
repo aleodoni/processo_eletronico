@@ -160,6 +160,7 @@ routes.delete(`${process.env.API_URL}/sigilos/:id`, SigiloController.delete);
 
 // rotas do cadastro de gêneros
 routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
+routes.get(`${process.env.API_URL}/generos-total`, GeneroController.generoTotal);
 routes.get(`${process.env.API_URL}/generos-grid`, GeneroController.grid);
 routes.post(`${process.env.API_URL}/generos`, generoValidator, GeneroController.store);
 routes.put(`${process.env.API_URL}/generos/:id`, generoValidator, GeneroController.update);

@@ -21,6 +21,15 @@ class GeneroController {
         return res.json(generos);
     }
 
+    async generoTotal(req, res) {
+        const generos = await Genero.findAll({
+            order: ['gen_nome'],
+            attributes: ['gen_id', 'gen_nome', 'gen_visivel'],
+            logging: false
+        });
+        return res.json(generos);
+    }
+
     async grid(req, res) {
         const generos = await VGenero.findAll({
             order: ['gen_nome'],

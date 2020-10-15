@@ -9,7 +9,7 @@ class TipoProcessoController {
     async index(req, res) {
         const tiposProcesso = await TipoProcesso.findAll({
             order: ['tpr_nome'],
-            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'flu_id', 'tpr_pessoal', 'tpr_prazo_recurso', 'tpr_visivel'],
+            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'flu_id', 'tpr_pessoal', 'tpr_prazo_recurso', 'tpr_visivel', 'tpr_tramitacao_aberta'],
             logging: false
         });
         return res.json(tiposProcesso);
@@ -22,7 +22,7 @@ class TipoProcessoController {
                 tpr_visivel: true
             },
             order: ['tpr_nome'],
-            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'flu_id', 'tpr_pessoal', 'tpr_visivel'],
+            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'flu_id', 'tpr_pessoal', 'tpr_visivel', 'tpr_tramitacao_aberta'],
             logging: false
         });
         return res.json(tiposProcesso);
@@ -31,14 +31,14 @@ class TipoProcessoController {
     async listaTiposProcesso(req, res) {
         const vTiposProcesso = await VTipoProcesso.findAll({
             order: ['tpr_nome'],
-            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'visualizacao', 'gen_nome', 'flu_id', 'flu_nome', 'tpr_pessoal', 'pessoal', 'tpr_prazo_recurso', 'visivel'],
+            attributes: ['tpr_id', 'tpr_nome', 'tpr_visualizacao', 'gen_id', 'visualizacao', 'gen_nome', 'flu_id', 'flu_nome', 'tpr_pessoal', 'pessoal', 'tpr_prazo_recurso', 'tpr_visivel', 'visivel', 'tpr_tramitacao_aberta', 'tramitacao_aberta'],
             logging: false
         });
         return res.json(vTiposProcesso);
     }
 
     async store(req, res) {
-        const { tpr_id, tpr_nome, tpr_visualizacao, gen_id, flu_id, tpr_pessoal, tpr_prazo_recurso, tpr_visivel } = await TipoProcesso.create(req.body, {
+        const { tpr_id, tpr_nome, tpr_visualizacao, gen_id, flu_id, tpr_pessoal, tpr_prazo_recurso, tpr_visivel, tpr_tramitacao_aberta } = await TipoProcesso.create(req.body, {
             logging: false
         });
         // auditoria de inserção
@@ -52,7 +52,8 @@ class TipoProcessoController {
             flu_id,
             tpr_pessoal,
             tpr_prazo_recurso,
-            tpr_visivel
+            tpr_visivel,
+            tpr_tramitacao_aberta
         });
     }
 
