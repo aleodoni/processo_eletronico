@@ -29,6 +29,7 @@ function Login() {
         sessionStorage.removeItem('nomeSetorUsuario');
         sessionStorage.removeItem('nomeAreaUsuario');
         sessionStorage.removeItem('menu');
+        sessionStorage.removeItem('permissoes');
     }
 
     useEffect(() => {
@@ -59,7 +60,7 @@ function Login() {
             formRef.current.setErrors({});
 
             const schema = Yup.object().shape({
-                usuario: Yup.string().required('O usuário é obrigatório'),
+                login: Yup.string().required('O usuário é obrigatório'),
                 senha: Yup.string().required('A senha é obrigatória'),
             });
 
@@ -68,12 +69,11 @@ function Login() {
             });
 
             try {
-                const { usuario, senha, timeout } = data;
+                const { login, senha } = data;
 
                 const response = await api.post('/autorizacao', {
-                    usuario,
+                    login,
                     senha,
-                    timeout,
                 });
 
                 sessionStorage.setItem('token', response.data.token);
@@ -84,6 +84,7 @@ function Login() {
                 sessionStorage.setItem('nomeSetorUsuario', response.data.nomeSetorUsuario);
                 sessionStorage.setItem('nomeAreaUsuario', response.data.nomeAreaUsuario);
                 sessionStorage.setItem('menu', response.data.menu);
+                sessionStorage.setItem('permissoes', response.data.permissoes);
 
                 history.push('/home');
             } catch (err) {
@@ -111,17 +112,12 @@ function Login() {
                     <img src={Logo} alt="Câmara Municipal de Curitiba" />
                     <span>Processo eletrônico</span>
                     <br />
-
-                    <Input type="text" name="usuario" placeholder="Usuário" />
-
+                    <Input type="text" name="login" placeholder="Usuário" />
                     <Input type="password" name="senha" placeholder="Senha" />
-
-                    <Input type="hidden" id="timeout" name="timeout" value="1440" />
                     <Button type="submit">
                         <FaKey color="#FFF" />
                         Acessar
                     </Button>
-
                     <Versao>{bd}</Versao>
                 </Form>
             </Centro>

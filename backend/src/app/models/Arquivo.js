@@ -47,6 +47,12 @@ class Arquivo extends Model {
                 arq_login: {
                     type: Sequelize.STRING,
                     allowNull: false
+                },
+                arq_hash: {
+                    type: Sequelize.STRING
+                },
+                arq_cancelado: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

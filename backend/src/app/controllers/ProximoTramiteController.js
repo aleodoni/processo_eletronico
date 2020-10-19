@@ -4,8 +4,9 @@
 import ProximoTramite from '../models/ProximoTramite';
 import VNodoFluxo from '../models/VNodoFluxo';
 import VProximoTramite from '../models/VProximoTramite';
-import Sequelize from 'sequelize';
+import { renderDot } from 'render-dot';
 // import AuditoriaController from './AuditoriaController';
+import ConnectionHelper from '../helpers/ConnectionHelper';
 
 class ProximoTramiteController {
     async index(req, res) {
@@ -23,7 +24,7 @@ class ProximoTramiteController {
                 flu_id: req.params.id
             },
             attributes: ['nod_id', 'flu_id', 'set_nome'],
-            logging: true
+            logging: false
         });
         return res.json(nodoFluxos);
     }
@@ -34,7 +35,7 @@ class ProximoTramiteController {
                 flu_id: req.params.id
             },
             attributes: ['prx_id', 'flu_id', 'nod_id', 'nod_id_proximo', 'raz_id', 'nodo', 'nodo_proximo', 'raz_nome', 'prx_prioridade'],
-            logging: true
+            logging: false
         });
         return res.json(gridProximoTramite);
     }
@@ -47,39 +48,30 @@ class ProximoTramiteController {
         return res.json(proximoTramite);
     }
 
-    async geraGrafo(req, res) {
-        const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-            host: process.env.DB_HOST,
-            dialect: 'postgres',
-            define: {
-                timestamps: false,
-                underscoredAll: true
-            },
-            pool: {
-                max: 7,
-                min: 0,
-                acquire: 30000,
-                idle: 10000
-            }
-        });
+    async criaGrafo(req, res) {
+        const connection = ConnectionHelper.getConnection();
 
         // monta o grafo do fluxo passado por parâmetro
         const sql = 'select spa2.grafo_fluxo(' + req.params.id + ')';
 
-        const montaGrafo = await sequelize.query(sql,
+        const montaGrafo = await connection.query(sql,
             {
                 logging: false,
                 plain: true,
                 raw: true
             }
         );
-        console.log(montaGrafo.grafo_fluxo);
-        return res.json(montaGrafo.grafo_fluxo);
+        const imagem = await renderDot({
+            input: montaGrafo.grafo_fluxo,
+            format: 'png'
+        });
+        const img = Buffer.from(imagem, 'binary');
+        return res.send(img);
     }
 
     async store(req, res) {
         const { prx_id, prx_prioridade, nod_id, nod_id_proximo, raz_id, flu_id } = await ProximoTramite.create(req.body, {
-            logging: true
+            logging: false
         });
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', nod_id);

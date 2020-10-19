@@ -17,6 +17,9 @@ import {
     ContainerIniciativa,
     ContainerDadosServidorPublico,
     ContainerNome,
+    ContainerRevisaoPensaoAlimenticia,
+    ContainerRecurso,
+    ContainerAbonoPermanencia,
     ContainerBotoes,
     Erro,
     BotaoProcura,
@@ -28,7 +31,9 @@ import axios from '../../configs/axiosConfig';
 import DefaultLayout from '../_layouts/default';
 import CriaProcesso from '../../components/layout/button/CriaProcesso';
 import Iniciativa from '../../components/system/select/Iniciativa';
+import ComAbono from '../../components/system/select/ComAbono';
 import { cpf, cnpj } from '../../utils/validaCpfCnpj';
+import * as constantes from '../../utils/constantes';
 
 function CriarProcesso() {
     const history = useHistory();
@@ -60,13 +65,21 @@ function CriarProcesso() {
     const [cnpjVisivel, setCnpjVisivel] = useState(false);
     const [areaVisivel, setAreaVisivel] = useState(false);
     const [assuntoVisivel, setAssuntoVisivel] = useState(false);
+    const [revisaoPensaoAlimenticiaVisivel, setRevisaoPensaoAlimenticiaVisivel] = useState(false);
+    const [abonoPermanenciaVisivel, setAbonoPermanenciaVisivel] = useState(false);
+    const [recursoVisivel, setRecursoVisivel] = useState(false);
+    const [recursoPadVisivel, setRecursoPadVisivel] = useState(false);
+    const [campoNumeroAbonoPermanenciaVisivel, setCampoNumeroAbonoPermanenciaVisivel] = useState(
+        false
+    );
 
     const [tiposProcesso, setTiposProcesso] = useState([]);
     const [tiposIniciativa, setTiposIniciativa] = useState([]);
     const [generos, setGeneros] = useState([]);
     const [areas, setAreas] = useState([]);
-
-    const DEMAIS_PROCESSOS = '26';
+    const [pensoesAlimenticias, setPensoesAlimenticias] = useState([]);
+    const [recursos, setRecursos] = useState([]);
+    const [recursosPad, setRecursosPad] = useState([]);
 
     const formRef = useRef(null);
 
@@ -145,11 +158,93 @@ function CriarProcesso() {
         }
     }
 
+    async function carregaPensaoAlimenticia() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/combo-processos-pensao-alimenticia');
+
+            const data = response.data.map(processoPensao => {
+                return {
+                    label: `${processoPensao.pro_codigo} - ${processoPensao.pro_nome}`,
+                    value: processoPensao.pro_id,
+                };
+            });
+            setPensoesAlimenticias(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    async function carregaRecurso() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(
+                `/combo-processos-recurso/${sessionStorage.getItem('usuario')}`
+            );
+
+            const data = response.data.map(processoRecurso => {
+                return {
+                    label: `${processoRecurso.pro_codigo} - ${processoRecurso.pro_nome} - ${processoRecurso.tpr_nome}`,
+                    value: processoRecurso.pro_id,
+                };
+            });
+            setRecursos(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    async function carregaRecursoPad() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(
+                `/combo-processos-recurso-pad/${sessionStorage.getItem('usuario')}`
+            );
+
+            const data = response.data.map(processoRecursoPad => {
+                return {
+                    label: `${processoRecursoPad.pro_codigo} - ${processoRecursoPad.tpr_nome}`,
+                    value: processoRecursoPad.pro_id,
+                };
+            });
+            setRecursosPad(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
     function handleTprId(e) {
+        const tipoProcesso = Number(e.target.value);
         // demais processos
-        if (e.target.value === DEMAIS_PROCESSOS) {
+        if (tipoProcesso === constantes.TPR_DEMAIS) {
             setAssuntoVisivel(true);
         } else {
+            if (tipoProcesso === constantes.TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
+                carregaPensaoAlimenticia();
+                setRevisaoPensaoAlimenticiaVisivel(true);
+            } else {
+                setRevisaoPensaoAlimenticiaVisivel(false);
+            }
+            if (tipoProcesso === constantes.TPR_ABONO_PERMANENCIA) {
+                setAbonoPermanenciaVisivel(true);
+            } else {
+                setAbonoPermanenciaVisivel(false);
+            }
+            if (tipoProcesso === constantes.TPR_RECURSO) {
+                carregaRecurso();
+                setRecursoVisivel(true);
+            } else {
+                setRecursoVisivel(false);
+            }
+            if (tipoProcesso === constantes.TPR_RECURSO_REVISAO_PAD) {
+                carregaRecursoPad();
+                setRecursoPadVisivel(true);
+            } else {
+                setRecursoPadVisivel(false);
+            }
             setAssuntoVisivel(false);
         }
     }
@@ -368,7 +463,7 @@ function CriarProcesso() {
                     return;
                 }
                 if (p.proCpf.trim() !== '') {
-                    if (!cpf(p.proCpf.trim())) {
+                    if (!cpf(p.proCpf.trim().replace(/[^\d]+/g, ''))) {
                         setErro('Cpf inválido.');
                         return;
                     }
@@ -420,6 +515,71 @@ function CriarProcesso() {
                 }
             }
         }
+        // aqui valida se for pensão alimentícia
+        if (Number(p.tprId) === constantes.TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA) {
+            if (p.proCpf === '' || p.proCpf === undefined) {
+                setErro('CPF é obrigatório.');
+                return;
+            }
+            if (Number(sessionStorage.getItem('areaUsuario')) !== constantes.AREA_DARH) {
+                setErro('Este tipo de processo só pode ser aberto pela área DGRH.');
+                return;
+            }
+            if (!cpf(p.proCpf.trim().replace(/[^\d]+/g, ''))) {
+                setErro('Cpf inválido.');
+                return;
+            }
+            if (p.proPensao === '-1') {
+                setErro('Selecione o processo.');
+                return;
+            }
+        }
+        let pensao;
+        if (p.proPensao !== '-1' && p.proPensao !== undefined) {
+            pensao = Number(p.proPensao);
+        } else {
+            pensao = null;
+        }
+
+        // aqui valida se é abono de permanência
+
+        if (Number(p.tprId) === constantes.TPR_ABONO_PERMANENCIA) {
+            if (p.proComAbono === '-1') {
+                setErro('Selecione se há comunicado eletrônico prévio.');
+                return;
+            }
+            if (p.proComAbono === 'true') {
+                if (p.proNumComAbono === '') {
+                    setErro('Preencha o número do comunicado eletrônico prévio.');
+                    return;
+                }
+            }
+        } else {
+            p.proComAbono = false;
+            p.proNumComAbono = null;
+        }
+
+        // aqui valida se é do tipo recurso
+        let proRecurso = false;
+        let proCodigoRecurso = null;
+        if (Number(p.tprId) === constantes.TPR_RECURSO) {
+            if (p.proRecurso === '-1') {
+                setErro('Selecione o processo.');
+                return;
+            }
+            proCodigoRecurso = Number(p.proRecurso);
+            proRecurso = true;
+        }
+
+        // aqui valida se se é do tipo auxílio funeral
+        // se for o CPF é obrigatório
+        if (Number(p.tprId) === constantes.TPR_AUXILIO_FUNERAL) {
+            if (p.proCpf === '' || p.proCpf === undefined) {
+                setErro('CPF é obrigatório.');
+                return;
+            }
+        }
+        //
         let cpfNumeros;
         let cnpjNumeros;
         if (p.proCpf !== '' && p.proCpf !== undefined) {
@@ -456,7 +616,11 @@ function CriarProcesso() {
                 tpr_id: p.tprId,
                 pro_contato_pj: p.proContatoPj,
                 pro_autuacao: null,
-                pro_recurso: false,
+                pro_recurso: proRecurso,
+                pro_pensao: pensao,
+                pro_com_abono: p.proComAbono,
+                pro_num_com_abono: p.proNumComAbono,
+                pro_codigo_recurso: proCodigoRecurso,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -471,7 +635,13 @@ function CriarProcesso() {
                     erroCria.response.data.error ===
                     'Processo sem fluxo. Cadastre um fluxo primeiro.'
                 ) {
-                    setErro(erroCria.response.data.error);
+                    setErro('Processo sem fluxo. Cadastre um fluxo primeiro.');
+                } else if (
+                    erroCria.response.data.error === 'Erro ao retornar dados de área de pessoa.'
+                ) {
+                    setErro(
+                        'Erro ao retornar dados de área de pessoa. Insira um nome válido de pessoa.'
+                    );
                 } else {
                     setErro('Erro ao inserir processo.');
                 }
@@ -543,6 +713,16 @@ function CriarProcesso() {
             });
     }
 
+    function abreCampoNumeroAbono() {
+        const p = formRef.current.getData();
+        if (p.proComAbono === 'true') {
+            setCampoNumeroAbonoPermanenciaVisivel(true);
+        } else {
+            p.proNumComAbono = '';
+            setCampoNumeroAbonoPermanenciaVisivel(false);
+        }
+    }
+
     function limpaCampos() {
         formRef.current.reset();
         setAssuntoVisivel(false);
@@ -553,6 +733,8 @@ function CriarProcesso() {
         setEmailVisivel(false);
         setCnpjVisivel(false);
         setAreaVisivel(false);
+        setRevisaoPensaoAlimenticiaVisivel(false);
+        setAbonoPermanenciaVisivel(false);
         iniciaTipoProcesso();
         formRef.current.setFieldValue('genId', '-1');
         formRef.current.setFieldValue('proIniciativa', '-1');
@@ -703,6 +885,49 @@ function CriarProcesso() {
                                 onChange={handleTprId}
                             />
                         </ContainerCriaProcesso>
+                        {revisaoPensaoAlimenticiaVisivel ? (
+                            <ContainerRevisaoPensaoAlimenticia>
+                                <Select
+                                    name="proPensao"
+                                    label="Selecione o processo"
+                                    options={pensoesAlimenticias}
+                                />
+                            </ContainerRevisaoPensaoAlimenticia>
+                        ) : null}
+                        {recursoVisivel ? (
+                            <ContainerRecurso>
+                                <Select
+                                    name="proRecurso"
+                                    label="Selecione o processo para recurso"
+                                    options={recursos}
+                                />
+                            </ContainerRecurso>
+                        ) : null}
+                        {recursoPadVisivel ? (
+                            <ContainerRecurso>
+                                <Select
+                                    name="proRecursoPad"
+                                    label="Selecione o processo para recurso de PAD"
+                                    options={recursosPad}
+                                />
+                            </ContainerRecurso>
+                        ) : null}
+                        {abonoPermanenciaVisivel ? (
+                            <ContainerAbonoPermanencia>
+                                <ComAbono name="proComAbono" onChange={abreCampoNumeroAbono} />
+                                {campoNumeroAbonoPermanenciaVisivel ? (
+                                    <>
+                                        <Input
+                                            name="proNumComAbono"
+                                            label="Número da comunicação de abono"
+                                            type="text"
+                                            size="30"
+                                            maxLength="30"
+                                        />
+                                    </>
+                                ) : null}
+                            </ContainerAbonoPermanencia>
+                        ) : null}
                         {assuntoVisivel ? (
                             <ContainerAssunto>
                                 <TextArea name="proAssunto" label="Assunto" rows={30} cols={100} />

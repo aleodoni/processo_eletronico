@@ -48,6 +48,9 @@ class Tramite extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     defaultValue: 0
+                },
+                tra_observacao: {
+                    type: Sequelize.STRING
                 }
             },
             {

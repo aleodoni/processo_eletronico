@@ -37,6 +37,16 @@ class TipoProcesso extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false,
                     defaultValue: 0
+                },
+                tpr_visivel: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: true
+                },
+                tpr_tramitacao_aberta: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
                 }
             },
             {

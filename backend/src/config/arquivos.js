@@ -1,6 +1,7 @@
 require('dotenv/config');
 
 export const destino = process.env.CAMINHO_ARQUIVOS;
+export const destinoPagamento = process.env.CAMINHO_ARQUIVOS_ORDEM_PAGAMENTO;
 
 export function finalDoCaminho(id) {
     const milhar = Math.floor(id / 1000);

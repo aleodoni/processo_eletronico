@@ -3,7 +3,7 @@ import Yup from '../../config/validator';
 export default async(req, res, next) => {
     try {
         const schema = Yup.object().shape({
-            usuario: Yup.string().required(),
+            login: Yup.string().required(),
             senha: Yup.string().required()
         });
 

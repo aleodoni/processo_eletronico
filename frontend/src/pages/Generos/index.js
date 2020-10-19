@@ -6,14 +6,14 @@ import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
-import { Container, Main, Erro, Titulo } from './styles';
+import { Container, Main, Erro, Titulo, ContainerCampos } from './styles';
 import Input from '../../components/layout/Input';
 import Salvar from '../../components/layout/button/Salvar';
 import Excluir from '../../components/layout/button/Excluir';
 import Limpar from '../../components/layout/button/Limpar';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
-import FormLine from '../../components/layout/FormLine';
+import GenVisivel from '../../components/system/select/GenVisivel';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
 function Genero() {
@@ -21,6 +21,7 @@ function Genero() {
     const [genero, setGenero] = useState({
         genId: undefined,
         genNome: '',
+        genVisivel: '-1',
     });
     const [generos, setGeneros] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
@@ -46,6 +47,7 @@ function Genero() {
             ...genero,
             genId: null,
             genNome: '',
+            genVisivel: '-1',
         });
         setErro('');
 
@@ -63,6 +65,7 @@ function Genero() {
             ...genero,
             genId: linha.gen_id,
             genNome: linha.gen_nome,
+            genVisivel: linha.gen_visivel,
         });
         posiciona();
     }
@@ -70,7 +73,7 @@ function Genero() {
     function carregaGrid() {
         axios({
             method: 'GET',
-            url: '/generos',
+            url: '/generos-grid',
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -91,15 +94,16 @@ function Genero() {
         carrega();
     }, []);
 
-    async function grava({ genId, genNome }) {
+    async function grava({ genId, genNome, genVisivel }) {
         try {
             const schema = Yup.object().shape({
                 genNome: Yup.string()
                     .max(100, 'Tamanho máximo 100 caracteres')
                     .required('Gênero é obrigatório'),
+                genVisivel: Yup.boolean().oneOf([true, false], 'Visível?'),
             });
 
-            await schema.validate({ genId, genNome }, { abortEarly: false });
+            await schema.validate({ genId, genNome, genVisivel }, { abortEarly: false });
 
             if (!genId) {
                 axios({
@@ -108,6 +112,7 @@ function Genero() {
                     data: {
                         gen_id: null,
                         gen_nome: genNome,
+                        gen_visivel: genVisivel,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -128,6 +133,7 @@ function Genero() {
                     url: `generos/${genId}`,
                     data: {
                         gen_nome: genNome,
+                        gen_visivel: genVisivel,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -139,11 +145,12 @@ function Genero() {
                         carregaGrid();
                         posiciona();
                     })
-                    .catch(() => {
+                    .catch(e => {
                         setErro('Erro ao editar registro.');
                     });
             }
         } catch (err) {
+            console.log(err);
             const validationErrors = {};
 
             if (err instanceof Yup.ValidationError) {
@@ -187,7 +194,7 @@ function Genero() {
                     <Erro>{erro}</Erro>
                     <Form ref={formRef} initialData={genero} onSubmit={grava}>
                         <Input name="genId" type="hidden" />
-                        <FormLine>
+                        <ContainerCampos>
                             <Input
                                 name="genNome"
                                 label="Nome"
@@ -195,7 +202,8 @@ function Genero() {
                                 autoFocus
                                 maxLength="100"
                             />
-                        </FormLine>
+                            <GenVisivel name="genVisivel" />
+                        </ContainerCampos>
                         <ButtonContainer>
                             <Salvar name="btnSalva" type="submit" />
 
@@ -205,7 +213,10 @@ function Genero() {
                         </ButtonContainer>
                     </Form>
                     <Table
-                        columns={[{ title: 'Nome', field: 'gen_nome' }]}
+                        columns={[
+                            { title: 'Nome', field: 'gen_nome' },
+                            { title: 'Visível', field: 'visivel' },
+                        ]}
                         data={generos}
                         fillData={preencheCampos}
                     />

@@ -8,10 +8,22 @@ class VProcessosArea extends Model {
                     type: Sequelize.INTEGER,
                     primaryKey: true
                 },
+                nod_id: {
+                    type: Sequelize.INTEGER
+                },
+                ind_observacao: {
+                    type: Sequelize.BOOLEAN
+                },
                 pro_codigo: {
                     type: Sequelize.STRING
                 },
                 tpr_nome: {
+                    type: Sequelize.STRING
+                },
+                tpr_tramitacao_aberta: {
+                    type: Sequelize.BOOLEAN
+                },
+                pro_nome: {
                     type: Sequelize.STRING
                 },
                 area_id: {
@@ -33,6 +45,30 @@ class VProcessosArea extends Model {
                     type: Sequelize.BOOLEAN
                 },
                 nod_decisao: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_dias_prazo: {
+                    type: Sequelize.INTEGER
+                },
+                alerta: {
+                    type: Sequelize.INTEGER
+                },
+                nod_ciencia: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_averbacao: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_ciencia_averbacao: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_aval_horario: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_contagem_tempo: {
+                    type: Sequelize.BOOLEAN
+                },
+                nod_ciencia_calculo: {
                     type: Sequelize.BOOLEAN
                 }
             },

@@ -12,6 +12,8 @@ import {
     ContainerNomeFluxo,
     ContainerCamposNodos,
     ContainerCamposNodos1,
+    ContainerSelecione,
+    ContainerCamposNodos2,
     Titulo,
 } from './styles';
 import api from '../../service/api';
@@ -23,12 +25,20 @@ import Limpar from '../../components/layout/button/Limpar';
 import ConsultarOutroFluxo from '../../components/layout/button/ConsultarOutroFluxo';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
-import FormLine from '../../components/layout/FormLine';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 import NoInicio from '../../components/system/select/NoInicio';
 import NoFim from '../../components/system/select/NoFim';
 import NoAvalExecutiva from '../../components/system/select/NoAvalExecutiva';
+import NoInteressado from '../../components/system/select/NoInteressado';
+import NoCiencia from '../../components/system/select/NoCiencia';
+import NoCienciaAverbacao from '../../components/system/select/NoCienciaAverbacao';
+import NoAverbacao from '../../components/system/select/NoAverbacao';
 import NoDecisao from '../../components/system/select/NoDecisao';
+import NoAvalHorario from '../../components/system/select/NoAvalHorario';
+import NoContagemTempo from '../../components/system/select/NoContagemTempo';
+import NoCienciaCalculo from '../../components/system/select/NoCienciaCalculo';
+import NoParecerProjurisAposentadoria from '../../components/system/select/NoParecerProjurisAposentadoria';
+import NoDecisaoPad from '../../components/system/select/NoDecisaoPad';
 
 function Nodo() {
     const [erro, setErro] = useState('');
@@ -40,6 +50,15 @@ function Nodo() {
         nodFim: -1,
         nodAvalExecutiva: -1,
         nodDecisao: -1,
+        nodInteressado: -1,
+        nodCiencia: -1,
+        nodAverbacao: -1,
+        nodCienciaAverbacao: -1,
+        nodAvalHorario: -1,
+        nodContagemTempo: -1,
+        nodCienciaCalculo: -1,
+        nodParecerProjurisAposentadoria: -1,
+        nodDecisaoPad: -1,
         nodDiasPrazo: 0,
         nodOrdem: 0,
     });
@@ -97,7 +116,16 @@ function Nodo() {
             nodInicio: -1,
             nodFim: -1,
             nodAvalExecutiva: -1,
+            nodInteressado: -1,
+            nodCiencia: -1,
+            nodAverbacao: -1,
+            nodCienciaAverbacao: -1,
             nodDecisao: -1,
+            nodAvalHorario: -1,
+            nodContagemTempo: -1,
+            nodCienciaCalculo: -1,
+            nodParecerProjurisAposentadoria: -1,
+            nodDecisaoPad: -1,
             nodDiasPrazo: 0,
             nodOrdem: 0,
         });
@@ -175,7 +203,16 @@ function Nodo() {
             nodDiasPrazo: linha.nod_dias_prazo,
             nodOrdem: linha.nod_ordem,
             nodAvalExecutiva: linha.nod_aval_executiva,
+            nodInteressado: linha.nod_interessado,
+            nodCiencia: linha.nod_ciencia,
+            nodAverbacao: linha.nod_averbacao,
+            nodCienciaAverbacao: linha.nod_ciencia_averbacao,
             nodDecisao: linha.nod_decisao,
+            nodAvalHorario: linha.nod_aval_horario,
+            nodContagemTempo: linha.nod_contagem_tempo,
+            nodCienciaCalculo: linha.nod_ciencia_calculo,
+            nodParecerProjurisAposentadoria: linha.nod_parecer_projuris_aposentadoria,
+            nodDecisaoPad: linha.nod_decisao_pad,
         });
         posiciona();
     }
@@ -204,7 +241,16 @@ function Nodo() {
         nodDiasPrazo,
         nodOrdem,
         nodAvalExecutiva,
+        nodInteressado,
+        nodCiencia,
+        nodAverbacao,
+        nodCienciaAverbacao,
         nodDecisao,
+        nodAvalHorario,
+        nodContagemTempo,
+        nodCienciaCalculo,
+        nodParecerProjurisAposentadoria,
+        nodDecisaoPad,
     }) {
         try {
             const schema = Yup.object().shape({
@@ -214,11 +260,49 @@ function Nodo() {
                 nodDiasPrazo: Yup.string().required('Prazo é obrigatório'),
                 nodOrdem: Yup.string().required('Ordem é obrigatória'),
                 nodAvalExecutiva: Yup.boolean().oneOf([true, false], 'Tem o aval da executiva?'),
+                nodInteressado: Yup.boolean().oneOf([true, false], 'É um nó de interessado?'),
+                nodCiencia: Yup.boolean().oneOf([true, false], 'É um nó de ciência?'),
+                nodAverbacao: Yup.boolean().oneOf([true, false], 'É um nó de averbação?'),
+                nodCienciaAverbacao: Yup.boolean().oneOf(
+                    [true, false],
+                    'É um nó de ciência de averbação?'
+                ),
                 nodDecisao: Yup.boolean().oneOf([true, false], 'É um nó de decisão?'),
+                nodAvalHorario: Yup.boolean().oneOf([true, false], 'É um nó de aval de horário?'),
+                nodContagemTempo: Yup.boolean().oneOf(
+                    [true, false],
+                    'É um nó de contagem de tempo?'
+                ),
+                nodCienciaCalculo: Yup.boolean().oneOf(
+                    [true, false],
+                    'É um nó de ciência de cálculo?'
+                ),
+                nodParecerProjurisAposentadoria: Yup.boolean().oneOf(
+                    [true, false],
+                    'É um nó de parecer de aposentadoria do Projuris?'
+                ),
+                nodDecisaoPad: Yup.boolean().oneOf([true, false], 'É um nó de decisão de PAD?'),
             });
 
             await schema.validate(
-                { areaId, nodInicio, nodFim, nodDiasPrazo, nodOrdem, nodAvalExecutiva, nodDecisao },
+                {
+                    areaId,
+                    nodInicio,
+                    nodFim,
+                    nodDiasPrazo,
+                    nodOrdem,
+                    nodAvalExecutiva,
+                    nodInteressado,
+                    nodDecisao,
+                    nodAverbacao,
+                    nodCiencia,
+                    nodCienciaAverbacao,
+                    nodAvalHorario,
+                    nodContagemTempo,
+                    nodCienciaCalculo,
+                    nodParecerProjurisAposentadoria,
+                    nodDecisaoPad,
+                },
                 { abortEarly: false }
             );
 
@@ -235,7 +319,16 @@ function Nodo() {
                         nod_dias_prazo: nodDiasPrazo,
                         nod_ordem: nodOrdem,
                         nod_aval_executiva: nodAvalExecutiva,
+                        nod_interessado: nodInteressado,
+                        nod_ciencia: nodCiencia,
+                        nod_averbacao: nodAverbacao,
+                        nod_ciencia_averbacao: nodCienciaAverbacao,
                         nod_decisao: nodDecisao,
+                        nod_aval_horario: nodAvalHorario,
+                        nod_contagem_tempo: nodContagemTempo,
+                        nod_ciencia_calculo: nodCienciaCalculo,
+                        nod_decisao_pad: nodDecisaoPad,
+                        nod_parecer_projuris_aposentadoria: nodParecerProjurisAposentadoria,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -263,7 +356,16 @@ function Nodo() {
                         nod_dias_prazo: nodDiasPrazo,
                         nod_ordem: nodOrdem,
                         nod_aval_executiva: nodAvalExecutiva,
+                        nod_interessado: nodInteressado,
+                        nod_ciencia: nodCiencia,
+                        nod_averbacao: nodAverbacao,
+                        nod_ciencia_averbacao: nodCienciaAverbacao,
                         nod_decisao: nodDecisao,
+                        nod_aval_horario: nodAvalHorario,
+                        nod_contagem_tempo: nodContagemTempo,
+                        nod_ciencia_calculo: nodCienciaCalculo,
+                        nod_decisao_pad: nodDecisaoPad,
+                        nod_parecer_projuris_aposentadoria: nodParecerProjurisAposentadoria,
                     },
                     headers: {
                         authorization: sessionStorage.getItem('token'),
@@ -328,14 +430,14 @@ function Nodo() {
                         <Input name="nodId" type="hidden" />
                         <Input name="fluId" type="hidden" />
                         {fluxosVisiveis ? (
-                            <FormLine>
+                            <ContainerSelecione>
                                 <Select
                                     name="selectFluxo"
                                     label="Selecione o fluxo"
                                     options={fluxos}
                                     onChange={handleFluId}
                                 />
-                            </FormLine>
+                            </ContainerSelecione>
                         ) : null}
                         {nomeFluxosVisiveis ? (
                             <ContainerNomeFluxo>
@@ -372,7 +474,18 @@ function Nodo() {
                                     />
                                     <NoAvalExecutiva name="nodAvalExecutiva" />
                                     <NoDecisao name="nodDecisao" />
+                                    <NoInteressado name="nodInteressado" />
+                                    <NoCiencia name="nodCiencia" />
+                                    <NoAverbacao name="nodAverbacao" />
                                 </ContainerCamposNodos1>
+                                <ContainerCamposNodos2>
+                                    <NoCienciaAverbacao name="nodCienciaAverbacao" />
+                                    <NoAvalHorario name="nodAvalHorario" />
+                                    <NoContagemTempo name="nodContagemTempo" />
+                                    <NoCienciaCalculo name="nodCienciaCalculo" />
+                                    <NoParecerProjurisAposentadoria name="nodParecerProjurisAposentadoria" />
+                                    <NoDecisaoPad name="nodDecisaoPad" />
+                                </ContainerCamposNodos2>
                                 <ButtonContainer>
                                     <Salvar name="btnSalva" type="submit" />
 
@@ -393,6 +506,39 @@ function Nodo() {
                                         { title: 'Ordem', field: 'nod_ordem', width: 100 },
                                         { title: 'Aval', field: 'aval_executiva', width: 100 },
                                         { title: 'Decisivo', field: 'decisao', width: 100 },
+                                        { title: 'Interessado', field: 'interessado', width: 100 },
+                                        { title: 'Ciência', field: 'ciencia', width: 100 },
+                                        { title: 'Averbação', field: 'averbacao', width: 100 },
+                                        {
+                                            title: 'Ciência da averbação',
+                                            field: 'ciencia_averbacao',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Aval de horário',
+                                            field: 'aval_horario',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Contagem de tempo',
+                                            field: 'contagem_tempo',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Ciência de cálculo',
+                                            field: 'ciencia_calculo',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Parecer de aposentadoria Projuris',
+                                            field: 'parecer_projuris_aposentadoria',
+                                            width: 100,
+                                        },
+                                        {
+                                            title: 'Decisão de PAD',
+                                            field: 'decisao_pad',
+                                            width: 100,
+                                        },
                                     ]}
                                     data={nodos}
                                     fillData={preencheCampos}

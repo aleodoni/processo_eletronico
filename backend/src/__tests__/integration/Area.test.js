@@ -26,40 +26,72 @@ beforeAll(done => {
 });
 
 describe('Área', () => {
-    it('dummy', () => {
-        token = 1;
-        expect(true).toBe(true);
+    it('Deve retornar a lista de áreas', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/area`)
+            .set('authorization', `${token}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body)
+            .toEqual(expect.arrayContaining([
+                expect.objectContaining({
+                    set_id: 27,
+                    set_nome: 'Diretoria De Informática'
+                })
+            ]));
     });
-    // test('Raiz', () => {
-    //     return request(app)
-    //         .get(`${process.env.API_URL}/`)
-    //         .set('authorization', `${token}`)
-    //         .then(response => {
-    //             expect(response.statusCode).toBe(200);
-    //         });
-    // });
-    // test('Área', () => {
-    //     return request(app)
-    //         .get(`${process.env.API_URL}/area`)
-    //         .set('authorization', `${token}`)
-    //         .then(response => {
-    //             expect(response.statusCode).toBe(200);
-    //         });
-    // });
-    // test('Área por código', () => {
-    //     return request(app)
-    //         .get(`${process.env.API_URL}/area-por-codigo/027`)
-    //         .set('authorization', `${token}`)
-    //         .then(response => {
-    //             expect(response.statusCode).toBe(200);
-    //         });
-    // });
-    // test('Setor por código', () => {
-    //     return request(app)
-    //         .get(`${process.env.API_URL}/setor-por-codigo/171`)
-    //         .set('authorization', `${token}`)
-    //         .then(response => {
-    //             expect(response.statusCode).toBe(200);
-    //         });
-    // });
+
+    it('Deve retornar uma área por código', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/area-por-codigo/027`)
+            .set('authorization', `${token}`);
+
+        expect(response.status).toBe(200);
+
+        expect(response.body)
+            .toEqual(
+                expect.objectContaining({
+                    set_id: 27,
+                    set_nome: 'Diretoria De Informática'
+                })
+            );
+    });
+
+    it('Não deve retornar uma área com código inválido', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/area-por-codigo/010`)
+            .set('authorization', `${token}`);
+
+        const error = JSON.parse(response.error.text);
+
+        expect(response.status).toBe(400);
+        expect(error.message).toEqual('Área não encontrada');
+    });
+
+    it('Deve retornar um setor por código', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/setor-por-codigo/171`)
+            .set('authorization', `${token}`);
+
+        expect(response.status).toBe(200);
+
+        expect(response.body)
+            .toEqual(
+                expect.objectContaining({
+                    set_id: 171,
+                    set_nome: 'Divisão De Desenvolvimento De Sistemas'
+                })
+            );
+    });
+
+    it('Não deve retornar um setor com código inválido', async() => {
+        const response = await request(app)
+            .get(`${process.env.API_URL}/setor-por-codigo/111`)
+            .set('authorization', `${token}`);
+
+        const error = JSON.parse(response.error.text);
+
+        expect(response.status).toBe(400);
+        expect(error.message).toEqual('Setor não encontrado');
+    });
 });

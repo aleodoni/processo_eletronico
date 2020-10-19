@@ -45,6 +45,33 @@ class VManifestacao extends Model {
                 },
                 nod_id: {
                     type: Sequelize.INTEGER
+                },
+                man_ciencia: {
+                    type: Sequelize.STRING
+                },
+                man_averbacao: {
+                    type: Sequelize.STRING
+                },
+                man_ciencia_averbacao: {
+                    type: Sequelize.STRING
+                },
+                man_aval_horario: {
+                    type: Sequelize.STRING
+                },
+                man_contagem_tempo: {
+                    type: Sequelize.STRING
+                },
+                man_ciencia_calculo: {
+                    type: Sequelize.STRING
+                },
+                man_tramitada: {
+                    type: Sequelize.BOOLEAN
+                },
+                man_parecer_projuris_aposentadoria: {
+                    type: Sequelize.STRING
+                },
+                man_decisao_pad: {
+                    type: Sequelize.STRING
                 }
 
             },

@@ -15,11 +15,21 @@ export const Container = styled.div`
     p {
         color: #fff;
         font-weight: bold;
+        margin-bottom: 3px;
     }
 
     h3 {
         color: #fff;
         font-weight: bold;
+    }
+`;
+
+export const ContainerProcessoOrigem = styled.div`
+    background: #fff;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    label {
+        margin: 3px;
     }
 `;
 
@@ -42,7 +52,7 @@ export const Erro = styled.div`
 
 export const ContainerIniciativa = styled.div`
     display: grid;
-    grid-template-columns: 1050px;
+    grid-template-columns: 1250px;
 `;
 
 export const ContainerDados = styled.div`
@@ -51,7 +61,7 @@ export const ContainerDados = styled.div`
     grid-column-gap: 10px;
     div {
         display: grid;
-        grid-template-columns: 240px 800px;
+        grid-template-columns: 240px 1000px;
         label {
             font-weight: bold;
             margin-bottom: 5px;
@@ -59,9 +69,33 @@ export const ContainerDados = styled.div`
     }
 `;
 
+export const ContainerManifestacoes = styled.div`
+    display: grid;
+    grid-template-columns: 1253px;
+    grid-column-gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    label {
+        font-weight: bold;
+    }
+`;
+
+export const ContainerTramitacao = styled.div`
+    display: grid;
+    grid-template-columns: 1253px;
+    grid-column-gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    label {
+        font-weight: bold;
+    }
+`;
+
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 195px 180px 180px;
+    grid-template-columns: 195px 180px 200px 250px;
     grid-gap: 5px;
     input {
         opacity: 0;
@@ -91,42 +125,6 @@ export const ContainerBotoes = styled.div`
             margin-right: 10px;
             margin-left: 5px;
         }
-    }
-`;
-
-export const ContainerArquivos = styled.div`
-    display: grid;
-    grid-template-columns: 1050px;
-    grid-gap: 5px;
-    thead {
-        color: black;
-        background: #d3d3d3;
-
-        tr,
-        th {
-            padding: 3px;
-            border: solid 1px #000000;
-        }
-    }
-    tbody {
-        color: black;
-
-        tr:nth-child(even) {
-            background-color: #def0ff;
-        }
-
-        td {
-            border: solid 1px #000000;
-            text-align: center;
-            padding: 3px;
-        }
-    }
-
-    table {
-        border-collapse: collapse;
-        border: 1px solid #000000;
-        font-size: 12px;
-        width: 100%;
     }
 `;
 

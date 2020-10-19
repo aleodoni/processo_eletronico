@@ -2,6 +2,7 @@ import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
+import crypto from 'crypto';
 
 import LoginController from './app/controllers/LoginController';
 import Spa2Controller from './app/controllers/Spa2Controller';
@@ -16,6 +17,7 @@ import ModeloMenuController from './app/controllers/ModeloMenuController';
 import AreaMenuController from './app/controllers/AreaMenuController';
 import AreaTelaController from './app/controllers/AreaTelaController';
 import NodoController from './app/controllers/NodoController';
+import MembroComissaoController from './app/controllers/MembroComissaoController';
 import CriaProcessoController from './app/controllers/CriaProcessoController';
 import DadosProcessoController from './app/controllers/DadosProcessoController';
 import ArquivoController from './app/controllers/ArquivoController';
@@ -23,13 +25,34 @@ import TipoManifestacaoController from './app/controllers/TipoManifestacaoContro
 import ManifestacaoController from './app/controllers/ManifestacaoController';
 import SetorController from './app/controllers/SetorController';
 import LotacaoController from './app/controllers/LotacaoController';
+import SigiloController from './app/controllers/SigiloController';
 import ProximoTramiteController from './app/controllers/ProximoTramiteController';
 import TramiteController from './app/controllers/TramiteController';
 import TipoDocumentoController from './app/controllers/TipoDocumentoController';
 import AuthMiddleware from './app/middlewares/auth';
 import * as funcoesArquivo from '../src/config/arquivos';
+import * as constantes from './app/constants/constantes';
+import CriaPdfController from './app/controllers/CriaPdfController';
+import RegraAposentacaoController from './app/controllers/RegraAposentacaoController';
 
 import validatorSessionStore from './app/validators/SessionStore';
+import fluxoValidator from './app/validators/fluxoValidator';
+import generoValidator from './app/validators/generoValidator';
+import lotacaoValidator from './app/validators/lotacaoValidator';
+import modeloMenuValidator from './app/validators/modeloMenuValidator';
+import areaMenuValidator from './app/validators/areaMenuValidator';
+import nodoValidator from './app/validators/nodoValidator';
+import menuValidator from './app/validators/menuValidator';
+import regraAposentacaoValidator from './app/validators/regraAposentacaoValidator';
+import razaoTramiteValidator from './app/validators/razaoTramiteValidator';
+import SolicitacaoController from './app/controllers/SolicitacaoController';
+import EditaProcessoController from './app/controllers/EditaProcessoController';
+import CriaManifestacaoService from './app/services/pdf/CriaManifestacaoService';
+
+import Arquivo from './app/models/Arquivo';
+import Manifestacao from './app/models/Manifestacao';
+import DataHoraAtual from './app/models/DataHoraAtual';
+import { fileHash } from './app/util/hash';
 
 require('dotenv/config');
 
@@ -49,28 +72,32 @@ const storage = multer.diskStorage({
     }
 });
 
-const storageManifestacao = multer.diskStorage({
+const storageArquivo = multer.diskStorage({
     destination: function(req, file, callback) {
-        const novoCaminho = funcoesArquivo.destino + funcoesArquivo.finalDoCaminho(req.params.id);
-        if (!fs.existsSync(novoCaminho)) {
-            fs.mkdirSync(novoCaminho);
-        }
-        callback(null, novoCaminho);
+        const proId = req.params.proId;
+        const ano = req.params.ano;
+        const caminhoManifestacao = process.env.CAMINHO_ARQUIVOS_PROCESSO + proId + ano + '/';
+        callback(null, caminhoManifestacao);
     },
     filename: function(req, file, callback) {
-        console.log('Id do arquivo: ' + req.params.id);
-        callback(null, funcoesArquivo.nomeFisico(req.params.id) + 'M' + path.extname(file.originalname));
+        crypto.randomBytes(16, (err, hash) => {
+            if (err) callback(err);
+            const filename = `${hash.toString('hex')}-${file.originalname}`;
+            callback(null, filename);
+        });
     }
 });
 
 const upload = multer({ storage: storage });
 
-const uploadManifestacao = multer({ storage: storageManifestacao });
+const uploadArquivo = multer({ storage: storageArquivo });
 
 /**
  * Rotas sem autenticação
  */
 routes.post(`${process.env.API_URL}/autorizacao`, validatorSessionStore, LoginController.index);
+routes.post(`${process.env.API_URL}/autorizacao-externa`, validatorSessionStore, LoginController.indexExterno);
+routes.post(`${process.env.API_URL}/autorizacao-ext-contab`, validatorSessionStore, LoginController.indexExtContab);
 routes.get(`${process.env.API_URL}/bd`, LoginController.getBd);
 routes.get(`${process.env.API_URL}/`, Spa2Controller.index);
 
@@ -111,14 +138,32 @@ routes.delete(`${process.env.API_URL}/telas/:id`, TelaController.delete);
 routes.get(`${process.env.API_URL}/nodos`, NodoController.index);
 routes.get(`${process.env.API_URL}/grid-nodos/:fluId`, NodoController.gridNodo);
 routes.get(`${process.env.API_URL}/seleciona-nodo/:id`, NodoController.findOne);
-routes.post(`${process.env.API_URL}/nodos`, NodoController.store);
-routes.put(`${process.env.API_URL}/nodos/:id`, NodoController.update);
+routes.post(`${process.env.API_URL}/nodos`, nodoValidator, NodoController.store);
+routes.put(`${process.env.API_URL}/nodos/:id`, nodoValidator, NodoController.update);
 routes.delete(`${process.env.API_URL}/nodos/:id`, NodoController.delete);
+
+// rotas do cadastro de membros de comissão
+routes.get(`${process.env.API_URL}/comissoes`, MembroComissaoController.comissao);
+routes.get(`${process.env.API_URL}/grid-membros-comissao/:id`, MembroComissaoController.gridMembrosComissao);
+routes.get(`${process.env.API_URL}/popup-membros-comissao/:id`, CriaProcessoController.popupMembrosComissao);
+routes.post(`${process.env.API_URL}/membros-comissao`, MembroComissaoController.store);
+routes.put(`${process.env.API_URL}/membros-comissao/:id`, MembroComissaoController.update);
+routes.delete(`${process.env.API_URL}/membros-comissao/:id`, MembroComissaoController.delete);
+
+// rotas do cadastro de sigilo
+routes.get(`${process.env.API_URL}/area-sigilo`, SigiloController.area);
+routes.get(`${process.env.API_URL}/tipo-processo-sigilo`, SigiloController.tipoProcesso);
+routes.get(`${process.env.API_URL}/grid-sigilo`, SigiloController.gridSigilo);
+routes.post(`${process.env.API_URL}/sigilos`, SigiloController.store);
+routes.put(`${process.env.API_URL}/sigilos/:id`, SigiloController.update);
+routes.delete(`${process.env.API_URL}/sigilos/:id`, SigiloController.delete);
 
 // rotas do cadastro de gêneros
 routes.get(`${process.env.API_URL}/generos`, GeneroController.index);
-routes.post(`${process.env.API_URL}/generos`, GeneroController.store);
-routes.put(`${process.env.API_URL}/generos/:id`, GeneroController.update);
+routes.get(`${process.env.API_URL}/generos-total`, GeneroController.generoTotal);
+routes.get(`${process.env.API_URL}/generos-grid`, GeneroController.grid);
+routes.post(`${process.env.API_URL}/generos`, generoValidator, GeneroController.store);
+routes.put(`${process.env.API_URL}/generos/:id`, generoValidator, GeneroController.update);
 routes.delete(`${process.env.API_URL}/generos/:id`, GeneroController.delete);
 
 // rotas do cadastro de tipos de processo
@@ -131,9 +176,10 @@ routes.delete(`${process.env.API_URL}/tipos-processo/:id`, TipoProcessoControlle
 
 // rotas do cadastro de modelo de menu
 routes.get(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.index);
-routes.post(`${process.env.API_URL}/modelo-menu`, ModeloMenuController.store);
+routes.post(`${process.env.API_URL}/modelo-menu`, modeloMenuValidator, ModeloMenuController.store);
 routes.put(
     `${process.env.API_URL}/modelo-menu/:id`,
+    modeloMenuValidator,
     ModeloMenuController.update
 );
 routes.delete(
@@ -144,8 +190,8 @@ routes.delete(
 // rotas do cadastro de área de menu
 routes.get(`${process.env.API_URL}/area-menu`, AreaMenuController.index);
 routes.get(`${process.env.API_URL}/areas-do-menu`, AreaMenuController.areaDoMenu);
-routes.post(`${process.env.API_URL}/area-menu`, AreaMenuController.store);
-routes.put(`${process.env.API_URL}/area-menu/:id`, AreaMenuController.update);
+routes.post(`${process.env.API_URL}/area-menu`, areaMenuValidator, AreaMenuController.store);
+routes.put(`${process.env.API_URL}/area-menu/:id`, areaMenuValidator, AreaMenuController.update);
 routes.delete(
     `${process.env.API_URL}/area-menu/:id`,
     AreaMenuController.delete
@@ -155,34 +201,51 @@ routes.delete(
 routes.get(`${process.env.API_URL}/menu`, MenuController.index);
 routes.get(`${process.env.API_URL}/tela-menu`, MenuController.telaMenu);
 routes.get(`${process.env.API_URL}/menu-pai`, MenuController.telaPai);
-routes.post(`${process.env.API_URL}/menu`, MenuController.store);
-routes.put(`${process.env.API_URL}/menu/:id`, MenuController.update);
+routes.post(`${process.env.API_URL}/menu`, menuValidator, MenuController.store);
+routes.put(`${process.env.API_URL}/menu/:id`, menuValidator, MenuController.update);
 routes.delete(`${process.env.API_URL}/menu/:id`, MenuController.delete);
 routes.get(`${process.env.API_URL}/data-hora-atual`, MenuController.dataAtual);
 
 // rotas de criação de processo
 routes.get(`${process.env.API_URL}/dados-pessoa/:matricula`, CriaProcessoController.dadosPessoa);
+routes.get(`${process.env.API_URL}/dados-pessoa-comissao/:matricula`, CriaProcessoController.dadosPessoaComissao);
+routes.get(`${process.env.API_URL}/processo-origem/:id`, CriaProcessoController.processoOrigem);
+routes.get(`${process.env.API_URL}/combo-processos-pensao-alimenticia`, CriaProcessoController.processosDescontoFolhaDeterminacaoJudicial);
+routes.get(`${process.env.API_URL}/combo-processos-recurso/:usuario`, CriaProcessoController.processosRecurso);
+routes.get(`${process.env.API_URL}/combo-processos-recurso-pad/:usuario`, CriaProcessoController.processosRecursoPad);
 routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
+routes.post(`${process.env.API_URL}/processo-pas-pad`, CriaProcessoController.criaPasPad);
+
+routes.post(`${process.env.API_URL}/processo-pagamento`, CriaProcessoController.criaProcessoPagamento);
+routes.post(`${process.env.API_URL}/processo-pagamento-interno`, CriaProcessoController.criaProcessoPagamentoInterno);
+routes.put(`${process.env.API_URL}/processo-pagamento-interno/:id`, CriaProcessoController.editaProcessoPagamentoInterno);
 
 // rota de pesquisa de processo
 routes.post(`${process.env.API_URL}/pesquisa-processo`, DadosProcessoController.pesquisaProcesso);
 
 // rotas de dados do processo
 routes.get(`${process.env.API_URL}/ver-processo/:id`, DadosProcessoController.dadosProcesso);
+routes.get(`${process.env.API_URL}/ver-observacao/:proId/:nodId`, DadosProcessoController.dadosObservacao);
+routes.get(`${process.env.API_URL}/ver-processo-pagamento/:id`, DadosProcessoController.dadosProcessoPagamento);
+routes.get(`${process.env.API_URL}/dados-membros-comissao/:id`, DadosProcessoController.membrosComissao);
+routes.get(`${process.env.API_URL}/dados-nome-pas-pad/:id`, DadosProcessoController.nomePasPad);
+routes.get(`${process.env.API_URL}/ver-processo-pas-pad/:id`, DadosProcessoController.dadosProcessoPasPad);
+routes.get(`${process.env.API_URL}/membros-comissao`, CriaProcessoController.comboMembrosComissaoProcessante);
 routes.get(`${process.env.API_URL}/processos-pessoa/:areaId/:usuario`, DadosProcessoController.processosPessoais);
 routes.get(`${process.env.API_URL}/processos-area/:areaId`, DadosProcessoController.processosArea);
+routes.get(`${process.env.API_URL}/processos-sigiloso/:areaId/:login`, DadosProcessoController.processosSigiloso);
 routes.post(`${process.env.API_URL}/processo-por-codigo`, DadosProcessoController.processoPorCodigo);
 
 // rotas do cadastro de fluxos
 routes.get(`${process.env.API_URL}/fluxos`, FluxoController.index);
-routes.post(`${process.env.API_URL}/fluxos`, FluxoController.store);
-routes.put(`${process.env.API_URL}/fluxos/:id`, FluxoController.update);
+routes.post(`${process.env.API_URL}/fluxos`, fluxoValidator, FluxoController.store);
+routes.put(`${process.env.API_URL}/fluxos/:id`, fluxoValidator, FluxoController.update);
 routes.delete(`${process.env.API_URL}/fluxos/:id`, FluxoController.delete);
 
 // rotas do cadastro de razoes de trâmite
 routes.get(`${process.env.API_URL}/razao-tramite`, RazaoTramiteController.index);
-routes.post(`${process.env.API_URL}/razao-tramite`, RazaoTramiteController.store);
-routes.put(`${process.env.API_URL}/razao-tramite/:id`, RazaoTramiteController.update);
+routes.post(`${process.env.API_URL}/razao-tramite`, razaoTramiteValidator, RazaoTramiteController.store);
+routes.put(`${process.env.API_URL}/razao-tramite/:id`, razaoTramiteValidator, RazaoTramiteController.update);
 routes.delete(`${process.env.API_URL}/razao-tramite/:id`, RazaoTramiteController.delete);
 
 // rotas de arquivos
@@ -191,8 +254,9 @@ routes.put(`${process.env.API_URL}/arquivos/:id`, ArquivoController.update);
 routes.delete(`${process.env.API_URL}/arquivos/:id`, ArquivoController.delete);
 routes.get(`${process.env.API_URL}/arquivos-processo/:proId`, ArquivoController.index);
 routes.get(`${process.env.API_URL}/download-processo/:proId/:arqId`, ArquivoController.download);
+routes.get(`${process.env.API_URL}/download-arquivo-processo/:proId/:ano/:nomeArquivo`, ArquivoController.downloadArquivoProcesso);
 routes.get(`${process.env.API_URL}/arquivos-manifestacao/:manId`, ArquivoController.indexManifestacao);
-routes.get(`${process.env.API_URL}/download-manifestacao/:manId/:arqId`, ArquivoController.downloadManifestacao);
+routes.get(`${process.env.API_URL}/download-arquivo-manifestacao/:proId/:ano/:nomeArquivo`, ArquivoController.downloadManifestacao);
 
 // rota de inserção de anexo em processo
 routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), function(req, res) {
@@ -200,8 +264,97 @@ routes.post(`${process.env.API_URL}/anexo-processo/:id`, upload.single('file'), 
 });
 
 // rota de inserção de anexo em manifestação
-routes.post(`${process.env.API_URL}/anexo-manifestacao/:id`, uploadManifestacao.single('file'), function(req, res) {
-    res.status(204).end();
+routes.post(`${process.env.API_URL}/anexo-manifestacao/:proId/:ano`, uploadArquivo.single('file'), async function(req, res) {
+    const nomeArquivo = req.file.filename;
+    const destinoArquivo = req.file.destination;
+    const caminhoArquivo = destinoArquivo + nomeArquivo;
+    const tipoArquivo = req.file.mimetype;
+    const proId = req.body.pro_id;
+    const manId = req.body.man_id;
+    const tpdId = req.body.tpd_id;
+    const arqLogin = req.body.arq_login;
+    const arqDocTipo = req.body.arq_doc_tipo;
+
+    try {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login } = await Arquivo.create({
+            arq_id: null,
+            arq_nome: nomeArquivo,
+            pro_id: proId,
+            man_id: manId,
+            arq_tipo: tipoArquivo,
+            arq_doc_id: proId,
+            arq_doc_tipo: arqDocTipo,
+            tpd_id: tpdId,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: arqLogin
+        }, {
+            logging: false
+        });
+
+        // obtem o hash do arquivo
+        const hashArquivo = await fileHash(caminhoArquivo);
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashArquivo },
+            { where: { arq_id: arq_id }, logging: false }
+        );
+        res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
+    } catch (erroArquivo) {
+        console.log(erroArquivo);
+        res.status(400).end();
+    }
+    // res.status(204).end();
+});
+
+// rota de inserção de arquivos de fornecedores
+routes.post(`${process.env.API_URL}/anexo-documentos`, uploadArquivo.single('file'), async function(req, res) {
+    const nomeArquivo = req.file.filename;
+    const destinoArquivo = req.file.destination;
+    const caminhoArquivo = destinoArquivo + nomeArquivo;
+    const tipoArquivo = req.file.mimetype;
+    const proId = req.body.pro_id;
+    const tpdId = req.body.tpd_id;
+
+    try {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login } = await Arquivo.create({
+            arq_id: null,
+            arq_nome: nomeArquivo,
+            pro_id: proId,
+            man_id: null,
+            arq_tipo: tipoArquivo,
+            arq_doc_id: proId,
+            arq_doc_tipo: 'pgto',
+            tpd_id: tpdId,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: 'externo'
+        }, {
+            logging: false
+        });
+
+        // obtem o hash do arquivo
+        const hashArquivo = await fileHash(caminhoArquivo);
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashArquivo },
+            { where: { arq_id: arq_id }, logging: false }
+        );
+        res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
+    } catch (erroArquivo) {
+        console.log(erroArquivo);
+        res.status(400).end();
+    }
 });
 
 // rotas do cadastro de tipos de manifestacao
@@ -211,6 +364,9 @@ routes.post(`${process.env.API_URL}/tipos-manifestacao`, TipoManifestacaoControl
 routes.put(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/tipos-manifestacao/:id`, TipoManifestacaoController.delete);
 
+// rubrica
+routes.post(`${process.env.API_URL}/cria-rubrica`, ManifestacaoController.rubrica);
+
 // rotas do cadastro de setores
 routes.get(`${process.env.API_URL}/setores`, SetorController.index);
 routes.post(`${process.env.API_URL}/setores`, SetorController.store);
@@ -219,13 +375,14 @@ routes.delete(`${process.env.API_URL}/setores/:id`, SetorController.delete);
 
 // rotas do cadastro de lotações
 routes.get(`${process.env.API_URL}/lotacoes`, LotacaoController.index);
-routes.post(`${process.env.API_URL}/lotacoes`, LotacaoController.store);
-routes.put(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.update);
+routes.post(`${process.env.API_URL}/lotacoes`, lotacaoValidator, LotacaoController.store);
+routes.put(`${process.env.API_URL}/lotacoes/:id`, lotacaoValidator, LotacaoController.update);
 routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 
 // rotas do cadastro de manifestacao
 routes.get(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.index);
 routes.get(`${process.env.API_URL}/manifestacao-processo/:id`, ManifestacaoController.manifestacaoProcesso);
+routes.get(`${process.env.API_URL}/manifestacao-processo-dados/:id`, ManifestacaoController.manifestacaoProcessoDados);
 routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
 routes.put(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.update);
 routes.delete(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.delete);
@@ -234,7 +391,7 @@ routes.delete(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController
 routes.get(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.index);
 routes.get(`${process.env.API_URL}/combo-nodo/:id`, ProximoTramiteController.comboNodo);
 routes.get(`${process.env.API_URL}/grid-proximo-tramite/:id`, ProximoTramiteController.gridProximoTramite);
-routes.get(`${process.env.API_URL}/gera-grafo/:id`, ProximoTramiteController.geraGrafo);
+routes.get(`${process.env.API_URL}/cria-grafo/:id`, ProximoTramiteController.criaGrafo);
 routes.get(`${process.env.API_URL}/seleciona-proximo-tramite/:id`, ProximoTramiteController.selecionaProximoTramite);
 routes.post(`${process.env.API_URL}/proximos-tramites`, ProximoTramiteController.store);
 routes.put(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteController.update);
@@ -244,6 +401,9 @@ routes.delete(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteCont
 routes.get(`${process.env.API_URL}/tramites`, TramiteController.index);
 routes.get(`${process.env.API_URL}/grid-tramites/:id`, TramiteController.gridTramite);
 routes.post(`${process.env.API_URL}/tramites`, TramiteController.store);
+routes.post(`${process.env.API_URL}/tramites-averbacao`, TramiteController.criaTramiteAverbacao);
+routes.post(`${process.env.API_URL}/tramites-direcionado`, TramiteController.criaTramiteDirecionado);
+routes.post(`${process.env.API_URL}/tramites-fiscal`, TramiteController.criaTramiteFiscal);
 // rota de envio de processo
 routes.get(`${process.env.API_URL}/processo-envia/:id`, TramiteController.processosEnvio);
 // rotas de recebimento de processo
@@ -251,6 +411,10 @@ routes.get(`${process.env.API_URL}/processo-recebe/:id`, TramiteController.proce
 routes.post(`${process.env.API_URL}/tramite-recebe-ou-nega`, TramiteController.recebeOuNega);
 // rota de retorno de próximo trâmite
 routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proximoTramite);
+// rota de retorno de proximo tramite de fiscal
+routes.get(`${process.env.API_URL}/proximo-tramite-fiscal/:id`, TramiteController.proximoTramiteFiscal);
+// rota de retorno de próximo trâmite de decisão de aposentadoria
+routes.get(`${process.env.API_URL}/proximo-tramite-decisao-aposentadoria/:id`, TramiteController.proximoTramiteAposentadoriaDecisao);
 
 // rota de encerramento de processo
 routes.put(`${process.env.API_URL}/encerra/:id`, CriaProcessoController.encerra);
@@ -268,4 +432,200 @@ routes.post(`${process.env.API_URL}/tipos-documento`, TipoDocumentoController.st
 routes.put(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.update);
 routes.delete(`${process.env.API_URL}/tipos-documento/:id`, TipoDocumentoController.delete);
 
+// rotas de criação de pdf
+routes.post(`${process.env.API_URL}/arquivo-visto-executiva/:id/:ano/:login/:manId/:secretaria`, async function(req, res) {
+    const nomeArquivo = crypto.randomBytes(16).toString('hex') + '-visto-' + req.params.secretaria + '-secretaria-' + req.params.id + req.params.ano + '.pdf';
+    // const nomeArquivo = hash.toString('hex')+'-visto-' + req.params.secretaria + '-secretaria-' + req.params.id + req.params.ano + '.pdf';
+    const destinoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano + '/';
+    const caminhoArquivo = destinoArquivo + nomeArquivo;
+    const tipoArquivo = 'application/pdf';
+    const proId = req.params.id;
+    const manId = req.params.manId;
+    const tpdId = constantes.TPD_AVAL_COMISSAO_EXECUTIVA;
+    const arqLogin = req.params.login;
+    const arqDocTipo = 'manifestação';
+
+    try {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login } = await Arquivo.create({
+            arq_id: null,
+            arq_nome: nomeArquivo,
+            pro_id: proId,
+            man_id: manId,
+            arq_tipo: tipoArquivo,
+            arq_doc_id: proId,
+            arq_doc_tipo: arqDocTipo,
+            tpd_id: tpdId,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: arqLogin
+        }, {
+            logging: false
+        });
+
+        // cria o arquivo pdf
+        const criaManifestacao = new CriaManifestacaoService(Arquivo, Manifestacao);
+        await criaManifestacao.criaManifestacaoVistoExecutiva(req.params.ano, pro_id, man_id, arq_id, caminhoArquivo);
+
+        // obtem o hash do arquivo
+        const hashArquivo = await fileHash(caminhoArquivo);
+
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashArquivo },
+            { where: { arq_id: arq_id }, logging: false }
+        );
+        res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
+    } catch (erroArquivo) {
+        console.log(erroArquivo);
+        res.status(400).end();
+    }
+});
+routes.post(`${process.env.API_URL}/arquivo-ciencia/:id/:ano/:login/:manId`, async function(req, res) {
+    const strHexa = crypto.randomBytes(16).toString('hex');
+    const nomeArquivo = strHexa + '-ciencia-' + req.params.id + req.params.ano + '.pdf';
+    const destinoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano + '/';
+    const caminhoArquivo = destinoArquivo + nomeArquivo;
+    const tipoArquivo = 'application/pdf';
+    const proId = req.params.id;
+    const manId = req.params.manId;
+    const tpdId = constantes.TPD_CIENCIA_PROCESSO;
+    const arqLogin = req.params.login;
+    const arqDocTipo = 'manifestação';
+
+    try {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login } = await Arquivo.create({
+            arq_id: null,
+            arq_nome: nomeArquivo,
+            pro_id: proId,
+            man_id: manId,
+            arq_tipo: tipoArquivo,
+            arq_doc_id: proId,
+            arq_doc_tipo: arqDocTipo,
+            tpd_id: tpdId,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: arqLogin
+        }, {
+            logging: false
+        });
+
+        // cria o arquivo pdf
+        const criaManifestacao = new CriaManifestacaoService(Arquivo, Manifestacao);
+        await criaManifestacao.criaManifestacaoCiencia(req.params.ano, pro_id, man_id, arq_id, caminhoArquivo);
+
+        // obtem o hash do arquivo
+        const hashArquivo = await fileHash(caminhoArquivo);
+
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashArquivo },
+            { where: { arq_id: arq_id }, logging: false }
+        );
+        res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
+    } catch (erroArquivo) {
+        console.log(erroArquivo);
+        res.status(400).end();
+    }
+});
+
+routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao`, CriaPdfController.criaPdfCienciaAverbacao);
+
+routes.post(`${process.env.API_URL}/arquivo-ciencia-calculo/:id/:ano/:login/:manId`, async function(req, res) {
+    const strHexa = crypto.randomBytes(16).toString('hex');
+    const nomeArquivo = strHexa + '-ciencia-calculo-' + req.params.id + req.params.ano + '.pdf';
+    const destinoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano + '/';
+    const caminhoArquivo = destinoArquivo + nomeArquivo;
+    const tipoArquivo = 'application/pdf';
+    const proId = req.params.id;
+    const manId = req.params.manId;
+    const tpdId = constantes.TPD_CIENCIA_CALCULO_APOSENTADORIA;
+    const arqLogin = req.params.login;
+    const arqDocTipo = 'manifestação';
+
+    try {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login } = await Arquivo.create({
+            arq_id: null,
+            arq_nome: nomeArquivo,
+            pro_id: proId,
+            man_id: manId,
+            arq_tipo: tipoArquivo,
+            arq_doc_id: proId,
+            arq_doc_tipo: arqDocTipo,
+            tpd_id: tpdId,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: arqLogin
+        }, {
+            logging: false
+        });
+
+        // cria o arquivo pdf
+        const criaManifestacao = new CriaManifestacaoService(Arquivo, Manifestacao);
+        await criaManifestacao.criaManifestacaoCienciaCalculo(req.params.ano, pro_id, man_id, arq_id, caminhoArquivo);
+
+        // obtem o hash do arquivo
+        const hashArquivo = await fileHash(caminhoArquivo);
+
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashArquivo },
+            { where: { arq_id: arq_id }, logging: false }
+        );
+        res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
+    } catch (erroArquivo) {
+        console.log(erroArquivo);
+        res.status(400).end();
+    }
+});
+
+// rotas do cadastro de regras de aposentação
+routes.get(`${process.env.API_URL}/regras-aposentacao`, RegraAposentacaoController.index);
+routes.post(`${process.env.API_URL}/regras-aposentacao`, regraAposentacaoValidator, RegraAposentacaoController.store);
+routes.put(`${process.env.API_URL}/regras-aposentacao/:id`, regraAposentacaoValidator, RegraAposentacaoController.update);
+routes.delete(`${process.env.API_URL}/regras-aposentacao/:id`, RegraAposentacaoController.delete);
+
+routes.post(`${process.env.API_URL}/tramites-calculo-aposentadoria`, TramiteController.criaTramiteCalculoAposentadoria);
+
+routes.get(`${process.env.API_URL}/proximo-tramite-aposentadoria-calculo/:id/:decisao`, TramiteController.proximoTramiteAposentadoriaCalculo);
+routes.get(`${process.env.API_URL}/proximo-tramite-direcionado/:proId/:prxId`, TramiteController.proximoTramiteDirecionado);
+routes.get(`${process.env.API_URL}/gera-juntada/:id/:ano`, DadosProcessoController.geraJuntada);
+routes.get(`${process.env.API_URL}/gera-juntada-pagamento/:id/:ano`, DadosProcessoController.geraJuntadaPagamento);
+
+// solicitações de fornecedor
+routes.get(`${process.env.API_URL}/solicitacoes/:cnpj`, SolicitacaoController.gridSolicitacao);
+routes.get(`${process.env.API_URL}/empenhos/:cnpj`, SolicitacaoController.gridEmpenhoFornecedor);
+routes.get(`${process.env.API_URL}/lista-documentos`, SolicitacaoController.listaTipoDocumentos);
+routes.post(`${process.env.API_URL}/altera-senha`, LoginController.alteraSenha);
+routes.get(`${process.env.API_URL}/verifica-fornecedor/:cnpj`, SolicitacaoController.verificaFornecedor);
+routes.get(`${process.env.API_URL}/bancos`, SolicitacaoController.listaBancos);
+routes.get(`${process.env.API_URL}/fornecedores/:cnpj`, SolicitacaoController.dadosFornecedor);
+routes.get(`${process.env.API_URL}/combo-fornecedores`, SolicitacaoController.comboFornecedor);
+
+routes.get(`${process.env.API_URL}/processos-fornecedores/`, DadosProcessoController.processosPagamento);
+
+// Edição de processo de pagamento
+routes.put(`${process.env.API_URL}/edita-processo-pagamento/:id`, EditaProcessoController.update);
+routes.get(`${process.env.API_URL}/ver-arquivos-processo-pgto/:proId`, EditaProcessoController.listaArquivos);
+routes.put(`${process.env.API_URL}/cancela-arquivo-processo-pagamento/:id`, EditaProcessoController.cancelaArquivo);
+routes.post(`${process.env.API_URL}/processo-empenho`, EditaProcessoController.insereEmpenho);
+routes.post(`${process.env.API_URL}/processo-nota-fiscal`, EditaProcessoController.insereNotaFiscal);
+routes.post(`${process.env.API_URL}/processo-nad`, EditaProcessoController.insereNAD);
+routes.delete(`${process.env.API_URL}/processo-empenho/:id`, EditaProcessoController.apagaEmpenho);
+routes.delete(`${process.env.API_URL}/processo-nota-fiscal/:id`, EditaProcessoController.apagaNotaFiscal);
+routes.delete(`${process.env.API_URL}/processo-nad/:id`, EditaProcessoController.apagaNAD);
 export default routes;

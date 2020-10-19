@@ -3,7 +3,6 @@ import { toast as mensagem } from 'react-toastify';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
 import ModalApaga from '../../components/ModalExcluir';
-import ModalFluxo from '../../components/ModalFluxo';
 import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import {
@@ -12,6 +11,7 @@ import {
     Erro,
     ContainerNomeFluxo,
     ContainerCamposNodos,
+    ContainerSelecione,
     ContainerCamposNodos1,
     Titulo,
 } from './styles';
@@ -25,7 +25,6 @@ import Limpar from '../../components/layout/button/Limpar';
 import ConsultarOutroFluxo from '../../components/layout/button/ConsultarOutroFluxo';
 import DefaultLayout from '../_layouts/default';
 import Table from '../../components/layout/Table';
-import FormLine from '../../components/layout/FormLine';
 import ButtonContainer from '../../components/layout/button/ButtonContainer';
 
 function ProximoTramite() {
@@ -42,7 +41,6 @@ function ProximoTramite() {
     const [fluxosVisiveis, setFluxosVisiveis] = useState(true);
     const [nomeFluxosVisiveis, setNomeFluxosVisiveis] = useState(false);
     const [nomeFluxo, setNomeFluxo] = useState('');
-    const [grafo, setGrafo] = useState('');
     const [nodosVisiveis, setNodosVisiveis] = useState(false);
     const [fluxos, setFluxos] = useState([]);
     const [razoesTramite, setRazoesTramite] = useState([]);
@@ -50,7 +48,6 @@ function ProximoTramite() {
     const [nodosProximos, setNodosProximos] = useState([]);
     const [proximosTramites, setProximosTramites] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
-    const [modalFluxo, setModalFluxo] = useState(false);
 
     const formRef = useRef(null);
 
@@ -66,14 +63,6 @@ function ProximoTramite() {
 
     function fechaModalExcluir() {
         setModalExcluir(false);
-    }
-
-    function abreModalFluxo() {
-        setModalFluxo(true);
-    }
-
-    function fechaModalFluxo() {
-        setModalFluxo(false);
     }
 
     async function carregaRazoesTramite() {
@@ -149,16 +138,33 @@ function ProximoTramite() {
             });
     }
 
-    function carregaGrafo(fluxo) {
+    function criaGrafo() {
         axios({
             method: 'GET',
-            url: `/gera-grafo/${fluxo}`,
+            responseType: 'blob',
+            url: `/cria-grafo/${proximoTramite.fluId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(res => {
-                setGrafo(res.data);
+                const blob = new Blob([res.data], { type: res.data.type });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const contentDisposition = res.headers['content-disposition'];
+                let fileName = `${nomeFluxo}.png`;
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                    if (fileNameMatch.length === 2) {
+                        fileName = fileNameMatch[1];
+                    }
+                }
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(url);
             })
             .catch(() => {
                 setErro('Erro ao carregar grafo.');
@@ -177,7 +183,7 @@ function ProximoTramite() {
             carregaNodos(e.target.value);
             carregaNodosProximos(e.target.value);
             carregaGrid(e.target.value);
-            carregaGrafo(e.target.value);
+            // carregaGrafo(e.target.value);
         } else {
             setNodosVisiveis(false);
             setFluxosVisiveis(true);
@@ -288,7 +294,6 @@ function ProximoTramite() {
                         limpaCampos();
                         carregaGrid(fluId);
                         setProximoTramite({ fluId });
-                        carregaGrafo(fluId);
                         posiciona();
                     })
                     .catch(() => {
@@ -314,7 +319,6 @@ function ProximoTramite() {
                         limpaCampos();
                         carregaGrid(fluId);
                         setProximoTramite({ fluId });
-                        carregaGrafo(fluId);
                         posiciona();
                     })
                     .catch(() => {
@@ -347,7 +351,6 @@ function ProximoTramite() {
                 limpaCampos();
                 carregaGrid(proximoTramite.fluId);
                 setProximoTramite({ fluId: proximoTramite.fluId });
-                carregaGrafo(proximoTramite.fluId);
                 posiciona();
             })
             .catch(err => {
@@ -369,7 +372,7 @@ function ProximoTramite() {
                         <Input name="prxId" type="hidden" />
                         <Input name="fluId" type="hidden" />
                         {fluxosVisiveis ? (
-                            <FormLine>
+                            <ContainerSelecione>
                                 <Select
                                     name="selectFluxo"
                                     label="Selecione o fluxo"
@@ -377,7 +380,7 @@ function ProximoTramite() {
                                     options={fluxos}
                                     onChange={handleFluId}
                                 />
-                            </FormLine>
+                            </ContainerSelecione>
                         ) : null}
                         {nomeFluxosVisiveis ? (
                             <ContainerNomeFluxo>
@@ -418,7 +421,7 @@ function ProximoTramite() {
 
                                     <Limpar name="btnLimpa" clickHandler={limpaCampos} />
 
-                                    <GeraFluxo name="btnGrafico" clickHandler={abreModalFluxo} />
+                                    <GeraFluxo name="btnGrafico" clickHandler={criaGrafo} />
                                 </ButtonContainer>
                                 <Table
                                     columns={[
@@ -448,7 +451,6 @@ function ProximoTramite() {
                     apaga={apaga}
                     id={proximoTramite.prxId}
                 />
-                <ModalFluxo fechaModalFluxo={fechaModalFluxo} modalFluxo={modalFluxo} id={grafo} />
             </Container>
         </DefaultLayout>
     );

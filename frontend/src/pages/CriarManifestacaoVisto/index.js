@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { toast as mensagem } from 'react-toastify';
-import { FaSyncAlt } from 'react-icons/fa';
 import { useHistory } from 'react-router';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
@@ -15,31 +14,42 @@ import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
 import BotaoVistoExecutiva from '../../components/layout/button/VistoExecutiva';
 import VistoExecutiva from '../../components/system/select/VistoExecutiva';
-import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
-import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
 
-import { Container, Container2, Main, Erro, LinkProcesso, ContainerBotoes, Titulo } from './styles';
+import {
+    Container,
+    Container2,
+    Main,
+    Erro,
+    LinkProcesso,
+    ContainerBotoes,
+    Titulo,
+    BotaoComoLink,
+} from './styles';
+import { download } from '../../utils/downloadArquivo';
+import * as constantes from '../../utils/constantes';
 
 function CriarManifestacaoVisto(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
         proId: undefined,
         manVistoExecutiva: '-1',
     });
     const [manId, setManId] = useState(undefined);
-    const [proIdModal, setProId] = useState(-1);
+    const [arqId, setArqId] = useState(undefined);
     const [proCodigo, setProCodigo] = useState('');
     const [tprNome, setTprNome] = useState('');
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
-    const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
     const [dadosTramite, setDadosTramite] = useState([]);
     const [nodId, setNodId] = useState('');
+    const [anexos, setAnexos] = useState([]);
+    const [processoModal, setProcessoModal] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
 
@@ -49,8 +59,7 @@ function CriarManifestacaoVisto(props) {
         formRef.current.setData(manifestacao);
     }, [manifestacao]);
 
-    function abreModalProcesso(id) {
-        setProId(id);
+    function abreModalProcesso() {
         setModalProcesso(true);
     }
 
@@ -59,7 +68,7 @@ function CriarManifestacaoVisto(props) {
     }
 
     function abreModalExcluir(id) {
-        setManId(id);
+        setArqId(id);
         setModalExcluir(true);
     }
 
@@ -76,15 +85,6 @@ function CriarManifestacaoVisto(props) {
         setModalTramitaUm(false);
     }
 
-    function abreModalTramitaVarios(dados) {
-        setDadosTramite(dados);
-        setModalTramitaVarios(true);
-    }
-
-    function fechaModalTramitaVarios() {
-        setModalTramitaVarios(false);
-    }
-
     function limpaCampos() {
         setManId(null);
         setManifestacao({
@@ -96,13 +96,36 @@ function CriarManifestacaoVisto(props) {
         formRef.current.setErrors({});
     }
 
-    function criaManifestacao({ manVistoExecutiva }) {
-        // Manifestação da executiva
-        const TIPO_MANIFESTACAO_EXECUTIVA = 5;
+    async function carregaAnexos(id) {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
-        // Aval da Comissão Executiva
-        const TIPO_DOCUMENTO_EXECUTIVA = 27;
+        try {
+            const response = await api.get(`/arquivos-manifestacao/${id}`);
+            setAnexos(response.data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
 
+    async function carregaManifestacaoProcesso() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            setManifestacaoProcesso(response.data);
+            if (response.data.length > 0) {
+                carregaAnexos(response.data[0].man_id);
+                setManId(response.data[0].man_id);
+                setManifestacao({ manId: response.data[0].man_id });
+                document.getElementById('manId').value = response.data[0].man_id;
+            }
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
+    function incluiManifestacao({ manVistoExecutiva }) {
+        setErro('');
         const manLogin = sessionStorage.getItem('usuario');
         const manIdArea = parseInt(sessionStorage.getItem('areaUsuario'), 10);
         if (manVistoExecutiva === '-1') {
@@ -114,19 +137,56 @@ function CriarManifestacaoVisto(props) {
             url: '/manifestacoes',
             data: {
                 man_id: null,
-                pro_id: props.match.params.proId,
-                tmn_id: TIPO_MANIFESTACAO_EXECUTIVA,
-                tpd_id: TIPO_DOCUMENTO_EXECUTIVA,
+                pro_id: match.params.proId,
+                tmn_id: constantes.TMN_MANIFESTACAO_EXECUTIVA,
                 man_login: manLogin,
                 man_id_area: manIdArea,
                 man_visto_executiva: manVistoExecutiva,
                 nod_id: nodId,
+
+                arq_id: null,
+                arq_nome: `visto-executiva.pdf`,
+                arq_tipo: 'application/pdf',
+                arq_doc_id: null,
+                arq_doc_tipo: 'manifestação',
+                tpd_id: constantes.TPD_VISTO_EXECUTIVA,
+                arq_login: sessionStorage.getItem('usuario'),
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(() => {
+            .then(res => {
+                setManId(res.data.man_id);
+                let secretaria = '';
+                if (sessionStorage.getItem('nomeSetorUsuario') === 'Gabinete da 1ª Secretaria') {
+                    secretaria = 1;
+                }
+                if (sessionStorage.getItem('nomeSetorUsuario') === 'Gabinete da 2ª Secretaria') {
+                    secretaria = 2;
+                }
+                axios({
+                    method: 'POST',
+                    url: `/arquivo-visto-executiva/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}/${sessionStorage.getItem('usuario')}/${res.data.man_id}/${secretaria}`,
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
+                })
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Arquivo de visto inserido com sucesso.');
+                            carregaManifestacaoProcesso();
+                        }
+                    })
+                    .catch(() => {
+                        setErro('');
+                        limpaCampos();
+                        carregaManifestacaoProcesso();
+                        setErro('Erro ao criar arquivo anexo.');
+                    });
                 limpaCampos();
                 carregaManifestacaoProcesso();
                 mensagem.success('Manifestação inserida com sucesso.');
@@ -151,27 +211,13 @@ function CriarManifestacaoVisto(props) {
                     setProCodigo(processo[i].pro_codigo);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
+                    setProcessoModal(processo[i]);
                 }
             })
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
-    }, [props.match.params.proId]);
-
-    async function carregaManifestacaoProcesso() {
-        api.defaults.headers.Authorization = sessionStorage.getItem('token');
-
-        try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
-            setManifestacaoProcesso(response.data);
-            if (response.data.length > 0) {
-                setManId(response.data[0].man_id);
-                setManifestacao({ manId: response.data[0].man_id });
-            }
-        } catch (err) {
-            mensagem.error(`Falha na autenticação - ${err}`);
-        }
-    }
+    }, [match.params.proId]);
 
     useEffect(() => {
         async function carrega() {
@@ -184,17 +230,31 @@ function CriarManifestacaoVisto(props) {
     function apaga(id) {
         axios({
             method: 'DELETE',
-            url: `manifestacoes/${id}`,
+            url: `arquivos/${id}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
             .then(() => {
-                mensagem.success('Visto apagado com sucesso.');
-                carregaManifestacaoProcesso();
+                axios({
+                    method: 'DELETE',
+                    url: `manifestacoes/${manId}`,
+                    headers: {
+                        authorization: sessionStorage.getItem('token'),
+                    },
+                })
+                    .then(() => {
+                        mensagem.success('Decisão apagada com sucesso.');
+                        carregaAnexos(manId);
+                        document.getElementById('manId').value = manId;
+                        carregaManifestacaoProcesso();
+                    })
+                    .catch(err => {
+                        setErro(err.response.data.error);
+                    });
             })
-            .catch(erroDeleteManifestacao => {
-                setErro(erroDeleteManifestacao.response.data.error);
+            .catch(erroDeleteArquivo => {
+                setErro(erroDeleteArquivo.response.data.error);
             });
     }
 
@@ -217,9 +277,6 @@ function CriarManifestacaoVisto(props) {
                 if (res.data.length === 1) {
                     abreModalTramitaUm(res.data[0]);
                 }
-                if (res.data.length > 1) {
-                    abreModalTramitaVarios(res.data);
-                }
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
@@ -228,10 +285,6 @@ function CriarManifestacaoVisto(props) {
 
     function limpaErros() {
         setErro('');
-    }
-
-    function consulta() {
-        history.push('/processo-consulta');
     }
 
     function insereTramite(prxId, setId) {
@@ -245,6 +298,7 @@ function CriarManifestacaoVisto(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: document.getElementById('manId').value,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -275,18 +329,16 @@ function CriarManifestacaoVisto(props) {
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
                     <span>
-                        <LinkProcesso
-                            type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                        <LinkProcesso type="button" onClick={() => abreModalProcesso()}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
                     </span>
-                    <Form ref={formRef} initialData={manifestacao} onSubmit={criaManifestacao}>
+                    <Form ref={formRef} initialData={manifestacao} onSubmit={incluiManifestacao}>
+                        <Input name="manId" type="hidden" />
+                        <Input name="proId" type="hidden" />
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
-                                <Input name="manId" type="hidden" />
-                                <Input name="proId" type="hidden" />
                                 <VistoExecutiva
                                     name="manVistoExecutiva"
                                     changeHandler={() => limpaErros()}
@@ -298,35 +350,15 @@ function CriarManifestacaoVisto(props) {
                                 <BotaoVistoExecutiva name="btnVistoExecutiva" type="submit" />
                             ) : null}
                             {manifestacaoProcesso.length > 0 ? (
-                                <>
-                                    <Tramitar name="btnTramita" clickHandler={tramita} />
-                                    {manifestacaoProcesso.map(m => (
-                                        <>
-                                            <label htmlFor="revistar">
-                                                &nbsp;
-                                                <FaSyncAlt />
-                                                Apagar visto
-                                            </label>
-                                            <input
-                                                type="button"
-                                                name="revistar"
-                                                id="revistar"
-                                                onClick={e => {
-                                                    abreModalExcluir(m.man_id);
-                                                }}
-                                            />
-                                        </>
-                                    ))}
-                                </>
+                                <Tramitar name="btnTramita" clickHandler={tramita} />
                             ) : null}
-                            <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>
                     </Form>
                     <ModalApaga
                         modalExcluir={modalExcluir}
                         fechaModalExcluir={fechaModalExcluir}
                         apaga={apaga}
-                        id={manId}
+                        id={arqId}
                     />
                     <ModalTramitaUm
                         modalTramitaUm={modalTramitaUm}
@@ -334,17 +366,67 @@ function CriarManifestacaoVisto(props) {
                         tramita={insereTramite}
                         dados={dadosTramite}
                     />
-                    <ModalTramitaVarios
-                        modalTramitaVarios={modalTramitaVarios}
-                        fechaModalTramitaVarios={fechaModalTramitaVarios}
-                        tramita={insereTramite}
-                        dados={dadosTramite}
-                    />
                     <ModalProcesso
                         fechaModalProcesso={fechaModalProcesso}
                         modalProcesso={modalProcesso}
-                        proId={proIdModal}
+                        processo={processoModal}
                     />
+                    {anexos.length > 0 ? (
+                        <div>
+                            <p>Arquivos da manifestação</p>
+                            <fieldset>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Documento</th>
+                                            <th>Arquivo</th>
+                                            <th>Data</th>
+                                            <th>Excluir</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {anexos.map(anexo => (
+                                            <tr key={anexo.arq_id}>
+                                                <td>{anexo.tpd_nome}</td>
+                                                <td>
+                                                <BotaoComoLink
+                                                        type="button"
+                                                        onClick={e =>
+                                                            download(
+                                                                e,
+                                                                Number(match.params.proId),
+                                                                proCodigo.substr(
+                                                                    proCodigo.length - 4
+                                                                ),
+                                                                anexo.arq_nome
+                                                            )
+                                                        }>
+                                                        {anexo.arq_nome.substr(
+                                                            33,
+                                                            anexo.arq_nome.length
+                                                        )}
+                                                    </BotaoComoLink>
+                                                </td>
+                                                <td>{anexo.data}</td>
+
+                                                <td>
+                                                    {anexo.arq_login ===
+                                                    sessionStorage.getItem('usuario') ? (
+                                                        <BotaoComoLink
+                                                            onClick={() =>
+                                                                abreModalExcluir(anexo.arq_id)
+                                                            }>
+                                                            Excluir
+                                                        </BotaoComoLink>
+                                                    ) : null}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                    ) : null}
                 </Main>
             </Container>
         </DefaultLayout>

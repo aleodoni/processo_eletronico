@@ -2,6 +2,13 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Setor from '../models/Setor';
+// import Auditoria from '../models/Auditoria';
+// import DataHoraAtual from '../models/DataHoraAtual';
+import CreateSetorService from '../services/setor/CreateSetorService';
+import UpdateSetorService from '../services/setor/UpdateSetorService';
+import DeleteSetorService from '../services/setor/DeleteSetorService';
+// import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
+
 // import AuditoriaController from './AuditoriaController';
 
 class SetorController {
@@ -15,58 +22,61 @@ class SetorController {
     }
 
     async store(req, res) {
-        const { set_id, set_nome, set_sigla, set_id_area, set_ativo, set_tipo } = await Setor.create(req.body, {
+        const createSetor = new CreateSetorService(Setor);
+        // const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const { set_id, set_nome, set_sigla, set_id_area, set_ativo, set_tipo } = await createSetor.execute(req.body, {
             logging: false
         });
+
         // auditoria de inserção
-        // AuditoriaController.audita(req.body, req, 'I', set_id);
+        // const { url, headers } = req;
+        // const { usuario } = headers;
+        // const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', set_id);
         //
+
         return res.json({
             set_id, set_id_area, set_nome, set_sigla, set_ativo, set_tipo
         });
     }
 
     async update(req, res) {
-        const setor = await Setor.findByPk(req.params.id, { logging: true });
+        const updateSetor = new UpdateSetorService(Setor);
+        // const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const { id } = req.params;
+        const { set_nome, set_sigla, set_id_area, set_ativo, set_tipo } = req.body;
+
+        const updatedSetor = await updateSetor.execute({ id, set_nome, set_sigla, set_id_area, set_ativo, set_tipo });
+
         // auditoria de edição
-        // AuditoriaController.audita(
-        //    setor._previousDataValues,
-        //    req,
-        //    'U',
-        //    req.params.id
-        // );
+        // const { url, headers } = req;
+        // const { usuario } = headers;
+        // const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        // await createAuditoria.execute(updatedSetor._previousDataValues, url, usuario, clientIP, 'U', id);
         //
-        if (!setor) {
-            return res.status(400).json({ error: 'Setor não encontrado' });
-        }
-        await setor.update(req.body, { logging: false });
-        return res.json(setor);
+
+        return res.json(updatedSetor);
     }
 
     async delete(req, res) {
-        const setor = await Setor.findByPk(req.params.id, { logging: true });
-        if (!setor) {
-            return res.status(400).json({ error: 'Setor não encontrado' });
-        }
-        await setor
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                // AuditoriaController.audita(
-                //    setor._previousDataValues,
-                //    req,
-                //    'D',
-                //    req.params.id
-                // );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error: 'Erro ao excluir setor. O setor possui uma ou mais ligações.'
-                    });
-                }
-            });
+        // const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteSetor = new DeleteSetorService(Setor);
+
+        const { id } = req.params;
+
+        // const setor = await deleteSetor.execute({ id });
+        await deleteSetor.execute({ id });
+
+        // auditoria de deleção
+        // const { url, headers } = req;
+        // const { usuario } = headers;
+        // const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // await createAuditoria.execute(setor._previousDataValues, url, usuario, clientIP, 'D', id);
+        //
+
         return res.send();
     }
 }

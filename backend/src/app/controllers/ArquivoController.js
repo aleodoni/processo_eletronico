@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Arquivo from '../models/Arquivo';
+import Processo from '../models/Processo';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
 import DataHoraAtual from '../models/DataHoraAtual';
 // import AuditoriaController from './AuditoriaController';
@@ -35,7 +36,28 @@ class ArquivoController {
                 'arq_login',
                 'tpd_nome'
             ],
-            logging: true,
+            logging: false,
+            where: {
+                man_id: req.params.manId
+            }
+        });
+        return res.json(arquivos);
+    }
+
+    async indexManifestacaoDiscordancia(req, res) {
+        const arquivos = await ArquivoManifestacao.findAll({
+            order: ['man_id'],
+            attributes: [
+                'contador',
+                'arq_id',
+                'arq_nome',
+                'man_id',
+                'arq_tipo',
+                'data',
+                'arq_login',
+                'tpd_nome'
+            ],
+            logging: false,
             where: {
                 man_id: req.params.manId
             }
@@ -46,7 +68,7 @@ class ArquivoController {
     async store(req, res) {
         const dataHoraAtual = await DataHoraAtual.findAll({
             attributes: ['data_hora_atual'],
-            logging: true,
+            logging: false,
             plain: true
         });
 
@@ -62,7 +84,7 @@ class ArquivoController {
             arq_data: dataHoraAtual.dataValues.data_hora_atual,
             arq_login: req.body.arq_login
         }, {
-            logging: true
+            logging: false
         });
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', arq_id);
@@ -103,6 +125,15 @@ class ArquivoController {
         if (!arquivo) {
             return res.status(400).json({ error: 'Arquivo não encontrado' });
         }
+        const processo = await Processo.findByPk(arquivo.pro_id, { logging: false });
+        // aqui apaga o arquivo no disco
+        const caminhoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + arquivo.pro_id + processo.pro_ano + '/' + arquivo.arq_nome;
+        try {
+            fs.unlinkSync(caminhoArquivo);
+        } catch (err) {
+            console.error(err);
+            return res.status(400).json({ error: 'Erro ao apagar arquivo em disco.' });
+        }
         await arquivo
             .destroy({ logging: false })
             .then(() => {
@@ -134,8 +165,19 @@ class ArquivoController {
         });
     }
 
+    async downloadArquivoProcesso(req, res) {
+        const caminho = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.proId + req.params.ano + '/' + req.params.nomeArquivo;
+        fs.readFile(caminho, function(_err, data) {
+            if (_err) {
+                console.log(_err);
+            }
+            res.contentType('application/pdf');
+            return res.send(data);
+        });
+    }
+
     downloadManifestacao(req, res) {
-        const caminho = caminhos.destino + caminhos.finalDoCaminho(req.params.arqId) + caminhos.nomeFisico(req.params.arqId) + 'M' + '.pdf';
+        const caminho = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.proId + req.params.ano + '/' + req.params.nomeArquivo;
         fs.readFile(caminho, function(_err, data) {
             if (_err) {
                 console.log(_err);

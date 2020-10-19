@@ -51,7 +51,7 @@ const ModalCancelar = props => {
                     <p>
                         <FaRegQuestionCircle color="#fff" size="3em" />
                     </p>
-                    <h1>Deseja cancelar a manifestação?</h1>
+                    <h1>Deseja cancelar o arquivo?</h1>
                     <hr />
                     <div>
                         <Sim name="btnSim" clickHandler={cancelaHandler} />

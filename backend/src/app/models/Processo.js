@@ -86,6 +86,9 @@ class Processo extends Model {
                     type: Sequelize.INTEGER,
                     allowNull: false
                 },
+                pro_ano: {
+                    type: Sequelize.INTEGER
+                },
                 pro_autuacao: {
                     type: Sequelize.NOW,
                     allowNull: false
@@ -93,6 +96,22 @@ class Processo extends Model {
                 pro_recurso: {
                     type: Sequelize.BOOLEAN,
                     allowNull: false
+                },
+                pro_com_abono: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
+                },
+                pro_num_com_abono: {
+                    type: Sequelize.STRING
+                },
+                pro_processo_pai: {
+                    type: Sequelize.STRING
+                },
+                pro_ip_externo: {
+                    type: Sequelize.STRING
+                },
+                pro_enviado_externo: {
+                    type: Sequelize.BOOLEAN
                 }
             },
             {

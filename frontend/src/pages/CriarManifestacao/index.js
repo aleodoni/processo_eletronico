@@ -14,12 +14,15 @@ import Select from '../../components/layout/Select';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
+import Finalizar from '../../components/layout/button/Finalizar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
+import * as constantes from '../../utils/constantes';
 import {
     Container,
+    Titulo,
     Container2,
     Container3,
     Main,
@@ -28,22 +31,25 @@ import {
     LinkProcesso,
     ContainerBotoes,
 } from './styles';
+import { download } from '../../utils/downloadArquivo';
 
 function CriarManifestacao(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
+    const { match } = props;
     const [manifestacao, setManifestacao] = useState({
         manId: undefined,
-        proId: props.match.params.proId,
+        proId: match.params.proId,
         manVistoExecutiva: '',
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
-    const [proIdModal, setProId] = useState(-1);
+    const [nodFim, setNodFim] = useState(false);
     const [tmnId, setTmnId] = useState('-1');
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
     const [proCodigo, setProCodigo] = useState('');
+    const [tprId, setTprId] = useState(undefined);
     const [tprNome, setTprNome] = useState('');
     const [tiposManifestacao, setTiposManifestacao] = useState([]);
     const [tiposDocumento, setTiposDocumento] = useState([]);
@@ -52,6 +58,7 @@ function CriarManifestacao(props) {
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
     const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
+    const [processoModal, setProcessoModal] = useState([]);
 
     const [dadosTramite, setDadosTramite] = useState([]);
 
@@ -71,8 +78,7 @@ function CriarManifestacao(props) {
         setTpdId(e.target.value);
     }
 
-    function abreModalProcesso(id) {
-        setProId(id);
+    function abreModalProcesso() {
         setModalProcesso(true);
     }
 
@@ -135,11 +141,12 @@ function CriarManifestacao(props) {
         api.defaults.headers.Authorization = sessionStorage.getItem('token');
 
         try {
-            const response = await api.get(`/manifestacao-processo/${props.match.params.proId}`);
+            const response = await api.get(`/manifestacao-processo/${match.params.proId}`);
             setManifestacaoProcesso(response.data);
             if (response.data.length > 0) {
                 carregaAnexos(response.data[0].man_id);
                 setManId(response.data[0].man_id);
+                document.getElementById('manId').value = response.data[0].man_id;
                 setManifestacao({ manId: response.data[0].man_id });
             }
         } catch (err) {
@@ -162,99 +169,72 @@ function CriarManifestacao(props) {
     };
 
     function incluiManifestacao(e) {
-        const TIPO_DOCUMENTO = 29;
         setErro('');
         const arq = e.target.files[0];
         const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
-        if (e.target.files[0].size <= tamanhoAnexo) {
-            if (e.target.files[0].type === 'application/pdf') {
-                // aqui vai gravar na manifestação
+        if (e.target.files[0].size > tamanhoAnexo) {
+            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+            return;
+        }
+        if (e.target.files[0].type !== 'application/pdf') {
+            setErro('São válidos somente arquivos PDF.');
+            return;
+        }
+        axios({
+            method: 'POST',
+            url: '/manifestacoes',
+            data: {
+                man_id: null,
+                pro_id: Number(match.params.proId),
+                tmn_id: tmnId,
+                man_login: sessionStorage.getItem('usuario'),
+                man_id_area: sessionStorage.getItem('areaUsuario'),
+                nod_id: nodId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                setManifestacao({ manId: res.data.man_id });
+                const data = new FormData();
+                data.append('file', arq);
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', res.data.man_id);
+                data.append('tpd_id', constantes.TPD_MANIFESTACAO);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: '/manifestacoes',
-                    data: {
-                        man_id: null,
-                        pro_id: Number(props.match.params.proId),
-                        tmn_id: tmnId,
-                        man_login: sessionStorage.getItem('usuario'),
-                        man_id_area: sessionStorage.getItem('areaUsuario'),
-                        man_visto_executiva: 'Não necessário',
-                        nod_id: nodId,
-                    },
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
+                        'Content-Type': 'multipart/form-data',
                     },
+                    data,
                 })
-                    .then(resultado => {
-                        setManifestacao({ manId: resultado.data.man_id });
-                        const data = new FormData();
-                        data.append('file', arq);
-                        axios({
-                            method: 'POST',
-                            url: '/arquivos',
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                            data: {
-                                arq_id: null,
-                                arq_nome: arq.name,
-                                pro_id: null,
-                                man_id: resultado.data.man_id,
-                                arq_tipo: arq.type,
-                                arq_doc_id: resultado.data.man_id,
-                                arq_doc_tipo: 'manifestação',
-                                tpd_id: TIPO_DOCUMENTO,
-                                arq_login: sessionStorage.getItem('usuario'),
-                            },
-                        })
-                            .then(res => {
-                                axios({
-                                    method: 'POST',
-                                    url: `/anexo-manifestacao/${res.data.arq_id}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                        'Content-Type': 'multipart/form-data',
-                                    },
-                                    data,
-                                })
-                                    .then(resAnexos => {
-                                        if (resAnexos.status === 204) {
-                                            limpaCampos();
-                                            mensagem.success('Manifestação inserida com sucesso.');
-                                            carregaManifestacaoProcesso();
-                                        }
-                                    })
-                                    .catch(() => {
-                                        const idArquivo = res.data.arq_id;
-                                        axios({
-                                            method: 'DELETE',
-                                            url: `arquivos/${idArquivo}`,
-                                            headers: {
-                                                authorization: sessionStorage.getItem('token'),
-                                            },
-                                        })
-                                            .then(() => {})
-                                            .catch(erroDeleteArquivo => {
-                                                setErro(erroDeleteArquivo.response.data.error);
-                                            });
-                                        setErro('Erro ao criar arquivo anexo.');
-                                    });
-                            })
-                            .catch(() => {
-                                setErro('Erro ao inserir na tabela arquivo.');
-                            });
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Manifestação inserida com sucesso.');
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                            setTpdId('-1');
+                        }
                     })
                     .catch(() => {
-                        setErro('Erro ao inserir manifestação.');
+                        limpaCampos();
+                        setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
                     });
-                //
-            } else {
-                setErro('São válidos somente arquivos PDF.');
-            }
-        } else {
-            setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
-        }
+            })
+            .catch(() => {
+                setErro('Erro ao inserir manifestação.');
+            });
     }
 
     function incluiAnexoManifestacao(e) {
@@ -266,60 +246,36 @@ function CriarManifestacao(props) {
             if (e.target.files[0].type === 'application/pdf') {
                 const data = new FormData();
                 data.append('file', arq);
+                data.append('pro_id', document.getElementById('proId').value);
+                data.append('man_id', manId);
+                data.append('tpd_id', tpdId);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
-                    data: {
-                        arq_id: null,
-                        arq_nome: arq.name,
-                        pro_id: null,
-                        man_id: manId,
-                        arq_tipo: arq.type,
-                        arq_doc_id: manId,
-                        arq_doc_tipo: 'manifestação',
-                        tpd_id: tpdId,
-                        arq_login: sessionStorage.getItem('usuario'),
-                    },
+                    data,
                 })
-                    .then(res => {
-                        axios({
-                            method: 'POST',
-                            url: `/anexo-manifestacao/${res.data.arq_id}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                                'Content-Type': 'multipart/form-data',
-                            },
-                            data,
-                        })
-                            .then(resAnexos => {
-                                if (resAnexos.status === 204) {
-                                    limpaCampos();
-                                    mensagem.success('Documento inserido com sucesso.');
-                                    carregaAnexos(manId);
-                                    carregaManifestacaoProcesso();
-                                }
-                            })
-                            .catch(() => {
-                                const idArquivo = res.data.arq_id;
-                                axios({
-                                    method: 'DELETE',
-                                    url: `arquivos/${idArquivo}`,
-                                    headers: {
-                                        authorization: sessionStorage.getItem('token'),
-                                    },
-                                })
-                                    .then(() => {})
-                                    .catch(erroDeleteArquivo => {
-                                        setErro(erroDeleteArquivo.response.data.error);
-                                    });
-                                setErro('Erro ao criar arquivo anexo.');
-                            });
+                    .then(resAnexos => {
+                        if (resAnexos.status === 204) {
+                            limpaCampos();
+                            mensagem.success('Documento inserido com sucesso.');
+                            carregaAnexos(manId);
+                            carregaManifestacaoProcesso();
+                            document.getElementById('anexo').value = '';
+                            setTpdId('-1');
+                        }
                     })
                     .catch(() => {
-                        setErro('Erro ao inserir na tabela arquivo.');
+                        limpaCampos();
+                        setErro('Erro ao criar arquivo anexo.');
+                        carregaManifestacaoProcesso();
+                        document.getElementById('anexo').value = '';
                     });
             } else {
                 setErro('São válidos somente arquivos PDF.');
@@ -368,7 +324,7 @@ function CriarManifestacao(props) {
     const carregaDadosProcesso = useCallback(() => {
         axios({
             method: 'GET',
-            url: `/ver-processo/${props.match.params.proId}`,
+            url: `/ver-processo/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -378,49 +334,17 @@ function CriarManifestacao(props) {
                 for (let i = 0; i < processo.length; i++) {
                     setManifestacao({ proId: processo[i].pro_id });
                     setProCodigo(processo[i].pro_codigo);
+                    setTprId(processo[i].tpr_id);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
+                    setNodFim(processo[i].nod_fim);
+                    setProcessoModal(processo[i]);
                 }
             })
             .catch(() => {
                 setErro('Erro ao retornar dados do processo.');
             });
     }, [manifestacao.proId]);
-
-    function downloadAnexo(e, idArquivo, id, arqNome) {
-        e.preventDefault();
-        axios({
-            method: 'GET',
-            url: `/download-manifestacao/${id}/${idArquivo}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-                Accept: 'application/pdf',
-            },
-            responseType: 'blob',
-        })
-            .then(res => {
-                const blob = new Blob([res.data], { type: res.data.type });
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                const contentDisposition = res.headers['content-disposition'];
-                let fileName = arqNome;
-                if (contentDisposition) {
-                    const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                    if (fileNameMatch.length === 2) {
-                        fileName = fileNameMatch[1];
-                    }
-                }
-                link.setAttribute('download', fileName);
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.URL.revokeObjectURL(url);
-            })
-            .catch(() => {
-                console.log('Erro ao efetuar o download do anexo.');
-            });
-    }
 
     useEffect(() => {
         async function carrega() {
@@ -482,10 +406,151 @@ function CriarManifestacao(props) {
     }
 
     function tramita() {
+        if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM && nodId === 130) {
+            const prxId = 130;
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-direcionado/${match.params.proId}/${prxId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(resDirecionado => {
+                    // se não tiver registros
+                    if (resDirecionado.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaUm(resDirecionado.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+
+        // se o tipo de processo for de recurso e o nó for
+        if (tprId === constantes.TPR_RECURSO && nodId === 281) {
+            const prxId = 103;
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-direcionado/${match.params.proId}/${prxId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(resDirecionado => {
+                    // se não tiver registros
+                    if (resDirecionado.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaUm(resDirecionado.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+        // se o nó for o 291 e o tipo for de aposentadoria voluntária
+        if (tprId === constantes.TPR_APOSENTADORIA && nodId === 291) {
+            // verifica qual foi a decisão da comissão executiva,
+            // se foi deferido vai para ciencia e toca o barco
+            // se foi indeferido vai para ciencia e termina
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-decisao-aposentadoria/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaUm(res.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+        // se o nó for o 321 e o tipo for de aposentadoria iniciativa da administração
+        if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM && nodId === 321) {
+            // verifica qual foi a decisão da comissão executiva,
+            // se foi deferido vai para ciencia e toca o barco
+            // se foi indeferido vai para ciencia e termina
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite-decisao-aposentadoria/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaUm(res.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+        // se o tipo de processo for de recurso e estiver no nó especificado
+        // se o tipo for de aposentadoria encaminha para ciência do interessado
+        // e ele encaminha para o DARH, para enviar ao Tribunal de Contas
+        // outro tipo encaminha para o interessado
+        if (tprId === constantes.TPR_RECURSO && nodId === 281) {
+            axios({
+                method: 'GET',
+                url: `/processo-origem/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    for (let i = 0; i < res.data.length; i++) {
+                        let prxId;
+                        if (res.data[i].tpr_id === constantes.TPR_APOSENTADORIA) {
+                            prxId = 102;
+                        } else {
+                            prxId = 103;
+                        }
+                        axios({
+                            method: 'GET',
+                            url: `/proximo-tramite-direcionado/${match.params.proId}/${prxId}`,
+                            headers: {
+                                authorization: sessionStorage.getItem('token'),
+                            },
+                        })
+                            .then(resDirecionado => {
+                                // se não tiver registros
+                                if (resDirecionado.data.length === 0) {
+                                    mensagem.info('Sem próximos trâmites.');
+                                    return;
+                                }
+                                abreModalTramitaUm(resDirecionado.data[0]);
+                            })
+                            .catch(() => {
+                                setErro('Erro ao carregar próximos trâmites.');
+                            });
+                    }
+                })
+                .catch(() => {
+                    console.log('Erro ao carregar processo de origem.');
+                });
+            return;
+        }
         // aqui vai verificar se vai tramitar para um ou para vários
         axios({
             method: 'GET',
-            url: `/proximo-tramite/${props.match.params.proId}`,
+            url: `/proximo-tramite/${match.params.proId}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
@@ -509,6 +574,39 @@ function CriarManifestacao(props) {
             });
     }
 
+    function finaliza() {
+        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        const usuario = sessionStorage.getItem('usuario');
+
+        axios({
+            method: 'PUT',
+            url: `/encerra/${match.params.proId}`,
+            data: {
+                usuario,
+                areaId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                const msg = `Processo encerrado com sucesso.`;
+                mensagem.success(msg, {
+                    position: 'top-center',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                history.push('/home');
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }
+
     function consulta() {
         history.push('/processo-consulta');
     }
@@ -520,10 +618,11 @@ function CriarManifestacao(props) {
             data: {
                 tra_id: null,
                 prx_id: prxId,
-                pro_id: Number(props.match.params.proId),
+                pro_id: Number(match.params.proId),
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
+                man_id: manId,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -543,18 +642,18 @@ function CriarManifestacao(props) {
             <Container>
                 <Autorizacao tela="Criar manifestação" />
                 <Main>
-                    {manifestacaoProcesso.length > 0 ? (
-                        <p>Manifestação - {manifestacaoProcesso[0].tmn_nome}</p>
-                    ) : (
-                        <p>Criar manifestação</p>
-                    )}
-                    <hr />
+                    <Titulo>
+                        {manifestacaoProcesso.length > 0 ? (
+                            <p>Manifestação - {manifestacaoProcesso[0].tmn_nome}</p>
+                        ) : (
+                            <p>Criar manifestação</p>
+                        )}
+                        <hr />
+                    </Titulo>
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
                     <span>
-                        <LinkProcesso
-                            type="button"
-                            onClick={() => abreModalProcesso(props.match.params.proId)}>
+                        <LinkProcesso type="button" onClick={() => abreModalProcesso()}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
@@ -622,7 +721,13 @@ function CriarManifestacao(props) {
                                 </>
                             )}
                             {manifestacaoProcesso.length > 0 ? (
-                                <Tramitar name="btnTramita" clickHandler={tramita} />
+                                <>
+                                    {nodFim ? (
+                                        <Finalizar name="btnFinaliza" clickHandler={finaliza} />
+                                    ) : (
+                                        <Tramitar name="btnTramita" clickHandler={tramita} />
+                                    )}
+                                </>
                             ) : null}
                             <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
                         </ContainerBotoes>
@@ -648,58 +753,65 @@ function CriarManifestacao(props) {
                     <ModalProcesso
                         fechaModalProcesso={fechaModalProcesso}
                         modalProcesso={modalProcesso}
-                        proId={proIdModal}
+                        processo={processoModal}
                     />
 
                     {anexos.length > 0 ? (
                         <div>
                             <p>Arquivos da manifestação</p>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Seq</th>
-                                        <th>Documento</th>
-                                        <th>Arquivo</th>
-                                        <th>Data</th>
-                                        <th>Excluir</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {anexos.map((anexo, index) => (
-                                        <tr key={anexo.arq_id}>
-                                            <td>{index + 1}</td>
-                                            <td>{anexo.tpd_nome}</td>
-                                            <td>
-                                                <BotaoComoLink
-                                                    type="button"
-                                                    onClick={e =>
-                                                        downloadAnexo(
-                                                            e,
-                                                            anexo.arq_id,
-                                                            anexo.manId,
-                                                            anexo.arq_nome
-                                                        )
-                                                    }>
-                                                    {anexo.arq_nome}
-                                                </BotaoComoLink>
-                                            </td>
-                                            <td>{anexo.data}</td>
-
-                                            <td>
-                                                {anexo.arq_login ===
-                                                sessionStorage.getItem('usuario') ? (
-                                                    <BotaoComoLink
-                                                        onClick={() =>
-                                                            abreModalExcluir(anexo.arq_id)
-                                                        }>
-                                                        Excluir
-                                                    </BotaoComoLink>
-                                                ) : null}
-                                            </td>
+                            <fieldset>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Seq</th>
+                                            <th>Documento</th>
+                                            <th>Arquivo</th>
+                                            <th>Data</th>
+                                            <th>Excluir</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {anexos.map((anexo, index) => (
+                                            <tr key={anexo.arq_id}>
+                                                <td>{index + 1}</td>
+                                                <td>{anexo.tpd_nome}</td>
+                                                <td>
+                                                    <BotaoComoLink
+                                                        type="button"
+                                                        onClick={e =>
+                                                            download(
+                                                                e,
+                                                                Number(match.params.proId),
+                                                                proCodigo.substr(
+                                                                    proCodigo.length - 4
+                                                                ),
+                                                                anexo.arq_nome
+                                                            )
+                                                        }>
+                                                        {anexo.arq_nome.substr(
+                                                            33,
+                                                            anexo.arq_nome.length
+                                                        )}
+                                                    </BotaoComoLink>
+                                                </td>
+                                                <td>{anexo.data}</td>
+
+                                                <td>
+                                                    {anexo.arq_login ===
+                                                    sessionStorage.getItem('usuario') ? (
+                                                        <BotaoComoLink
+                                                            onClick={() =>
+                                                                abreModalExcluir(anexo.arq_id)
+                                                            }>
+                                                            Excluir
+                                                        </BotaoComoLink>
+                                                    ) : null}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </fieldset>
                         </div>
                     ) : null}
                 </Main>

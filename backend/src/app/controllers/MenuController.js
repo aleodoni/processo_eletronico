@@ -1,12 +1,25 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
-import Sequelize from 'sequelize';
+// import Sequelize from 'sequelize';
 import Menu from '../models/Menu';
+import Tela from '../models/Tela';
+import ModeloMenu from '../models/ModeloMenu';
 import VTelaMenu from '../models/VTelaMenu';
 import VMenuPai from '../models/VMenuPai';
+
+import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
+import Auditoria from '../models/Auditoria';
 import DataHoraAtual from '../models/DataHoraAtual';
-import AuditoriaController from './AuditoriaController';
+
+import ConnectionHelper from '../helpers/ConnectionHelper';
+
+import CreateMenuService from '../services/menu/CreateMenuService';
+import DeleteMenuService from '../services/menu/DeleteMenuService';
+import UpdateMenuService from '../services/menu/UpdateMenuService';
+
+import AppError from '../error/AppError';
+
 require('dotenv/config');
 
 class MenuController {
@@ -61,84 +74,78 @@ class MenuController {
     }
 
     async store(req, res) {
-        if (req.body.men_id_pai === '-1') {
-            req.body.men_id_pai = null;
-        }
-        if (req.body.men_ordem_pai === '') {
-            req.body.men_ordem_pai = null;
-        }
-        const {
-            men_id,
-            men_id_pai,
-            men_nome,
-            men_url,
-            tel_id,
-            mmu_id,
-            men_ordem_pai
-        } = await Menu.create(req.body, {
-            logging: false
-        });
-        // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', men_id);
-        //
-        return res.json({
-            men_id,
-            men_id_pai,
-            men_nome,
-            men_url,
-            tel_id,
-            mmu_id,
-            men_ordem_pai
-        });
-    }
+        const createMenu = new CreateMenuService(Menu, Tela, ModeloMenu);
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
 
-    async update(req, res) {
-        const menu = await Menu.findByPk(req.params.id, { logging: false });
-        // auditoria de edição
-        AuditoriaController.audita(
-            menu._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        const menu = await createMenu.execute(req.body, { logging: false });
+
+        // auditoria de inserção
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', menu.men_id);
         //
-        if (!menu) {
-            return res.status(400).json({ error: 'Menu não encontrado' });
-        }
-        if (req.body.men_id_pai === '-1') {
-            req.body.men_id_pai = null;
-        }
-        if (req.body.men_ordem_pai === '') {
-            req.body.men_ordem_pai = null;
-        }
-        await menu.update(req.body, { logging: false });
+
         return res.json(menu);
     }
 
+    async update(req, res) {
+        const updateMenu = new UpdateMenuService(Menu, Tela, ModeloMenu);
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const { id } = req.params;
+
+        const {
+            men_id_pai,
+            men_nome,
+            men_url,
+            tel_id,
+            mmu_id,
+            men_ordem_pai,
+            tela_interna
+        } = req.body;
+
+        const updatedMenu = await updateMenu.execute({
+            id,
+            men_id_pai,
+            men_nome,
+            men_url,
+            tel_id,
+            mmu_id,
+            men_ordem_pai,
+            tela_interna
+        });
+
+        // auditoria de edição
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        await createAuditoria.execute(updatedMenu._previousDataValues, url, usuario, clientIP, 'U', id);
+        //
+
+        return res.json(updatedMenu);
+    }
+
     async delete(req, res) {
-        const menu = await Menu.findByPk(req.params.id, { logging: false });
-        if (!menu) {
-            return res.status(400).json({ error: 'Menu não encontrado' });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteMenu = new DeleteMenuService(Menu);
+
+        const { id } = req.params;
+
+        try {
+            const menu = await deleteMenu.execute({ id });
+
+            // auditoria de deleção
+            const { url, headers } = req;
+            const { usuario } = headers;
+            const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await createAuditoria.execute(menu._previousDataValues, url, usuario, clientIP, 'D', id);
+            //
+        } catch (err) {
+            throw new AppError('Erro ao excluir menu. O menu menu possui uma ou mais ligações.');
         }
-        await menu
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                AuditoriaController.audita(
-                    menu._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error: 'Erro ao excluir menu. O menu possui uma ou mais ligações.'
-                    });
-                }
-            });
+
         return res.send();
     }
 
@@ -151,24 +158,26 @@ class MenuController {
     }
 
     async montaMenu(req, res) {
-        const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-            host: process.env.DB_HOST,
-            dialect: 'postgres',
-            define: {
-                timestamps: false,
-                underscoredAll: true
-            },
-            pool: {
-                max: 7,
-                min: 0,
-                acquire: 30000,
-                idle: 10000
-            }
-        });
+        // const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+        //     host: process.env.DB_HOST,
+        //     dialect: 'postgres',
+        //     define: {
+        //         timestamps: false,
+        //         underscoredAll: true
+        //     },
+        //     pool: {
+        //         max: 7,
+        //         min: 0,
+        //         acquire: 30000,
+        //         idle: 10000
+        //     }
+        // });
+
+        const connection = ConnectionHelper.getConnection();
         const area = req.params.area;
 
         const sql = "select spa2.monta_menu_raiz('" + area + "')";
-        sequelize.query(sql, {
+        connection.query(sql, {
             logging: false,
             plain: true,
             raw: true

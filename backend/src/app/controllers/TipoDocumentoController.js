@@ -9,7 +9,7 @@ class TipoDocumentoController {
     async index(req, res) {
         const tiposDocumento = await VTipoDocumento.findAll({
             order: ['tpd_nome'],
-            attributes: ['tpd_id', 'tpd_nome', 'tpd_visivel', 'visivel'],
+            attributes: ['tpd_id', 'tpd_nome', 'tpd_visivel', 'visivel', 'tpd_solicitacao_pgto', 'solicitacao_pgto'],
             logging: false
         });
         return res.json(tiposDocumento);
@@ -18,7 +18,7 @@ class TipoDocumentoController {
     async combo(req, res) {
         const tiposDocumento = await VTipoDocumento.findAll({
             order: ['tpd_nome'],
-            attributes: ['tpd_id', 'tpd_nome', 'tpd_visivel', 'visivel'],
+            attributes: ['tpd_id', 'tpd_nome', 'tpd_visivel', 'visivel', 'tpd_solicitacao_pgto', 'solicitacao_pgto'],
             where: [
                 { tpd_visivel: true }
             ],
@@ -28,7 +28,7 @@ class TipoDocumentoController {
     }
 
     async store(req, res) {
-        const { tpd_id, tpd_nome, tpd_visivel } = await TipoDocumento.create(req.body, {
+        const { tpd_id, tpd_nome, tpd_visivel, tpd_solicitacao_pgto } = await TipoDocumento.create(req.body, {
             logging: false
         });
         // auditoria de inserção
@@ -37,7 +37,8 @@ class TipoDocumentoController {
         return res.json({
             tpd_id,
             tpd_nome,
-            tpd_visivel
+            tpd_visivel,
+            tpd_solicitacao_pgto
         });
     }
 

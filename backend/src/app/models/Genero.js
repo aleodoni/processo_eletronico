@@ -14,6 +14,11 @@ class Genero extends Model {
                     type: Sequelize.STRING,
                     allowNull: false
                 },
+                gen_visivel: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false
+                },
                 versao: {
                     type: Sequelize.INTEGER,
                     allowNull: false,

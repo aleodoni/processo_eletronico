@@ -3,13 +3,17 @@
 /* eslint-disable camelcase */
 import Manifestacao from '../models/Manifestacao';
 import VManifestacao from '../models/VManifestacao';
-import VNodoDecisao from '../models/VNodoDecisao';
+import VManifestacaoProcesso from '../models/VManifestacaoProcesso';
 import ArquivoManifestacao from '../models/ArquivoManifestacao';
+import VNodoDecisao from '../models/VNodoDecisao';
 import DataHoraAtual from '../models/DataHoraAtual';
+import Tramite from '../models/Tramite';
 import moment from 'moment';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import * as caminhos from '../../config/arquivos';
+import CreateManifestacaoService from '../services/manifestacao/CreateManifestacaoService';
 import fs from 'fs';
+import * as constantes from '../../app/constants/constantes';
 require('dotenv/config');
 // import AuditoriaController from './AuditoriaController';
 
@@ -17,7 +21,7 @@ class ManifestacaoController {
     async index(req, res) {
         const nodoDecisao = await VNodoDecisao.findAll({
             attributes: ['nod_id', 'pro_id', 'nod_decisao'],
-            logging: true,
+            logging: false,
             plain: true,
             where: {
                 pro_id: req.params.id
@@ -27,6 +31,17 @@ class ManifestacaoController {
     }
 
     async manifestacaoProcesso(req, res) {
+        // vou verificar nos tramites deste processo se o último trâmite teve
+        // como razão "Discordância de cálculo", se teve é que voltou, então
+        // tem que ter uma nova manifestação do DARH
+        const tramite = await Tramite.findAll({
+            attributes: ['tra_id', 'pro_id', 'raz_id'],
+            logging: false,
+            where: {
+                pro_id: req.params.id,
+                raz_id: constantes.RAZ_DISCORDANCIA_CALCULO
+            }
+        });
         const manifestacao = await VManifestacao.findAll({
             attributes: ['man_id',
                 'pro_id',
@@ -40,58 +55,120 @@ class ManifestacaoController {
                 'man_visto_executiva',
                 'man_data_cancelamento',
                 'man_data',
-                'nod_id'],
+                'man_ciencia',
+                'man_averbacao',
+                'man_ciencia_averbacao',
+                'man_aval_horario',
+                'man_contagem_tempo',
+                'man_ciencia_calculo',
+                'nod_id',
+                'man_tramitada',
+                'man_parecer_projuris_aposentadoria',
+                'man_decisao_pad'],
+
+            logging: false,
+            where: {
+                pro_id: req.params.id,
+                man_data_cancelamento: null,
+                man_login_cancelamento: null,
+                man_tramitada: false
+            },
+            order: [
+                ['man_id', 'DESC']]
+        });
+        if (tramite.length === 0) {
+            for (let i = 0; i < manifestacao.length; i++) {
+                manifestacao[i].dataValues.discordancia = false;
+            }
+            return res.json(manifestacao);
+        } else {
+            for (let i = 0; i < manifestacao.length; i++) {
+                manifestacao[i].dataValues.discordancia = true;
+            }
+            return res.json(manifestacao);
+        }
+    }
+
+    async manifestacaoProcessoDados(req, res) {
+        const manifestacao = await VManifestacaoProcesso.findAll({
+            attributes: ['seq',
+                'man_id',
+                'pro_id',
+                'tmn_nome',
+                'man_login',
+                'set_nome',
+                'man_data'],
             logging: true,
             where: {
                 pro_id: req.params.id
             }
         });
-        return res.json(manifestacao);
+        const dados = [];
+        for (const m in manifestacao) {
+            const arquivosManifestacao = [];
+            const arquivos = await ArquivoManifestacao.findAll({
+                order: ['man_id'],
+                attributes: [
+                    'arq_id',
+                    'arq_nome',
+                    'man_id',
+                    'arq_tipo',
+                    'data',
+                    'arq_login',
+                    'tpd_nome'
+                ],
+                logging: false,
+                where: {
+                    man_id: manifestacao[m].man_id
+                }
+            });
+
+            for (const a in arquivos) {
+                arquivosManifestacao.push(
+                    {
+                        arq_id: arquivos[a].arq_id,
+                        arq_nome: arquivos[a].arq_nome,
+                        arq_tipo: arquivos[a].arq_tipo,
+                        data: arquivos[a].data,
+                        arq_login: arquivos[a].arq_login,
+                        tpd_nome: arquivos[a].tpd_nome
+                    });
+            }
+
+            dados.push(
+                {
+                    seq: manifestacao[m].seq,
+                    tmn_nome: manifestacao[m].tmn_nome,
+                    set_nome: manifestacao[m].set_nome,
+                    man_login: manifestacao[m].man_login,
+                    arquivos: arquivosManifestacao
+                });
+        }
+        return res.json(dados);
     }
 
     async store(req, res) {
-        const dataHoraAtual = await DataHoraAtual.findAll({
-            attributes: ['data_hora_atual'],
-            logging: true,
-            plain: true
-        });
-
-        console.log(req.body);
-
-        const {
-            man_id,
-            pro_id,
-            tmn_id,
-            man_login,
-            man_id_area,
-            man_visto_executiva,
-            man_data,
-            nod_id
-        } = await Manifestacao.create({
+        const createManifestacao = new CreateManifestacaoService(Manifestacao, DataHoraAtual);
+        const manifestacao = await createManifestacao.criaManifestacao({
             man_id: req.body.man_id,
             pro_id: req.body.pro_id,
             tmn_id: req.body.tmn_id,
             man_login: req.body.man_login,
             man_id_area: req.body.man_id_area,
             man_visto_executiva: req.body.man_visto_executiva,
-            man_data: dataHoraAtual.dataValues.data_hora_atual,
-            nod_id: req.body.nod_id
-        }, {
-            logging: true
+            man_data: null,
+            nod_id: req.body.nod_id,
+            man_ciencia: req.body.man_ciencia,
+            man_averbacao: req.body.man_averbacao,
+            man_ciencia_averbacao: req.body.man_ciencia_averbacao,
+            man_aval_horario: req.body.man_aval_horario,
+            man_contagem_tempo: req.body.man_contagem_tempo,
+            man_ciencia_calculo: req.body.man_ciencia_calculo,
+            man_parecer_projuris_aposentadoria: req.body.man_parecer_projuris_aposentadoria,
+            man_decisao_pad: req.body.man_decisao_pad
         });
-            // auditoria de inserção
-            // AuditoriaController.audita(req.body, req, 'I', man_id);
-            //
-        return res.json({
-            man_id,
-            pro_id,
-            tmn_id,
-            man_login,
-            man_id_area,
-            man_visto_executiva,
-            man_data,
-            nod_id
-        });
+
+        return res.json(manifestacao);
     }
 
     async update(req, res) {
@@ -110,7 +187,7 @@ class ManifestacaoController {
         if (req.body.man_data_cancelamento === null) {
             const dataHoraAtual = await DataHoraAtual.findAll({
                 attributes: ['data_hora_atual'],
-                logging: true,
+                logging: false,
                 plain: true
             });
             req.body.man_data_cancelamento = dataHoraAtual.dataValues.data_hora_atual;
@@ -174,6 +251,81 @@ class ManifestacaoController {
         console.log(JSON.stringify(manifestacao));
 
         return res.json(manifestacao);
+    }
+
+    async rubrica(req, res) {
+        try {
+            const ordemAssinatura = Number(req.body.ordem);
+            let jpgUrl = null;
+            let jpgImageBytes = null;
+            let eixoX = null;
+            const caminhoOrdemPagamento = process.env.CAMINHO_ARQUIVOS_ORDEM_PAGAMENTO;
+            if (ordemAssinatura === 1) {
+                jpgUrl = caminhoOrdemPagamento + 'assinaturas/assinatura1.jpg';
+                jpgImageBytes = fs.readFileSync(jpgUrl, null);
+                eixoX = 75;
+            }
+            if (ordemAssinatura === 2) {
+                jpgUrl = caminhoOrdemPagamento + 'assinaturas/assinatura2.jpg';
+                jpgImageBytes = fs.readFileSync(jpgUrl, null);
+                eixoX = 200;
+            }
+            if (ordemAssinatura === 3) {
+                jpgUrl = caminhoOrdemPagamento + 'assinaturas/assinatura3.jpg';
+                jpgImageBytes = fs.readFileSync(jpgUrl, null);
+                eixoX = 330;
+            }
+            if (ordemAssinatura === 4) {
+                jpgUrl = caminhoOrdemPagamento + 'assinaturas/assinatura4.jpg';
+                jpgImageBytes = fs.readFileSync(jpgUrl, null);
+                eixoX = 500;
+            }
+            const caminho = caminhoOrdemPagamento + 'ordemPagamento.pdf';
+            const myArrayBuffer = fs.readFileSync(caminho, null);
+
+            const pdfDoc = await PDFDocument.load(myArrayBuffer);
+
+            // const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0];
+            // const { width, height } = firstPage.getSize();
+            const { height } = firstPage.getSize();
+
+            /*
+        firstPage.drawText('ASS1', {
+            x: 75,
+            y: height - 763,
+            size: 18,
+            font: helveticaFont,
+            color: rgb(0.95, 0.1, 0.1)
+        });
+        */
+
+            const jpgImage = await pdfDoc.embedJpg(jpgImageBytes);
+
+            firstPage.drawImage(jpgImage, {
+                x: eixoX,
+                y: height - 763,
+                width: 40,
+                height: 50
+            });
+
+            const pdfBytes = await pdfDoc.save();
+
+            fs.writeFileSync(caminho, Buffer.from(pdfBytes));
+
+            fs.readFile(caminho, function(_err, data) {
+                if (_err) {
+                    console.log(_err);
+                }
+                res.contentType('application/pdf');
+                return res.send(data);
+            });
+        } catch (e) {
+            console.log(e);
+        }
+
+        // return res.json({ ok: 'ok' });
     }
 
     async delete(req, res) {

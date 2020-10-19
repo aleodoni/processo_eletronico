@@ -5,7 +5,7 @@ const sql = `
     SELECT
         v_menu_autorizacao.tel_id,
         v_menu_autorizacao.tel_nome,
-        v_menu_autorizacao.set_id
+        (v_menu_autorizacao.set_id)::integer AS set_id
     FROM
         spa2.v_menu_autorizacao;
 `;

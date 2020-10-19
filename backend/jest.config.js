@@ -25,7 +25,8 @@ module.exports = {
         '<rootDir>/src/app/controllers/*.js',
         '<rootDir>/src/app/middlewares/*.js',
         '<rootDir>/src/app/models/*.js',
-        '<rootDir>/src/app/validators/*.js'
+        '<rootDir>/src/app/validators/*.js',
+        '<rootDir>/src/app/services/**/*.js'
     ],
 
     // The directory where Jest should output its coverage files

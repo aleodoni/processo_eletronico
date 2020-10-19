@@ -49,6 +49,54 @@ class VNodo extends Model {
                 },
                 decisao: {
                     type: Sequelize.STRING
+                },
+                nod_interessado: {
+                    type: Sequelize.BOOLEAN
+                },
+                interessado: {
+                    type: Sequelize.STRING
+                },
+                nod_ciencia: {
+                    type: Sequelize.BOOLEAN
+                },
+                ciencia: {
+                    type: Sequelize.STRING
+                },
+                nod_averbacao: {
+                    type: Sequelize.BOOLEAN
+                },
+                averbacao: {
+                    type: Sequelize.STRING
+                },
+                nod_ciencia_averbacao: {
+                    type: Sequelize.BOOLEAN
+                },
+                ciencia_averbacao: {
+                    type: Sequelize.STRING
+                },
+                nod_aval_horario: {
+                    type: Sequelize.BOOLEAN
+                },
+                aval_horario: {
+                    type: Sequelize.STRING
+                },
+                nod_contagem_tempo: {
+                    type: Sequelize.BOOLEAN
+                },
+                contagem_tempo: {
+                    type: Sequelize.STRING
+                },
+                nod_ciencia_calculo: {
+                    type: Sequelize.BOOLEAN
+                },
+                ciencia_calculo: {
+                    type: Sequelize.STRING
+                },
+                parecer_projuris_aposentadoria: {
+                    type: Sequelize.STRING
+                },
+                decisao_pad: {
+                    type: Sequelize.STRING
                 }
             },
             {

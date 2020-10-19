@@ -2,7 +2,12 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 import Tela from '../models/Tela';
-import AuditoriaController from './AuditoriaController';
+// import Auditoria from '../models/Auditoria';
+// import DataHoraAtual from '../models/DataHoraAtual';
+import CreateTelaService from '../services/tela/CreateTelaService';
+import UpdateTelaService from '../services/tela/UpdateTelaService';
+import DeleteTelaService from '../services/tela/DeleteTelaService';
+// import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
 
 class TelaController {
     async index(req, res) {
@@ -15,12 +20,20 @@ class TelaController {
     }
 
     async store(req, res) {
-        const { tel_id, tel_nome } = await Tela.create(req.body, {
+        const createTela = new CreateTelaService(Tela);
+        // const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const { tel_id, tel_nome } = await createTela.execute(req.body, {
             logging: false
         });
+
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', tel_id);
+        // const { url, headers } = req;
+        // const { usuario } = headers;
+        // const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', tel_id);
         //
+
         return res.json({
             tel_id,
             tel_nome
@@ -28,46 +41,41 @@ class TelaController {
     }
 
     async update(req, res) {
-        const tela = await Tela.findByPk(req.params.id, { logging: false });
+        const updateTela = new UpdateTelaService(Tela);
+        // const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const { id } = req.params;
+        const { tel_nome } = req.body;
+
+        const updatedTela = await updateTela.execute({ id, tel_nome });
+
         // auditoria de edição
-        AuditoriaController.audita(
-            tela._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        // const { url, headers } = req;
+        // const { usuario } = headers;
+        // const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        // await createAuditoria.execute(updatedTela._previousDataValues, url, usuario, clientIP, 'U', id);
         //
-        if (!tela) {
-            return res.status(400).json({ error: 'Tela não encontrada' });
-        }
-        await tela.update(req.body, { logging: false });
-        return res.json(tela);
+
+        return res.json(updatedTela);
     }
 
     async delete(req, res) {
-        const tela = await Tela.findByPk(req.params.id, { logging: false });
-        if (!tela) {
-            return res.status(400).json({ error: 'Tela não encontrada' });
-        }
-        await tela
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                AuditoriaController.audita(
-                    tela._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error: 'Erro ao excluir tela. A tela possui uma ou mais ligações.'
-                    });
-                }
-            });
+        // const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteTela = new DeleteTelaService(Tela);
+
+        const { id } = req.params;
+
+        // const tela = await deleteTela.execute({ id });
+        await deleteTela.execute({ id });
+
+        // auditoria de deleção
+        // const { url, headers } = req;
+        // const { usuario } = headers;
+        // const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // await createAuditoria.execute(tela._previousDataValues, url, usuario, clientIP, 'D', id);
+        //
+
         return res.send();
     }
 }

@@ -7,6 +7,7 @@ export default async(req, res, next) => {
     if (!authHeader) {
         return res.status(401).json({ error: 'Sem token.' });
     }
+    // const [, token] = authHeader.split(' ');
     const token = authHeader;
     try {
         const decoded = await promisify(jwt.verify)(token, process.env.CHAVE);

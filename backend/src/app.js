@@ -1,14 +1,16 @@
 import express from 'express';
-import Youch from 'youch';
 import 'express-async-errors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import bodyParser from 'body-parser';
+import { isCelebrate } from 'celebrate';
 import winston from './config/log';
 import routes from './routes';
 import './database';
+import AppError from './app/error/AppError';
+import rateLimiter from './app/middlewares/rateLimiter';
 
 class App {
     constructor() {
@@ -23,13 +25,16 @@ class App {
     }
 
     middlewares() {
-    // configura o express
+        if (process.env.NODE_ENV !== 'development') {
+            this.server.use(rateLimiter);
+        }
+        // configura o express
         this.server.use(express.json());
         // formata o JSON retornado
         this.server.set('json spaces', 4);
         // configura o log da aplicação
         if (process.env.NODE_ENV !== 'test') {
-            this.server.use(morgan(':method | :url | :status | :response-time ms', { stream: winston.stream }));
+            this.server.use(morgan(':method | :url | :status | :response-time ms', { stream: winston.stream, skip: function(req, res) { return req.method === 'OPTIONS'; } }));
         }
         // configura o helmet
         this.server.use(helmet());
@@ -54,9 +59,32 @@ class App {
     exceptionHandler() {
         this.server.use(async(err, req, res, next) => {
             if (process.env.NODE_ENV === 'development') {
-                const errors = await new Youch(err, req).toJSON();
-                return res.status(500).json(errors);
+                if (err instanceof AppError) {
+                    // console.log(err);
+                    return res.status(err.statusCode).json({
+                        status: 'error',
+                        message: err.message
+                    });
+                }
             }
+
+            // console.log(err);
+
+            if (err instanceof AppError) {
+                return res.status(err.statusCode).json({
+                    status: 'error',
+                    message: err.message
+                });
+            }
+
+            if (isCelebrate(err)) {
+                const celError = err;
+                return res.status(422).json({
+                    status: 'error',
+                    message: celError.message
+                });
+            }
+
             return res.status(500).json({ error: 'Erro interno no servidor.' });
         });
     }

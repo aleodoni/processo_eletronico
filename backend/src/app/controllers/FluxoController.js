@@ -2,7 +2,16 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Fluxo from '../models/Fluxo';
-import AuditoriaController from './AuditoriaController';
+import Auditoria from '../models/Auditoria';
+import DataHoraAtual from '../models/DataHoraAtual';
+
+import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
+
+import CreateFluxoService from '../services/fluxo/CreateFluxoService';
+import DeleteFluxoService from '../services/fluxo/DeleteFluxoService';
+import UpdateFluxoService from '../services/fluxo/UpdateFluxoService';
+
+import AppError from '../error/AppError';
 
 class FluxoController {
     async index(req, res) {
@@ -15,12 +24,18 @@ class FluxoController {
     }
 
     async store(req, res) {
-        const { flu_id, flu_nome } = await Fluxo.create(req.body, {
-            logging: false
-        });
+        const createFluxo = new CreateFluxoService(Fluxo);
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const { flu_id, flu_nome } = await createFluxo.execute(req.body);
+
         // auditoria de inserção
-        AuditoriaController.audita(req.body, req, 'I', flu_id);
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', flu_id);
         //
+
         return res.json({
             flu_id,
             flu_nome
@@ -28,46 +43,45 @@ class FluxoController {
     }
 
     async update(req, res) {
-        const fluxo = await Fluxo.findByPk(req.params.id, { logging: false });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const updateFluxo = new UpdateFluxoService(Fluxo);
+
+        const { id } = req.params;
+        const { flu_nome } = req.body;
+
+        const updatedFluxo = await updateFluxo.execute({ id, flu_nome });
+
         // auditoria de edição
-        AuditoriaController.audita(
-            fluxo._previousDataValues,
-            req,
-            'U',
-            req.params.id
-        );
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        await createAuditoria.execute(updatedFluxo._previousDataValues, url, usuario, clientIP, 'U', id);
         //
-        if (!fluxo) {
-            return res.status(400).json({ error: 'Fluxo não encontrado' });
-        }
-        await fluxo.update(req.body, { logging: false });
-        return res.json(fluxo);
+
+        return res.json(updatedFluxo);
     }
 
     async delete(req, res) {
-        const fluxo = await Fluxo.findByPk(req.params.id, { logging: false });
-        if (!fluxo) {
-            return res.status(400).json({ error: 'Fluxo não encontrado' });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteFluxo = new DeleteFluxoService(Fluxo);
+
+        const { id } = req.params;
+
+        try {
+            const fluxo = await deleteFluxo.execute({ id });
+
+            // auditoria de deleção
+            const { url, headers } = req;
+            const { usuario } = headers;
+            const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await createAuditoria.execute(fluxo._previousDataValues, url, usuario, clientIP, 'D', id);
+            //
+        } catch (err) {
+            throw new AppError('Erro ao excluir fluxo. O fluxo possui uma ou mais ligações.');
         }
-        await fluxo
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                AuditoriaController.audita(
-                    fluxo._previousDataValues,
-                    req,
-                    'D',
-                    req.params.id
-                );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error: 'Erro ao excluir fluxo. O fluxo possui uma ou mais ligações.'
-                    });
-                }
-            });
+
         return res.send();
     }
 }

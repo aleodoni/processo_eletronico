@@ -53,5 +53,10 @@ export const Container1 = styled.div`
 
 export const Container2 = styled.div`
     display: grid;
-    grid-template-columns: 280px 570px 180px 150px;
+    grid-template-columns: 280px 570px;
+`;
+
+export const Container3 = styled.div`
+    display: grid;
+    grid-template-columns: 180px 150px 150px 150px;
 `;

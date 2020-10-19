@@ -1,5 +1,31 @@
 import styled from 'styled-components';
 
+const handleColorType = cor => {
+    switch (cor) {
+        case 'vermelho':
+            return 'color: #fff; background: #e0001e;';
+        case 'laranja':
+            return 'color: #fff; background: #fc5f00;';
+        case 'azul':
+            return 'color: #fff; background: #293689;';
+        default:
+            return 'color: #fff; background: #293689;';
+    }
+};
+
+const handleColorHover = corHover => {
+    switch (corHover) {
+        case 'vermelho-claro':
+            return 'background: #ff4040;';
+        case 'laranja-claro':
+            return 'background: #ffbc40;';
+        case 'azul-claro':
+            return 'background: #3e50c5;';
+        default:
+            return 'background: #3e50c5;';
+    }
+};
+
 export const Container = styled.div`
     display: flex;
     flex: 1;
@@ -21,7 +47,7 @@ export const Main = styled.main`
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 190px 230px;
+    grid-template-columns: 190px 240px 350px;
     margin-bottom: 10px;
 `;
 
@@ -64,6 +90,14 @@ export const ContainerProcessos = styled.div`
             td {
                 border: solid 1px #fff;
                 padding: 1px;
+
+                label {
+                    background: transparent;
+                }
+
+                img {
+                    cursor: pointer;
+                }
             }
         }
     }
@@ -86,20 +120,21 @@ export const Erro = styled.div`
     font-size: 14px;
     color: red;
     padding-bottom: 10px;
+    padding-left: 10px;
 `;
 
 export const BotaoCriaManifestacao = styled.button`
-    background: ${({ theme }) => theme.primary};
     border: 0;
     border-radius: 4px;
     height: 30px;
-    width: 165px;
-    color: ${({ theme }) => theme.text};
+    width: 150px;
+
+    ${({ cor }) => handleColorType(cor)};
     font-size: 14px;
     transition: background 0.2s;
 
     &:hover {
-        background: ${({ theme }) => theme.hover};
+        ${({ corHover }) => handleColorHover(corHover)};
     }
 
     svg {
@@ -114,7 +149,7 @@ export const BotaoFinalizaProcesso = styled.button`
     border: 0;
     border-radius: 4px;
     height: 27px;
-    width: 162px;
+    width: 180px;
     color: ${({ theme }) => theme.text};
     font-size: 14px;
     transition: background 0.2s;

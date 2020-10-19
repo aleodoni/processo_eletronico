@@ -2,7 +2,14 @@
 /* eslint-disable func-names */
 /* eslint-disable camelcase */
 import Lotacao from '../models/Lotacao';
-// import AuditoriaController from './AuditoriaController';
+import Setor from '../models/Setor';
+import Auditoria from '../models/Auditoria';
+import DataHoraAtual from '../models/DataHoraAtual';
+import CreateLotacaoService from '../services/lotacao/CreateLotacaoService';
+import UpdateLotacaoService from '../services/lotacao/UpdateLotacaoService';
+import DeleteLotacaoService from '../services/lotacao/DeleteLotacaoService';
+import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
+import AppError from '../error/AppError';
 
 class LotacaoController {
     async index(req, res) {
@@ -15,68 +22,61 @@ class LotacaoController {
     }
 
     async store(req, res) {
-        const { matricula, set_id, pes_nome, pes_login } = await Lotacao.create({
-            matricula: req.body.matricula,
-            set_id: req.body.set_id,
-            pes_nome: req.body.pes_nome,
-            pes_login: req.body.pes_login
-        }, {
-            logging: false
-        });
-        // auditoria de inserção
-        // AuditoriaController.audita(req.body, req, 'I', matricula);
-        //
-        return res.json({
-            matricula, set_id, pes_nome, pes_login
-        });
-    }
+        const createLotacao = new CreateLotacaoService(Lotacao, Setor);
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
 
-    async update(req, res) {
-        const lotacao = await Lotacao.findByPk(req.params.id, { logging: true });
-        // auditoria de edição
-        // AuditoriaController.audita(
-        //    lotacao._previousDataValues,
-        //    req,
-        //    'U',
-        //    req.params.id
-        // );
+        const lotacao = await createLotacao.execute(req.body);
+
+        // auditoria de inserção
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', lotacao.matricula);
         //
-        if (!lotacao) {
-            return res.status(400).json({ error: 'Lotação não encontrada' });
-        }
-        await lotacao.update({
-            matricula: req.body.matricula,
-            set_id: req.body.set_id,
-            pes_nome: req.body.pes_nome,
-            pes_login: req.body.pes_login
-        }, { logging: false });
+
         return res.json(lotacao);
     }
 
+    async update(req, res) {
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const updateLotacao = new UpdateLotacaoService(Lotacao, Setor);
+
+        const { id } = req.params;
+        const { matricula, pes_nome, set_id, pes_login } = req.body;
+
+        const updatedLotacao = await updateLotacao.execute({ matricula, pes_nome, set_id, pes_login });
+
+        // auditoria de edição
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        await createAuditoria.execute(updatedLotacao._previousDataValues, url, usuario, clientIP, 'U', id);
+        //
+
+        return res.json(updatedLotacao);
+    }
+
     async delete(req, res) {
-        const lotacao = await Lotacao.findByPk(req.params.id, { logging: true });
-        if (!lotacao) {
-            return res.status(400).json({ error: 'Lotação não encontrada' });
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteLotacao = new DeleteLotacaoService(Lotacao);
+
+        const { id } = req.params;
+
+        try {
+            const lotacao = await deleteLotacao.execute({ matricula: id });
+
+            // auditoria de deleção
+            const { url, headers } = req;
+            const { usuario } = headers;
+            const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await createAuditoria.execute(lotacao._previousDataValues, url, usuario, clientIP, 'D', id);
+            //
+        } catch (err) {
+            throw new AppError('Erro ao excluir lotação. A Lotação possui uma ou mais ligações.');
         }
-        await lotacao
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                // AuditoriaController.audita(
-                //    lotacao._previousDataValues,
-                //    req,
-                //    'D',
-                //    req.params.id
-                // );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error: 'Erro ao excluir lotação. A lotação possui uma ou mais ligações.'
-                    });
-                }
-            });
+
         return res.send();
     }
 }

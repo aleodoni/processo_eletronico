@@ -79,6 +79,21 @@ export const ContainerCriaProcesso = styled.div`
     grid-template-columns: 250px 750px;
     grid-template-rows: 70px;
 `;
+export const ContainerRevisaoPensaoAlimenticia = styled.div`
+    display: grid;
+    grid-template-columns: 750px;
+    grid-template-rows: 70px;
+`;
+export const ContainerRecurso = styled.div`
+    display: grid;
+    grid-template-columns: 750px;
+    grid-template-rows: 70px;
+`;
+export const ContainerAbonoPermanencia = styled.div`
+    display: grid;
+    grid-template-columns: 350px 350px;
+    grid-template-rows: 70px;
+`;
 
 export const BotaoProcura = styled.button`
     display: flex;

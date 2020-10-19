@@ -3,6 +3,18 @@
 /* eslint-disable camelcase */
 import AreaMenu from '../models/AreaMenu';
 import VAreaMenu from '../models/VAreaMenu';
+import Setor from '../models/Setor';
+import ModeloMenu from '../models/ModeloMenu';
+
+import CreateAuditoriaService from '../services/auditoria/CreateAuditoriaService';
+import Auditoria from '../models/Auditoria';
+import DataHoraAtual from '../models/DataHoraAtual';
+
+import CreateAreaMenuService from '../services/area_menu/CreateAreaMenuService';
+import DeleteAreaMenuService from '../services/area_menu/DeleteAreaMenuService';
+import UpdateAreaMenuService from '../services/area_menu/UpdateAreaMenuService';
+
+import AppError from '../error/AppError';
 // import AuditoriaController from './AuditoriaController';
 
 class AreaMenuController {
@@ -23,70 +35,61 @@ class AreaMenuController {
     }
 
     async store(req, res) {
-        const { amu_id, set_id, mmu_id } = await AreaMenu.create(req.body, {
-            logging: true
-        });
-        console.log(JSON.stringify(req.body));
-        // auditoria de inserção
-        // AuditoriaController.audita(req.body, req, 'I', amu_id);
-        //
-        return res.json({
-            amu_id,
-            set_id,
-            mmu_id
-        });
-    }
+        const createAreamenu = new CreateAreaMenuService(AreaMenu, Setor, ModeloMenu);
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
 
-    async update(req, res) {
-        const areaMenu = await AreaMenu.findByPk(req.params.id, { logging: false });
-        // auditoria de edição
-        // AuditoriaController.audita(
-        //    areaMenu._previousDataValues,
-        //    req,
-        //    'U',
-        //    req.params.id
-        // );
+        const areaMenu = await createAreamenu.execute(req.body);
+
+        // auditoria de inserção
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        await createAuditoria.execute(req.body, url, usuario, clientIP, 'I', areaMenu.amu_id);
         //
-        if (!areaMenu) {
-            return res.status(400).json({ error: 'Área de menu não encontrado' });
-        }
-        await areaMenu.update(req.body, { logging: false });
+
         return res.json(areaMenu);
     }
 
-    async delete(req, res) {
-        const areaMenu = await AreaMenu.findByPk(req.params.id, { logging: false });
+    async update(req, res) {
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+
+        const updateAreaMenu = new UpdateAreaMenuService(AreaMenu, Setor, ModeloMenu);
+
+        const { id } = req.params;
+        const { set_id, mmu_id } = req.body;
+
+        const updatedAreamenu = await updateAreaMenu.execute({ id, set_id, mmu_id });
+
         // auditoria de edição
-        // AuditoriaController.audita(
-        //    areaMenu._previousDataValues,
-        //    req,
-        //    'U',
-        //    req.params.id
-        // );
+        const { url, headers } = req;
+        const { usuario } = headers;
+        const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+        await createAuditoria.execute(updatedAreamenu._previousDataValues, url, usuario, clientIP, 'U', id);
         //
-        if (!areaMenu) {
-            return res.status(400).json({ error: 'Área de menu não encontrado' });
+
+        return res.json(updatedAreamenu);
+    }
+
+    async delete(req, res) {
+        const createAuditoria = new CreateAuditoriaService(Auditoria, DataHoraAtual);
+        const deleteAreaMenu = new DeleteAreaMenuService(AreaMenu);
+
+        const { id } = req.params;
+
+        try {
+            const areamenu = await deleteAreaMenu.execute({ id });
+
+            // auditoria de deleção
+            const { url, headers } = req;
+            const { usuario } = headers;
+            const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await createAuditoria.execute(areamenu._previousDataValues, url, usuario, clientIP, 'D', id);
+            //
+        } catch (err) {
+            throw new AppError('Erro ao excluir área menu. A área menu possui uma ou mais ligações.');
         }
-        await areaMenu
-            .destroy({ logging: false })
-            .then(auditoria => {
-                // auditoria de deleção
-                // AuditoriaController.audita(
-                //    areaMenu._previousDataValues,
-                //    req,
-                //    'D',
-                //    req.params.id
-                // );
-                //
-            })
-            .catch(function(err) {
-                if (err.toString().includes('SequelizeForeignKeyConstraintError')) {
-                    return res.status(400).json({
-                        error:
-              'Erro ao excluir a área de menu. A área de menu possui uma ou mais ligações.'
-                    });
-                }
-            });
+
         return res.send();
     }
 }
