@@ -1,0 +1,95 @@
+# Este workflow cria o ambiente, instala as dependências e verifica padrão de código através do lint
+
+name: Node.js CI
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      BACKEND_DIR: ./backend
+
+    name: Testando no node 12.x
+  
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: Build Postgres & LDAP
+      run: |
+        docker-compose up -d
+      working-directory: ${{env.BACKEND_DIR}}
+      
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Cache node modules
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    
+    - name: Install dependencies
+      run: |
+        node --version
+        npm --version
+        yarn --version
+        yarn install --frozen-lockfile
+      working-directory: ${{env.BACKEND_DIR}}
+      
+    - name: Check linting
+      run: |
+        yarn lint
+      working-directory: ${{env.BACKEND_DIR}}
+
+    - name: Run migrations
+      run: |
+        yarn sequelize db:migrate
+      env:
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB_PASS: spa2
+          DB_NAME: spa2_local
+          DB_PORT: 5432
+      working-directory: ${{env.BACKEND_DIR}}
+
+    - name: Run seeds
+      run: |
+        yarn sequelize db:seed:all
+      env:
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB_PASS: spa2
+          DB_NAME: spa2_local
+          DB_PORT: 5432
+      working-directory: ${{env.BACKEND_DIR}}
+      
+    - name: Run integration tests
+      run: |
+        yarn testci
+      env:
+          API_URL: /spa2-api
+          DB_HOST: localhost
+          DB_USER: postgres
+          DB_PASS: spa2
+          DB_NAME: spa2_local
+          DB_PORT: 5432
+          CHAVE: fjkfhsklfjhffhihuueqwiouqhoifufybmsdncbamchefgewfgyu4237843784%$%$%!$%vnkavdkadhjkhjahjj
+          LDAP_URL: ldap://localhost:389
+          LDAP_USERS_OU: ou=usuarios,dc=cmc,dc=pr,dc=gov,dc=br
+          LDAP_GROUPS_OU: ou=grupos,dc=cmc,dc=pr,dc=gov,dc=br
+          LDAP_BIND_USER: cn=authproxy,dc=cmc,dc=pr,dc=gov,dc=br
+          LDAP_BIND_PASS: authproxy
+          LDAP_USER_FILTER:
+          LDAP_GROUP_FILTER:
+          USUARIO_TESTE: alexandre.odoni
+          SENHA_TESTE: 123456
+      working-directory: ${{env.BACKEND_DIR}}

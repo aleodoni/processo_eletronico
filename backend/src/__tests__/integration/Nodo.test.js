@@ -1061,4 +1061,5 @@ describe('Nodos', () => {
         const errorParsed = JSON.parse(response.text);
         expect(errorParsed.message).toBe('Ciência cálculo obrigatório');
     });
+
 });
