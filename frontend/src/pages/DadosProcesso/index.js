@@ -203,7 +203,9 @@ function DadosProcesso({ match }) {
                                             />
                                             <Juntada
                                                 name="btnJuntada"
-                                                clickHandler={() => geraJuntada(pro.pro_id, pro.pro_ano)}
+                                                clickHandler={() =>
+                                                    geraJuntada(pro.pro_id, pro.pro_ano)
+                                                }
                                             />
                                             <br />
                                         </ContainerBotoes>
@@ -219,7 +221,9 @@ function DadosProcesso({ match }) {
                                             />
                                             <Juntada
                                                 name="btnJuntada"
-                                                clickHandler={() => geraJuntada(pro.pro_id)}
+                                                clickHandler={() =>
+                                                    geraJuntada(pro.pro_id, pro.pro_ano)
+                                                }
                                             />
                                             <br />
                                         </ContainerBotoes>
@@ -401,7 +405,10 @@ function DadosProcesso({ match }) {
                             ))}
                             <ContainerManifestacoes>
                                 <p>Manifestações</p>
-                                <TabelaManifestacoes proId={proId} />
+                                <TabelaManifestacoes
+                                    proId={proId}
+                                    anoProcesso={processos[0].pro_ano}
+                                />
                             </ContainerManifestacoes>
                             <ContainerTramitacao>
                                 <p>Tramitação</p>

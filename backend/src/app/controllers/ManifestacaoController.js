@@ -98,7 +98,7 @@ class ManifestacaoController {
                 'man_login',
                 'set_nome',
                 'man_data'],
-            logging: false,
+            logging: true,
             where: {
                 pro_id: req.params.id
             }

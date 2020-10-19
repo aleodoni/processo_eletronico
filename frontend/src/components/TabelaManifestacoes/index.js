@@ -203,13 +203,14 @@ function TabelaManifestacao({ proId, anoProcesso }) {
                     manifestacoes.push({
                         seq: i + 1,
                         pro_id: proId,
-                        ano: anoProcesso.substr(anoProcesso.length - 4),
+                        ano: anoProcesso,
                         set_nome: res.data[i].set_nome,
                         man_login: res.data[i].man_login,
                         tmn_nome: res.data[i].tmn_nome,
                         arquivos: res.data[i].arquivos,
                     });
                 }
+
                 setRows(manifestacoes);
             })
             .catch(() => {
