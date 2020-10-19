@@ -2,8 +2,8 @@ import app from './app';
 
 const https = require('https');
 const fs = require('fs');
-const chavePrivada = fs.readFileSync('inga-desenv.key', 'utf8');
-const certificado = fs.readFileSync('inga-desenv.cert', 'utf8');
+const chavePrivada = fs.readFileSync(process.env.CHAVE_PRIVADA, 'utf8');
+const certificado = fs.readFileSync(process.env.CERTIFICADO_PRIVADO, 'utf8');
 const credenciais = { key: chavePrivada, cert: certificado };
 
 app.listen(process.env.APP_PORT);

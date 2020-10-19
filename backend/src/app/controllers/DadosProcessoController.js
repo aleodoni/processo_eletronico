@@ -309,6 +309,7 @@ class DadosProcessoController {
                 'pro_codigo',
                 'pro_nome',
                 'tpr_nome',
+                'tpr_tramitacao_aberta',
                 'area_id',
                 'usu_autuador',
                 'nod_aval_executiva',

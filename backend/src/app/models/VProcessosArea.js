@@ -20,6 +20,9 @@ class VProcessosArea extends Model {
                 tpr_nome: {
                     type: Sequelize.STRING
                 },
+                tpr_tramitacao_aberta: {
+                    type: Sequelize.BOOLEAN
+                },
                 pro_nome: {
                     type: Sequelize.STRING
                 },
