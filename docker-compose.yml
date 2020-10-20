@@ -4,11 +4,15 @@ services:
         image: cmc/spa2api
         ports:
             - "3002:3002"
+        dns:
+            - dns1
+            - dns2
     frontend:
         image: cmc/spa2
         ports:
             - "3000:3000"
+        dns:
+            - dns1
+            - dns2
     redis:
         image: redis:alpine
-        ports:
-            - '6379:6379'
