@@ -1,4 +1,4 @@
-FROM node:14.13.1-buster-slim
+FROM node:lts-buster-slim
 
 # bzip2 and git are used to decompress/install some packages in npm
 # RUN apt-get update \
@@ -17,7 +17,7 @@ ENV SPA2_APP_FOLDER=/opt/spa2/ \
     SPA2_STATIC_FOLDER=/var/www/spa2/ \
     SPA2_LOG_FOLDER=/var/log/spa2/
 
-# As default for a mount point, this must be run before VOLUME directive
+# As defaulting properties for a mount point, this must be run before VOLUME directive
 RUN mkdir -p "${SPA2_LOG_FOLDER}" \
     && chown node:node "${SPA2_LOG_FOLDER}"
 
@@ -35,12 +35,15 @@ WORKDIR "${SPA2_APP_FOLDER}"
 
 USER node
 
-RUN npm install && npm cache clean --force
+RUN npm install --only=production
 # If you are building your code for production
 # RUN npm ci --only=production
 
 # Bundle app source
 COPY . "${SPA2_APP_FOLDER}"
+
+RUN npm run build && \
+    npm cache clean --force
 
 EXPOSE 3000
 

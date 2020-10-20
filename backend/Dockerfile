@@ -1,4 +1,4 @@
-FROM node:14.13.1-buster-slim
+FROM node:lts-buster-slim
 
 # bzip2 and git are used to decompress/install some packages in npm
 RUN apt-get update \
@@ -35,12 +35,15 @@ WORKDIR "${SPA2API_APP_FOLDER}"
 
 USER node
 
-RUN npm install && npm cache clean --force
+RUN npm install --only=production
 # If you are building your code for production
 # RUN npm ci --only=production
 
 # Bundle app source
 COPY . "${SPA2API_APP_FOLDER}"
+
+RUN npm run build && \
+    npm cache clean --force
 
 EXPOSE 3002
 
