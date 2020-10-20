@@ -1,10 +1,5 @@
 FROM node:lts-buster-slim
 
-# bzip2 and git are used to decompress/install some packages in npm
-# RUN apt-get update \
-#     && apt-get install -y bzip2 git \
-#     && rm -rf /var/lib/apt/lists/*
-
 # Recommended location of node.js applications in linux filesystem?
 # https://unix.stackexchange.com/questions/35807/recommended-location-of-node-js-applications-in-linux-filesystem
 #

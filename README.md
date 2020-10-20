@@ -65,9 +65,15 @@ O projeto é dividido em 4 partes:
    docker build -t cmc/spa2 .
    ```
 
-1. Suba a aplicação:
+1. Suba o _stack_ da aplicação:
 
    ```shell
+   docker swarm init
    cd processo_eletronico
-   docker-compose up
+   docker stack deploy --compose-file docker-stack.yml spa2
    ```
+
+Informações úteis:
+
+- A rede da stack e de ingresso não podem estar na mesma faixa da LAN de serviços
+- O [portainer](https://www.portainer.io/) pode ser útil para gerenciar a _stack_.

@@ -12,10 +12,13 @@ RUN apt-get update \
 # CONFIG = placeholder for configuration files
 # STATIC = static and run-time data (could be "/src/opt/spa2-api")
 # LOG = logs
+# FILES = placeholder for user files
 ENV SPA2API_APP_FOLDER=/opt/spa2-api/ \
     SPA2API_CONFIG_FOLDER=/etc/opt/spa2-api/ \
     SPA2API_STATIC_FOLDER=/var/www/spa2-api/ \
-    SPA2API_LOG_FOLDER=/var/log/spa2-api/
+    SPA2API_LOG_FOLDER=/var/log/spa2-api/ \
+    SPA2API_FILES_FOLDER=/opt/spa2-api/arquivos/
+# ATENÇÃO: ajuste estes caminhos de acordo com o configurado no ''.env'
 
 # As default for a mount point, this must be run before VOLUME directive
 RUN mkdir -p "${SPA2API_LOG_FOLDER}" \
