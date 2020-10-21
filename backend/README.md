@@ -15,7 +15,7 @@
 yarn
 ```
 
-**Obs**: o `yarn` pode ser substituído por `npm install`.
+**Obs**: este comando pode ser substituído por `npm install`.
 
 Instala todas as bibliotecas necessárias para a aplicação.
 
