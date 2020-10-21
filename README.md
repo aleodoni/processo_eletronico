@@ -73,7 +73,14 @@ O projeto é dividido em 4 partes:
    docker stack deploy --compose-file docker-stack.yml spa2
    ```
 
+   Para verificar:
+
+   ```shell
+   docker stack ls
+   docker stack services spa2
+   ```
+
 Informações úteis:
 
-- A rede da stack e de ingresso não podem estar na mesma faixa da LAN de serviços
+- A rede da stack e de [ingresso](https://docs.docker.com/network/overlay/#customize-the-default-ingress-network) não podem estar na mesma faixa de sua LAN de serviços;
 - O [portainer](https://www.portainer.io/) pode ser útil para gerenciar a _stack_.
