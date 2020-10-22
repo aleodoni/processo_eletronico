@@ -43,7 +43,7 @@ RUN npm install --only=production
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY . "${SPA2API_APP_FOLDER}"
+COPY --chown=node:node . "${SPA2API_APP_FOLDER}"
 
 RUN npm run build && \
     npm cache clean --force

@@ -5,28 +5,28 @@ FROM node:lts-buster-slim
 #
 # APP = distribution files
 # CONFIG = placeholder for configuration files
-# STATIC = static and run-time data (could be "/src/opt/spa2")
+# STATIC = static and run-time data (could be "/src/opt/spa2-contab")
 # LOG = logs
-ENV SPA2_APP_FOLDER=/opt/spa2/ \
-    SPA2_CONFIG_FOLDER=/etc/opt/spa2/ \
-    SPA2_STATIC_FOLDER=/var/www/spa2/ \
-    SPA2_LOG_FOLDER=/var/log/spa2/
+ENV SPA2CONTAB_APP_FOLDER=/opt/spa2-contab/ \
+    SPA2CONTAB_CONFIG_FOLDER=/etc/opt/spa2-contab/ \
+    SPA2CONTAB_STATIC_FOLDER=/var/www/spa2-contab/ \
+    SPA2CONTAB_LOG_FOLDER=/var/log/spa2-contab/
 
 # As defaulting properties for a mount point, this must be run before VOLUME directive
-RUN mkdir -p "${SPA2_LOG_FOLDER}" \
-    && chown node:node "${SPA2_LOG_FOLDER}"
+RUN mkdir -p "${SPA2CONTAB_LOG_FOLDER}" \
+    && chown node:node "${SPA2CONTAB_LOG_FOLDER}"
 
 # Persisting data
-VOLUME "${SPA2_CONFIG_FOLDER}" \
-       "${SPA2_LOG_FOLDER}"
+VOLUME "${SPA2CONTAB_CONFIG_FOLDER}" \
+       "${SPA2CONTAB_LOG_FOLDER}"
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-COPY --chown=node:node package*.json "${SPA2_APP_FOLDER}"
+COPY --chown=node:node package*.json "${SPA2CONTAB_APP_FOLDER}"
 
 # Create app directory
-WORKDIR "${SPA2_APP_FOLDER}"
+WORKDIR "${SPA2CONTAB_APP_FOLDER}"
 
 USER node
 
@@ -35,7 +35,7 @@ RUN npm install --only=production
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY --chown=node:node . "${SPA2_APP_FOLDER}"
+COPY --chown=node:node . "${SPA2CONTAB_APP_FOLDER}"
 
 RUN npm run build && \
     npm cache clean --force
