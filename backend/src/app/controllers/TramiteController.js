@@ -354,33 +354,6 @@ class TramiteController {
     }
 
     async proximoTramiteAposentadoriaDecisao(req, res) {
-        const manifestacao = await Manifestacao.findAll({
-            where: {
-                pro_id: req.params.id,
-                man_id_area: constantes.AREA_COMISSAO_EXECUTIVA
-            },
-            attributes: ['man_visto_executiva'],
-            logging: false,
-            plain: true
-        });
-        let prxId;
-        if (manifestacao.dataValues.man_visto_executiva === 'Concedido') {
-            prxId = 112;
-        }
-        if (manifestacao.dataValues.man_visto_executiva === 'Negado') {
-            prxId = 111;
-        }
-
-        const proximoTramite = await ProximoTramite.findByPk(prxId, {
-            logging: false,
-            plain: true
-        });
-
-        const razaoTramite = await RazaoTramite.findByPk(
-            proximoTramite.raz_id,
-            { logging: false, plain: true }
-        );
-
         const processo = await Processo.findAll({
             where: {
                 pro_id: req.params.id
@@ -398,6 +371,42 @@ class TramiteController {
         });
         const areaProcesso = processo.dataValues.area_id_iniciativa;
         const proNome = processo.dataValues.pro_nome;
+        const tprId = processo.dataValues.tpr_id;
+
+        const manifestacao = await Manifestacao.findAll({
+            where: {
+                pro_id: req.params.id,
+                man_id_area: constantes.AREA_COMISSAO_EXECUTIVA
+            },
+            attributes: ['man_visto_executiva'],
+            logging: false,
+            plain: true
+        });
+        let prxId;
+        if (manifestacao.dataValues.man_visto_executiva === 'Concedido' && tprId === constantes.TPR_APOSENTADORIA) {
+            prxId = 112;
+        }
+        if (manifestacao.dataValues.man_visto_executiva === 'Negado' && tprId === constantes.TPR_APOSENTADORIA) {
+            prxId = 111;
+        }
+        if (manifestacao.dataValues.man_visto_executiva === 'Concedido' && tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
+            prxId = 142;
+        }
+        if (manifestacao.dataValues.man_visto_executiva === 'Negado' && tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
+            prxId = 141;
+        }
+        console.log('próximo:' + prxId);
+
+        const proximoTramite = await ProximoTramite.findByPk(prxId, {
+            logging: false,
+            plain: true
+        });
+
+        const razaoTramite = await RazaoTramite.findByPk(
+            proximoTramite.raz_id,
+            { logging: false, plain: true }
+        );
+
         const area = await Setor.findAll({
             where: {
                 set_id: areaProcesso
@@ -412,6 +421,7 @@ class TramiteController {
             id: 1,
             prx_id: proximoTramite.prx_id,
             set_id: area.dataValues.set_id,
+            tpr_id: tprId,
             pro_nome: proNome,
             set_nome: area.dataValues.set_nome,
             raz_nome: razaoTramite.raz_nome

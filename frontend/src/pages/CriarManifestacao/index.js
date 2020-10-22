@@ -168,6 +168,31 @@ function CriarManifestacao(props) {
         }
     };
 
+    const carregaDadosProcesso = useCallback(() => {
+        axios({
+            method: 'GET',
+            url: `/ver-processo/${match.params.proId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const processo = res.data;
+                for (let i = 0; i < processo.length; i++) {
+                    setManifestacao({ proId: processo[i].pro_id });
+                    setProCodigo(processo[i].pro_codigo);
+                    setTprId(processo[i].tpr_id);
+                    setTprNome(processo[i].tpr_nome);
+                    setNodId(processo[i].nod_id);
+                    setNodFim(processo[i].nod_fim);
+                    setProcessoModal(processo[i]);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao retornar dados do processo.');
+            });
+    }, [manifestacao.proId]);
+
     function incluiManifestacao(e) {
         setErro('');
         const arq = e.target.files[0];
@@ -221,6 +246,7 @@ function CriarManifestacao(props) {
                             limpaCampos();
                             mensagem.success('Manifestação inserida com sucesso.');
                             carregaManifestacaoProcesso();
+                            carregaDadosProcesso();
                             document.getElementById('anexo').value = '';
                             setTpdId('-1');
                         }
@@ -267,6 +293,7 @@ function CriarManifestacao(props) {
                             mensagem.success('Documento inserido com sucesso.');
                             carregaAnexos(manId);
                             carregaManifestacaoProcesso();
+                            carregaDadosProcesso();
                             document.getElementById('anexo').value = '';
                             setTpdId('-1');
                         }
@@ -320,31 +347,6 @@ function CriarManifestacao(props) {
             mensagem.error(`Falha na autenticação - ${err}`);
         }
     }
-
-    const carregaDadosProcesso = useCallback(() => {
-        axios({
-            method: 'GET',
-            url: `/ver-processo/${match.params.proId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const processo = res.data;
-                for (let i = 0; i < processo.length; i++) {
-                    setManifestacao({ proId: processo[i].pro_id });
-                    setProCodigo(processo[i].pro_codigo);
-                    setTprId(processo[i].tpr_id);
-                    setTprNome(processo[i].tpr_nome);
-                    setNodId(processo[i].nod_id);
-                    setNodFim(processo[i].nod_fim);
-                    setProcessoModal(processo[i]);
-                }
-            })
-            .catch(() => {
-                setErro('Erro ao retornar dados do processo.');
-            });
-    }, [manifestacao.proId]);
 
     useEffect(() => {
         async function carrega() {
@@ -611,30 +613,60 @@ function CriarManifestacao(props) {
         history.push('/processo-consulta');
     }
 
-    function insereTramite(prxId, setId) {
-        axios({
-            method: 'POST',
-            url: '/tramites',
-            data: {
-                tra_id: null,
-                prx_id: prxId,
-                pro_id: Number(match.params.proId),
-                login_envia: sessionStorage.getItem('usuario'),
-                area_id_envia: sessionStorage.getItem('areaUsuario'),
-                area_id_recebe: setId,
-                man_id: manId,
-            },
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(() => {
-                mensagem.success('Trâmite inserido com sucesso.');
-                history.push(`/home/`);
+    function insereTramite(prxId, setId, tprId1) {
+        if (
+            tprId1 === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM ||
+            tprId1 === constantes.TPR_APOSENTADORIA
+        ) {
+            alert('é pra entrar aqui mesmo!');
+            axios({
+                method: 'POST',
+                url: '/tramites-direcionado',
+                data: {
+                    tra_id: null,
+                    prx_id: prxId,
+                    pro_id: Number(match.params.proId),
+                    login_envia: sessionStorage.getItem('usuario'),
+                    area_id_envia: sessionStorage.getItem('areaUsuario'),
+                    area_id_recebe: setId,
+                    man_id: manId,
+                },
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
             })
-            .catch(() => {
-                setErro('Erro ao inserir trâmite.');
-            });
+                .then(() => {
+                    mensagem.success('Trâmite inserido com sucesso.');
+                    history.push(`/home/`);
+                })
+                .catch(() => {
+                    setErro('Erro ao inserir trâmite.');
+                });
+        } else {
+            axios({
+                method: 'POST',
+                url: '/tramites',
+                data: {
+                    tra_id: null,
+                    prx_id: prxId,
+                    pro_id: Number(match.params.proId),
+                    login_envia: sessionStorage.getItem('usuario'),
+                    area_id_envia: sessionStorage.getItem('areaUsuario'),
+                    area_id_recebe: setId,
+                    man_id: manId,
+                },
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(() => {
+                    mensagem.success('Trâmite inserido com sucesso.');
+                    history.push(`/home/`);
+                })
+                .catch(() => {
+                    setErro('Erro ao inserir trâmite.');
+                });
+        }
     }
 
     return (
