@@ -541,7 +541,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                                     type="button"
                                     onClick={() =>
                                         geraJuntada(
-                                            Number(match.params.proId),
+                                            Number(props.match.params.proId),
                                             proCodigo.substr(proCodigo.length - 4)
                                         )
                                     }>
@@ -558,7 +558,14 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
                                     options={tiposDocumento}
                                     onChange={handleTpdId}
                                 />
-                                <LinkJuntada type="button" onClick={geraJuntada}>
+                                <LinkJuntada
+                                    type="button"
+                                    onClick={() =>
+                                        geraJuntada(
+                                            Number(props.match.params.proId),
+                                            proCodigo.substr(proCodigo.length - 4)
+                                        )
+                                    }>
                                     Ver juntada do processo
                                 </LinkJuntada>
                             </Container3>

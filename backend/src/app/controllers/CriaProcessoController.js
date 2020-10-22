@@ -241,268 +241,273 @@ class CriaProcessoController {
     }
 
     async store(req, res) {
-        if (req.body.pro_nome === '') {
-            req.body.pro_nome = null;
-        }
-        if (req.body.pro_matricula === '') {
-            req.body.pro_matricula = null;
-        }
-        if (req.body.pro_cpf === '') {
-            req.body.pro_cpf = null;
-        }
-        if (req.body.pro_cnpj === '') {
-            req.body.pro_cnpj = null;
-        }
-        if (req.body.pro_contato_pj === '') {
-            req.body.pro_contato_pj = null;
-        }
-        if (req.body.pro_fone === '') {
-            req.body.pro_fone = null;
-        }
-        if (req.body.pro_celular === '') {
-            req.body.pro_celular = null;
-        }
-        if (req.body.pro_email === '') {
-            req.body.pro_email = null;
-        }
-        if (req.body.pro_assunto === '') {
-            req.body.pro_assunto = null;
-        }
-        if (req.body.usu_finalizador === '') {
-            req.body.usu_finalizador = null;
-        }
-        if (req.body.set_id_finalizador === '') {
-            req.body.set_id_finalizador = null;
-        }
-        if (req.body.area_id_iniciativa === '') {
-            req.body.area_id_iniciativa = null;
-        }
-        if (req.body.pro_com_abono === null) {
-            req.body.pro_com_abono = false;
-        }
-
-        const dataHoraAtual = await DataHoraAtual.findAll({
-            attributes: ['data_hora_atual'],
-            logging: false,
-            plain: true
-        });
-        req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
-
-        const anoAtual = dataHoraAtual.dataValues.data_hora_atual.substring(
-            6,
-            10
-        );
-
-        // com o tpr_id verifico qual é o nó de início do fluxo e se
-        // o processo é pessoal ou não
-        const tipoProcesso = await TipoProcesso.findAll({
-            attributes: ['tpr_id', 'flu_id', 'tpr_pessoal', 'tpr_nome'],
-            logging: false,
-            plain: true,
-            where: {
-                tpr_id: req.body.tpr_id
+        try {
+            if (req.body.pro_nome === '') {
+                req.body.pro_nome = null;
             }
-        });
+            if (req.body.pro_matricula === '') {
+                req.body.pro_matricula = null;
+            }
+            if (req.body.pro_cpf === '') {
+                req.body.pro_cpf = null;
+            }
+            if (req.body.pro_cnpj === '') {
+                req.body.pro_cnpj = null;
+            }
+            if (req.body.pro_contato_pj === '') {
+                req.body.pro_contato_pj = null;
+            }
+            if (req.body.pro_fone === '') {
+                req.body.pro_fone = null;
+            }
+            if (req.body.pro_celular === '') {
+                req.body.pro_celular = null;
+            }
+            if (req.body.pro_email === '') {
+                req.body.pro_email = null;
+            }
+            if (req.body.pro_assunto === '') {
+                req.body.pro_assunto = null;
+            }
+            if (req.body.usu_finalizador === '') {
+                req.body.usu_finalizador = null;
+            }
+            if (req.body.set_id_finalizador === '') {
+                req.body.set_id_finalizador = null;
+            }
+            if (req.body.area_id_iniciativa === '') {
+                req.body.area_id_iniciativa = null;
+            }
+            if (req.body.pro_com_abono === null) {
+                req.body.pro_com_abono = false;
+            }
 
-        const tipoPessoal = tipoProcesso.dataValues.tpr_pessoal;
-        let areaPessoa;
-        // se for do tipo pessoal vou procurar pela matrícula ou pelo cpf
-        // na view da elotech e na tabela de lotação
-        if (tipoPessoal) {
-            if (
-                req.body.pro_matricula !== null &&
-                req.body.pro_matricula !== undefined
-            ) {
-                // procura na tabela de lotação a área
-                const lotacao = await VDadosLogin.findAll({
-                    attributes: ['matricula', 'set_id_area'],
-                    logging: false,
-                    plain: true,
-                    where: {
-                        matricula: req.body.pro_matricula.trim()
-                    }
-                });
-                areaPessoa = lotacao.dataValues.set_id_area;
-            } else if (
-                req.body.pro_cpf !== null &&
-                req.body.pro_cpf !== undefined
-            ) {
-                const dadosPessoa = await VDadosPessoa.findAll({
-                    attributes: ['pes_matricula', 'pes_cpf'],
-                    logging: false,
-                    plain: true,
-                    where: {
-                        pes_cpf: req.body.pro_cpf
-                    }
-                });
-                const lotacao = await VDadosLogin.findAll({
-                    attributes: ['matricula', 'set_id_area'],
-                    logging: false,
-                    plain: true,
-                    where: {
-                        matricula: dadosPessoa.dataValues.pes_matricula.toString()
-                    }
-                });
-                areaPessoa = lotacao.dataValues.set_id_area;
+            const dataHoraAtual = await DataHoraAtual.findAll({
+                attributes: ['data_hora_atual'],
+                logging: false,
+                plain: true
+            });
+            req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
+
+            const anoAtual = dataHoraAtual.dataValues.data_hora_atual.substring(
+                6,
+                10
+            );
+
+            // com o tpr_id verifico qual é o nó de início do fluxo e se
+            // o processo é pessoal ou não
+            const tipoProcesso = await TipoProcesso.findAll({
+                attributes: ['tpr_id', 'flu_id', 'tpr_pessoal', 'tpr_nome'],
+                logging: false,
+                plain: true,
+                where: {
+                    tpr_id: req.body.tpr_id
+                }
+            });
+
+            const tipoPessoal = tipoProcesso.dataValues.tpr_pessoal;
+            let areaPessoa;
+            // se for do tipo pessoal vou procurar pela matrícula ou pelo cpf
+            // na view da elotech e na tabela de lotação
+            if (tipoPessoal) {
+                if (
+                    req.body.pro_matricula !== null &&
+                    req.body.pro_matricula !== undefined
+                ) {
+                    // procura na tabela de lotação a área
+                    const lotacao = await VDadosLogin.findAll({
+                        attributes: ['matricula', 'set_id_area'],
+                        logging: false,
+                        plain: true,
+                        where: {
+                            matricula: req.body.pro_matricula.trim()
+                        }
+                    });
+                    areaPessoa = lotacao.dataValues.set_id_area;
+                } else if (
+                    req.body.pro_cpf !== null &&
+                    req.body.pro_cpf !== undefined
+                ) {
+                    const dadosPessoa = await VDadosPessoa.findAll({
+                        attributes: ['pes_matricula', 'pes_cpf'],
+                        logging: false,
+                        plain: true,
+                        where: {
+                            pes_cpf: req.body.pro_cpf
+                        }
+                    });
+                    const lotacao = await VDadosLogin.findAll({
+                        attributes: ['matricula', 'set_id_area'],
+                        logging: false,
+                        plain: true,
+                        where: {
+                            matricula: dadosPessoa.dataValues.pes_matricula.toString()
+                        }
+                    });
+                    areaPessoa = lotacao.dataValues.set_id_area;
+                } else {
+                    return res
+                        .status(400)
+                        .json({
+                            error: 'Erro ao retornar dados de área de pessoa.'
+                        });
+                }
+                req.body.area_id_iniciativa = areaPessoa;
+            }
+            const fluId = tipoProcesso.dataValues.flu_id;
+            const nodo = await Nodo.findAll({
+                attributes: ['nod_id', 'flu_id', 'nod_inicio'],
+                logging: false,
+                plain: true,
+                where: {
+                    flu_id: fluId,
+                    nod_inicio: true
+                }
+            });
+            if (nodo !== null) {
+                req.body.nod_id = nodo.dataValues.nod_id;
             } else {
                 return res
                     .status(400)
                     .json({
-                        error: 'Erro ao retornar dados de área de pessoa.'
+                        error: 'Processo sem fluxo. Cadastre um fluxo primeiro.'
                     });
             }
-            req.body.area_id_iniciativa = areaPessoa;
-        }
-        const fluId = tipoProcesso.dataValues.flu_id;
-        const nodo = await Nodo.findAll({
-            attributes: ['nod_id', 'flu_id', 'nod_inicio'],
-            logging: false,
-            plain: true,
-            where: {
-                flu_id: fluId,
-                nod_inicio: true
-            }
-        });
-        if (nodo !== null) {
-            req.body.nod_id = nodo.dataValues.nod_id;
-        } else {
-            return res
-                .status(400)
-                .json({
-                    error: 'Processo sem fluxo. Cadastre um fluxo primeiro.'
-                });
-        }
-        console.log(JSON.stringify(req.body, null, 4));
-        const {
-            pro_id,
-            tpr_id,
-            pro_iniciativa,
-            pro_nome,
-            pro_matricula,
-            pro_cpf,
-            pro_cnpj,
-            pro_contato_pj,
-            pro_fone,
-            pro_celular,
-            pro_email,
-            pro_encerramento,
-            pro_assunto,
-            usu_autuador,
-            set_id_autuador,
-            area_id,
-            pro_ultimo_tramite,
-            usu_finalizador,
-            set_id_finalizador,
-            nod_id,
-            pro_tipo_iniciativa,
-            area_id_iniciativa,
-            pro_autuacao,
-            pro_recurso,
-            pro_com_abono,
-            pro_num_com_abono
-        } = await Processo.create(req.body, {
-            logging: false
-        });
+            console.log(JSON.stringify(req.body, null, 4));
+            const {
+                pro_id,
+                tpr_id,
+                pro_iniciativa,
+                pro_nome,
+                pro_matricula,
+                pro_cpf,
+                pro_cnpj,
+                pro_contato_pj,
+                pro_fone,
+                pro_celular,
+                pro_email,
+                pro_encerramento,
+                pro_assunto,
+                usu_autuador,
+                set_id_autuador,
+                area_id,
+                pro_ultimo_tramite,
+                usu_finalizador,
+                set_id_finalizador,
+                nod_id,
+                pro_tipo_iniciativa,
+                area_id_iniciativa,
+                pro_autuacao,
+                pro_recurso,
+                pro_com_abono,
+                pro_num_com_abono
+            } = await Processo.create(req.body, {
+                logging: false
+            });
 
-        // cria a pasta com o id do processo(id+ano)
-        fs.mkdirSync(process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual);
-        const caminhoProcesso =
-            process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual;
-        // auditoria de inserção
-        // AuditoriaController.audita(req.body, req, 'I', pro_id);
-        //
-        // se tiver revisão de desconto de pensão alimentícia grava na tabela
-        // de processo_origem
-        if (req.body.pro_pensao !== null && req.body.pro_pensao !== undefined) {
-            const processoOrigem = await ProcessoOrigem.create(
-                { pro_id_pai: req.body.pro_pensao, pro_id_atual: pro_id },
+            // cria a pasta com o id do processo(id+ano)
+            fs.mkdirSync(process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual);
+            const caminhoProcesso =
+                process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual;
+            // auditoria de inserção
+            // AuditoriaController.audita(req.body, req, 'I', pro_id);
+            //
+            // se tiver revisão de desconto de pensão alimentícia grava na tabela
+            // de processo_origem
+            if (req.body.pro_pensao !== null && req.body.pro_pensao !== undefined) {
+                const processoOrigem = await ProcessoOrigem.create(
+                    { pro_id_pai: req.body.pro_pensao, pro_id_atual: pro_id },
+                    {
+                        logging: false
+                    }
+                );
+                console.log(JSON.stringify(processoOrigem, null, 4));
+            }
+            // se for um recurso de processo grava na tabela de processo_origem
+            if (req.body.pro_recurso === true) {
+                const processoOrigem = await ProcessoOrigem.create(
+                    {
+                        pro_id_pai: req.body.pro_codigo_recurso,
+                        pro_id_atual: pro_id
+                    },
+                    {
+                        logging: false
+                    }
+                );
+                console.log(JSON.stringify(processoOrigem, null, 4));
+            }
+            // grava na tabela arquivo a capa do processo
+            const strHexa = crypto.randomBytes(16).toString('hex');
+            const nomeArquivo = strHexa + '-capa-' + pro_id + anoAtual + '.pdf';
+
+            const arquivo = await Arquivo.create(
                 {
-                    logging: false
-                }
-            );
-            console.log(JSON.stringify(processoOrigem, null, 4));
-        }
-        // se for um recurso de processo grava na tabela de processo_origem
-        if (req.body.pro_recurso === true) {
-            const processoOrigem = await ProcessoOrigem.create(
-                {
-                    pro_id_pai: req.body.pro_codigo_recurso,
-                    pro_id_atual: pro_id
+                    arq_id: null,
+                    arq_nome: nomeArquivo,
+                    pro_id: pro_id,
+                    man_id: null,
+                    arq_tipo: 'application/pdf',
+                    arq_doc_id: pro_id,
+                    arq_doc_tipo: 'capa-processo',
+                    tpd_id: constantes.TPD_CAPA_PROCESSO,
+                    arq_data: dataHoraAtual.dataValues.data_hora_atual,
+                    arq_login: usu_autuador
                 },
                 {
                     logging: false
                 }
             );
-            console.log(JSON.stringify(processoOrigem, null, 4));
+
+            // cria o arquivo pdf da capa
+            const criaCapa = new CriaCapaService(Processo);
+            const caminhoArquivoCapa = await criaCapa.capaProcesso(
+                arquivo.arq_id,
+                pro_id,
+                anoAtual,
+                tipoProcesso.dataValues.tpr_nome,
+                caminhoProcesso,
+                nomeArquivo
+            );
+            // obtem o hash do arquivo
+            const hashCapa = await fileHash(caminhoArquivoCapa);
+            // atualiza a tabela de arquivo com o hash do arquivo
+            await Arquivo.update(
+                { arq_hash: hashCapa },
+                { where: { arq_id: arquivo.arq_id }, logging: false }
+            );
+
+            return res.json({
+                pro_id,
+                tpr_id,
+                pro_iniciativa,
+                pro_nome,
+                pro_matricula,
+                pro_cpf,
+                pro_cnpj,
+                pro_contato_pj,
+                pro_fone,
+                pro_celular,
+                pro_email,
+                pro_encerramento,
+                pro_assunto,
+                usu_autuador,
+                set_id_autuador,
+                area_id,
+                pro_ultimo_tramite,
+                usu_finalizador,
+                set_id_finalizador,
+                nod_id,
+                pro_tipo_iniciativa,
+                area_id_iniciativa,
+                pro_autuacao,
+                pro_recurso,
+                pro_com_abono,
+                pro_num_com_abono
+            });
+        } catch (erroProcesso) {
+            console.log(erroProcesso);
+            return null;
         }
-        // grava na tabela arquivo a capa do processo
-        const strHexa = crypto.randomBytes(16).toString('hex');
-        const nomeArquivo = strHexa + '-capa-' + pro_id + anoAtual + '.pdf';
-
-        const arquivo = await Arquivo.create(
-            {
-                arq_id: null,
-                arq_nome: nomeArquivo,
-                pro_id: pro_id,
-                man_id: null,
-                arq_tipo: 'application/pdf',
-                arq_doc_id: pro_id,
-                arq_doc_tipo: 'capa-processo',
-                tpd_id: constantes.TPD_CAPA_PROCESSO,
-                arq_data: dataHoraAtual.dataValues.data_hora_atual,
-                arq_login: usu_autuador
-            },
-            {
-                logging: false
-            }
-        );
-
-        // cria o arquivo pdf da capa
-        const criaCapa = new CriaCapaService(Processo);
-        const caminhoArquivoCapa = await criaCapa.capaProcesso(
-            arquivo.arq_id,
-            pro_id,
-            anoAtual,
-            tipoProcesso.dataValues.tpr_nome,
-            caminhoProcesso,
-            nomeArquivo
-        );
-        // obtem o hash do arquivo
-        const hashCapa = await fileHash(caminhoArquivoCapa);
-        // atualiza a tabela de arquivo com o hash do arquivo
-        await Arquivo.update(
-            { arq_hash: hashCapa },
-            { where: { arq_id: arquivo.arq_id }, logging: false }
-        );
-
-        return res.json({
-            pro_id,
-            tpr_id,
-            pro_iniciativa,
-            pro_nome,
-            pro_matricula,
-            pro_cpf,
-            pro_cnpj,
-            pro_contato_pj,
-            pro_fone,
-            pro_celular,
-            pro_email,
-            pro_encerramento,
-            pro_assunto,
-            usu_autuador,
-            set_id_autuador,
-            area_id,
-            pro_ultimo_tramite,
-            usu_finalizador,
-            set_id_finalizador,
-            nod_id,
-            pro_tipo_iniciativa,
-            area_id_iniciativa,
-            pro_autuacao,
-            pro_recurso,
-            pro_com_abono,
-            pro_num_com_abono
-        });
     }
 
     async criaPasPad(req, res) {

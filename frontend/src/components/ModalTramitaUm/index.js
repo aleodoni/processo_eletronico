@@ -31,7 +31,7 @@ const ModalTramitaUm = props => {
     const { fechaModalTramitaUm, modalTramitaUm, tramita, dados } = props;
 
     function tramitaUmHandler(e) {
-        alert(JSON.stringify(dados, null, 4));
+        // alert(JSON.stringify(dados, null, 4));
         tramita(dados.prx_id, dados.set_id, dados.tpr_id);
         fechaModalTramitaUm(e.target.value);
     }

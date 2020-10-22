@@ -618,7 +618,6 @@ function CriarManifestacao(props) {
             tprId1 === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM ||
             tprId1 === constantes.TPR_APOSENTADORIA
         ) {
-            alert('é pra entrar aqui mesmo!');
             axios({
                 method: 'POST',
                 url: '/tramites-direcionado',
