@@ -1,32 +1,12 @@
-FROM node:lts-buster-slim
-
-# Recommended location of node.js applications in linux filesystem?
-# https://unix.stackexchange.com/questions/35807/recommended-location-of-node-js-applications-in-linux-filesystem
-#
-# APP = distribution files
-# CONFIG = placeholder for configuration files
-# STATIC = static and run-time data (could be "/src/opt/spa2-contab")
-# LOG = logs
-ENV SPA2CONTAB_APP_FOLDER=/opt/spa2-contab/ \
-    SPA2CONTAB_CONFIG_FOLDER=/etc/opt/spa2-contab/ \
-    SPA2CONTAB_STATIC_FOLDER=/var/www/spa2-contab/ \
-    SPA2CONTAB_LOG_FOLDER=/var/log/spa2-contab/
-
-# As defaulting properties for a mount point, this must be run before VOLUME directive
-RUN mkdir -p "${SPA2CONTAB_LOG_FOLDER}" \
-    && chown node:node "${SPA2CONTAB_LOG_FOLDER}"
-
-# Persisting data
-VOLUME "${SPA2CONTAB_CONFIG_FOLDER}" \
-       "${SPA2CONTAB_LOG_FOLDER}"
+FROM node:lts-buster-slim as build
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-COPY --chown=node:node package*.json "${SPA2CONTAB_APP_FOLDER}"
+COPY --chown=node:node package*.json /opt/spa2-contab/
 
 # Create app directory
-WORKDIR "${SPA2CONTAB_APP_FOLDER}"
+WORKDIR /opt/spa2-contab/
 
 USER node
 
@@ -35,13 +15,24 @@ RUN npm install --only=production
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY --chown=node:node . "${SPA2CONTAB_APP_FOLDER}"
+COPY --chown=node:node . /opt/spa2-contab/
 
 RUN npm run build && \
     npm cache clean --force
 
-EXPOSE 3000
+# EXPOSE 3000
 
-# tentar alterar isso para algo do tipo "node src/server.js", vide:
-# https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md#handling-kernel-signals
-CMD [ "npm", "start" ]
+# # tentar alterar isso para algo do tipo "node src/server.js", vide:
+# # https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md#handling-kernel-signals
+# CMD [ "npm", "start" ]
+
+FROM nginx
+
+ENV LOG_FOLDER=/var/log/nginx/
+
+# Persisting data
+VOLUME "${LOG_FOLDER}"
+
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=build "/opt/spa2-contab/build" /usr/share/nginx/html
