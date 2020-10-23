@@ -11,15 +11,8 @@ O projeto é dividido em 4 partes:
    - usa o redis
    - usa conexão com o LDAP
    - tem seu próprio `.env`
-   - usa um arquivo de chave para https (`.key` e `.crt`)
+   - usa um arquivo de chave para https (`.key` e `.crt`); vide [#295](https://github.com/CMCuritiba/processo_eletronico/issues/295)
    - para rodar no desenv usa: `npm run dev`
-   - para rodar com pm2 usa um comando `pm2 start`
-   - o backend pode ser gerenciado pelos comandos:
-     - para parar o backend `pm2 stop spa2-api`
-     - para startar o backend, dentro da pasta backend
-`pm2 start src/server.js --interpreter ./node_modules/sucrase/bin/sucrase-node --name spa2-api`
-     - para ver as APIs `pm2 list`
-     - para ver o log `pm2 logs`
 
 1. pasta `frontend`:
 
@@ -65,6 +58,20 @@ O projeto é dividido em 4 partes:
    docker build -t cmc/spa2 .
    ```
 
+1. Construa a imagem do frontend externo:
+
+   ```shell
+   cd externo
+   docker build -t cmc/spa2-externo .
+   ```
+
+1. Construa a imagem do frontend contab:
+
+   ```shell
+   cd ext-contab
+   docker build -t cmc/spa2-contab .
+   ```
+
 1. Suba o _stack_ da aplicação:
 
    ```shell
@@ -79,6 +86,13 @@ O projeto é dividido em 4 partes:
    docker stack ls
    docker stack services spa2
    ```
+
+1. Os "módulos" da aplicação estarão disponíveis em:
+
+   1. Backend: porta `3002`
+   1. Frontend: porta `80`
+   1. Frontend externo: porta `81`
+   1. Frontend contab: porta `82`
 
 Informações úteis:
 
