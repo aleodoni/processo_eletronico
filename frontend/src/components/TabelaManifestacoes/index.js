@@ -145,7 +145,9 @@ function Row(props) {
                                                             downloadAnexoManifestacao(
                                                                 e,
                                                                 linha.pro_id,
-                                                                linha.ano,
+                                                                linha.ano.substr(
+                                                                    linha.ano.length - 4
+                                                                ),
                                                                 linhaArquivo.arq_nome
                                                             )
                                                         }>

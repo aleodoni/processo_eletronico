@@ -117,6 +117,7 @@ function DadosProcesso({ match }) {
                 link.click();
                 link.remove();
                 window.URL.revokeObjectURL(url);
+                mensagem.success('Fluxo gerado...');
             })
             .catch(() => {
                 setErro('Erro ao carregar grafo.');
@@ -407,7 +408,7 @@ function DadosProcesso({ match }) {
                                 <p>Manifestações</p>
                                 <TabelaManifestacoes
                                     proId={proId}
-                                    anoProcesso={processos[0].pro_ano}
+                                    anoProcesso={processos[0].pro_codigo}
                                 />
                             </ContainerManifestacoes>
                             <ContainerTramitacao>

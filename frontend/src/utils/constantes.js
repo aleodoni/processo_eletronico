@@ -26,13 +26,15 @@ export const TPR_REVISAO_DESCONTO_PENSAO_ALIMENTICIA = 247;
 export const TPR_RECURSO = 248;
 export const TPR_RECURSO_REVISAO_PAD = 249;
 export const TPR_APOSENTADORIA_INICIATIVA_ADM = 250;
+export const TPR_AQUISICAO_BENS_SERVICOS = 251;
 
 // Área
 export const AREA_PRESIDENCIA = 88;
 export const AREA_COMISSAO_EXECUTIVA = 398;
 export const AREA_DPS = 32;
 export const AREA_DARH = 7;
-export const AREA_DCF = 4;
+export const AREA_DCF = 168;
+export const AREA_DAF = 4;
 export const TODA_AREA = 556;
 export const TODO_GABINETE = 557;
 export const GAB_1_SECRETARIA = 98;
