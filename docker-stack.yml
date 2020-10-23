@@ -1,3 +1,9 @@
+# O pacote react-scripts na versão 3.4.1 utilizada no frontend externo
+# possui um bug que não permite execução normal no docker:
+# https://github.com/facebook/create-react-app/issues/8688
+# Para contornar, adicionamos o tty: true
+# Vide issue https://github.com/CMCuritiba/processo_eletronico/issues/302
+
 version: "3.8"
 services:
   backend:
@@ -16,6 +22,7 @@ services:
       - type: volume
         source: backend_files
         target: /opt/spa2-api/arquivos/
+    tty: true
 
   frontend:
     image: cmc/spa2
@@ -23,12 +30,8 @@ services:
       - "3000:3000"
     networks:
       - local_network
+    tty: true
 
-  # O pacote react-scripts na versão 3.4.1 utilizada no frontend externo
-  # possui um bug que não permite execução normal no docker:
-  # https://github.com/facebook/create-react-app/issues/8688
-  # Para contonrar, adicionamos o tty: true
-  # Vide issue https://github.com/CMCuritiba/processo_eletronico/issues/302
   contab:
     image: cmc/spa2-contab
     ports:
@@ -40,7 +43,7 @@ services:
   externo:
     image: cmc/spa2-ext
     ports:
-      - "3010:3000"
+      - "3020:3000"
     networks:
       - local_network
     tty: true
