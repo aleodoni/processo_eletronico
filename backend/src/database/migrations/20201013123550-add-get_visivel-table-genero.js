@@ -13,7 +13,7 @@ module.exports = {
             'gen_visivel', {
                 type: sequelize.BOOLEAN,
                 allowNull: false,
-                default: true
+                defaultValue: true
             }, { transaction });
 
             await transaction.commit();

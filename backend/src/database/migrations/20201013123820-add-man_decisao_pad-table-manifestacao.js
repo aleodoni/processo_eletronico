@@ -13,7 +13,7 @@ module.exports = {
             'man_decisao_pad', {
                 type: sequelize.STRING(50),
                 allowNull: false,
-                default: 'Não necessário'
+                defaultValue: 'Não necessário'
             }, { transaction });
 
             await transaction.commit();
