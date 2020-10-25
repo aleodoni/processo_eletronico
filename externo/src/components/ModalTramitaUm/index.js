@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { lighten } from 'polished';
 import { FaRegQuestionCircle } from 'react-icons/fa';
+import { toast as mensagem } from 'react-toastify';
 import Modal from 'react-modal';
 import Sim from '../layout/button/Sim';
 import Nao from '../layout/button/Nao';
-import { ContainerModal } from './styles';
+import * as constantes from '../../utils/constantes';
+import { ContainerModal, ContainerTitulo, ContainerBotoes } from './styles';
 
 const ModalTramitaUm = (props) => {
     const dialogs = {
@@ -28,11 +30,33 @@ const ModalTramitaUm = (props) => {
             backgroundColor: lighten(0.1, '#2E8B57'),
         },
     };
-    const { fechaModalTramitaUm, modalTramitaUm, tramita, dados } = props;
+    const { fechaModalTramitaUm, modalTramitaUm, tramita, dados, tprId } = props;
 
     function tramitaUmHandler(e) {
-        tramita(dados.prx_id, dados.set_id, null);
-        fechaModalTramitaUm(e.target.value);
+        if (document.getElementById('cboTramita').value === '') {
+            mensagem.error('Selecione a área e a razão para tramitar');
+        } else {
+            if (Number(tprId) === Number(constantes.TPR_APOSENTADORIA)) {
+                if (Number(document.getElementById('cboTramita').value) === 202) {
+                    tramita(202, constantes.AREA_DARH);
+                    fechaModalTramitaUm(e.target.value);
+                }
+                if (Number(document.getElementById('cboTramita').value) === 106) {
+                    tramita(106, constantes.AREA_PROJURIS);
+                    fechaModalTramitaUm(e.target.value);
+                }
+            }
+            if (Number(tprId) === Number(constantes.TPR_APOSENTADORIA_INICIATIVA_ADM)) {
+                if (Number(document.getElementById('cboTramita').value) === 207) {
+                    tramita(207, constantes.AREA_DARH);
+                    fechaModalTramitaUm(e.target.value);
+                }
+                if (Number(document.getElementById('cboTramita').value) === 136) {
+                    tramita(136, constantes.AREA_PROJURIS);
+                    fechaModalTramitaUm(e.target.value);
+                }
+            }
+        }
     }
 
     function fechaHandler(e) {
@@ -49,30 +73,31 @@ const ModalTramitaUm = (props) => {
                 style={dialogs}
                 ariaHideApp={false}>
                 <ContainerModal>
-                    <p>
-                        <FaRegQuestionCircle color="#fff" size="3em" />
-                    </p>
-                    <h1>Deseja tramitar?</h1>
-                    <br />
-                    {dados.pro_nome !== undefined ? (
+                    <ContainerTitulo>
                         <p>
-                            <label>Interessado: </label>
-                            {dados.pro_nome}
+                            <FaRegQuestionCircle color="#fff" size="3em" />
                         </p>
-                    ) : null}
-                    <p>
-                        <label>Destino: </label>
-                        {dados.set_nome}
-                    </p>
-                    <p>
-                        <label>Razão: </label>
-                        {dados.raz_nome}
-                    </p>
+                        <br />
+                        <h1>Deseja tramitar?</h1>
+                    </ContainerTitulo>
+                    <br />
+                    <select name="cboTramita" id="cboTramita">
+                        <option key={0} value="">
+                            Selecione a área e a razão de tramitação...
+                        </option>
+                        {dados.map((dado) => (
+                            <option key={dado.id} value={dado.prx_id}>
+                                {dado.set_nome} - {dado.raz_nome}
+                            </option>
+                        ))}
+                        ;
+                    </select>
+                    <br />
                     <hr />
-                    <div>
+                    <ContainerBotoes>
                         <Sim name="btnSim" clickHandler={tramitaUmHandler} />
                         <Nao name="btnNao" clickHandler={fechaModalTramitaUm} />
-                    </div>
+                    </ContainerBotoes>
                 </ContainerModal>
             </Modal>
         </>
@@ -92,10 +117,10 @@ ModalTramitaUm.propTypes = {
             raz_nome: PropTypes.string,
         })
     ),
+    tprId: PropTypes.number.isRequired,
 };
 
 ModalTramitaUm.defaultProps = {
-    id: null,
     dados: {
         id: null,
         prx_id: null,

@@ -381,8 +381,8 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
 
     function tramita() {
         const parecer = manifestacaoProcesso[0].man_parecer_projuris_aposentadoria;
-        const PRX_PARECER_LEGALIDADE_APOSENTADORIA = 95;
-        const PRX_PARECER_LEGALIDADE_APOSENTADORIA_ADM = 135;
+        const PRX_PARECER_LEGALIDADE_APOSENTADORIA = 200;
+        const PRX_PARECER_LEGALIDADE_APOSENTADORIA_ADM = 205;
         if (parecer === 'Pela legalidade e regularidade') {
             let url = '';
             if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
