@@ -383,12 +383,18 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         const parecer = manifestacaoProcesso[0].man_parecer_projuris_aposentadoria;
         const PRX_PARECER_LEGALIDADE_APOSENTADORIA = 200;
         const PRX_PARECER_LEGALIDADE_APOSENTADORIA_ADM = 205;
+        const PRX_PARECER_ABONO_PERMANENCIA = 211;
         if (parecer === 'Pela legalidade e regularidade') {
             let url = '';
+            // Aposentadorias
             if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
                 url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_LEGALIDADE_APOSENTADORIA_ADM}`;
             } else {
                 url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_LEGALIDADE_APOSENTADORIA}`;
+            }
+            // Abono de permanência
+            if (tprId === constantes.TPR_ABONO_PERMANENCIA) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_ABONO_PERMANENCIA}`;
             }
 
             axios({
@@ -413,11 +419,17 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         if (parecer === 'Correção de informações ou esclarecimentos') {
             const PRX_PARECER_CORRECAO_APOSENTADORIA = 94;
             const PRX_PARECER_CORRECAO_APOSENTADORIA_ADM = 134;
+            const PRX_PARECER_CORRECAO_ABONO_PERMANENCIA = 212;
             let url = '';
+            // Aposentadorias
             if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
                 url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_APOSENTADORIA_ADM}`;
             } else {
                 url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_APOSENTADORIA}`;
+            }
+            // Abono de permanência
+            if (tprId === constantes.TPR_ABONO_PERMANENCIA) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_ABONO_PERMANENCIA}`;
             }
             axios({
                 method: 'GET',
