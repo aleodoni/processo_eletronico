@@ -217,6 +217,7 @@ routes.post(`${process.env.API_URL}/processo`, CriaProcessoController.store);
 routes.post(`${process.env.API_URL}/processo-pas-pad`, CriaProcessoController.criaPasPad);
 
 routes.post(`${process.env.API_URL}/processo-pagamento`, CriaProcessoController.criaProcessoPagamento);
+routes.post(`${process.env.API_URL}/processo-licitacao`, CriaProcessoController.criaProcessoLicitacao);
 routes.post(`${process.env.API_URL}/processo-pagamento-interno`, CriaProcessoController.criaProcessoPagamentoInterno);
 routes.put(`${process.env.API_URL}/processo-pagamento-interno/:id`, CriaProcessoController.editaProcessoPagamentoInterno);
 

@@ -43,6 +43,7 @@ import TipoDocumento from './pages/TipoDocumento';
 import Tramite from './pages/Tramite';
 import EditaProcessoPagamento from './pages/EditaProcessoPagamento';
 import CriarProcessoPagamento from './pages/CriarProcessoPagamento';
+import CriarProcessoLicitacao from './pages/CriarProcessoLicitacao';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route
@@ -71,6 +72,7 @@ const Routes = () => (
             path="/processo-cria-aposentadoria-adm"
             component={CriarProcessoAposentadoriaAdm}
         />
+        <PrivateRoute exact path="/processo-cria-licitacao" component={CriarProcessoLicitacao} />
         <PrivateRoute exact path="/processo-pas-pad" component={CriarProcessoPasPad} />
         <PrivateRoute exact path="/telas" component={Tela} />
         <PrivateRoute exact path="/fluxos" component={Fluxo} />

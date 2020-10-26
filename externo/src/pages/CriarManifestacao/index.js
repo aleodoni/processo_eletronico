@@ -43,6 +43,7 @@ function CriarManifestacao(props) {
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
     const [proCodigo, setProCodigo] = useState('');
+    const [tprId, setTprId] = useState(undefined);
     const [tprNome, setTprNome] = useState('');
     const [tiposDocumento, setTiposDocumento] = useState([]);
     const [anexos, setAnexos] = useState([]);
@@ -298,6 +299,7 @@ function CriarManifestacao(props) {
                     }
                     setManifestacao({ proId: processo[i].pro_id });
                     setProCodigo(processo[i].pro_codigo);
+                    setTprId(processo[i].tpr_id);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
                 }
@@ -365,6 +367,7 @@ function CriarManifestacao(props) {
         }
     }
 
+    // eslint-disable-next-line no-unused-vars
     function tramita() {
         axios({
             method: 'GET',
@@ -379,7 +382,7 @@ function CriarManifestacao(props) {
                     mensagem.info('Sem próximos trâmites.');
                     return;
                 }
-                abreModalTramitaUm(res.data[0]);
+                abreModalTramitaUm(res.data);
             })
             .catch(() => {
                 setErro('Erro ao carregar próximos trâmites.');
@@ -389,7 +392,7 @@ function CriarManifestacao(props) {
     function insereTramite(prxId, setId) {
         axios({
             method: 'POST',
-            url: '/tramites',
+            url: '/tramites-direcionado',
             data: {
                 tra_id: null,
                 prx_id: prxId,
@@ -500,6 +503,7 @@ function CriarManifestacao(props) {
                         fechaModalTramitaUm={fechaModalTramitaUm}
                         tramita={insereTramite}
                         dados={dadosTramite}
+                        tprId={tprId}
                     />
                     <ModalProcesso
                         fechaModalProcesso={fechaModalProcesso}

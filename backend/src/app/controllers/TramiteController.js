@@ -467,7 +467,7 @@ class TramiteController {
                 pro_id: req.params.proId,
                 prx_id: req.params.prxId
             },
-            logging: false
+            logging: true
         });
         const combo = [];
         // se for toda área é o setor do usuário

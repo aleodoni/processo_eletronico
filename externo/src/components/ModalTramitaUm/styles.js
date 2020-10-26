@@ -1,7 +1,18 @@
 import styled from 'styled-components';
 
 export const ContainerModal = styled.div`
-    width: 570px;
+    width: 680px;
+    display: grid;
+    grid-template-columns: 670px;
+    grid-column-gap: 0px;
+    margin-top: 20px;
+
+    hr {
+        color: #fff;
+    }
+`;
+export const ContainerTitulo = styled.div`
+    justify-items: center;
     p {
         text-align: center;
         margin-bottom: 15px;
@@ -17,16 +28,12 @@ export const ContainerModal = styled.div`
     label {
         font-weight: bold;
     }
+`;
 
-    hr {
-        color: #fff;
-    }
-
-    div {
-        display: grid;
-        grid-template-columns: 350px 82px;
-        grid-column-gap: 0px;
-        margin-top: 20px;
-        justify-items: center;
-
+export const ContainerBotoes = styled.div`
+    display: grid;
+    grid-template-columns: 320px 310px;
+    grid-column-gap: 0px;
+    margin-top: 20px;
+    justify-items: center;
 `;

@@ -1387,6 +1387,122 @@ class CriaProcessoController {
             console.log(error);
         }
     }
+
+    async criaProcessoLicitacao(req, res) {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const anoAtual = dataHoraAtual.dataValues.data_hora_atual.substring(
+            6,
+            10
+        );
+
+        req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
+        const nodo = await Nodo.findAll({
+            attributes: ['nod_id', 'flu_id', 'nod_inicio'],
+            logging: false,
+            plain: true,
+            where: {
+                flu_id: constantes.FLU_AQUISICAO_BENS,
+                nod_inicio: true
+            }
+        });
+
+        if (nodo !== null) {
+            req.body.nod_id = nodo.dataValues.nod_id;
+        } else {
+            return res
+                .status(400)
+                .json({
+                    error: 'Processo sem fluxo. Cadastre um fluxo primeiro.'
+                });
+        }
+        try {
+            const {
+                pro_id,
+                pro_codigo,
+                tpr_id,
+                pro_iniciativa,
+                pro_nome,
+                pro_assunto,
+                usu_autuador,
+                set_id_autuador,
+                area_id,
+                nod_id,
+                pro_tipo_iniciativa,
+                area_id_iniciativa,
+                pro_autuacao
+            } = await Processo.create(req.body, {
+                logging: false
+            });
+
+            // cria a pasta com o id do processo(id+ano)
+            fs.mkdirSync(
+                process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual
+            );
+            const caminhoProcesso =
+                process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual;
+
+            // grava na tabela arquivo a capa do processo
+            const arquivoCapa = await Arquivo.create(
+                {
+                    arq_id: null,
+                    arq_nome: 'capa-' + pro_id + '.pdf',
+                    pro_id: pro_id,
+                    man_id: null,
+                    arq_tipo: 'application/pdf',
+                    arq_doc_id: pro_id,
+                    arq_doc_tipo: 'capa-processo',
+                    tpd_id: constantes.TPD_CAPA_PROCESSO,
+                    arq_data: dataHoraAtual.dataValues.data_hora_atual,
+                    arq_login: usu_autuador
+                },
+                {
+                    logging: false
+                }
+            );
+
+            // cria o arquivo pdf da capa
+            const criaCapa = new CriaCapaService(Processo);
+            const caminhoArquivoCapa = await criaCapa.capaProcesso(
+                arquivoCapa.arq_id,
+                pro_id,
+                'Aquisição de Bens e/ou Contratação de Serviços',
+                caminhoProcesso
+            );
+            // obtem o hash do arquivo
+            const hashCapa = await fileHash(caminhoArquivoCapa);
+            // atualiza a tabela de arquivo com o hash do arquivo
+            await Arquivo.update(
+                { arq_hash: hashCapa },
+                { where: { arq_id: arquivoCapa.arq_id }, logging: false }
+            );
+
+            return res.json({
+                pro_id,
+                pro_codigo,
+                tpr_id,
+                pro_iniciativa,
+                pro_nome,
+                pro_assunto,
+                usu_autuador,
+                set_id_autuador,
+                area_id,
+                nod_id,
+                pro_tipo_iniciativa,
+                area_id_iniciativa,
+                pro_autuacao,
+                ano: anoAtual,
+                aut_id: req.body.aut_id
+            });
+        } catch (erroProcesso) {
+            console.log(erroProcesso);
+            return res.status(400).json({ error: 'Erro ao criar processo de licitação.' });
+        }
+    }
 }
 
 export default new CriaProcessoController();

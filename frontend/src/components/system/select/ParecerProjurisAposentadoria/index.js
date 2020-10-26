@@ -19,7 +19,7 @@ export default function ParecerProjurisAposentadoria({ name, changeHandler, ...r
     <Select
       id={name}
       name={name}
-      label="Parecer da aposentadoria"
+      label="Parecer"
       options={options}
       onChange={changeHandler}
       {...rest}

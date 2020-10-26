@@ -20,6 +20,7 @@ import {
 } from './styles';
 import ButtonAcessoRapido from '../../components/layout/button/ButtonAcessoRapido';
 import ButtonAposentadoriaAdm from '../../components/layout/button/ButtonAposentadoriaAdm';
+import ButtonLicitacao from '../../components/layout/button/ButtonLicitacao';
 import DefaultLayout from '../_layouts/default';
 import axios from '../../configs/axiosConfig';
 import ModalProcesso from '../../components/ModalProcesso';
@@ -47,6 +48,7 @@ function Home() {
     const [modalProcessoPasPad, setModalProcessoPasPad] = useState(false);
     const [botaoPasPadVisivel, setBotaoPasPadVisivel] = useState(false);
     const [botaoAposentadoriaAdmVisivel, setBotaoAposentadoriaAdmVisivel] = useState(false);
+    const [botaoProcLicVisivel, setBotaoProcLicVisivel] = useState(false);
     const [processoModal, setProcessoModal] = useState([]);
     const [processoModalPasPad, setProcessoModalPasPad] = useState([]);
     const [observacaoModal, setObservacaoModal] = useState([]);
@@ -193,9 +195,16 @@ function Home() {
         }
     }
 
+    function verificaProcessoLicitacao(areaId) {
+        if (areaId === constantes.AREA_DAF) {
+            setBotaoProcLicVisivel(true);
+        }
+    }
+
     useEffect(() => {
         verificaPadPas(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         verificaAposentadoriaAdm(parseInt(sessionStorage.getItem('areaUsuario'), 10));
+        verificaProcessoLicitacao(parseInt(sessionStorage.getItem('areaUsuario'), 10));
         carregaGridArea();
         carregaGridSigiloso();
     }, [carregaGridArea, carregaGridSigiloso]);
@@ -287,6 +296,14 @@ function Home() {
                                     Criar processo de aposentadoria iniciativa da administração
                                 </Link>
                             </ButtonAposentadoriaAdm>
+                        ) : null}
+                        {botaoProcLicVisivel ? (
+                            <ButtonLicitacao>
+                                <Link to="/processo-cria-licitacao">
+                                    <FaFileAlt />
+                                    Criar processo de licitação
+                                </Link>
+                            </ButtonLicitacao>
                         ) : null}
                     </ContainerBotoes>
                     <hr />

@@ -240,7 +240,10 @@ const ModalProcesso = (props) => {
                             </ContainerDados>
                             <ContainerComponente>
                                 <p>Manifestações</p>
-                                <TabelaManifestacoes proId={proId} />
+                                <TabelaManifestacoes
+                                    proId={pro.pro_id}
+                                    anoProcesso={pro.pro_codigo}
+                                />
                             </ContainerComponente>
                             <ContainerComponente>
                                 <p>Trâmites</p>
