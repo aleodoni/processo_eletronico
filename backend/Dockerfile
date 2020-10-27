@@ -10,31 +10,31 @@ RUN apt-get update \
 #
 # APP = distribution files
 # CONFIG = placeholder for configuration files
-# STATIC = static and run-time data (could be "/src/opt/spa2-api")
+# STATIC = static and run-time data (could be "/src/opt/spae-api")
 # LOG = logs
 # FILES = placeholder for user files
-ENV SPA2API_APP_FOLDER=/opt/spa2-api/ \
-    SPA2API_CONFIG_FOLDER=/etc/opt/spa2-api/ \
-    SPA2API_STATIC_FOLDER=/var/www/spa2-api/ \
-    SPA2API_LOG_FOLDER=/var/log/spa2-api/ \
-    SPA2API_FILES_FOLDER=/opt/spa2-api/arquivos/
+ENV SPAEAPI_APP_FOLDER=/opt/spae-api/ \
+    SPAEAPI_CONFIG_FOLDER=/etc/opt/spae-api/ \
+    SPAEAPI_STATIC_FOLDER=/var/www/spae-api/ \
+    SPAEAPI_LOG_FOLDER=/var/log/spae-api/ \
+    SPAEAPI_FILES_FOLDER=/opt/spae-api/arquivos/
 # ATENÇÃO: ajuste estes caminhos de acordo com o configurado no ''.env'
 
 # As default for a mount point, this must be run before VOLUME directive
-RUN mkdir -p "${SPA2API_LOG_FOLDER}" \
-    && chown node:node "${SPA2API_LOG_FOLDER}"
+RUN mkdir -p "${SPAEAPI_LOG_FOLDER}" \
+    && chown node:node "${SPAEAPI_LOG_FOLDER}"
 
 # Persisting data
-VOLUME "${SPA2API_CONFIG_FOLDER}" \
-       "${SPA2API_LOG_FOLDER}"
+VOLUME "${SPAEAPI_CONFIG_FOLDER}" \
+       "${SPAEAPI_LOG_FOLDER}"
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-COPY --chown=node:node package*.json "${SPA2API_APP_FOLDER}"
+COPY --chown=node:node package*.json "${SPAEAPI_APP_FOLDER}"
 
 # Create app directory
-WORKDIR "${SPA2API_APP_FOLDER}"
+WORKDIR "${SPAEAPI_APP_FOLDER}"
 
 USER node
 
@@ -43,7 +43,7 @@ RUN npm install --only=production
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY --chown=node:node . "${SPA2API_APP_FOLDER}"
+COPY --chown=node:node . "${SPAEAPI_APP_FOLDER}"
 
 RUN npm run build && \
     npm cache clean --force

@@ -1,7 +1,7 @@
-version: "3.8"
+version: "3.7"
 services:
   backend:
-    image: cmc/spa2api
+    image: camaracuritiba/spaeapi
     build:
       context: ./backend
     ports:
@@ -14,15 +14,15 @@ services:
     volumes:
       - type: volume
         source: backend_logs
-        target: /var/log/spa2-api/
+        target: /var/log/spae-api/
       - type: volume
         source: backend_files
-        target: /opt/spa2-api/arquivos/
+        target: /opt/spae-api/arquivos/
     depends_on:
       - redis
 
   frontend:
-    image: cmc/spa2
+    image: camaracuritiba/spae
     build:
       context: ./frontend
     ports:
@@ -37,7 +37,7 @@ services:
       - backend
 
   contab:
-    image: cmc/spa2-contab
+    image: camaracuritiba/spae-contab
     build:
       context: ./ext-contab
     ports:
@@ -52,7 +52,7 @@ services:
       - backend
 
   externo:
-    image: cmc/spa2-externo
+    image: camaracuritiba/spae-externo
     build:
       context: ./externo
     ports:

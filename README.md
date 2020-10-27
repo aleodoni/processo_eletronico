@@ -44,32 +44,17 @@ O projeto é dividido em 4 partes:
 
 ## Getting started
 
-1. Construa a imagem do backend:
+1. Construa as imagens:
 
    ```shell
-   cd backend
-   docker build -t cmc/spa2api .
+   cd processo_eletronico
+   docker-compose -f docker-stack.yml build
    ```
 
-1. Construa a imagem do frontend:
+1. Publique as imagens:
 
    ```shell
-   cd frontend
-   docker build -t cmc/spa2 .
-   ```
-
-1. Construa a imagem do frontend externo:
-
-   ```shell
-   cd externo
-   docker build -t cmc/spa2-externo .
-   ```
-
-1. Construa a imagem do frontend contab:
-
-   ```shell
-   cd ext-contab
-   docker build -t cmc/spa2-contab .
+   docker-compose -f docker-stack.yml push
    ```
 
 1. Suba o _stack_ da aplicação:
@@ -77,7 +62,7 @@ O projeto é dividido em 4 partes:
    ```shell
    docker swarm init
    cd processo_eletronico
-   docker stack deploy --compose-file docker-stack.yml spa2
+   docker stack deploy --compose-file docker-stack.yml spae
    ```
 
    Para verificar:

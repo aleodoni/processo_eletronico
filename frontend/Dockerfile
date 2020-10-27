@@ -3,10 +3,10 @@ FROM node:lts-buster-slim as build
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-COPY --chown=node:node package*.json /opt/spa2/
+COPY --chown=node:node package*.json /opt/spae/
 
 # Create app directory
-WORKDIR /opt/spa2/
+WORKDIR /opt/spae/
 
 USER node
 
@@ -15,7 +15,7 @@ RUN npm install --only=production
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY --chown=node:node . /opt/spa2/
+COPY --chown=node:node . /opt/spae/
 
 RUN npm run build && \
     npm cache clean --force
@@ -35,4 +35,4 @@ VOLUME "${LOG_FOLDER}"
 
 COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=build "/opt/spa2/build" /usr/share/nginx/html
+COPY --from=build "/opt/spae/build" /usr/share/nginx/html
