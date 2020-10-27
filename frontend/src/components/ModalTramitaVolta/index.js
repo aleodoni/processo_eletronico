@@ -38,12 +38,31 @@ const ModalTramitaVolta = props => {
         } else {
             console.log(tprId);
             if (Number(tprId) === Number(constantes.TPR_AUXILIO_FUNERAL)) {
+                console.log(Number(document.getElementById('cboTramita').value));
                 tramita(
                     Number(document.getElementById('cboTramita').value),
                     constantes.AREA_DARH,
                     tprId
                 );
                 fechaModalTramitaVolta(e.target.value);
+            }
+            if (Number(tprId) === Number(constantes.TPR_DESCONTO_PENSAO_ALIMENTICIA)) {
+                console.log(Number(document.getElementById('cboTramita').value));
+                if (Number(document.getElementById('cboTramita').value) === 228) {
+                    tramita(
+                        Number(document.getElementById('cboTramita').value),
+                        constantes.AREA_DARH,
+                        tprId
+                    );
+                    fechaModalTramitaVolta(e.target.value);
+                } else {
+                    tramita(
+                        Number(document.getElementById('cboTramita').value),
+                        constantes.AREA_DCF,
+                        tprId
+                    );
+                    fechaModalTramitaVolta(e.target.value);
+                }
             }
         }
     }

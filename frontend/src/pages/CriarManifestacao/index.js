@@ -444,6 +444,29 @@ function CriarManifestacao(props) {
             return;
         }
 
+        // Pagamento por determinação judicial
+        if (tprId === constantes.TPR_DESCONTO_PENSAO_ALIMENTICIA && nodId === 364) {
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaVolta(res.data);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+
         if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM && nodId === 130) {
             const prxId = 130;
             axios({
@@ -653,7 +676,8 @@ function CriarManifestacao(props) {
         if (
             tprId1 === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM ||
             tprId1 === constantes.TPR_APOSENTADORIA ||
-            tprId1 === constantes.TPR_AUXILIO_FUNERAL
+            tprId1 === constantes.TPR_AUXILIO_FUNERAL ||
+            tprId1 === constantes.TPR_DESCONTO_PENSAO_ALIMENTICIA
         ) {
             axios({
                 method: 'POST',
