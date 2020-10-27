@@ -463,7 +463,7 @@ function CriarManifestacaoPasPad(props) {
                 const msg = `Processo encerrado com sucesso.`;
                 mensagem.success(msg, {
                     position: 'top-center',
-                    autoClose: 5000,
+                    autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,

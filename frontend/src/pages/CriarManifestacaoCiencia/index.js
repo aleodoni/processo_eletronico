@@ -258,7 +258,7 @@ function CriarManifestacaoCiencia(props) {
                 const msg = `Processo encerrado com sucesso. O prazo para recurso é de ${response.data} dias.`;
                 mensagem.success(msg, {
                     position: 'top-center',
-                    autoClose: 5000,
+                    autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,

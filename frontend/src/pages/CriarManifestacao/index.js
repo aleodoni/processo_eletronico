@@ -17,6 +17,7 @@ import Tramitar from '../../components/layout/button/Tramitar';
 import Finalizar from '../../components/layout/button/Finalizar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
+import ModalTramitaVolta from '../../components/ModalTramitaVolta';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
 import * as constantes from '../../utils/constantes';
@@ -56,11 +57,13 @@ function CriarManifestacao(props) {
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
+    const [modalTramitaVolta, setModalTramitaVolta] = useState(false);
     const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
     const [processoModal, setProcessoModal] = useState([]);
 
     const [dadosTramite, setDadosTramite] = useState([]);
+    const [dadosTramiteVolta, setDadosTramiteVolta] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
 
@@ -103,6 +106,16 @@ function CriarManifestacao(props) {
     function fechaModalTramitaUm() {
         setModalTramitaUm(false);
     }
+
+    function abreModalTramitaVolta(dados) {
+        setDadosTramiteVolta(dados);
+        setModalTramitaVolta(true);
+    }
+
+    function fechaModalTramitaVolta() {
+        setModalTramitaVolta(false);
+    }
+
 
     function abreModalTramitaVarios(dados) {
         setDadosTramite(dados);
@@ -408,6 +421,29 @@ function CriarManifestacao(props) {
     }
 
     function tramita() {
+        // Pagamento de auxílio funeral
+        if (tprId === constantes.TPR_AUXILIO_FUNERAL && nodId === 229) {
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaVolta(res.data);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+
         if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM && nodId === 130) {
             const prxId = 130;
             axios({
@@ -595,7 +631,7 @@ function CriarManifestacao(props) {
                 const msg = `Processo encerrado com sucesso.`;
                 mensagem.success(msg, {
                     position: 'top-center',
-                    autoClose: 5000,
+                    autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -616,7 +652,8 @@ function CriarManifestacao(props) {
     function insereTramite(prxId, setId, tprId1) {
         if (
             tprId1 === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM ||
-            tprId1 === constantes.TPR_APOSENTADORIA
+            tprId1 === constantes.TPR_APOSENTADORIA ||
+            tprId1 === constantes.TPR_AUXILIO_FUNERAL
         ) {
             axios({
                 method: 'POST',
@@ -774,6 +811,13 @@ function CriarManifestacao(props) {
                         fechaModalTramitaUm={fechaModalTramitaUm}
                         tramita={insereTramite}
                         dados={dadosTramite}
+                    />
+                    <ModalTramitaVolta
+                        modalTramitaVolta={modalTramitaVolta}
+                        fechaModalTramitaVolta={fechaModalTramitaVolta}
+                        tramita={insereTramite}
+                        dados={dadosTramiteVolta}
+                        tprId={tprId}
                     />
                     <ModalTramitaVarios
                         modalTramitaVarios={modalTramitaVarios}
