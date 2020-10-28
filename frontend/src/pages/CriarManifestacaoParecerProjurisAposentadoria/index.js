@@ -385,6 +385,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         const PRX_PARECER_LEGALIDADE_APOSENTADORIA_ADM = 205;
         const PRX_PARECER_ABONO_PERMANENCIA = 211;
         const PRX_GRATIFICACAO_ESTIMULO = 215;
+        const PRX_AVERBACAO_TEMPO = 232;
         if (parecer === 'Pela legalidade e regularidade') {
             let url = '';
             // Aposentadorias
@@ -400,6 +401,10 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
             // Gratificação de estímulo à formação acadêmica
             if (tprId === constantes.TPR_GRATIFICACAO_FORMACAO_ACADEMICA) {
                 url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_GRATIFICACAO_ESTIMULO}`;
+            }
+            // Averbação de tempo de serviço
+            if (tprId === constantes.TPR_AVERBACAO_TEMPO_SERVICO) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_AVERBACAO_TEMPO}`;
             }
             axios({
                 method: 'GET',
@@ -425,6 +430,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
             const PRX_PARECER_CORRECAO_APOSENTADORIA_ADM = 134;
             const PRX_PARECER_CORRECAO_ABONO_PERMANENCIA = 212;
             const PRX_PARECER_CORRECAO_GRATIFICACAO_ESTIMULO = 216;
+            const PRX_PARECER_CORRECAO_AVERBACAO_TEMPO = 233;
             let url = '';
             // Aposentadorias
             if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
@@ -439,6 +445,10 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
             // Gratificação de estímulo à formação acadêmica
             if (tprId === constantes.TPR_GRATIFICACAO_FORMACAO_ACADEMICA) {
                 url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_GRATIFICACAO_ESTIMULO}`;
+            }
+            // Averbação de tempo de serviço
+            if (tprId === constantes.TPR_AVERBACAO_TEMPO_SERVICO) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_AVERBACAO_TEMPO}`;
             }
             axios({
                 method: 'GET',

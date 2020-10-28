@@ -231,7 +231,7 @@ function CriarManifestacaoAverbacao(props) {
                 login_envia: sessionStorage.getItem('usuario'),
                 area_id_envia: sessionStorage.getItem('areaUsuario'),
                 area_id_recebe: setId,
-                man_id: document.getElementById('manId').value,
+                man_id: manId,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
@@ -277,6 +277,7 @@ function CriarManifestacaoAverbacao(props) {
         })
             .then(res => {
                 setManifestacao({ manId: res.data.man_id });
+                setManId(res.data.man_id);
                 const data = new FormData();
                 data.append('file', arq);
                 data.append('pro_id', Number(match.params.proId));

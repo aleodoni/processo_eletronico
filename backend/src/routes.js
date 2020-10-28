@@ -32,7 +32,6 @@ import TipoDocumentoController from './app/controllers/TipoDocumentoController';
 import AuthMiddleware from './app/middlewares/auth';
 import * as funcoesArquivo from '../src/config/arquivos';
 import * as constantes from './app/constants/constantes';
-import CriaPdfController from './app/controllers/CriaPdfController';
 import RegraAposentacaoController from './app/controllers/RegraAposentacaoController';
 
 import validatorSessionStore from './app/validators/SessionStore';
@@ -539,7 +538,58 @@ routes.post(`${process.env.API_URL}/arquivo-ciencia/:id/:ano/:login/:manId`, asy
     }
 });
 
-routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao`, CriaPdfController.criaPdfCienciaAverbacao);
+routes.post(`${process.env.API_URL}/arquivo-ciencia-averbacao/:id/:ano/:login/:manId`, async function(req, res) {
+    const strHexa = crypto.randomBytes(16).toString('hex');
+    const nomeArquivo = strHexa + '-ciencia-averbacao-' + req.params.id + req.params.ano + '.pdf';
+    const destinoArquivo = process.env.CAMINHO_ARQUIVOS_PROCESSO + req.params.id + req.params.ano + '/';
+    const caminhoArquivo = destinoArquivo + nomeArquivo;
+    const tipoArquivo = 'application/pdf';
+    const proId = req.params.id;
+    const manId = req.params.manId;
+    const tpdId = constantes.TPD_CIENCIA_AVERBACAO;
+    const arqLogin = req.params.login;
+    const arqDocTipo = 'manifestação';
+
+    try {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const { arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login } = await Arquivo.create({
+            arq_id: null,
+            arq_nome: nomeArquivo,
+            pro_id: proId,
+            man_id: manId,
+            arq_tipo: tipoArquivo,
+            arq_doc_id: proId,
+            arq_doc_tipo: arqDocTipo,
+            tpd_id: tpdId,
+            arq_data: dataHoraAtual.dataValues.data_hora_atual,
+            arq_login: arqLogin
+        }, {
+            logging: false
+        });
+
+        // cria o arquivo pdf
+        const criaManifestacao = new CriaManifestacaoService(Arquivo, Manifestacao);
+        await criaManifestacao.criaManifestacaoCienciaAverbacao(req.params.ano, pro_id, man_id, arq_id, caminhoArquivo);
+
+        // obtem o hash do arquivo
+        const hashArquivo = await fileHash(caminhoArquivo);
+
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashArquivo },
+            { where: { arq_id: arq_id }, logging: false }
+        );
+        res.status(204).json({ arq_id, arq_nome, pro_id, man_id, arq_tipo, arq_doc_id, arq_doc_tipo, tpd_id, arq_data, arq_login });
+    } catch (erroArquivo) {
+        console.log(erroArquivo);
+        res.status(400).end();
+    }
+});
 
 routes.post(`${process.env.API_URL}/arquivo-ciencia-calculo/:id/:ano/:login/:manId`, async function(req, res) {
     const strHexa = crypto.randomBytes(16).toString('hex');
