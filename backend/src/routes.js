@@ -381,6 +381,7 @@ routes.delete(`${process.env.API_URL}/lotacoes/:id`, LotacaoController.delete);
 
 // rotas do cadastro de manifestacao
 routes.get(`${process.env.API_URL}/manifestacoes/:id`, ManifestacaoController.index);
+routes.get(`${process.env.API_URL}/verifica-decisao-executiva/:id`, ManifestacaoController.verificaDecisaoExecutiva);
 routes.get(`${process.env.API_URL}/manifestacao-processo/:id`, ManifestacaoController.manifestacaoProcesso);
 routes.get(`${process.env.API_URL}/manifestacao-processo-dados/:id`, ManifestacaoController.manifestacaoProcessoDados);
 routes.post(`${process.env.API_URL}/manifestacoes`, ManifestacaoController.store);
@@ -411,6 +412,7 @@ routes.get(`${process.env.API_URL}/processo-recebe/:id`, TramiteController.proce
 routes.post(`${process.env.API_URL}/tramite-recebe-ou-nega`, TramiteController.recebeOuNega);
 // rota de retorno de próximo trâmite
 routes.get(`${process.env.API_URL}/proximo-tramite/:id`, TramiteController.proximoTramite);
+routes.get(`${process.env.API_URL}/proximo-tramite-recurso/:id`, TramiteController.proximoTramiteRecurso);
 // rota de retorno de proximo tramite de fiscal
 routes.get(`${process.env.API_URL}/proximo-tramite-fiscal/:id`, TramiteController.proximoTramiteFiscal);
 // rota de retorno de próximo trâmite de decisão de aposentadoria

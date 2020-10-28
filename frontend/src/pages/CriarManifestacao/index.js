@@ -33,6 +33,7 @@ import {
     ContainerBotoes,
 } from './styles';
 import { download } from '../../utils/downloadArquivo';
+import { AlternateEmailRounded } from '@material-ui/icons';
 
 function CriarManifestacao(props) {
     const [erro, setErro] = useState('');
@@ -115,7 +116,6 @@ function CriarManifestacao(props) {
     function fechaModalTramitaVolta() {
         setModalTramitaVolta(false);
     }
-
 
     function abreModalTramitaVarios(dados) {
         setDadosTramite(dados);
@@ -492,6 +492,7 @@ function CriarManifestacao(props) {
 
         // se o tipo de processo for de recurso e o nó for
         if (tprId === constantes.TPR_RECURSO && nodId === 281) {
+            /*
             const prxId = 103;
             axios({
                 method: 'GET',
@@ -507,6 +508,44 @@ function CriarManifestacao(props) {
                         return;
                     }
                     abreModalTramitaUm(resDirecionado.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            */
+            axios({
+                method: 'GET',
+                url: `/verifica-decisao-executiva/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(resDecisao => {
+                    const decisao = resDecisao.data;
+
+                    axios({
+                        method: 'GET',
+                        url: `/proximo-tramite-recurso/${match.params.proId}`,
+                        headers: {
+                            authorization: sessionStorage.getItem('token'),
+                        },
+                    })
+                        .then(resProximoRecurso => {
+                            // se não tiver registros
+                            if (resProximoRecurso.data.length === 0) {
+                                mensagem.info('Sem próximos trâmites.');
+                                return;
+                            }
+                            if (decisao === 'Concedido') {
+                                abreModalTramitaUm(resProximoRecurso.data[0]);
+                            }
+                            if (decisao === 'Negado') {
+                                abreModalTramitaUm(resProximoRecurso.data[1]);
+                            }
+                        })
+                        .catch(() => {
+                            setErro('Erro ao carregar próximos trâmites.');
+                        });
                 })
                 .catch(() => {
                     setErro('Erro ao carregar próximos trâmites.');
@@ -567,6 +606,7 @@ function CriarManifestacao(props) {
         // se o tipo for de aposentadoria encaminha para ciência do interessado
         // e ele encaminha para o DARH, para enviar ao Tribunal de Contas
         // outro tipo encaminha para o interessado
+        /*
         if (tprId === constantes.TPR_RECURSO && nodId === 281) {
             axios({
                 method: 'GET',
@@ -608,6 +648,7 @@ function CriarManifestacao(props) {
                 });
             return;
         }
+        */
         // aqui vai verificar se vai tramitar para um ou para vários
         axios({
             method: 'GET',
@@ -673,11 +714,13 @@ function CriarManifestacao(props) {
     }
 
     function insereTramite(prxId, setId, tprId1) {
+
         if (
             tprId1 === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM ||
             tprId1 === constantes.TPR_APOSENTADORIA ||
             tprId1 === constantes.TPR_AUXILIO_FUNERAL ||
-            tprId1 === constantes.TPR_DESCONTO_PENSAO_ALIMENTICIA
+            tprId1 === constantes.TPR_DESCONTO_PENSAO_ALIMENTICIA ||
+            tprId1 === constantes.TPR_RECURSO
         ) {
             axios({
                 method: 'POST',
