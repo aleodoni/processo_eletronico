@@ -520,6 +520,12 @@ class CriaProcessoController {
             plain: true
         });
         req.body.pro_autuacao = dataHoraAtual.dataValues.data_hora_atual;
+
+        const anoAtual = dataHoraAtual.dataValues.data_hora_atual.substring(
+            6,
+            10
+        );
+
         // com o tpr_id verifico qual é o nó de início do fluxo
         const tipoProcesso = await TipoProcesso.findAll({
             attributes: ['tpr_id', 'flu_id', 'tpr_nome'],
@@ -570,6 +576,11 @@ class CriaProcessoController {
         } = await Processo.create(req.body, {
             logging: false
         });
+
+        // cria a pasta com o id do processo(id+ano)
+        fs.mkdirSync(process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual);
+        const caminhoProcesso =
+                process.env.CAMINHO_ARQUIVOS_PROCESSO + pro_id + anoAtual;
         // auditoria de inserção
         // AuditoriaController.audita(req.body, req, 'I', pro_id);
         //
@@ -645,7 +656,7 @@ class CriaProcessoController {
                     logging: false,
                     plain: true,
                     where: {
-                        mco_matricula: arrayMembros[key].matricula
+                        mco_matricula: arrayMembros[key].matricula.toString()
                     }
                 });
                 let cargo = false;
@@ -668,10 +679,13 @@ class CriaProcessoController {
             }
         }
         // grava na tabela arquivo a capa do processo
+        const strHexa = crypto.randomBytes(16).toString('hex');
+        const nomeArquivo = strHexa + '-capa-' + pro_id + anoAtual + '.pdf';
+
         const arquivo = await Arquivo.create(
             {
                 arq_id: null,
-                arq_nome: 'capa-' + pro_id + '.pdf',
+                arq_nome: nomeArquivo,
                 pro_id: pro_id,
                 man_id: null,
                 arq_tipo: 'application/pdf',
@@ -685,13 +699,25 @@ class CriaProcessoController {
                 logging: false
             }
         );
-        // cria o arquivo pdf
+
+        // cria o arquivo pdf da capa
         const criaCapa = new CriaCapaService(Processo);
-        await criaCapa.execute(
+        const caminhoArquivoCapa = await criaCapa.capaProcesso(
             arquivo.arq_id,
             pro_id,
-            tipoProcesso.dataValues.tpr_nome
+            anoAtual,
+            tipoProcesso.dataValues.tpr_nome,
+            caminhoProcesso,
+            nomeArquivo
         );
+        // obtem o hash do arquivo
+        const hashCapa = await fileHash(caminhoArquivoCapa);
+        // atualiza a tabela de arquivo com o hash do arquivo
+        await Arquivo.update(
+            { arq_hash: hashCapa },
+            { where: { arq_id: arquivo.arq_id }, logging: false }
+        );
+
         return res.json({
             pro_id,
             tpr_id,
