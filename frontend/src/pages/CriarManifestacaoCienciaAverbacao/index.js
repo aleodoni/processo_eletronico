@@ -125,66 +125,53 @@ function CriarManifestacaoCienciaAverbacao(props) {
 
     function criaManifestacaoCienciaAverbacao({ proId, manCienciaAverbacao }) {
         setErro('');
-        if (manCienciaAverbacao === '-1') {
-            setErro('Selecione a ciência da averbação.');
-            return;
-        }
         axios({
             method: 'POST',
             url: '/manifestacoes',
             data: {
                 man_id: null,
-                pro_id: proId,
+                pro_id: match.params.proId,
                 tmn_id: constantes.TMN_CIENCIA_AVERBACAO,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: parseInt(sessionStorage.getItem('areaUsuario'), 10),
-                nod_id: nodId,
                 man_ciencia_averbacao: manCienciaAverbacao,
-
-                arq_id: null,
-                arq_nome: `ciencia-averbacao.pdf`,
-                arq_tipo: 'application/pdf',
-                arq_doc_id: null,
-                arq_doc_tipo: 'manifestação',
-                tpd_id: constantes.TPD_CIENCIA_AVERBACAO,
-                arq_login: sessionStorage.getItem('usuario'),
+                nod_id: nodId,
             },
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resultado => {
+            .then(res => {
+                setManId(res.data.man_id);
+                const data = new FormData();
+                data.append('pro_id', Number(match.params.proId));
+                data.append('man_id', res.data.man_id);
+                data.append('arq_login', sessionStorage.getItem('usuario'));
+                data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: `/arquivo-ciencia-averbacao`,
+                    url: `/arquivo-ciencia-averbacao/${Number(
+                        match.params.proId
+                    )}/${proCodigo.substr(proCodigo.length - 4)}/${sessionStorage.getItem(
+                        'usuario'
+                    )}/${res.data.man_id}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
-                    data: {
-                        arq_id: resultado.data.arq_id,
-                        man_id: resultado.data.man_id,
-                    },
+                    data,
                 })
                     .then(resAnexos => {
                         if (resAnexos.status === 204) {
                             limpaCampos();
-                            mensagem.success('Arquivo de ciência inserido com sucesso.');
+                            mensagem.success(
+                                'Arquivo de ciência de averbação inserido com sucesso.'
+                            );
                             carregaManifestacaoProcesso();
                         }
                     })
                     .catch(() => {
-                        const idArquivo = resultado.data.arq_id;
-                        axios({
-                            method: 'DELETE',
-                            url: `arquivos/${idArquivo}`,
-                            headers: {
-                                authorization: sessionStorage.getItem('token'),
-                            },
-                        })
-                            .then(() => {})
-                            .catch(erroDeleteArquivo => {
-                                setErro(erroDeleteArquivo.response.data.error);
-                            });
+                        setErro('');
+                        carregaManifestacaoProcesso();
                         setErro('Erro ao criar arquivo anexo.');
                     });
                 limpaCampos();
@@ -278,9 +265,9 @@ function CriarManifestacaoCienciaAverbacao(props) {
                 if (ciencia_averbacao === 'Concordo com a averbação parcial') {
                     abreModalTramitaUm(res.data[0]);
                 } else if (ciencia_averbacao === 'Nova apresentação de CTC') {
-                    abreModalTramitaUm(res.data[1]);
-                } else if (ciencia_averbacao === 'Desisto do pedido') {
                     abreModalTramitaUm(res.data[2]);
+                } else if (ciencia_averbacao === 'Desisto do pedido') {
+                    abreModalTramitaUm(res.data[1]);
                 } else {
                     mensagem.info('Erro ao tramitar.');
                 }
@@ -408,12 +395,17 @@ function CriarManifestacaoCienciaAverbacao(props) {
                                                         onClick={e =>
                                                             download(
                                                                 e,
-                                                                anexo.arq_id,
-                                                                anexo.man_id,
+                                                                Number(match.params.proId),
+                                                                proCodigo.substr(
+                                                                    proCodigo.length - 4
+                                                                ),
                                                                 anexo.arq_nome
                                                             )
                                                         }>
-                                                        {anexo.arq_nome}
+                                                        {anexo.arq_nome.substr(
+                                                            33,
+                                                            anexo.arq_nome.length
+                                                        )}
                                                     </BotaoComoLink>
                                                 </td>
                                                 <td>{anexo.data}</td>

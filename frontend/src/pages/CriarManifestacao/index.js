@@ -17,6 +17,7 @@ import Tramitar from '../../components/layout/button/Tramitar';
 import Finalizar from '../../components/layout/button/Finalizar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import ModalTramitaUm from '../../components/ModalTramitaUm';
+import ModalTramitaVolta from '../../components/ModalTramitaVolta';
 import ModalTramitaVarios from '../../components/ModalTramitaVarios';
 import ModalProcesso from '../../components/ModalProcesso';
 import * as constantes from '../../utils/constantes';
@@ -32,6 +33,7 @@ import {
     ContainerBotoes,
 } from './styles';
 import { download } from '../../utils/downloadArquivo';
+import { AlternateEmailRounded } from '@material-ui/icons';
 
 function CriarManifestacao(props) {
     const [erro, setErro] = useState('');
@@ -56,11 +58,13 @@ function CriarManifestacao(props) {
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
+    const [modalTramitaVolta, setModalTramitaVolta] = useState(false);
     const [modalTramitaVarios, setModalTramitaVarios] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
     const [processoModal, setProcessoModal] = useState([]);
 
     const [dadosTramite, setDadosTramite] = useState([]);
+    const [dadosTramiteVolta, setDadosTramiteVolta] = useState([]);
 
     const [manifestacaoProcesso, setManifestacaoProcesso] = useState([]);
 
@@ -102,6 +106,15 @@ function CriarManifestacao(props) {
 
     function fechaModalTramitaUm() {
         setModalTramitaUm(false);
+    }
+
+    function abreModalTramitaVolta(dados) {
+        setDadosTramiteVolta(dados);
+        setModalTramitaVolta(true);
+    }
+
+    function fechaModalTramitaVolta() {
+        setModalTramitaVolta(false);
     }
 
     function abreModalTramitaVarios(dados) {
@@ -408,6 +421,52 @@ function CriarManifestacao(props) {
     }
 
     function tramita() {
+        // Pagamento de auxílio funeral
+        if (tprId === constantes.TPR_AUXILIO_FUNERAL && nodId === 229) {
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaVolta(res.data);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+
+        // Pagamento por determinação judicial
+        if (tprId === constantes.TPR_DESCONTO_PENSAO_ALIMENTICIA && nodId === 364) {
+            axios({
+                method: 'GET',
+                url: `/proximo-tramite/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(res => {
+                    // se não tiver registros
+                    if (res.data.length === 0) {
+                        mensagem.info('Sem próximos trâmites.');
+                        return;
+                    }
+                    abreModalTramitaVolta(res.data);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            return;
+        }
+
         if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM && nodId === 130) {
             const prxId = 130;
             axios({
@@ -433,6 +492,7 @@ function CriarManifestacao(props) {
 
         // se o tipo de processo for de recurso e o nó for
         if (tprId === constantes.TPR_RECURSO && nodId === 281) {
+            /*
             const prxId = 103;
             axios({
                 method: 'GET',
@@ -448,6 +508,44 @@ function CriarManifestacao(props) {
                         return;
                     }
                     abreModalTramitaUm(resDirecionado.data[0]);
+                })
+                .catch(() => {
+                    setErro('Erro ao carregar próximos trâmites.');
+                });
+            */
+            axios({
+                method: 'GET',
+                url: `/verifica-decisao-executiva/${match.params.proId}`,
+                headers: {
+                    authorization: sessionStorage.getItem('token'),
+                },
+            })
+                .then(resDecisao => {
+                    const decisao = resDecisao.data;
+
+                    axios({
+                        method: 'GET',
+                        url: `/proximo-tramite-recurso/${match.params.proId}`,
+                        headers: {
+                            authorization: sessionStorage.getItem('token'),
+                        },
+                    })
+                        .then(resProximoRecurso => {
+                            // se não tiver registros
+                            if (resProximoRecurso.data.length === 0) {
+                                mensagem.info('Sem próximos trâmites.');
+                                return;
+                            }
+                            if (decisao === 'Concedido') {
+                                abreModalTramitaUm(resProximoRecurso.data[0]);
+                            }
+                            if (decisao === 'Negado') {
+                                abreModalTramitaUm(resProximoRecurso.data[1]);
+                            }
+                        })
+                        .catch(() => {
+                            setErro('Erro ao carregar próximos trâmites.');
+                        });
                 })
                 .catch(() => {
                     setErro('Erro ao carregar próximos trâmites.');
@@ -508,6 +606,7 @@ function CriarManifestacao(props) {
         // se o tipo for de aposentadoria encaminha para ciência do interessado
         // e ele encaminha para o DARH, para enviar ao Tribunal de Contas
         // outro tipo encaminha para o interessado
+        /*
         if (tprId === constantes.TPR_RECURSO && nodId === 281) {
             axios({
                 method: 'GET',
@@ -549,6 +648,7 @@ function CriarManifestacao(props) {
                 });
             return;
         }
+        */
         // aqui vai verificar se vai tramitar para um ou para vários
         axios({
             method: 'GET',
@@ -595,7 +695,7 @@ function CriarManifestacao(props) {
                 const msg = `Processo encerrado com sucesso.`;
                 mensagem.success(msg, {
                     position: 'top-center',
-                    autoClose: 5000,
+                    autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -614,9 +714,13 @@ function CriarManifestacao(props) {
     }
 
     function insereTramite(prxId, setId, tprId1) {
+
         if (
             tprId1 === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM ||
-            tprId1 === constantes.TPR_APOSENTADORIA
+            tprId1 === constantes.TPR_APOSENTADORIA ||
+            tprId1 === constantes.TPR_AUXILIO_FUNERAL ||
+            tprId1 === constantes.TPR_DESCONTO_PENSAO_ALIMENTICIA ||
+            tprId1 === constantes.TPR_RECURSO
         ) {
             axios({
                 method: 'POST',
@@ -774,6 +878,13 @@ function CriarManifestacao(props) {
                         fechaModalTramitaUm={fechaModalTramitaUm}
                         tramita={insereTramite}
                         dados={dadosTramite}
+                    />
+                    <ModalTramitaVolta
+                        modalTramitaVolta={modalTramitaVolta}
+                        fechaModalTramitaVolta={fechaModalTramitaVolta}
+                        tramita={insereTramite}
+                        dados={dadosTramiteVolta}
+                        tprId={tprId}
                     />
                     <ModalTramitaVarios
                         modalTramitaVarios={modalTramitaVarios}

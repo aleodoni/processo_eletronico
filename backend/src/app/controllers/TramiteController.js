@@ -283,6 +283,66 @@ class TramiteController {
         return res.json(combo);
     }
 
+    async proximoTramiteRecurso(req, res) {
+        const processo = await Processo.findAll({
+            where: {
+                pro_id: req.params.id
+            },
+            attributes: [
+                'pro_id',
+                'nod_id',
+                'tpr_id',
+                'area_id_iniciativa',
+                'usu_autuador',
+                'pro_nome'
+            ],
+            logging: false,
+            plain: true
+        });
+        const areaProcesso = processo.dataValues.area_id_iniciativa;
+        const proximo = await VProximoTramiteNormal.findAll({
+            attributes: [
+                'pro_id',
+                'prx_id',
+                'nod_id',
+                'nod_id_proximo',
+                'raz_id',
+                'raz_nome',
+                'set_id',
+                'set_nome',
+                'set_sigla'
+            ],
+            where: {
+                pro_id: req.params.id
+            },
+            logging: true
+        });
+        const combo = [];
+        let contador = 1;
+        for (const p in proximo) {
+            // carrega a área do usuário
+            const areaTramitacaoPessoal = await VAreaTramitacaoPessoal.findAll({
+                attributes: ['area_id', 'set_nome', 'pes_login'],
+                where: {
+                    // pes_login: usuAutuador
+                    area_id: areaProcesso
+                },
+                logging: false,
+                plain: true
+            });
+            combo.push({
+                id: contador,
+                prx_id: proximo[p].prx_id,
+                set_id: areaTramitacaoPessoal.dataValues.area_id,
+                set_nome: areaTramitacaoPessoal.dataValues.set_nome,
+                raz_nome: proximo[p].raz_nome,
+                tpr_id: constantes.TPR_RECURSO
+            });
+            contador = contador + 1;
+        }
+        return res.json(combo);
+    }
+
     async proximoTramiteAposentadoriaCalculo(req, res) {
         const processo = await Processo.findAll({
             where: {
@@ -383,16 +443,28 @@ class TramiteController {
             plain: true
         });
         let prxId;
-        if (manifestacao.dataValues.man_visto_executiva === 'Concedido' && tprId === constantes.TPR_APOSENTADORIA) {
+        if (
+            manifestacao.dataValues.man_visto_executiva === 'Concedido' &&
+            tprId === constantes.TPR_APOSENTADORIA
+        ) {
             prxId = 112;
         }
-        if (manifestacao.dataValues.man_visto_executiva === 'Negado' && tprId === constantes.TPR_APOSENTADORIA) {
+        if (
+            manifestacao.dataValues.man_visto_executiva === 'Negado' &&
+            tprId === constantes.TPR_APOSENTADORIA
+        ) {
             prxId = 111;
         }
-        if (manifestacao.dataValues.man_visto_executiva === 'Concedido' && tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
+        if (
+            manifestacao.dataValues.man_visto_executiva === 'Concedido' &&
+            tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM
+        ) {
             prxId = 142;
         }
-        if (manifestacao.dataValues.man_visto_executiva === 'Negado' && tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
+        if (
+            manifestacao.dataValues.man_visto_executiva === 'Negado' &&
+            tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM
+        ) {
             prxId = 141;
         }
         console.log('próximo:' + prxId);

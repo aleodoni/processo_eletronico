@@ -40,6 +40,7 @@ function CriarManifestacaoCiencia(props) {
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
     const [proCodigo, setProCodigo] = useState('');
+    const [tprId, setTprId] = useState(undefined);
     const [tprNome, setTprNome] = useState('');
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaUm, setModalTramitaUm] = useState(false);
@@ -190,6 +191,7 @@ function CriarManifestacaoCiencia(props) {
                 for (let i = 0; i < processo.length; i++) {
                     setManifestacao({ proId: processo[i].pro_id });
                     setProCodigo(processo[i].pro_codigo);
+                    setTprId(processo[i].tpr_id);
                     setTprNome(processo[i].tpr_nome);
                     setNodId(processo[i].nod_id);
                     setNodFim(processo[i].nod_fim);
@@ -255,10 +257,15 @@ function CriarManifestacaoCiencia(props) {
             },
         })
             .then(response => {
-                const msg = `Processo encerrado com sucesso. O prazo para recurso é de ${response.data} dias.`;
+                let msg = '';
+                if (tprId === constantes.TPR_RECURSO) {
+                    msg = `Processo encerrado com sucesso.`;
+                } else {
+                    msg = `Processo encerrado com sucesso. O prazo para recurso é de ${response.data} dias.`;
+                }
                 mensagem.success(msg, {
                     position: 'top-center',
-                    autoClose: 5000,
+                    autoClose: 2000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,

@@ -30,6 +30,19 @@ class ManifestacaoController {
         return res.send(nodoDecisao.dataValues.nod_decisao);
     }
 
+    async verificaDecisaoExecutiva(req, res) {
+        const decisaoExecutiva = await Manifestacao.findAll({
+            attributes: ['man_id_area', 'pro_id', 'man_visto_executiva'],
+            logging: true,
+            plain: true,
+            where: {
+                pro_id: req.params.id,
+                man_id_area: constantes.AREA_COMISSAO_EXECUTIVA
+            }
+        });
+        return res.send(decisaoExecutiva.dataValues.man_visto_executiva);
+    }
+
     async manifestacaoProcesso(req, res) {
         // vou verificar nos tramites deste processo se o último trâmite teve
         // como razão "Discordância de cálculo", se teve é que voltou, então
