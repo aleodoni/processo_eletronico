@@ -371,7 +371,7 @@ function CriarProcessoPasPad() {
                                 <ContainerIrregularidade>
                                     <Input
                                         name="proIrregularidade"
-                                        label="Irregularidade"
+                                        label="Motivo"
                                         type="text"
                                         size="101"
                                         maxLength="100"
