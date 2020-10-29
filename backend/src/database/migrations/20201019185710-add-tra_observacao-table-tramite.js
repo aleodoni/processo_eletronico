@@ -7,13 +7,11 @@ module.exports = {
         const transaction = await queryInterface.sequelize.transaction();
         try {
             await queryInterface.addColumn({
-                tableName: 'manifestacao',
+                tableName: 'tramite',
                 schema: 'spa2'
             },
-            'man_decisao_pad', {
-                type: sequelize.STRING(50),
-                allowNull: false,
-                defaultValue: 'Não necessário'
+            'tra_observacao', {
+                type: sequelize.STRING(200)
             }, { transaction });
 
             await transaction.commit();

@@ -13,7 +13,7 @@ module.exports = {
             'pro_processo_pai', {
                 type: sequelize.STRING(14),
                 allowNull: false,
-                default: 'Não necessário'
+                defaultValue: 'Não necessário'
             }, { transaction });
 
             await queryInterface.addColumn({
@@ -23,7 +23,7 @@ module.exports = {
             'pro_ip_externo', {
                 type: sequelize.STRING(15),
                 allowNull: false,
-                default: 'Não necessário'
+                defaultValue: 'Não necessário'
             }, { transaction });
 
             await queryInterface.addColumn({
@@ -33,7 +33,7 @@ module.exports = {
             'pro_enviado_externo', {
                 type: sequelize.BOOLEAN,
                 allowNull: false,
-                default: false
+                defaultValue: false
             }, { transaction });
 
             await transaction.commit();
