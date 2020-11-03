@@ -209,9 +209,14 @@ function Home() {
         carregaGridSigiloso();
     }, [carregaGridArea, carregaGridSigiloso]);
 
-    function criaManifestacaoPasPad(id, noDecisaoPad) {
+    function criaManifestacaoPasPad(id, noDecisaoPad, tprNome) {
         if (noDecisaoPad) {
             history.push(`/manifestacao-cria-decisao-pad/${id}`);
+        } else if (
+            Number(sessionStorage.getItem('areaUsuario')) === constantes.AREA_PROJURIS &&
+            tprNome === 'Processo Administrativo de Sindicância - PAS'
+        ) {
+            history.push(`/manifestacao-cria-parecer-projuris-aposentadoria/${id}`);
         } else {
             history.push(`/manifestacao-cria-pas-pad/${id}`);
         }
@@ -346,7 +351,8 @@ function Home() {
                                                                             onClick={() => {
                                                                                 criaManifestacaoPasPad(
                                                                                     proc.pro_id,
-                                                                                    proc.nod_decisao_pad
+                                                                                    proc.nod_decisao_pad,
+                                                                                    proc.tpr_nome
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -362,7 +368,8 @@ function Home() {
                                                                             onClick={() => {
                                                                                 criaManifestacaoPasPad(
                                                                                     proc.pro_id,
-                                                                                    proc.nod_decisao_pad
+                                                                                    proc.nod_decisao_pad,
+                                                                                    proc.tpr_nome
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -378,7 +385,8 @@ function Home() {
                                                                             onClick={() => {
                                                                                 criaManifestacaoPasPad(
                                                                                     proc.pro_id,
-                                                                                    proc.nod_decisao_pad
+                                                                                    proc.nod_decisao_pad,
+                                                                                    proc.tpr_nome
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />
@@ -394,7 +402,8 @@ function Home() {
                                                                             onClick={() => {
                                                                                 criaManifestacaoPasPad(
                                                                                     proc.pro_id,
-                                                                                    proc.nod_decisao_pad
+                                                                                    proc.nod_decisao_pad,
+                                                                                    proc.tpr_nome
                                                                                 );
                                                                             }}>
                                                                             <FaFileAlt />

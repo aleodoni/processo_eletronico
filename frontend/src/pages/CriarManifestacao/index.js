@@ -33,7 +33,6 @@ import {
     ContainerBotoes,
 } from './styles';
 import { download } from '../../utils/downloadArquivo';
-import { AlternateEmailRounded } from '@material-ui/icons';
 
 function CriarManifestacao(props) {
     const [erro, setErro] = useState('');

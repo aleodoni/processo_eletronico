@@ -97,18 +97,35 @@ function CriarProcessoPasPad() {
         setErro('');
         if (p.tprId === '-1') {
             setErro('Selecione o tipo de processo.');
+            return;
         }
         // quando for PAD a irregularidade é obrigatória
         if (Number(p.tprId) === constantes.TPR_PAD && p.proIrregularidade === '') {
-            setErro('Irregularidade em branco.');
+            setErro('Motivo em branco.');
+            return;
+        }
+        if (Number(p.tprId) === constantes.TPR_PAS && p.proIrregularidade === '') {
+            setErro('Motivo em branco.');
+            return;
         }
         if (listaComissao.length === 0) {
             setErro('Selecione os membros da comissão.');
+            return;
+        }
+        // quando a lista de nomes da comissão for menor que 3
+        if (listaComissao.length < 3) {
+            setErro('Número de membros insuficiente.');
+            return;
         }
 
         // quando for PAD a lista de nome(s) é obrigatória
-        if (Number(p.tprId) === constantes.TPR_PAD && listaNome.length === 0) {
+        if (Number(p.tprId) === Number(constantes.TPR_PAD) && listaNome.length === 0) {
             setErro('Selecione o(s) nome(s).');
+            return;
+        }
+        if (Number(p.tprId) === Number(constantes.TPR_PAS) && listaNome.length === 0) {
+            setErro('Selecione o(s) nome(s).');
+            return;
         }
 
         axios({

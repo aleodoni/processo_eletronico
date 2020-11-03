@@ -32,6 +32,7 @@ export const TPR_AQUISICAO_BENS_SERVICOS = 251;
 export const AREA_PRESIDENCIA = 88;
 export const AREA_COMISSAO_EXECUTIVA = 398;
 export const AREA_DPS = 32;
+export const AREA_PROJURIS = 289;
 export const AREA_DARH = 7;
 export const AREA_DCF = 168;
 export const AREA_DAF = 4;

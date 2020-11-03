@@ -223,7 +223,10 @@ const ModalProcessoPasPad = props => {
                         </ContainerDados>
                         <ContainerComponente>
                             <p>Manifestações</p>
-                            <TabelaManifestacoes proId={processoPasPad.pro_id} />
+                            <TabelaManifestacoes
+                                proId={processoPasPad.pro_id}
+                                anoProcesso={processoPasPad.pro_codigo}
+                            />
                         </ContainerComponente>
                         <ContainerComponente>
                             <p>Trâmites</p>

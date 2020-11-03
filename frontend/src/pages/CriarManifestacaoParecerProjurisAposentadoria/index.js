@@ -386,6 +386,8 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         const PRX_PARECER_ABONO_PERMANENCIA = 211;
         const PRX_GRATIFICACAO_ESTIMULO = 215;
         const PRX_AVERBACAO_TEMPO = 232;
+        const PRX_RECURSO = 244;
+        const PRX_SINDICANCIA = 247;
         if (parecer === 'Pela legalidade e regularidade') {
             let url = '';
             // Aposentadorias
@@ -405,6 +407,14 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
             // Averbação de tempo de serviço
             if (tprId === constantes.TPR_AVERBACAO_TEMPO_SERVICO) {
                 url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_AVERBACAO_TEMPO}`;
+            }
+            // Recurso
+            if (tprId === constantes.TPR_RECURSO) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_RECURSO}`;
+            }
+            // Sindicância
+            if (tprId === constantes.TPR_PAS) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_SINDICANCIA}`;
             }
             axios({
                 method: 'GET',
@@ -431,6 +441,8 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
             const PRX_PARECER_CORRECAO_ABONO_PERMANENCIA = 212;
             const PRX_PARECER_CORRECAO_GRATIFICACAO_ESTIMULO = 216;
             const PRX_PARECER_CORRECAO_AVERBACAO_TEMPO = 233;
+            const PRX_PARECER_CORRECAO_RECURSO = 245;
+            const PRX_PARECER_CORRECAO_SINDICANCIA = 248;
             let url = '';
             // Aposentadorias
             if (tprId === constantes.TPR_APOSENTADORIA_INICIATIVA_ADM) {
@@ -449,6 +461,14 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
             // Averbação de tempo de serviço
             if (tprId === constantes.TPR_AVERBACAO_TEMPO_SERVICO) {
                 url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_AVERBACAO_TEMPO}`;
+            }
+            // Recurso
+            if (tprId === constantes.TPR_RECURSO) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_RECURSO}`;
+            }
+            // Sindicância
+            if (tprId === constantes.TPR_PAS) {
+                url = `/proximo-tramite-direcionado/${props.match.params.proId}/${PRX_PARECER_CORRECAO_SINDICANCIA}`;
             }
             axios({
                 method: 'GET',

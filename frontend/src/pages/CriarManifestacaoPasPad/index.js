@@ -474,7 +474,7 @@ function CriarManifestacaoPasPad(props) {
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Criar manifestação Pas / Pad" />
+                <Autorizacao tela="Criar manifestação" />
                 <Main>
                     <Titulo>
                         {manifestacaoProcesso.length > 0 ? (
