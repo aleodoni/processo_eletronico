@@ -69,7 +69,7 @@ O projeto é dividido em 4 partes:
 
    ```shell
    docker stack ls
-   docker stack services spa2
+   docker stack services spae
    ```
 
 1. Os "módulos" da aplicação estarão disponíveis em:
