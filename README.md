@@ -51,9 +51,12 @@ O projeto é dividido em 4 partes:
    docker-compose -f docker-stack.yml build
    ```
 
-1. Publique as imagens:
+   **Observação importante para ambiente de produção e _staging_**: a construção do(s) frontend(s) depende(m) da URL da API no _backend_ ser fornecida em tempo de _build_ (vide #321).
+
+1. Publique as imagens (apenas necessário para **produção** ou _staging_):
 
    ```shell
+   docker login -u nomedeusuario
    docker-compose -f docker-stack.yml push
    ```
 
@@ -65,7 +68,7 @@ O projeto é dividido em 4 partes:
    docker stack deploy --compose-file docker-stack.yml spae
    ```
 
-   Para verificar:
+   A inicialização do _swarm_ é realizada apenas uma vez. Para verificar a pilha de serviços:
 
    ```shell
    docker stack ls
