@@ -44,6 +44,8 @@ O projeto é dividido em 4 partes:
 
 ## Getting started
 
+1. Primeiro não se esqueça de editar localmente os arquivos `.env` de cada módulo conforme suas necessidades.
+
 1. Construa as imagens:
 
    ```shell
@@ -51,7 +53,7 @@ O projeto é dividido em 4 partes:
    docker-compose -f docker-stack.yml build
    ```
 
-   **Observação importante para ambiente de produção e _staging_**: a construção do(s) frontend(s) depende(m) da URL da API no _backend_ ser fornecida em tempo de _build_ (vide #321).
+   **Observação importante para ambiente de produção e _staging_**: a construção do(s) frontend(s) depende(m) da URL da API no _backend_ ser fornecida em tempo de _build_ (vide [#321](https://github.com/CMCuritiba/processo_eletronico/issues/321)).
 
 1. Publique as imagens (apenas necessário para **produção** ou _staging_):
 

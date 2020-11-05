@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   backend:
-    image: camaracuritiba/spaeapi:latest
+    image: camaracuritiba/spaeapi
     env_file:
       - ./backend/.env
     build:
@@ -24,11 +24,11 @@ services:
       - redis
 
   frontend:
-    image: camaracuritiba/spae:latest
+    image: camaracuritiba/spae
     build:
       context: ./frontend
     ports:
-      - "80:80"
+      - "8080:80"
     networks:
       - local_network
     volumes:
@@ -39,11 +39,11 @@ services:
       - backend
 
   contab:
-    image: camaracuritiba/spae-contab:latest
+    image: camaracuritiba/spae-contab
     build:
       context: ./ext-contab
     ports:
-      - "81:80"
+      - "8081:80"
     networks:
       - local_network
     volumes:
@@ -54,11 +54,11 @@ services:
       - backend
 
   externo:
-    image: camaracuritiba/spae-externo:latest
+    image: camaracuritiba/spae-externo
     build:
       context: ./externo
     ports:
-      - "82:80"
+      - "8082:80"
     networks:
       - local_network
     volumes:
