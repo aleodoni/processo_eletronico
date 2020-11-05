@@ -70,7 +70,8 @@ O projeto é dividido em 4 partes:
    docker stack deploy --compose-file docker-stack.yml spae
    ```
 
-   A inicialização do _swarm_ é realizada apenas uma vez. Para verificar a pilha de serviços:
+   A inicialização do _swarm_ é realizada apenas uma vez.  
+   Para verificar a pilha de serviços:
 
    ```shell
    docker stack ls
@@ -80,9 +81,9 @@ O projeto é dividido em 4 partes:
 1. Os "módulos" da aplicação estarão disponíveis em:
 
    1. Backend: porta `3002`
-   1. Frontend: porta `80`
-   1. Frontend externo: porta `81`
-   1. Frontend contab: porta `82`
+   1. Frontend: porta `8080`
+   1. Frontend externo: porta `8081`
+   1. Frontend contab: porta `8082`
 
 Informações úteis:
 
