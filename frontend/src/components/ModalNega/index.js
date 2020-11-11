@@ -39,7 +39,11 @@ const ModalNegar = props => {
 
     return (
         <>
-            <Modal isOpen={modalNegar} onRequestClose={fechaHandler} style={dialogs} ariaHideApp={false}>
+            <Modal
+                isOpen={modalNegar}
+                onRequestClose={fechaHandler}
+                style={dialogs}
+                ariaHideApp={false}>
                 <ContainerModal>
                     <p>
                         <FaRegQuestionCircle color="#303f9f" size="3em" />

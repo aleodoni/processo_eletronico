@@ -17,8 +17,10 @@ import Tramitar from '../../components/layout/button/Tramitar';
 import Finalizar from '../../components/layout/button/Finalizar';
 import Encerrar from '../../components/layout/button/Encerrar';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
+import FluxoLicitacao from '../../components/layout/button/FluxoLicitacao';
 import ModalTramitaLivre from '../../components/ModalTramitaLivre';
 import ModalProcesso from '../../components/ModalProcesso';
+import ModalFluxoLicitacao from '../../components/ModalFluxoLicitacao';
 import * as constantes from '../../utils/constantes';
 import {
     Container,
@@ -57,6 +59,7 @@ function CriarManifestacaoLivre(props) {
     const [modalExcluir, setModalExcluir] = useState(false);
     const [modalTramitaLivre, setModalTramitaLivre] = useState(false);
     const [modalProcesso, setModalProcesso] = useState(false);
+    const [modalFluxoLicitacao, setModalFluxoLicitacao] = useState(false);
     const [processoModal, setProcessoModal] = useState([]);
     const [comboRazao, setComboRazao] = useState('');
 
@@ -84,6 +87,16 @@ function CriarManifestacaoLivre(props) {
 
     function fechaModalProcesso() {
         setModalProcesso(false);
+    }
+
+    function abreModalFluxoLicitacao() {
+        if (tprId === constantes.TPR_AQUISICAO_BENS_SERVICOS) {
+            setModalFluxoLicitacao(true);
+        }
+    }
+
+    function fechaModalFluxoLicitacao() {
+        setModalFluxoLicitacao(false);
     }
 
     function abreModalExcluir(id) {
@@ -691,6 +704,10 @@ function CriarManifestacaoLivre(props) {
                                     }
                                 />
                             ) : null}
+                            <FluxoLicitacao
+                                name="btnFluxoLicitacao"
+                                clickHandler={abreModalFluxoLicitacao}
+                            />
                         </ContainerBotoes>
                     </Form>
                     <ModalApaga
@@ -710,6 +727,10 @@ function CriarManifestacaoLivre(props) {
                         fechaModalProcesso={fechaModalProcesso}
                         modalProcesso={modalProcesso}
                         processo={processoModal}
+                    />
+                    <ModalFluxoLicitacao
+                        fechaModalFluxoLicitacao={fechaModalFluxoLicitacao}
+                        modalFluxoLicitacao={modalFluxoLicitacao}
                     />
 
                     {anexos.length > 0 ? (
