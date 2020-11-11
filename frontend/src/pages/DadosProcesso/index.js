@@ -10,9 +10,11 @@ import DefaultLayout from '../_layouts/default';
 import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
 import GeraFluxo from '../../components/layout/button/GeraFluxo';
 import Juntada from '../../components/layout/button/Juntada';
+import Encerrar from '../../components/layout/button/Encerrar';
 import CriaManifestacao from '../../components/layout/button/CriaManifestacao';
 import TabelaManifestacoes from '../../components/TabelaManifestacoes';
 import TabelaTramitacao from '../../components/TabelaTramitacao';
+import * as constantes from '../../utils/constantes';
 import {
     Container,
     Main,
@@ -128,6 +130,12 @@ function DadosProcesso({ match }) {
         // se tiver o aval da executiva a manifestação é diferenciada
         if (processos.nodAvalExecutiva) {
             history.push(`/manifestacao-cria-executiva/${proId}`);
+        } else if (
+            // se for um processo de licitação e for o nó de início é manifestação com trâmite aberto
+            processos[0].tpr_id === constantes.TPR_AQUISICAO_BENS_SERVICOS &&
+            processos[0].nod_id === 331
+        ) {
+            history.push(`/manifestacao-cria-livre/${proId}`);
         } else {
             history.push(`/manifestacao-cria/${proId}`);
         }
@@ -165,6 +173,38 @@ function DadosProcesso({ match }) {
             })
             .catch(() => {
                 setErro('Erro ao gerar juntada.');
+            });
+    }
+
+    function encerraProcessoLicitacao(id) {
+        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        const usuario = sessionStorage.getItem('usuario');
+        axios({
+            method: 'PUT',
+            url: `/encerra/${id}`,
+            data: {
+                usuario,
+                areaId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                const msg = `Processo encerrado com sucesso.`;
+                mensagem.success(msg, {
+                    position: 'top-center',
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                history.push('/home');
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
             });
     }
 
@@ -208,6 +248,14 @@ function DadosProcesso({ match }) {
                                                     geraJuntada(pro.pro_id, pro.pro_ano)
                                                 }
                                             />
+                                            {pro.nod_id === 331 ? (
+                                                <Encerrar
+                                                    name="btnEncerraProcessoLicitacao"
+                                                    clickHandler={() =>
+                                                        encerraProcessoLicitacao(pro.pro_id)
+                                                    }
+                                                />
+                                            ) : null}
                                             <br />
                                         </ContainerBotoes>
                                     ) : (

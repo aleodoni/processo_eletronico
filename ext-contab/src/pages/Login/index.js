@@ -22,7 +22,7 @@ function Login() {
     const history = useHistory();
     const formRef = useRef(null);
     const [verificado, setVerificado] = useState(false);
-    const chaveCaptcha = process.env.REACT_APP_CHAVE_CAPTCHA;
+    const [captcha, setCaptcha] = useState('');
 
     function verifica() {
         setVerificado(true);
@@ -33,6 +33,7 @@ function Login() {
         sessionStorage.removeItem('cnpj');
         sessionStorage.removeItem('fornecedor');
         sessionStorage.removeItem('ip');
+        sessionStorage.removeItem('tamanhoAnexo');
     }
 
     useEffect(() => {
@@ -47,6 +48,9 @@ function Login() {
                 } else {
                     setBd(`${response.data.bd} - versão:${response.data.versao}`);
                 }
+
+                const responseCaptcha = await api.get('/captcha');
+                setCaptcha(responseCaptcha.data.captcha);
             } catch (err) {
                 setBd(`Não conectado`);
             }
@@ -83,6 +87,7 @@ function Login() {
                 sessionStorage.setItem('token', response.data.token);
                 sessionStorage.setItem('cnpj', response.data.cnpj);
                 sessionStorage.setItem('fornecedor', response.data.fornecedor);
+                sessionStorage.setItem('tamanhoAnexo', response.data.tamanhoAnexo);
 
                 let meuIp = response.data.ip;
 
@@ -129,7 +134,7 @@ function Login() {
                         maskChar=" "
                     />
                     <Input type="password" name="senha" placeholder="Senha" />
-                    <Reaptcha sitekey={chaveCaptcha} onVerify={verifica} />
+                    <Reaptcha sitekey={captcha} onVerify={verifica} />
                     <Button type="submit">
                         <FaKey color="#FFF" />
                         Acessar

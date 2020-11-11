@@ -1186,6 +1186,118 @@ class TramiteController {
         });
     }
 
+    async criaTramiteLivre(req, res) {
+        const dataHoraAtual = await DataHoraAtual.findAll({
+            attributes: ['data_hora_atual'],
+            logging: false,
+            plain: true
+        });
+
+        const processo = await Processo.findByPk(req.body.pro_id, {
+            logging: false,
+            plain: true
+        });
+        if (!processo) {
+            return res.status(400).json({ error: 'Processo não encontrado' });
+        }
+
+        const traId = null;
+        const traEnvio = dataHoraAtual.dataValues.data_hora_atual;
+        const nodIdEnvia = processo.dataValues.nod_id;
+        const nodIdRecebe = processo.dataValues.nod_id;
+        const proId = req.body.pro_id;
+        const razId = req.body.raz_id;
+        const loginEnvia = req.body.login_envia;
+        const areaIdEnvia = req.body.area_id_envia;
+        const areaIdRecebe = req.body.area_id_recebe;
+        const traObservacao = req.body.tra_observacao;
+        const {
+            tra_id,
+            tra_envio,
+            pro_id,
+            raz_id,
+            login_envia,
+            area_id_envia,
+            area_id_recebe,
+            nod_id_envia,
+            nod_id_recebe,
+            tra_observacao
+        } = await Tramite.create(
+            {
+                tra_id: traId,
+                tra_envio: traEnvio,
+                pro_id: proId,
+                raz_id: razId,
+                login_envia: loginEnvia,
+                area_id_envia: areaIdEnvia,
+                area_id_recebe: areaIdRecebe,
+                nod_id_envia: nodIdEnvia,
+                nod_id_recebe: nodIdRecebe,
+                tra_observacao: traObservacao
+            },
+            {
+                logging: false
+            }
+        );
+        // auditoria de inserção
+        // AuditoriaController.audita(req.body, req, 'I', tra_id);
+        //
+
+        // agora pega e atualiza a tabela "manifestacao" o campo "man_tramitada"
+        const manifestacao = await Manifestacao.findByPk(req.body.man_id, {
+            logging: false
+        });
+        if (!manifestacao) {
+            return res
+                .status(400)
+                .json({ error: 'Manifestação não encontrada' });
+        }
+        await manifestacao.update(
+            {
+                man_tramitada: true
+            },
+            { logging: false }
+        );
+
+        // agora pega e atualiza a tabela "processo" o campo "area_id_pendente"
+        const processoAtualiza = await Processo.findByPk(proId, {
+            logging: false
+        });
+        // auditoria de edição
+        // AuditoriaController.audita(
+        //    processo._previousDataValues,
+        //    req,
+        //    'U',
+        //    proId
+        // );
+        //
+        if (!processoAtualiza) {
+            return res.status(400).json({ error: 'Processo não encontrado' });
+        }
+
+        await processo.update(
+            {
+                area_id: areaIdRecebe,
+                nod_id: nodIdRecebe,
+                pro_ultimo_tramite: dataHoraAtual.dataValues.data_hora_atual
+            },
+            { logging: false }
+        );
+
+        return res.json({
+            tra_id,
+            tra_envio,
+            pro_id,
+            raz_id,
+            login_envia,
+            area_id_envia,
+            area_id_recebe,
+            nod_id_envia,
+            nod_id_recebe,
+            tra_observacao
+        });
+    }
+
     async update(req, res) {
         const tramite = await Tramite.findByPk(req.params.id, {
             logging: false

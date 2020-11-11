@@ -164,7 +164,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
         }
 
         const arq = e.target.files[0];
-        const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
+        const tamanhoAnexo = Number(sessionStorage.getItem('tamanhoAnexo'));
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
         if (e.target.files[0].size > tamanhoAnexo) {
             setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
@@ -234,7 +234,7 @@ function CriarManifestacaoParecerProjurisAposentadoria(props) {
     function incluiAnexoManifestacao(e) {
         setErro('');
         const arq = e.target.files[0];
-        const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
+        const tamanhoAnexo = Number(sessionStorage.getItem('tamanhoAnexo'));
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
         if (e.target.files[0].size > tamanhoAnexo) {
             setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);

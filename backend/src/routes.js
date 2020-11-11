@@ -98,6 +98,7 @@ routes.post(`${process.env.API_URL}/autorizacao`, validatorSessionStore, LoginCo
 routes.post(`${process.env.API_URL}/autorizacao-externa`, validatorSessionStore, LoginController.indexExterno);
 routes.post(`${process.env.API_URL}/autorizacao-ext-contab`, validatorSessionStore, LoginController.indexExtContab);
 routes.get(`${process.env.API_URL}/bd`, LoginController.getBd);
+routes.get(`${process.env.API_URL}/captcha`, LoginController.getCaptcha);
 routes.get(`${process.env.API_URL}/`, Spa2Controller.index);
 
 /**
@@ -107,6 +108,7 @@ routes.use(AuthMiddleware);
 
 // rota que retorna as áreas
 routes.get(`${process.env.API_URL}/area`, AreaController.index);
+routes.get(`${process.env.API_URL}/areas-processo-licitacao`, AreaController.areasProcessoLicitacao);
 routes.get(`${process.env.API_URL}/area-combo`, AreaController.areaNormal);
 
 // rota que retorna a área por código
@@ -402,6 +404,7 @@ routes.delete(`${process.env.API_URL}/proximos-tramites/:id`, ProximoTramiteCont
 routes.get(`${process.env.API_URL}/tramites`, TramiteController.index);
 routes.get(`${process.env.API_URL}/grid-tramites/:id`, TramiteController.gridTramite);
 routes.post(`${process.env.API_URL}/tramites`, TramiteController.store);
+routes.post(`${process.env.API_URL}/tramites-livre`, TramiteController.criaTramiteLivre);
 routes.post(`${process.env.API_URL}/tramites-averbacao`, TramiteController.criaTramiteAverbacao);
 routes.post(`${process.env.API_URL}/tramites-direcionado`, TramiteController.criaTramiteDirecionado);
 routes.post(`${process.env.API_URL}/tramites-fiscal`, TramiteController.criaTramiteFiscal);

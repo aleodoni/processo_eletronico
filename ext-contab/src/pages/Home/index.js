@@ -101,7 +101,7 @@ function Home() {
     }, []);
 
     function verificaArquivo(e, id, documento) {
-        const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
+        const tamanhoAnexo = Number(sessionStorage.getItem('tamanhoAnexo'));
         const labelId = `label_${id}`;
         const imageId = `img_${id}`;
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);

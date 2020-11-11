@@ -14,6 +14,8 @@ function Header() {
         sessionStorage.removeItem('nomeSetorUsuario');
         sessionStorage.removeItem('nomeAreaUsuario');
         sessionStorage.removeItem('menu');
+        sessionStorage.removeItem('permissoes');
+        sessionStorage.removeItem('tamanhoAnexo');
         window.location.href = '/processo-eletronico';
     }
 

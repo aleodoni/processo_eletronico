@@ -124,6 +124,10 @@ class LoginController {
 
                 const meuToken = loginToken.geraToken(login, nome, matricula);
 
+                const tamanhoAnexo = process.env.TAMANHO_ANEXO;
+
+                const chaveCaptcha = process.env.CHAVE_CAPTCHA;
+
                 return res.status(201).json({
                     token: meuToken,
                     usuario: login,
@@ -134,7 +138,9 @@ class LoginController {
                     nomeSetorUsuario: nomeSetor,
                     nomeAreaUsuario: nomeArea,
                     menu: montaMenu.monta_menu_raiz,
-                    permissoes: listaPermissoes
+                    permissoes: listaPermissoes,
+                    tamanhoAnexo: tamanhoAnexo,
+                    chaveCaptcha: chaveCaptcha
                 });
             } else {
                 return res.status(400).json({ error: 'Usuário não cadastrado no sistema.' });
@@ -248,6 +254,9 @@ class LoginController {
 
                 const meuToken = loginToken.geraToken(login, nome, matricula);
 
+                const tamanhoAnexo = process.env.TAMANHO_ANEXO;
+                console.log('---> ' + tamanhoAnexo);
+
                 return res.status(201).json({
                     token: meuToken,
                     usuario: login,
@@ -258,7 +267,8 @@ class LoginController {
                     nomeSetorUsuario: nomeSetor,
                     nomeAreaUsuario: nomeArea,
                     orgao: 'IPMC',
-                    permissoes: listaPermissoes
+                    permissoes: listaPermissoes,
+                    tamanhoAnexo: tamanhoAnexo
                 });
             } else {
                 return res.status(400).json({ error: 'Usuário não cadastrado no sistema.' });
@@ -309,13 +319,16 @@ class LoginController {
 
                     const meuToken = loginToken.geraTokenFornecedor(login, nomeFornecedor);
 
+                    const tamanhoAnexo = process.env.TAMANHO_ANEXO;
+
                     const meuIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
                     return res.status(201).json({
                         token: meuToken,
                         cnpj: login,
                         fornecedor: nomeFornecedor,
                         ip: meuIp,
-                        acessoDefault: true
+                        acessoDefault: true,
+                        tamanhoAnexo: tamanhoAnexo
                     });
                 } else {
                     const acessoHmac = hmac(senha.trim());
@@ -341,12 +354,15 @@ class LoginController {
 
                         const meuIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
+                        const tamanhoAnexo = process.env.TAMANHO_ANEXO;
+
                         return res.status(201).json({
                             token: meuToken,
                             cnpj: login,
                             fornecedor: nomeFornecedor,
                             ip: meuIp,
-                            acessoDefault: false
+                            acessoDefault: false,
+                            tamanhoAnexo: tamanhoAnexo
                         });
                     }
                 }
@@ -370,6 +386,12 @@ class LoginController {
         return res
             .status(200)
             .json({ bd: process.env.DB_NAME, versao: process.env.VERSAO });
+    }
+
+    async getCaptcha(req, res) {
+        return res
+            .status(200)
+            .json({ captcha: process.env.CHAVE_CAPTCHA });
     }
 
     geraToken(login, nomeUsuario, matricula) {

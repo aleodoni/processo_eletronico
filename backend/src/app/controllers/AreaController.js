@@ -1,4 +1,5 @@
 import Setor from '../models/Setor';
+import Area from '../models/Area';
 import AreaCombo from '../models/AreaCombo';
 // import ConnectionHelper from '../helpers/ConnectionHelper';
 // import Sequelize from 'sequelize';
@@ -6,6 +7,7 @@ import ListAllAreaService from '../services/area/ListAllAreaService';
 import ListAllAreaNormalService from '../services/area/ListAllAreaNormalService';
 import FindAreaPorCodigoService from '../services/area/FindAreaPorCodigoService';
 import FindSetorPorCodigoService from '../services/area/FindSetorPorCodigoService';
+import Sequelize from 'sequelize';
 
 class AreaController {
     async index(req, res) {
@@ -25,6 +27,17 @@ class AreaController {
         //     attributes: ['set_id', 'set_nome'],
         //     logging: false
         // });
+        return res.json(areas);
+    }
+
+    async areasProcessoLicitacao(req, res) {
+        const Op = Sequelize.Op;
+        const areas = await Area.findAll({
+            where: { set_id: { [Op.notIn]: [2000, 1500, 98, 100, 556, 557] } },
+            order: ['set_nome'],
+            attributes: ['set_id', 'set_nome'],
+            logging: true
+        });
         return res.json(areas);
     }
 

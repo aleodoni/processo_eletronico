@@ -28,6 +28,7 @@ import Sigilo from './pages/Sigilo';
 import ProximoTramite from './pages/ProximoTramite';
 import RegraAposentacao from './pages/RegraAposentacao';
 import CriarManifestacao from './pages/CriarManifestacao';
+import CriarManifestacaoLivre from './pages/CriarManifestacaoLivre';
 import CriarManifestacaoPasPad from './pages/CriarManifestacaoPasPad';
 import CriarManifestacaoDecisaoPad from './pages/CriarManifestacaoDecisaoPad';
 import CriarManifestacaoExecutiva from './pages/CriarManifestacaoExecutiva';
@@ -92,6 +93,7 @@ const Routes = () => (
         <PrivateRoute exact path="/dados-processo/:id" component={DadosProcesso} />
         <PrivateRoute exact path="/dados-processo-pas-pad/:id" component={DadosProcessoPasPad} />
         <PrivateRoute exact path="/manifestacao-cria/:proId" component={CriarManifestacao} />
+        <PrivateRoute exact path="/manifestacao-cria-livre/:proId" component={CriarManifestacaoLivre} />
         <PrivateRoute
             exact
             path="/edita-processo-pagamento/:proId"

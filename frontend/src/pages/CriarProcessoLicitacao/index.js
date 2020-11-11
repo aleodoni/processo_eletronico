@@ -47,7 +47,6 @@ function CriarProcessoLicitacao() {
             data: {
                 pro_id: null,
                 pro_nome: p.proNome,
-                pro_matricula: p.proMatricula,
                 pro_encerramento: null,
                 pro_assunto: p.proAssunto,
                 usu_autuador: sessionStorage.getItem('usuario'),

@@ -11,12 +11,14 @@ import axios from '../../configs/axiosConfig';
 import Autorizacao from '../../components/Autorizacao';
 import api from '../../service/api';
 import Select from '../../components/layout/Select';
-import DecisaoPad from '../../components/system/select/DecisaoPad';
 import Input from '../../components/layout/Input';
 import DefaultLayout from '../_layouts/default';
 import Tramitar from '../../components/layout/button/Tramitar';
-import ModalTramitaUm from '../../components/ModalTramitaUm';
-import ModalProcessoPasPad from '../../components/ModalProcessoPasPad';
+import Finalizar from '../../components/layout/button/Finalizar';
+import Encerrar from '../../components/layout/button/Encerrar';
+import ConsultarOutro from '../../components/layout/button/ConsultarOutro';
+import ModalTramitaLivre from '../../components/ModalTramitaLivre';
+import ModalProcesso from '../../components/ModalProcesso';
 import * as constantes from '../../utils/constantes';
 import {
     Container,
@@ -31,7 +33,7 @@ import {
 } from './styles';
 import { download } from '../../utils/downloadArquivo';
 
-function CriarManifestacaoDecisaoPad(props) {
+function CriarManifestacaoLivre(props) {
     const [erro, setErro] = useState('');
     const history = useHistory();
     const { match } = props;
@@ -42,17 +44,21 @@ function CriarManifestacaoDecisaoPad(props) {
     });
     const [manId, setManId] = useState(undefined);
     const [arqId, setArqId] = useState(undefined);
+    const [nodFim, setNodFim] = useState(false);
+    const [tmnId, setTmnId] = useState('-1');
     const [tpdId, setTpdId] = useState('-1');
     const [nodId, setNodId] = useState('');
     const [proCodigo, setProCodigo] = useState('');
+    const [tprId, setTprId] = useState(undefined);
     const [tprNome, setTprNome] = useState('');
+    const [tiposManifestacao, setTiposManifestacao] = useState([]);
     const [tiposDocumento, setTiposDocumento] = useState([]);
     const [anexos, setAnexos] = useState([]);
     const [modalExcluir, setModalExcluir] = useState(false);
-    const [modalTramitaUm, setModalTramitaUm] = useState(false);
-    const [processoPasPad, setProcessoPasPad] = useState([]);
-    const [manDecisaoPad, setManDecisaoPad] = useState('-1');
-    const [modalProcessoPasPad, setModalProcessoPasPad] = useState(false);
+    const [modalTramitaLivre, setModalTramitaLivre] = useState(false);
+    const [modalProcesso, setModalProcesso] = useState(false);
+    const [processoModal, setProcessoModal] = useState([]);
+    const [comboRazao, setComboRazao] = useState('');
 
     const [dadosTramite, setDadosTramite] = useState([]);
 
@@ -64,16 +70,20 @@ function CriarManifestacaoDecisaoPad(props) {
         formRef.current.setData(manifestacao);
     }, [manifestacao]);
 
+    function handleTmnId(e) {
+        setTmnId(e.target.value);
+    }
+
     function handleTpdId(e) {
         setTpdId(e.target.value);
     }
 
-    function abreModalProcessoPasPad() {
-        setModalProcessoPasPad(true);
+    function abreModalProcesso() {
+        setModalProcesso(true);
     }
 
-    function fechaModalProcessoPasPad() {
-        setModalProcessoPasPad(false);
+    function fechaModalProcesso() {
+        setModalProcesso(false);
     }
 
     function abreModalExcluir(id) {
@@ -85,22 +95,17 @@ function CriarManifestacaoDecisaoPad(props) {
         setModalExcluir(false);
     }
 
-    function abreModalTramitaUm(dados) {
+    function abreModalTramitaLivre(dados) {
         setDadosTramite(dados);
-        setModalTramitaUm(true);
+        setModalTramitaLivre(true);
     }
 
-    function fechaModalTramitaUm() {
-        setModalTramitaUm(false);
-    }
-
-    function selecionaDecisaoPad(e) {
-        setErro('');
-        setManDecisaoPad(e.target.value);
+    function fechaModalTramitaLivre() {
+        setModalTramitaLivre(false);
     }
 
     function limpaCampos() {
-        formRef.current.setFieldValue('manDecisaoPad', '-1');
+        formRef.current.setFieldValue('tmnId', '-1');
         formRef.current.setFieldValue('tpdId', '-1');
         setManId(null);
         setNodId('');
@@ -140,32 +145,9 @@ function CriarManifestacaoDecisaoPad(props) {
         }
     }
 
-    const carregaDadosProcesso = useCallback(() => {
-        axios({
-            method: 'GET',
-            url: `/ver-processo-pas-pad/${match.params.proId}`,
-            headers: {
-                authorization: sessionStorage.getItem('token'),
-            },
-        })
-            .then(res => {
-                const processo = res.data;
-                for (let i = 0; i < processo.length; i++) {
-                    setManifestacao({ proId: processo[i].pro_id });
-                    setProCodigo(processo[i].pro_codigo);
-                    setTprNome(processo[i].tpr_nome);
-                    setNodId(processo[i].nod_id);
-                    setProcessoPasPad(processo[i]);
-                }
-            })
-            .catch(() => {
-                setErro('Erro ao retornar dados do processo.');
-            });
-    }, [manifestacao.proId]);
-
-    const verificaDecisaoPad = e => {
-        if (manDecisaoPad === '-1') {
-            setErro('Selecione a decisão.');
+    const verificaManifestacao = e => {
+        if (tmnId === '-1') {
+            setErro('Selecione o tipo da manifestação.');
             e.preventDefault();
         }
     };
@@ -176,6 +158,31 @@ function CriarManifestacaoDecisaoPad(props) {
             e.preventDefault();
         }
     };
+
+    const carregaDadosProcesso = useCallback(() => {
+        axios({
+            method: 'GET',
+            url: `/ver-processo/${match.params.proId}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const processo = res.data;
+                for (let i = 0; i < processo.length; i++) {
+                    setManifestacao({ proId: processo[i].pro_id });
+                    setProCodigo(processo[i].pro_codigo);
+                    setTprId(processo[i].tpr_id);
+                    setTprNome(processo[i].tpr_nome);
+                    setNodId(processo[i].nod_id);
+                    setNodFim(processo[i].nod_fim);
+                    setProcessoModal(processo[i]);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao retornar dados do processo.');
+            });
+    }, [manifestacao.proId]);
 
     function incluiManifestacao(e) {
         setErro('');
@@ -196,10 +203,9 @@ function CriarManifestacaoDecisaoPad(props) {
             data: {
                 man_id: null,
                 pro_id: Number(match.params.proId),
-                tmn_id: constantes.TMN_DECISAO_PAD,
+                tmn_id: tmnId,
                 man_login: sessionStorage.getItem('usuario'),
                 man_id_area: sessionStorage.getItem('areaUsuario'),
-                man_decisao_pad: manDecisaoPad,
                 nod_id: nodId,
             },
             headers: {
@@ -212,7 +218,7 @@ function CriarManifestacaoDecisaoPad(props) {
                 data.append('file', arq);
                 data.append('pro_id', Number(match.params.proId));
                 data.append('man_id', res.data.man_id);
-                data.append('tpd_id', constantes.TPD_DECISAO_PAD);
+                data.append('tpd_id', constantes.TPD_MANIFESTACAO);
                 data.append('arq_login', sessionStorage.getItem('usuario'));
                 data.append('arq_doc_tipo', 'manifestação');
                 axios({
@@ -233,6 +239,7 @@ function CriarManifestacaoDecisaoPad(props) {
                             carregaManifestacaoProcesso();
                             carregaDadosProcesso();
                             document.getElementById('anexo').value = '';
+                            setTpdId('-1');
                         }
                     })
                     .catch(() => {
@@ -263,7 +270,9 @@ function CriarManifestacaoDecisaoPad(props) {
                 data.append('arq_doc_tipo', 'manifestação');
                 axios({
                     method: 'POST',
-                    url: '/arquivos',
+                    url: `/anexo-manifestacao/${Number(match.params.proId)}/${proCodigo.substr(
+                        proCodigo.length - 4
+                    )}`,
                     headers: {
                         authorization: sessionStorage.getItem('token'),
                     },
@@ -277,6 +286,7 @@ function CriarManifestacaoDecisaoPad(props) {
                             carregaManifestacaoProcesso();
                             carregaDadosProcesso();
                             document.getElementById('anexo').value = '';
+                            setTpdId('-1');
                         }
                     })
                     .catch(() => {
@@ -290,6 +300,24 @@ function CriarManifestacaoDecisaoPad(props) {
             }
         } else {
             setErro(`Arquivo maior que ${tamanhoAnexoMB}MB.`);
+        }
+    }
+
+    async function carregaTipoManifestacao() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/tipos-manifestacao-combo');
+
+            const data = response.data.map(tipoManifestacao => {
+                return {
+                    label: tipoManifestacao.tmn_nome,
+                    value: tipoManifestacao.tmn_id,
+                };
+            });
+            setTiposManifestacao(data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
         }
     }
 
@@ -311,11 +339,24 @@ function CriarManifestacaoDecisaoPad(props) {
         }
     }
 
+    async function carregaRazaoTramite() {
+        api.defaults.headers.Authorization = sessionStorage.getItem('token');
+
+        try {
+            const response = await api.get('/razao-tramite');
+            setComboRazao(response.data);
+        } catch (err) {
+            mensagem.error(`Falha na autenticação - ${err}`);
+        }
+    }
+
     useEffect(() => {
         async function carrega() {
             await carregaDadosProcesso();
             await carregaManifestacaoProcesso();
+            await carregaTipoManifestacao();
             await carregaTipoDocumento();
+            carregaRazaoTramite();
         }
         carrega();
     }, []);
@@ -370,43 +411,126 @@ function CriarManifestacaoDecisaoPad(props) {
     }
 
     function tramita() {
-        const tipoDecisao = manifestacaoProcesso[0].man_decisao_pad;
-        let prxId = null;
-
-        if (tipoDecisao === 'Pela continuidade do processo') {
-            prxId = 126;
-        }
-
-        if (tipoDecisao === 'Novas diligências' || tipoDecisao === 'Agravamento de penalidade') {
-            prxId = 127;
-        }
         axios({
             method: 'GET',
-            url: `/proximo-tramite-direcionado/${match.params.proId}/${prxId}`,
+            url: `/ver-processo/${Number(match.params.proId)}`,
             headers: {
                 authorization: sessionStorage.getItem('token'),
             },
         })
-            .then(resDirecionado => {
-                // se não tiver registros
-                if (resDirecionado.data.length === 0) {
-                    mensagem.info('Sem próximos trâmites.');
-                    return;
+            .then(res => {
+                const processo = res.data;
+                const combo = [];
+                if (
+                    // se for um processo de licitação e for o nó de início é manifestação com trâmite aberto
+                    processo[0].tpr_id === constantes.TPR_AQUISICAO_BENS_SERVICOS &&
+                    processo[0].nod_id === 331
+                ) {
+                    if (
+                        Number(sessionStorage.getItem('areaUsuario')) ===
+                        Number(constantes.AREA_DAF)
+                    ) {
+                        combo.push({
+                            set_id: constantes.AREA_DLICIT,
+                            set_nome: 'Diretoria de Licitações',
+                            raz_id: constantes.RAZ_SUGESTAO_MODALIDADE_CONTRATACAO,
+                            raz_nome: 'Sugestão de modalidade de contratação',
+                        });
+                        abreModalTramitaLivre(combo);
+                    } else {
+                        axios({
+                            method: 'GET',
+                            url: `/areas-processo-licitacao`,
+                            headers: {
+                                authorization: sessionStorage.getItem('token'),
+                            },
+                        })
+                            .then(resArea => {
+                                for (let i = 0; i < resArea.data.length; i++) {
+                                    combo.push({
+                                        set_id: resArea.data[i].set_id,
+                                        set_nome: resArea.data[i].set_nome,
+                                        raz_id: constantes.RAZ_ENCAMINHAMENTO,
+                                        raz_nome: 'Encaminhamento',
+                                    });
+                                }
+                                abreModalTramitaLivre(combo);
+                            })
+                            .catch(() => {
+                                setErro('Erro ao retornar dados do processo.');
+                            });
+                    }
+                } else {
+                    axios({
+                        method: 'GET',
+                        url: `/area`,
+                        headers: {
+                            authorization: sessionStorage.getItem('token'),
+                        },
+                    })
+                        .then(resArea => {
+                            for (let i = 0; i < resArea.data.length; i++) {
+                                combo.push({
+                                    set_id: resArea.data[i].set_id,
+                                    set_nome: resArea.data[i].set_nome,
+                                    raz_id: constantes.RAZ_ENCAMINHAMENTO,
+                                    raz_nome: 'Encaminhamento',
+                                });
+                            }
+                            abreModalTramitaLivre(combo);
+                        })
+                        .catch(() => {
+                            setErro('Erro ao retornar dados do processo.');
+                        });
                 }
-                // alert(JSON.stringify(resDirecionado.data[0], null, 4));
-                abreModalTramitaUm(resDirecionado.data[0]);
             })
             .catch(() => {
-                setErro('Erro ao carregar próximos trâmites.');
+                setErro('Erro ao retornar dados do processo.');
             });
     }
 
-    function insereTramite(prxId, setId) {
-        // se for "Pela continuidade do processo" vai para frente
-        if (prxId === 126) {
+    function finaliza() {
+        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        const usuario = sessionStorage.getItem('usuario');
+
+        axios({
+            method: 'PUT',
+            url: `/encerra/${match.params.proId}`,
+            data: {
+                usuario,
+                areaId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                const msg = `Processo encerrado com sucesso.`;
+                mensagem.success(msg, {
+                    position: 'top-center',
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                history.push('/home');
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
+    }
+
+    function consulta() {
+        history.push('/processo-consulta');
+    }
+
+    function insereTramite(prxId, setId, razId, obs) {
+        if (prxId === null) {
             axios({
                 method: 'POST',
-                url: '/tramites',
+                url: '/tramites-livre',
                 data: {
                     tra_id: null,
                     prx_id: prxId,
@@ -415,6 +539,8 @@ function CriarManifestacaoDecisaoPad(props) {
                     area_id_envia: sessionStorage.getItem('areaUsuario'),
                     area_id_recebe: setId,
                     man_id: manId,
+                    raz_id: razId,
+                    tra_observacao: obs,
                 },
                 headers: {
                     authorization: sessionStorage.getItem('token'),
@@ -428,53 +554,57 @@ function CriarManifestacaoDecisaoPad(props) {
                     setErro('Erro ao inserir trâmite.');
                 });
         }
-        // se for "Novas diligências ou Agravamento de penalidade" é direcionado
-        if (prxId === 127) {
-            axios({
-                method: 'POST',
-                url: '/tramites-direcionado',
-                data: {
-                    tra_id: null,
-                    prx_id: prxId,
-                    pro_id: Number(match.params.proId),
-                    login_envia: sessionStorage.getItem('usuario'),
-                    area_id_envia: sessionStorage.getItem('areaUsuario'),
-                    area_id_recebe: setId,
-                    man_id: manId,
-                },
-                headers: {
-                    authorization: sessionStorage.getItem('token'),
-                },
-            })
-                .then(() => {
-                    mensagem.success('Trâmite inserido com sucesso.');
-                    history.push(`/home/`);
-                })
-                .catch(() => {
-                    setErro('Erro ao inserir trâmite.');
+    }
+
+    function encerraProcessoLicitacao(id) {
+        const areaId = parseInt(sessionStorage.getItem('areaUsuario'), 10);
+        const usuario = sessionStorage.getItem('usuario');
+        axios({
+            method: 'PUT',
+            url: `/encerra/${id}`,
+            data: {
+                usuario,
+                areaId,
+            },
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(() => {
+                const msg = `Processo encerrado com sucesso.`;
+                mensagem.success(msg, {
+                    position: 'top-center',
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
                 });
-        }
+                history.push('/home');
+            })
+            .catch(() => {
+                setErro('Erro ao carregar registros.');
+            });
     }
 
     return (
         <DefaultLayout>
             <Container>
-                <Autorizacao tela="Criar manifestação decisão PAD" />
+                <Autorizacao tela="Criar manifestação" />
                 <Main>
                     <Titulo>
                         {manifestacaoProcesso.length > 0 ? (
                             <p>Manifestação - {manifestacaoProcesso[0].tmn_nome}</p>
                         ) : (
-                            <p>Criar manifestação - Decisão de PAD</p>
+                            <p>Criar manifestação</p>
                         )}
                         <hr />
                     </Titulo>
                     <Erro>{erro}</Erro>
                     <label>Processo: </label>
                     <span>
-                        <LinkProcesso
-                            type="button"
-                            onClick={() => abreModalProcessoPasPad(match.params.proId)}>
+                        <LinkProcesso type="button" onClick={() => abreModalProcesso()}>
                             {proCodigo}
                         </LinkProcesso>
                         - {tprNome}
@@ -485,9 +615,11 @@ function CriarManifestacaoDecisaoPad(props) {
 
                         {manifestacaoProcesso.length === 0 ? (
                             <Container2>
-                                <DecisaoPad
-                                    name="manDecisaoPad"
-                                    changeHandler={selecionaDecisaoPad}
+                                <Select
+                                    name="tmnId"
+                                    label="Tipo da manifestação"
+                                    options={tiposManifestacao}
+                                    onChange={handleTmnId}
                                 />
                             </Container2>
                         ) : null}
@@ -534,13 +666,30 @@ function CriarManifestacaoDecisaoPad(props) {
                                         onChange={incluiManifestacao}
                                         id="anexo"
                                         onClick={e => {
-                                            verificaDecisaoPad(e);
+                                            verificaManifestacao(e);
                                         }}
                                     />
                                 </>
                             )}
                             {manifestacaoProcesso.length > 0 ? (
-                                <Tramitar name="btnTramita" clickHandler={tramita} />
+                                <>
+                                    {nodFim ? (
+                                        <Finalizar name="btnFinaliza" clickHandler={finaliza} />
+                                    ) : (
+                                        <Tramitar name="btnTramita" clickHandler={tramita} />
+                                    )}
+                                </>
+                            ) : null}
+                            <ConsultarOutro name="btnConsulta" clickHandler={consulta} />
+                            {nodId === 331 &&
+                            Number(sessionStorage.getItem('areaUsuario')) ===
+                                Number(constantes.AREA_DAF) ? (
+                                <Encerrar
+                                    name="btnEncerraProcessoLicitacao"
+                                    clickHandler={() =>
+                                        encerraProcessoLicitacao(Number(match.params.proId))
+                                    }
+                                />
                             ) : null}
                         </ContainerBotoes>
                     </Form>
@@ -550,16 +699,17 @@ function CriarManifestacaoDecisaoPad(props) {
                         apaga={apaga}
                         id={arqId}
                     />
-                    <ModalTramitaUm
-                        modalTramitaUm={modalTramitaUm}
-                        fechaModalTramitaUm={fechaModalTramitaUm}
+                    <ModalTramitaLivre
+                        modalTramitaLivre={modalTramitaLivre}
+                        fechaModalTramitaLivre={fechaModalTramitaLivre}
                         tramita={insereTramite}
                         dados={dadosTramite}
+                        razoes={comboRazao}
                     />
-                    <ModalProcessoPasPad
-                        fechaModalProcessoPasPad={fechaModalProcessoPasPad}
-                        modalProcessoPasPad={modalProcessoPasPad}
-                        processoPasPad={processoPasPad}
+                    <ModalProcesso
+                        fechaModalProcesso={fechaModalProcesso}
+                        modalProcesso={modalProcesso}
+                        processo={processoModal}
                     />
 
                     {anexos.length > 0 ? (
@@ -582,7 +732,7 @@ function CriarManifestacaoDecisaoPad(props) {
                                                 <td>{index + 1}</td>
                                                 <td>{anexo.tpd_nome}</td>
                                                 <td>
-                                                <BotaoComoLink
+                                                    <BotaoComoLink
                                                         type="button"
                                                         onClick={e =>
                                                             download(
@@ -626,7 +776,7 @@ function CriarManifestacaoDecisaoPad(props) {
     );
 }
 
-CriarManifestacaoDecisaoPad.propTypes = {
+CriarManifestacaoLivre.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
             proId: PropTypes.string,
@@ -634,4 +784,4 @@ CriarManifestacaoDecisaoPad.propTypes = {
     }).isRequired,
 };
 
-export default CriarManifestacaoDecisaoPad;
+export default CriarManifestacaoLivre;

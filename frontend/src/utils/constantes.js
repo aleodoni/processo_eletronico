@@ -35,6 +35,7 @@ export const AREA_DPS = 32;
 export const AREA_PROJURIS = 289;
 export const AREA_DARH = 7;
 export const AREA_DCF = 168;
+export const AREA_DLICIT = 365;
 export const AREA_DAF = 4;
 export const TODA_AREA = 556;
 export const TODO_GABINETE = 557;
@@ -117,6 +118,7 @@ export const RAZ_DISCORDANCIA_CALCULO = 120;
 export const RAZ_CORRECAO_INFORMACOES_ESCLARECIMENTOS = 121;
 export const RAZ_ENVIO_TC = 122;
 export const RAZ_NOVAS_DILIGENCIAS_OU_AGRAVAMENTO_PENALIDADE = 123;
+export const RAZ_SUGESTAO_MODALIDADE_CONTRATACAO = 127;
 
 // Fluxos
 export const FLU_SINDICANCIA_ADMINISTRATIVA = 2;

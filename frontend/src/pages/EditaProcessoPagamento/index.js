@@ -315,7 +315,7 @@ function EditaProcessoPagamento({ match }) {
     function inserirArquivo(e) {
         setErro('');
         const arq = e.target.files[0];
-        const tamanhoAnexo = process.env.REACT_APP_TAMANHO_ANEXO;
+        const tamanhoAnexo = Number(sessionStorage.getItem('tamanhoAnexo'));
         const tamanhoAnexoMB = Math.round(tamanhoAnexo / 1024 / 1024);
         if (e.target.files[0].size > tamanhoAnexo) {
             mensagem.error(`Arquivo maior que ${tamanhoAnexoMB}MB.`);

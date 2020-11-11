@@ -234,37 +234,56 @@ function Home() {
         noCienciaCalculo,
         noParecerProjurisAposentadoria
     ) {
-        // se tiver o aval da executiva a manifestação é diferenciada
-        if (aval) {
-            if (noDecisao) {
-                history.push(`/manifestacao-cria-executiva/${id}`);
-            } else {
-                history.push(`/manifestacao-cria-visto/${id}`);
-            }
-            // se for uma ciência a manifestação é diferenciada
-        } else if (noCiencia) {
-            history.push(`/manifestacao-cria-ciencia/${id}`);
-            // se se for uma averbação a manifestação é diferenciada
-        } else if (noAverbacao) {
-            history.push(`/manifestacao-cria-averbacao/${id}`);
-            // se se for uma ciência de averbação a manifestação é diferenciada
-        } else if (noCienciaAverbacao) {
-            history.push(`/manifestacao-cria-ciencia-averbacao/${id}`);
-            // se se for um aval de horário especial
-        } else if (noAvalHorario) {
-            history.push(`/manifestacao-cria-aval-horario/${id}`);
-            // se se for uma contagem de tempo
-        } else if (noContagemTempo) {
-            history.push(`/manifestacao-cria-contagem-tempo/${id}`);
-            // se se for uma ciência de cálculo de aposentadoria
-        } else if (noCienciaCalculo) {
-            history.push(`/manifestacao-cria-ciencia-calculo/${id}`);
-            // se se for um parecer do Projuris de aposentadoria
-        } else if (noParecerProjurisAposentadoria) {
-            history.push(`/manifestacao-cria-parecer-projuris-aposentadoria/${id}`);
-        } else {
-            history.push(`/manifestacao-cria/${id}`);
-        }
+        axios({
+            method: 'GET',
+            url: `/ver-processo/${id}`,
+            headers: {
+                authorization: sessionStorage.getItem('token'),
+            },
+        })
+            .then(res => {
+                const processo = res.data;
+                // se tiver o aval da executiva a manifestação é diferenciada
+                if (aval) {
+                    if (noDecisao) {
+                        history.push(`/manifestacao-cria-executiva/${id}`);
+                    } else {
+                        history.push(`/manifestacao-cria-visto/${id}`);
+                    }
+                    // se for uma ciência a manifestação é diferenciada
+                } else if (noCiencia) {
+                    history.push(`/manifestacao-cria-ciencia/${id}`);
+                    // se se for uma averbação a manifestação é diferenciada
+                } else if (noAverbacao) {
+                    history.push(`/manifestacao-cria-averbacao/${id}`);
+                    // se se for uma ciência de averbação a manifestação é diferenciada
+                } else if (noCienciaAverbacao) {
+                    history.push(`/manifestacao-cria-ciencia-averbacao/${id}`);
+                    // se se for um aval de horário especial
+                } else if (noAvalHorario) {
+                    history.push(`/manifestacao-cria-aval-horario/${id}`);
+                    // se se for uma contagem de tempo
+                } else if (noContagemTempo) {
+                    history.push(`/manifestacao-cria-contagem-tempo/${id}`);
+                    // se se for uma ciência de cálculo de aposentadoria
+                } else if (noCienciaCalculo) {
+                    history.push(`/manifestacao-cria-ciencia-calculo/${id}`);
+                    // se se for um parecer do Projuris de aposentadoria
+                } else if (noParecerProjurisAposentadoria) {
+                    history.push(`/manifestacao-cria-parecer-projuris-aposentadoria/${id}`);
+                } else if (
+                    // se for um processo de licitação e for o nó de início é manifestação com trâmite aberto
+                    processo[0].tpr_id === constantes.TPR_AQUISICAO_BENS_SERVICOS &&
+                    processo[0].nod_id === 331
+                ) {
+                    history.push(`/manifestacao-cria-livre/${id}`);
+                } else {
+                    history.push(`/manifestacao-cria/${id}`);
+                }
+            })
+            .catch(() => {
+                setErro('Erro ao retornar dados do processo.');
+            });
     }
 
     return (

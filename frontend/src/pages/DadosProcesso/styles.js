@@ -95,7 +95,7 @@ export const ContainerTramitacao = styled.div`
 
 export const ContainerBotoes = styled.div`
     display: grid;
-    grid-template-columns: 195px 180px 200px 250px;
+    grid-template-columns: 195px 180px 200px 250px 180px;
     grid-gap: 5px;
     input {
         opacity: 0;
