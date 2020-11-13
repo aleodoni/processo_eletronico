@@ -24,6 +24,11 @@ module.exports = {
                     mmu_id: 4,
                     mmu_nome: 'Modelo gabinetes',
                     versao: 0
+                },
+                {
+                    mmu_id: 423,
+                    mmu_nome: 'Modelo externo',
+                    versao: 0
                 }
             ],
             {}
