@@ -10,7 +10,7 @@ module.exports = {
                 primaryKey: true
             },
             tpd_nome: {
-                type: Sequelize.STRING(100),
+                type: Sequelize.STRING(500),
                 allowNull: false
             },
             versao: {
