@@ -4,151 +4,58 @@ module.exports = {
     up: (queryInterface, Sequelize) => queryInterface.bulkInsert(
         { tableName: 'tela', schema: 'spa2' },
         [
-            {
-                tel_id: 22,
-                tel_nome: 'Home',
-                versao: 0
-            },
-            {
-                tel_id: 23,
-                tel_nome: 'Procesos',
-                versao: 0
-            },
-            {
-                tel_id: 24,
-                tel_nome: 'Memorandos',
-                versao: 0
-            },
-            {
-                tel_id: 25,
-                tel_nome: 'Manifestações',
-                versao: 0
-            },
-            {
-                tel_id: 26,
-                tel_nome: 'Cadastros',
-                versao: 0
-            },
-            {
-                tel_id: 27,
-                tel_nome: 'Manutenção',
-                versao: 0
-            },
-            {
-                tel_id: 28,
-                tel_nome: 'Trâmites',
-                versao: 0
-            },
-            {
-                tel_id: 32,
-                tel_nome: 'Complementar dados',
-                versao: 0
-            },
-            {
-                tel_id: 30,
-                tel_nome: 'Consultar processo',
-                versao: 0
-            },
-            {
-                tel_id: 31,
-                tel_nome: 'Criar processo',
-                versao: 0
-            },
-            {
-                tel_id: 34,
-                tel_nome: 'Reabrir processo',
-                versao: 0
-            },
-            {
-                tel_id: 35,
-                tel_nome: 'Consultar memorando',
-                versao: 0
-            },
-            {
-                tel_id: 36,
-                tel_nome: 'Criar memorando',
-                versao: 0
-            },
-            {
-                tel_id: 37,
-                tel_nome: 'Consultar manifestação',
-                versao: 0
-            },
-            {
-                tel_id: 38,
-                tel_nome: 'Criar manifestação',
-                versao: 0
-            },
-            {
-                tel_id: 353,
-                tel_nome: 'Menus',
-                versao: 0
-            },
-            {
-                tel_id: 413,
-                tel_nome: 'Fluxos',
-                versao: 0
-            },
-            {
-                tel_id: 46,
-                tel_nome: 'Enviar',
-                versao: 0
-            },
-            {
-                tel_id: 47,
-                tel_nome: 'Receber',
-                versao: 0
-            },
-            {
-                tel_id: 539,
-                tel_nome: 'Dados processo',
-                versao: 0
-            },
-            {
-                tel_id: 479,
-                tel_nome: 'Nodos',
-                versao: 0
-            },
-            {
-                tel_id: 337,
-                tel_nome: 'Telas',
-                versao: 0
-            },
-            {
-                tel_id: 33,
-                tel_nome: 'Encerrar processo',
-                versao: 0
-            },
-            {
-                tel_id: 397,
-                tel_nome: 'Tipos de processo',
-                versao: 0
-            },
-            {
-                tel_id: 343,
-                tel_nome: 'Gêneros',
-                versao: 0
-            },
-            {
-                tel_id: 348,
-                tel_nome: 'Modelos de menus',
-                versao: 0
-            },
-            {
-                tel_id: 349,
-                tel_nome: 'Áreas de menus',
-                versao: 0
-            },
-            {
-                tel_id: 623,
-                tel_nome: 'Razões de trâmite',
-                versao: 0
-            },
-            {
-                tel_id: 624,
-                tel_nome: 'Setores',
-                versao: 0
-            }
+            { tel_id: 22, tel_nome: 'Home', versao: 0 },
+            { tel_id: 23, tel_nome: 'Processos', versao: 0 },
+            { tel_id: 24, tel_nome: 'Memorandos', versao: 0 },
+            { tel_id: 25, tel_nome: 'Manifestações', versao: 0 },
+            { tel_id: 26, tel_nome: 'Cadastros', versao: 0 },
+            { tel_id: 27, tel_nome: 'Manutenção', versao: 0 },
+            { tel_id: 28, tel_nome: 'Trâmites', versao: 0 },
+            { tel_id: 32, tel_nome: 'Complementar dados', versao: 0 },
+            { tel_id: 30, tel_nome: 'Consultar processo', versao: 0 },
+            { tel_id: 31, tel_nome: 'Criar processo', versao: 0 },
+            { tel_id: 34, tel_nome: 'Reabrir processo', versao: 0 },
+            { tel_id: 35, tel_nome: 'Consultar memorando', versao: 0 },
+            { tel_id: 36, tel_nome: 'Criar memorando', versao: 0 },
+            { tel_id: 37, tel_nome: 'Consultar manifestação', versao: 0 },
+            { tel_id: 38, tel_nome: 'Criar manifestação', versao: 0 },
+            { tel_id: 353, tel_nome: 'Menus', versao: 0 },
+            { tel_id: 413, tel_nome: 'Fluxos', versao: 0 },
+            { tel_id: 46, tel_nome: 'Enviar', versao: 0 },
+            { tel_id: 47, tel_nome: 'Receber', versao: 0 },
+            { tel_id: 539, tel_nome: 'Dados processo', versao: 0 },
+            { tel_id: 479, tel_nome: 'Nodos', versao: 0 },
+            { tel_id: 337, tel_nome: 'Telas', versao: 0 },
+            { tel_id: 33, tel_nome: 'Encerrar processo', versao: 0 },
+            { tel_id: 397, tel_nome: 'Tipos de processo', versao: 0 },
+            { tel_id: 343, tel_nome: 'Gêneros', versao: 0 },
+            { tel_id: 348, tel_nome: 'Modelo de menus', versao: 0 },
+            { tel_id: 349, tel_nome: 'Áreas de menu', versao: 0 },
+            { tel_id: 623, tel_nome: 'Razões de trâmite', versao: 0 },
+            { tel_id: 624, tel_nome: 'Setores', versao: 0 },
+            { tel_id: 625, tel_nome: 'Lotações', versao: 0 },
+            { tel_id: 626, tel_nome: 'Tipos de manifestação', versao: 0 },
+            { tel_id: 627, tel_nome: 'Criar manifestação', versao: 0 },
+            { tel_id: 628, tel_nome: 'Próximos trâmites', versao: 0 },
+            { tel_id: 643, tel_nome: 'Tramitar', versao: 0 },
+            { tel_id: 644, tel_nome: 'Tipos de documento', versao: 0 },
+            { tel_id: 645, tel_nome: 'Criar manifestação executiva', versao: 0 },
+            { tel_id: 646, tel_nome: 'Criar visto', versao: 0 },
+            { tel_id: 647, tel_nome: 'GeraFluxo', versao: 0 },
+            { tel_id: 648, tel_nome: 'Criar ciência', versao: 0 },
+            { tel_id: 649, tel_nome: 'Criar averbação', versao: 0 },
+            { tel_id: 650, tel_nome: 'Criar ciência averbação', versao: 0 },
+            { tel_id: 651, tel_nome: 'Criar aval horário', versao: 0 },
+            { tel_id: 652, tel_nome: 'Criar contagem de tempo', versao: 0 },
+            { tel_id: 653, tel_nome: 'Criar ciência do cálculo', versao: 0 },
+            { tel_id: 654, tel_nome: 'Regras de aposentação', versao: 0 },
+            { tel_id: 655, tel_nome: 'Criar parecer Projuris aposentadoria', versao: 0 },
+            { tel_id: 656, tel_nome: 'Criar processo Pas Pad', versao: 0 },
+            { tel_id: 657, tel_nome: 'Membros comissão', versao: 0 },
+            { tel_id: 658, tel_nome: 'Criar manifestação Pas / Pad', versao: 0 },
+            { tel_id: 659, tel_nome: 'Sigilos', versao: 0 },
+            { tel_id: 660, tel_nome: 'Criar manifestação decisão PAD', versao: 0 },
+            { tel_id: 661, tel_nome: 'Execução de despesas', versao: 0 }
         ],
         {}
     ),
