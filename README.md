@@ -4,7 +4,7 @@
 
 O projeto é dividido em 4 partes:
 
-1. pasta `backend`:  
+1. pasta `backend`:
 
    - possui o backend do projeto
    - tem seu próprio `package.json`
@@ -89,3 +89,13 @@ Informações úteis:
 
 - A rede da stack e de [ingresso](https://docs.docker.com/network/overlay/#customize-the-default-ingress-network) não podem estar na mesma faixa de sua LAN de serviços;
 - O [portainer](https://www.portainer.io/) pode ser útil para gerenciar a _stack_.
+
+## Tips and tricks
+
+- Para atualizar as dependências de um módulo, utilize o pacote `ncu`:
+
+  ```shell
+  npm install -g npm-check-updates
+  ncu -u
+  npm install
+  ```
