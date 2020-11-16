@@ -9,23 +9,23 @@ RUN apt-get update \
 # https://unix.stackexchange.com/questions/35807/recommended-location-of-node-js-applications-in-linux-filesystem
 #
 # APP = distribution files
-# CONFIG = placeholder for configuration files
-# STATIC = static and run-time data (could be "/src/opt/spae-api")
-# LOG = logs
 # FILES = placeholder for user files
+# LOG = logs
 ENV SPAEAPI_APP_FOLDER=/opt/spae-api/ \
-    SPAEAPI_CONFIG_FOLDER=/etc/opt/spae-api/ \
-    SPAEAPI_STATIC_FOLDER=/var/www/spae-api/ \
-    SPAEAPI_LOG_FOLDER=/var/log/spae-api/ \
-    SPAEAPI_FILES_FOLDER=/opt/spae-api/arquivos/
-# ATENÇÃO: ajuste estes caminhos de acordo com o configurado no ''.env'
+    SPAEAPI_FILES_FOLDER=/opt/spae-api/arquivos/ \
+    SPAEAPI_LOG_FOLDER=/var/log/spae-api/
+# ATENÇÃO: ajuste estes caminhos de acordo com o configurado no '.env'
 
 # As default for a mount point, this must be run before VOLUME directive
-RUN mkdir -p "${SPAEAPI_LOG_FOLDER}" \
+RUN mkdir -p "${SPAEAPI_APP_FOLDER}" \
+    && chown node:node "${SPAEAPI_APP_FOLDER}" \
+    && mkdir -p "${SPAEAPI_FILES_FOLDER}" \
+    && chown node:node "${SPAEAPI_FILES_FOLDER}" \
+    && mkdir -p "${SPAEAPI_LOG_FOLDER}" \
     && chown node:node "${SPAEAPI_LOG_FOLDER}"
 
 # Persisting data
-VOLUME "${SPAEAPI_CONFIG_FOLDER}" \
+VOLUME "${SPAEAPI_FILES_FOLDER}" \
        "${SPAEAPI_LOG_FOLDER}"
 
 # Install app dependencies
