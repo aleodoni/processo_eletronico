@@ -30,7 +30,7 @@ import ProximoTramiteController from './app/controllers/ProximoTramiteController
 import TramiteController from './app/controllers/TramiteController';
 import TipoDocumentoController from './app/controllers/TipoDocumentoController';
 import AuthMiddleware from './app/middlewares/auth';
-import * as funcoesArquivo from '../src/config/arquivos';
+import * as funcoesArquivo from './config/arquivos';
 import * as constantes from './app/constants/constantes';
 import RegraAposentacaoController from './app/controllers/RegraAposentacaoController';
 

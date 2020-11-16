@@ -65,6 +65,8 @@ typings/
 
 *.lock
 
-# certificados do backend
-backend/*.cert
-backend/*.key
+# certificates
+*.cert
+*.key
+*.crt
+*.pem
