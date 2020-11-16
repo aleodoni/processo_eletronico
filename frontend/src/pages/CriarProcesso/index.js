@@ -5,6 +5,7 @@ import { Form } from '@unform/web';
 import { FaSearch } from 'react-icons/fa';
 import Input from '../../components/layout/Input';
 import InputMask from '../../components/layout/InputMask';
+import CpfInputMask from '../../components/layout/InputMask/CpfInputMask';
 import TextArea from '../../components/layout/TextArea';
 import Select from '../../components/layout/Select';
 import Limpar from '../../components/layout/button/Limpar';
@@ -699,6 +700,7 @@ function CriarProcesso() {
                     if (res.data.pes_cpf.toString().length === 9) {
                         res.data.pes_cpf = `00${res.data.pes_cpf.toString()}`;
                     }
+                    formRef.current.setFieldValue('proCpf', res.data.pes_cpf);
                     setProcesso({
                         proNome: res.data.pes_nome,
                         proCpf: res.data.pes_cpf,
@@ -802,10 +804,11 @@ function CriarProcesso() {
                         ) : null}
                         {dadosServidorPublico ? (
                             <ContainerDadosServidorPublico>
-                                <InputMask
+                                <CpfInputMask
                                     name="proCpf"
                                     label="Cpf"
-                                    mask="999.999.999-99"
+                                    //mask="999.999.999-99"
+                                    size="11"
                                     maskChar=" "
                                 />
                                 <Input
