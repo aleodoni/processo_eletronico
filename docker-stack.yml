@@ -1,0 +1,89 @@
+version: "3.7"
+services:
+  backend:
+    image: camaracuritiba/spaeapi
+    env_file:
+      - ./backend/.env
+    build:
+      context: ./backend
+    ports:
+      - "3002:3002"
+    dns:
+      - dns1
+      - dns2
+    networks:
+      - local_network
+    volumes:
+      - type: volume
+        source: backend_logs
+        target: /var/log/spae-api/
+      - type: volume
+        source: backend_files
+        target: /opt/spae-api/arquivos/
+    depends_on:
+      - redis
+
+  frontend:
+    image: camaracuritiba/spae
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    networks:
+      - local_network
+    volumes:
+      - type: volume
+        source: frontend_logs
+        target: /var/log/nginx/
+    depends_on:
+      - backend
+
+  contab:
+    image: camaracuritiba/spae-contab
+    build:
+      context: ./ext-contab
+    ports:
+      - "8081:80"
+    networks:
+      - local_network
+    volumes:
+      - type: volume
+        source: contab_logs
+        target: /var/log/nginx/
+    depends_on:
+      - backend
+
+  externo:
+    image: camaracuritiba/spae-externo
+    build:
+      context: ./externo
+    ports:
+      - "8082:80"
+    networks:
+      - local_network
+    volumes:
+      - type: volume
+        source: externo_logs
+        target: /var/log/nginx/
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:alpine
+    networks:
+      - local_network
+
+networks:
+  local_network:
+    driver: overlay
+    ipam:
+      config:
+        - subnet: 10.12.0.0/24
+
+
+volumes:
+  backend_logs:
+  backend_files:
+  frontend_logs:
+  externo_logs:
+  contab_logs:
